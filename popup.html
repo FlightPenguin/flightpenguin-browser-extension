@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+  <head> </head>
+  <body>
+    <form id="search">
+      <input type="text" placeholder="From" name="from" value="SFO" />
+      <input type="text" placeholder="To" name="to" value="LAX" />
+      <label>
+        From
+        <input type="date" name="fromDate" value="2020-04-26" />
+      </label>
+      <label>
+        To
+        <input type="date" name="toDate" value="2020-04-28" />
+      </label>
+      <select name="cabin">
+        <option value="econ">Economy</option>
+        <option value="prem_econ">Premium Economy</option>
+        <option value="business">Business</option>
+        <option value="first">First</option>
+      </select>
+      <label>
+        Priceline
+        <input type="radio" name="priceline" value="Priceline" checked="true" />
+      </label>
+      <label>
+        Southwest
+        <input type="radio" name="southwest" value="Southwest" checked="true" />
+      </label>
+      <br />
+      <label>
+        Oneway
+        <input type="radio" name="oneway" value="Oneway" />
+      </label>
+      <label>
+        Roundtrip
+        <input type="radio" name="roundtrip" value="Roundtrip" />
+      </label>
+      <label>
+        Total Passengers
+        <select name="numPax">
+          <option>1</option>
+          <option>2</option>
+          <option>3</option>
+          <option>4</option>
+        </select>
+      </label>
+      <button type="submit">Search</button>
+    </form>
+    <script src="./popup.js"></script>
+  </body>
+</html>
