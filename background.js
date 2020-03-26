@@ -11,9 +11,11 @@ const tabIds = {};
 chrome.runtime.onMessage.addListener(function(message, sender, reply) {
   switch (message.event) {
     case "FORM_DATA_RECEIVED":
+      console.info(message.event);
       openProviderSearchResults(message.formData);
       break;
     case "FLIGHT_RESULTS_RECEIVED":
+      console.info(message.event);
       resultsReceived.push(message.flights);
 
       if (providerCount === resultsReceived.length) {
