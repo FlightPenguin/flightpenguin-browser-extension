@@ -13,5 +13,5 @@ document.querySelector("form#search").addEventListener("submit", e => {
     numPax: Number(e.target.numPax.value)
     // add oneway roundtrip selections
   };
-  chrome.runtime.sendMessage(formData);
+  chrome.runtime.sendMessage({ event: "FORM_DATA_RECEIVED", formData });
 });

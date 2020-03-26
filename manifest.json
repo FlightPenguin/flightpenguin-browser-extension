@@ -2,18 +2,20 @@
   "name": "hinhilla Browser Extension",
   "version": "1.0",
   "description": "Best one in town!",
-  "permissions": [],
+  "permissions": ["webRequest", "<all_urls>"],
   "background": {
     "scripts": ["background.js"],
-    "persistent": false
+    "persistent": true // prevents following error "The 'webRequest' API cannot be used with event pages."
   },
-  // "content_scripts": [
-  //   {
-  //     "matches": ["<all_urls>"],
-  //     "css": ["content_script_styles.css"],
-  //     "js": ["content_script.js"]
-  //   }
-  // ],
+  "content_scripts": [
+    {
+      "matches": [
+        "https://www.southwest.com/air/booking/select.html?*",
+        "https://www.priceline.com/m/fly/search/*"
+      ],
+      "js": ["contentScript.js"]
+    }
+  ],
   "browser_action": {
     "default_popup": "popup.html",
     "default_title": "Default title"

@@ -4,8 +4,59 @@ chrome.runtime.onInstalled.addListener(function() {
   console.log("Is this thing on?");
 });
 
+let providerCount = 0;
+let resultsReceived = [];
+const tabIds = {};
+
 chrome.runtime.onMessage.addListener(function(message, sender, reply) {
+  switch (message.event) {
+    case "FORM_DATA_RECEIVED":
+      openProviderSearchResults(message.formData);
+      break;
+    case "FLIGHT_RESULTS_RECEIVED":
+      resultsReceived.push(message.flights);
+
+      if (providerCount === resultsReceived.length) {
+        // set on localStorage so our webpage can read it
+        // TODO add webpage which displays results
+        localStorage.setItem("flight_results", JSON.stringify(resultsReceived));
+      }
+      break;
+    default:
+      console.error("Unhandled message ", message);
+      break;
+  }
+});
+
+// use chrome.webRequest API to listen for when flight results API has finished fetching
+// then send message to content script to begin parsing results off DOM
+chrome.webRequest.onCompleted.addListener(
+  function(args) {
+    console.log("web request complete ", args.url);
+    chrome.tabs.query({ active: true, currentWindow: true }, function(tabs) {
+      let tabId;
+      if (args.url.includes("priceline")) {
+        tabId = tabIds["priceline"];
+      } else if (args.url.includes("southwest")) {
+        tabId = tabIds["southwest"];
+      }
+      chrome.tabs.sendMessage(tabId, { event: "BEGIN_PARSING" });
+    });
+  },
+  {
+    urls: [
+      "https://www.southwest.com/api/air-booking/v1/air-booking/page/air/booking/shopping",
+      "https://www.priceline.com/pws/v0/fly/graph/query"
+    ]
+  }
+);
+
+function openProviderSearchResults(message) {
   /**
+   * Open tabs to provider search results pages.
+   * Keep track of opened tab ids to send messages to them.
+   *
+   * message schema:
     from: "sfo"
     to: "lax"
     southwest: false
@@ -15,25 +66,24 @@ chrome.runtime.onMessage.addListener(function(message, sender, reply) {
     toDate: "2020-03-25"
     numPax: 2
      */
-  console.log("formData", message);
   const { southwest, priceline } = message;
   const providers = [];
   if (southwest) {
     providers.push("southwest");
+    providerCount++;
   }
   if (priceline) {
     providers.push("priceline");
+    providerCount++;
   }
-  let tabIds = [];
   providers.forEach(provider => {
     const url = providerURLBaseMap[provider](message);
-    console.log(url);
     // open new tab with url
     chrome.tabs.create({ url }, tab => {
-      tabIds.push(tab.id);
+      tabIds[provider] = tab.id;
     });
   });
-});
+}
 
 const providerURLBaseMap = {
   priceline: pricelineTabURL,
