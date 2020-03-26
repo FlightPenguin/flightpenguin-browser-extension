@@ -20,8 +20,8 @@ chrome.runtime.onMessage.addListener(function(message, sender, reply) {
 
       if (providerCount === resultsReceived.length) {
         // set on localStorage so our webpage can read it
-        // TODO add webpage which displays results
         localStorage.setItem("flight_results", JSON.stringify(resultsReceived));
+        chrome.tabs.create({ url: chrome.extension.getURL("./index.html") });
       }
       break;
     default:
