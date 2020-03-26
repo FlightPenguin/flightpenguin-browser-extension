@@ -47,7 +47,7 @@ function southwestParser() {
             .querySelector(selector)
             .textContent.replace(/Departs |Arrives /, "");
         } catch (e) {
-          console.error("Error parsing ", e);
+          console.error("Error parsing ", key, e);
         }
       });
       return data;

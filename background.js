@@ -42,7 +42,11 @@ chrome.webRequest.onCompleted.addListener(
       } else if (args.url.includes("southwest")) {
         tabId = tabIds["southwest"];
       }
-      chrome.tabs.sendMessage(tabId, { event: "BEGIN_PARSING" });
+      window.setTimeout(() => {
+        // give provider page time to render
+        // this has great potential to break for slow internet speeds
+        chrome.tabs.sendMessage(tabId, { event: "BEGIN_PARSING" });
+      }, 4000);
     });
   },
   {
