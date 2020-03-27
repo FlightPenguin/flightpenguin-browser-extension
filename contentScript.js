@@ -45,25 +45,37 @@ function southwestParser() {
   // const pattern = /(?<dep>.{5}(PM|AM)).+(?<arr>.{5}(PM|AM)).+(?<duration>Duration\d+h\s\d+m).+(?<stops>\d+h\s\d+m).+(?<price>\$\d+)/;
   // pat = /(?<dep>.{5}(PM|AM)).+(?<arr>.{5}(PM|AM)).+(?<stops>\d+h\s\d+m).+(?<price>\$\d+)/;
 
-  function parseText(htmlCollection) {
-    return Array.from(htmlCollection).map(departure => {
-      const data = {};
-      Object.entries(selectors).forEach(([key, selector]) => {
-        try {
-          data[key] = departure
-            .querySelector(selector)
-            .textContent.replace(/Departs |Arrives /, "");
-        } catch (e) {
-          console.error("Error parsing ", key, e);
-        }
-      });
-      return data;
-    });
-  }
-
-  const departureList = parseText(departures.children);
-  const returnList = parseText(returns.children);
+  const departureList = parseText(departures.children, selectors);
+  const returnList = parseText(returns.children, selectors);
 
   return { departureList, returnList };
 }
-function pricelineParser() {}
+function pricelineParser() {
+  const [departures, returns] = document.querySelectorAll("");
+  const selectors = {
+    fromTime: "",
+    toTime: "",
+    fare: "",
+    duration: "",
+    layovers: ""
+  };
+
+  const departureList = parseText(departures.children, selectors);
+  const returnList = parseText(returns.children, selectors);
+
+  return { departureList, returnList };
+}
+
+function parseText(htmlCollection, selectors) {
+  return Array.from(htmlCollection).map(departure => {
+    const data = {};
+    Object.entries(selectors).forEach(([key, selector]) => {
+      try {
+        data[key] = departure.querySelector(selector).textContent;
+      } catch (e) {
+        console.info("Error parsing ", key, e);
+      }
+    });
+    return data;
+  });
+}
