@@ -20,8 +20,8 @@ function createNodeList(list) {
 const departures = createNodeList(departureList);
 const returns = createNodeList(returnList);
 
-document.body.append(departures);
-document.body.append(returns);
+document.querySelector(".departures").append(departures);
+document.querySelector(".returns").append(returns);
 
 function handleClick(e) {
   const tabId = e.currentTarget.dataset.tabId;
