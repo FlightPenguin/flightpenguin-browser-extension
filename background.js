@@ -7,12 +7,14 @@ chrome.runtime.onInstalled.addListener(function() {
 let providerCount = 0;
 const resultsReceived = [];
 const tabIds = {};
+let formData = {};
 
 chrome.runtime.onMessage.addListener(function(message, sender, reply) {
   console.info(message.event);
 
   switch (message.event) {
     case "FORM_DATA_RECEIVED":
+      formData = message.formData;
       openProviderSearchResults(message.formData);
       break;
     case "FLIGHT_RESULTS_RECEIVED":
@@ -23,7 +25,7 @@ chrome.runtime.onMessage.addListener(function(message, sender, reply) {
       } else if (sender.origin.includes("priceline")) {
         tabId = tabIds["priceline"];
       }
-      resultsReceived.push({ flights: message.flights, tabId });
+      resultsReceived.push({ flights: message.flights, tabId, formData });
       if (providerCount === resultsReceived.length) {
         // set on localStorage so our webpage can read it
         localStorage.setItem("flight_results", JSON.stringify(resultsReceived));

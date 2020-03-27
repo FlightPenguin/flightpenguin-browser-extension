@@ -1,5 +1,5 @@
 const res = localStorage.getItem("flight_results");
-const { flights, tabId } = JSON.parse(res)[0];
+const { flights, tabId, formData } = JSON.parse(res)[0];
 const { departureList, returnList } = flights;
 
 function createNodeList(list) {
@@ -20,6 +20,9 @@ function createNodeList(list) {
 const departures = createNodeList(departureList);
 const returns = createNodeList(returnList);
 
+const { from, to, fromDate, toDate, cabin, numPax } = formData;
+const headline = `${from}-${to} ${fromDate} to ${toDate} ${cabin} ${numPax} adults`;
+document.querySelector(".header").append(headline);
 document.querySelector(".departures").append(departures);
 document.querySelector(".returns").append(returns);
 
