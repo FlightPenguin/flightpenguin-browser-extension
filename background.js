@@ -32,7 +32,11 @@ chrome.runtime.onMessage.addListener(function(message, sender, reply) {
       break;
     case "HIGHLIGHT_TAB":
       chrome.tabs.get(message.tabId, tab => {
-        chrome.tabs.highlight({ tabs: [tab.index] });
+        chrome.tabs.highlight({ tabs: [tab.index] }, () => {
+          chrome.tabs.sendMessage(message.tabId, {
+            event: "HIGHLIGHT_FLIGHT"
+          });
+        });
       });
       break;
     default:
