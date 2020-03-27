@@ -30,6 +30,7 @@ document.querySelector(".returns").append(returns);
 
 function handleClick(e) {
   const { tabId, id } = e.currentTarget.dataset;
+  e.currentTarget.style.border = "10px solid tomato";
   selections.push(id);
 
   if (selections.length === 2) {
