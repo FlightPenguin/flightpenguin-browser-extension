@@ -33,10 +33,13 @@ chrome.runtime.onMessage.addListener(function(message, sender, reply) {
       }
       break;
     case "HIGHLIGHT_TAB":
+      const { selectedDepartureId, selectedReturnId } = message;
       chrome.tabs.get(message.tabId, tab => {
         chrome.tabs.highlight({ tabs: [tab.index] }, () => {
           chrome.tabs.sendMessage(message.tabId, {
-            event: "HIGHLIGHT_FLIGHT"
+            event: "HIGHLIGHT_FLIGHT",
+            selectedDepartureId,
+            selectedReturnId
           });
         });
       });

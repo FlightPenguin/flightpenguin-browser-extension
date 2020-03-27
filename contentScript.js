@@ -23,12 +23,31 @@ chrome.runtime.onMessage.addListener(function(message, sender, sendResponse) {
       }
       break;
     case "HIGHLIGHT_FLIGHT":
-      // TODO
+      const { selectedDepartureId, selectedReturnId } = message;
+      findSouthwestNodes(selectedDepartureId, selectedReturnId);
       break;
     default:
       break;
   }
 });
+
+function findSouthwestNodes(selectedDepartureId, selectedReturnId) {
+  const [departureList, returnList] = document.querySelectorAll(
+    ".transition-content.price-matrix--details-area ul"
+  );
+
+  const dep = findMatch(
+    Array.from(departureList.children),
+    selectedDepartureId
+  );
+  const ret = findMatch(Array.from(returnList.children), selectedReturnId);
+  dep.style.border = "10px solid tomato";
+  ret.style.border = "10px solid tomato";
+}
+
+function findMatch(list, target) {
+  return list.find(item => item.dataset.id === target);
+}
 
 function southwestParser() {
   const [departures, returns] = document.querySelectorAll(
@@ -81,10 +100,14 @@ function parseText(htmlCollection, selectors, moreKeyValues = {}) {
         console.info("Error parsing ", key, e);
       }
     });
+    const id = [data.fromTime, data.toTime, data.fare].join("-");
+    departure.dataset.id = id;
     data = {
+      id,
       ...data,
       ...moreKeyValues
     };
+
     return data;
   });
 }

@@ -1,6 +1,7 @@
 const res = localStorage.getItem("flight_results");
 const { flights, tabId, formData } = JSON.parse(res)[0];
 const { departureList, returnList } = flights;
+let selections = [];
 
 function createNodeList(list) {
   const listNode = document.createElement("ul");
@@ -13,6 +14,7 @@ function createNodeList(list) {
       node.append(span);
     });
     node.dataset.tabId = tabId;
+    node.dataset.id = item.id;
     listNode.append(node);
   });
   return listNode;
@@ -27,6 +29,16 @@ document.querySelector(".departures").append(departures);
 document.querySelector(".returns").append(returns);
 
 function handleClick(e) {
-  const tabId = e.currentTarget.dataset.tabId;
-  chrome.runtime.sendMessage({ event: "HIGHLIGHT_TAB", tabId: Number(tabId) });
+  const { tabId, id } = e.currentTarget.dataset;
+  selections.push(id);
+
+  if (selections.length === 2) {
+    chrome.runtime.sendMessage({
+      event: "HIGHLIGHT_TAB",
+      tabId: Number(tabId),
+      selectedDepartureId: selections[0],
+      selectedReturnId: selections[1]
+    });
+    selections = [];
+  }
 }
