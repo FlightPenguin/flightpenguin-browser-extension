@@ -5,24 +5,35 @@ chrome.runtime.onInstalled.addListener(function() {
 });
 
 let providerCount = 0;
-let resultsReceived = [];
+const resultsReceived = [];
 const tabIds = {};
 
 chrome.runtime.onMessage.addListener(function(message, sender, reply) {
+  console.info(message.event);
+
   switch (message.event) {
     case "FORM_DATA_RECEIVED":
-      console.info(message.event);
       openProviderSearchResults(message.formData);
       break;
     case "FLIGHT_RESULTS_RECEIVED":
-      console.info(message.event);
-      resultsReceived.push(message.flights);
-
+      let tabId;
+      if (sender.origin.includes("southwest")) {
+        // save results with their tab index so we know where to move the user to when they make a flight selection
+        tabId = tabIds["southwest"];
+      } else if (sender.origin.includes("priceline")) {
+        tabId = tabIds["priceline"];
+      }
+      resultsReceived.push({ flights: message.flights, tabId });
       if (providerCount === resultsReceived.length) {
         // set on localStorage so our webpage can read it
         localStorage.setItem("flight_results", JSON.stringify(resultsReceived));
         chrome.tabs.create({ url: chrome.extension.getURL("./index.html") });
       }
+      break;
+    case "HIGHLIGHT_TAB":
+      chrome.tabs.get(message.tabId, tab => {
+        chrome.tabs.highlight({ tabs: [tab.index] });
+      });
       break;
     default:
       console.error("Unhandled message ", message);
