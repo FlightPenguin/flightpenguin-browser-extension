@@ -1,8 +1,29 @@
 const res = localStorage.getItem("flight_results");
 const { flights, tabId } = JSON.parse(res)[0];
-const container = document.createElement("main");
-container.addEventListener("click", () => {
-  chrome.runtime.sendMessage({ event: "HIGHLIGHT_TAB", tabId });
-});
-container.textContent = res;
-document.body.append(container);
+const { departureList, returnList } = flights;
+
+function createNodeList(list) {
+  const listNode = document.createElement("ul");
+  list.forEach(item => {
+    const node = document.createElement("li");
+    node.addEventListener("click", handleClick);
+    Object.values(item).forEach(value => {
+      const span = document.createElement("span");
+      span.textContent = value;
+      node.append(span);
+    });
+    node.dataset.tabId = tabId;
+    listNode.append(node);
+  });
+  return listNode;
+}
+const departures = createNodeList(departureList);
+const returns = createNodeList(returnList);
+
+document.body.append(departures);
+document.body.append(returns);
+
+function handleClick(e) {
+  const tabId = e.currentTarget.dataset.tabId;
+  chrome.runtime.sendMessage({ event: "HIGHLIGHT_TAB", tabId: Number(tabId) });
+}

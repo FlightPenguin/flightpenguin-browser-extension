@@ -1,3 +1,9 @@
 body {
   background-color: tomato;
+  font-size: 1em;
+}
+li {
+  padding: 20px;
+  display: flex;
+  justify-content: space-evenly;
 }

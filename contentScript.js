@@ -35,9 +35,9 @@ function southwestParser() {
     ".transition-content.price-matrix--details-area ul"
   );
   const selectors = {
-    fromTime: ".air-operations-time-status[type='origination']",
-    toTime: ".air-operations-time-status[type='destination']",
-    fare: ".fare-button_primary-yellow",
+    fromTime: ".air-operations-time-status[type='origination'] .time--value",
+    toTime: ".air-operations-time-status[type='destination'] .time--value",
+    fare: ".fare-button_primary-yellow [aria-hidden='true']",
     duration: ".flight-stops--duration-time",
     layovers: ".flight-stops-badge"
   };
@@ -45,8 +45,12 @@ function southwestParser() {
   // const pattern = /(?<dep>.{5}(PM|AM)).+(?<arr>.{5}(PM|AM)).+(?<duration>Duration\d+h\s\d+m).+(?<stops>\d+h\s\d+m).+(?<price>\$\d+)/;
   // pat = /(?<dep>.{5}(PM|AM)).+(?<arr>.{5}(PM|AM)).+(?<stops>\d+h\s\d+m).+(?<price>\$\d+)/;
 
-  const departureList = parseText(departures.children, selectors);
-  const returnList = parseText(returns.children, selectors);
+  const departureList = parseText(departures.children, selectors, {
+    airline: "Southwest"
+  });
+  const returnList = parseText(returns.children, selectors, {
+    airline: "Southwest"
+  });
 
   return { departureList, returnList };
 }
@@ -57,7 +61,8 @@ function pricelineParser() {
     toTime: "",
     fare: "",
     duration: "",
-    layovers: ""
+    layovers: "",
+    airline: ""
   };
 
   const departureList = parseText(departures.children, selectors);
@@ -66,9 +71,9 @@ function pricelineParser() {
   return { departureList, returnList };
 }
 
-function parseText(htmlCollection, selectors) {
+function parseText(htmlCollection, selectors, moreKeyValues = {}) {
   return Array.from(htmlCollection).map(departure => {
-    const data = {};
+    let data = {};
     Object.entries(selectors).forEach(([key, selector]) => {
       try {
         data[key] = departure.querySelector(selector).textContent;
@@ -76,6 +81,10 @@ function parseText(htmlCollection, selectors) {
         console.info("Error parsing ", key, e);
       }
     });
+    data = {
+      ...data,
+      ...moreKeyValues
+    };
     return data;
   });
 }
