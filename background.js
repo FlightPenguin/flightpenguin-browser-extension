@@ -4,10 +4,10 @@ chrome.runtime.onInstalled.addListener(function() {
   console.log("Is this thing on?");
 });
 
-let providerCount = 0;
-const resultsReceived = [];
 const tabIds = {};
 let formData = {};
+let providerCount = 0;
+let resultsReceived = [];
 
 chrome.runtime.onMessage.addListener(function(message, sender, reply) {
   console.info(message.event);
@@ -30,6 +30,8 @@ chrome.runtime.onMessage.addListener(function(message, sender, reply) {
         // set on localStorage so our webpage can read it
         localStorage.setItem("flight_results", JSON.stringify(resultsReceived));
         chrome.tabs.create({ url: chrome.extension.getURL("./index.html") });
+        providerCount = 0;
+        resultsReceived = [];
       }
       break;
     case "HIGHLIGHT_TAB":
