@@ -1,10 +1,41 @@
-const res = localStorage.getItem("flight_results");
-const { flights, tabId, formData } = JSON.parse(res)[0];
-const { departureList, returnList } = flights;
+let totalFlights = 0;
+const headerContainer = document.querySelector(".header");
+const subheaderContainer = document.querySelector(".subheader");
+const departuresContainer = document.querySelector(".departures");
+
+const returnsContainer = document.querySelector(".returns");
+
+chrome.runtime.onMessage.addListener(function(message) {
+  switch (message.event) {
+    case "FLIGHT_RESULTS_FOR_CLIENT":
+      console.log(message.event);
+      debugger;
+
+      const {
+        flights: { departureList, returnList },
+        formData,
+        tabId
+      } = message;
+      const departures = createNodeList(departureList, tabId);
+      const returns = createNodeList(returnList, tabId);
+      const header = createHeader(formData);
+      totalFlights += departureList.length + returnList.length;
+
+      // move these to variables to prevent over-querying
+      headerContainer.textContent = header;
+      subheaderContainer.textContent = `${totalFlights} flights found.`;
+      departuresContainer.append(departures);
+      returnsContainer.append(returns);
+      break;
+    default:
+      break;
+  }
+});
+
 let selections = [];
 
-function createNodeList(list) {
-  const listNode = document.createElement("ul");
+function createNodeList(list, tabId) {
+  const listNode = document.createDocumentFragment();
   list.forEach(item => {
     const node = document.createElement("li");
     node.addEventListener("click", handleClick);
@@ -19,14 +50,11 @@ function createNodeList(list) {
   });
   return listNode;
 }
-const departures = createNodeList(departureList);
-const returns = createNodeList(returnList);
 
-const { from, to, fromDate, toDate, cabin, numPax } = formData;
-const headline = `${from}-${to} ${fromDate} to ${toDate} ${cabin} ${numPax} adults`;
-document.querySelector(".header").append(headline);
-document.querySelector(".departures").append(departures);
-document.querySelector(".returns").append(returns);
+function createHeader(formData) {
+  const { from, to, fromDate, toDate, cabin, numPax } = formData;
+  return `${from}-${to} ${fromDate} to ${toDate} ${cabin} ${numPax} adults`;
+}
 
 function handleClick(e) {
   const { tabId, id } = e.currentTarget.dataset;

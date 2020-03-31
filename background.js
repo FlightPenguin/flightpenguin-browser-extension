@@ -6,11 +6,10 @@ chrome.runtime.onInstalled.addListener(function() {
 
 const tabIds = {};
 let formData = {};
-let providerCount = 0;
-let resultsReceived = [];
+let webPageTabId;
 
 chrome.runtime.onMessage.addListener(function(message, sender, reply) {
-  console.info(message.event);
+  console.info(message.event, message);
 
   switch (message.event) {
     case "FORM_DATA_RECEIVED":
@@ -25,14 +24,26 @@ chrome.runtime.onMessage.addListener(function(message, sender, reply) {
       } else if (sender.origin.includes("priceline")) {
         tabId = tabIds["priceline"];
       }
-      resultsReceived.push({ flights: message.flights, tabId, formData });
-      if (providerCount === resultsReceived.length) {
-        // set on localStorage so our webpage can read it
-        localStorage.setItem("flight_results", JSON.stringify(resultsReceived));
-        chrome.tabs.create({ url: chrome.extension.getURL("./index.html") });
-        providerCount = 0;
-        resultsReceived = [];
+      nextMessage = {
+        event: "FLIGHT_RESULTS_FOR_CLIENT",
+        flights: message.flights,
+        tabId,
+        formData
+      };
+      if (!webPageTabId) {
+        createNewWebPage(nextMessage);
+      } else {
+        // make sure webpage still exists
+        chrome.tabs.get(webPageTabId, tab => {
+          if (!tab) {
+            createNewWebPage(nextMessage);
+          } else {
+            chrome.tabs.sendMessage(tab.id, nextMessage);
+          }
+        });
       }
+
+      // need to clean up variables when webpage tab is closed
       break;
     case "HIGHLIGHT_TAB":
       const { selectedDepartureId, selectedReturnId } = message;
@@ -52,6 +63,16 @@ chrome.runtime.onMessage.addListener(function(message, sender, reply) {
   }
 });
 
+function createNewWebPage(message) {
+  chrome.tabs.create({ url: chrome.extension.getURL("./index.html") }, tab => {
+    window.setTimeout(() => {
+      // need setTimeout here or else message will be missed by new tab.
+      chrome.tabs.sendMessage(tab.id, message);
+    }, 1000);
+    webPageTabId = tab.id;
+  });
+}
+
 // use chrome.webRequest API to listen for when flight results API has finished fetching
 // then send message to content script to begin parsing results off DOM
 chrome.webRequest.onCompleted.addListener(
@@ -68,7 +89,7 @@ chrome.webRequest.onCompleted.addListener(
         // give provider page time to render
         // this has great potential to break for slow internet speeds
         chrome.tabs.sendMessage(tabId, { event: "BEGIN_PARSING" });
-      }, 4000);
+      }, 2000);
     });
   },
   {
@@ -98,11 +119,9 @@ function openProviderSearchResults(message) {
   const providers = [];
   if (southwest) {
     providers.push("southwest");
-    providerCount++;
   }
   if (priceline) {
     providers.push("priceline");
-    providerCount++;
   }
   providers.forEach(provider => {
     const url = providerURLBaseMap[provider](message);
