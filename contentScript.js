@@ -2,17 +2,16 @@
 console.clear();
 console.log("hello...");
 
+let rafID = 0;
+let allItins = [];
+
 chrome.runtime.onMessage.addListener(function(message, sender, sendResponse) {
   // parse page to get flights, then send background to process and display on new web page.
   console.info("Received message ", message.event);
   switch (message.event) {
     case "BEGIN_PARSING":
       if (window.location.origin.includes("priceline")) {
-        const pricelineFlights = pricelineParser();
-        chrome.runtime.sendMessage({
-          event: "FLIGHT_RESULTS_RECEIVED",
-          flights: pricelineFlights
-        });
+        loadPricelineResults();
       } else if (window.location.origin.includes("southwest")) {
         const southwestFlights = southwestParser();
         console.info("Sending parsed results to background ", southwestFlights);
@@ -30,6 +29,54 @@ chrome.runtime.onMessage.addListener(function(message, sender, sendResponse) {
       break;
   }
 });
+
+/**
+ * Priceline has "infinite scroll" results. So to get more results we need to scroll down the page.
+ * Every time Priceline needs to fetch more results, our background picks up the API request and
+ * calls this function again.
+ */
+function loadPricelineResults() {
+  cancelAnimationFrame(rafID);
+
+  let newY = window.innerHeight;
+  let lastTime = 0;
+
+  rafID = window.requestAnimationFrame(parseMorePriceline);
+
+  function parseMorePriceline(currentTime) {
+    if (allItins.length >= 50) {
+      // just picking 50 for now
+      cancelAnimationFrame(rafID);
+      return;
+    }
+    // every 5 seconds scroll to next viewPort
+    const timeToScroll = Math.max(0, 5000 - (currentTime - lastTime));
+    if (timeToScroll === 0) {
+      window.scroll(0, newY);
+
+      let moreItins = Array.from(
+        document.querySelectorAll(
+          "[class^='Itinerary__MainZone']:not([data-visited='true']"
+        )
+      );
+      if (moreItins.length) {
+        const pricelineFlights = pricelineParser(allItins);
+        chrome.runtime.sendMessage({
+          event: "FLIGHT_RESULTS_RECEIVED",
+          flights: pricelineFlights
+        });
+      }
+      moreItins.forEach(itin => {
+        itin.style.border = "10px solid tomato";
+        itin.dataset.visited = true;
+      });
+      allItins = allItins.concat(moreItins);
+      newY = window.scrollY + window.innerHeight;
+    }
+
+    rafID = window.requestAnimationFrame(parseMorePriceline);
+  }
+}
 
 function findSouthwestNodes(selectedDepartureId, selectedReturnId) {
   const [departureList, returnList] = document.querySelectorAll(
@@ -73,20 +120,34 @@ function southwestParser() {
 
   return { departureList, returnList };
 }
-function pricelineParser() {
-  const [departures, returns] = document.querySelectorAll("");
+function pricelineParser(itinNodes) {
+  // const [departures, returns] = document.querySelectorAll("");
   const selectors = {
-    fromTime: "",
-    toTime: "",
-    fare: "",
-    duration: "",
-    layovers: "",
-    airline: ""
+    fromTime: ".departure time",
+    toTime: ".arrival time",
+    duration: "[class^='Slice__Duration'] time",
+    layovers: "[class^='Stops__StopsText']",
+    airline: "[class^='AirlineTitle']"
   };
+  const fareSelector = {
+    fare: "[data-test='rounded-dollars']",
+    currency: "[data-test='currency-symbol']"
+  };
+  const departureList = [];
+  const returnList = [];
+  itinNodes.forEach(node => {
+    const [departureFlight, returnFlight] = parseText(
+      node.children[0].children,
+      selectors
+    );
+    const price = parseText(node.children[1].children, fareSelector);
+    const { currency, fare } = price[0];
+    departureFlight.fare = `${currency}${fare}`;
+    returnFlight.fare = `${currency}${fare}`;
 
-  const departureList = parseText(departures.children, selectors);
-  const returnList = parseText(returns.children, selectors);
-
+    departureList.push(departureFlight);
+    returnList.push(returnFlight);
+  });
   return { departureList, returnList };
 }
 
