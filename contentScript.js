@@ -36,17 +36,15 @@ chrome.runtime.onMessage.addListener(function(message, sender, sendResponse) {
  * calls this function again.
  */
 function loadPricelineResults() {
-  cancelAnimationFrame(rafID);
-
   let newY = window.innerHeight;
   let lastTime = 0;
 
   rafID = window.requestAnimationFrame(parseMorePriceline);
 
   function parseMorePriceline(currentTime) {
-    if (allItins.length >= 50) {
-      // just picking 50 for now
-      cancelAnimationFrame(rafID);
+    if (allItins.length >= 20) {
+      // arbitrary number
+      window.cancelAnimationFrame(rafID);
       return;
     }
     // every 5 seconds scroll to next viewPort
@@ -60,18 +58,19 @@ function loadPricelineResults() {
         )
       );
       if (moreItins.length) {
-        const pricelineFlights = pricelineParser(allItins);
+        const pricelineFlights = pricelineParser(moreItins);
         chrome.runtime.sendMessage({
           event: "FLIGHT_RESULTS_RECEIVED",
           flights: pricelineFlights
         });
       }
       moreItins.forEach(itin => {
-        itin.style.border = "10px solid tomato";
+        // itin.style.border = "10px solid tomato";
         itin.dataset.visited = true;
       });
       allItins = allItins.concat(moreItins);
       newY = window.scrollY + window.innerHeight;
+      lastTime = currentTime;
     }
 
     rafID = window.requestAnimationFrame(parseMorePriceline);

@@ -125,9 +125,9 @@ function openProviderSearchResults(message) {
   }
   providers.forEach(provider => {
     const url = providerURLBaseMap[provider](message);
-    // open new tab with url
-    chrome.tabs.create({ url }, tab => {
-      tabIds[provider] = tab.id;
+    // Open url in a new window. Not a new tab because we can't read results from inactive tabs (browser powers down inactive tabs).
+    chrome.windows.create({ url, focused: false, incognito: true }, win => {
+      tabIds[provider] = win.tabs[0].id;
     });
   });
 }

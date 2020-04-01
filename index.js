@@ -9,8 +9,6 @@ chrome.runtime.onMessage.addListener(function(message) {
   switch (message.event) {
     case "FLIGHT_RESULTS_FOR_CLIENT":
       console.log(message.event);
-      debugger;
-
       const {
         flights: { departureList, returnList },
         formData,
