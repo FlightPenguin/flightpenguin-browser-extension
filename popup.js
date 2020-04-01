@@ -2,6 +2,14 @@
 document.querySelector("form#search").addEventListener("submit", e => {
   e.preventDefault();
 
+  if (!e.target.southwest.checked && !e.target.priceline.checked) {
+    const node = document.querySelector(".validation-error");
+    node.textContent = "Please select a provider to continue";
+    return;
+  }
+
+  e.target.button.disabled = true;
+
   const formData = {
     from: e.target.from.value,
     to: e.target.to.value,

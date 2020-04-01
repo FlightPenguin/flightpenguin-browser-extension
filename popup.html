@@ -1,6 +1,16 @@
 <!DOCTYPE html>
 <html>
-  <head> </head>
+  <head>
+    <style>
+      .validation-error {
+        color: tomato;
+      }
+      button[type="submit"] {
+        float: right;
+        border: 2px solid tomato;
+      }
+    </style>
+  </head>
   <body>
     <form id="search">
       <input type="text" placeholder="From" name="from" value="SFO" />
@@ -19,23 +29,17 @@
         <option value="business">Business</option>
         <option value="first">First</option>
       </select>
-      <label>
-        Priceline
-        <input type="radio" name="priceline" value="Priceline" />
-      </label>
-      <label>
-        Southwest
-        <input type="radio" name="southwest" value="Southwest" />
-      </label>
       <br />
       <label>
         Oneway
         <input type="radio" name="oneway" value="Oneway" />
       </label>
+      <br />
       <label>
         Roundtrip
-        <input type="radio" name="roundtrip" value="Roundtrip" />
+        <input type="radio" name="roundtrip" value="Roundtrip" checked />
       </label>
+      <br />
       <label>
         Total Passengers
         <select name="numPax">
@@ -45,7 +49,22 @@
           <option>4</option>
         </select>
       </label>
-      <button type="submit">Search</button>
+      <br />
+      <h4>Providers:</h4>
+      <label>
+        Priceline
+        <input type="radio" name="priceline" value="Priceline" />
+      </label>
+      <br />
+      <label>
+        Southwest
+        <input type="radio" name="southwest" value="Southwest" />
+      </label>
+      <br />
+      <br />
+      <button type="submit" name="button">Search</button>
+      <br />
+      <div class="validation-error"></div>
     </form>
     <script src="./popup.js"></script>
   </body>
