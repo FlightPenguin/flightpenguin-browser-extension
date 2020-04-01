@@ -5,7 +5,7 @@
   "permissions": ["webRequest", "<all_urls>"],
   "background": {
     "scripts": ["background.js"],
-    "persistent": true // prevents following error "The 'webRequest' API cannot be used with event pages."
+    "persistent": true // prevents following error "The 'webRequest' API cannot be used with event pages." https://developer.chrome.com/extensions/background_pages#persistentWarning
   },
   "content_scripts": [
     {
