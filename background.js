@@ -5,7 +5,7 @@ chrome.runtime.onInstalled.addListener(function() {
 });
 
 const tabIds = {};
-const windowIds = [];
+const windowIds = {};
 let formData = {};
 let webPageTabId;
 
@@ -48,8 +48,9 @@ chrome.runtime.onMessage.addListener(function(message, sender, reply) {
       break;
     case "HIGHLIGHT_TAB":
       const { selectedDepartureId, selectedReturnId } = message;
+      // remove this line once you weave windowId from message var
       chrome.tabs.get(message.tabId, tab => {
-        chrome.tabs.highlight({ tabs: [tab.index] }, () => {
+        chrome.windows.update(tab.windowId, { focused: true }, win => {
           chrome.tabs.sendMessage(message.tabId, {
             event: "HIGHLIGHT_FLIGHT",
             selectedDepartureId,
@@ -66,7 +67,7 @@ chrome.runtime.onMessage.addListener(function(message, sender, reply) {
 // clean up provider windows when webpage tab is closed
 chrome.tabs.onRemoved.addListener(function(tabId) {
   if (tabId === webPageTabId) {
-    windowIds.forEach(windowId => {
+    Object.values(windowIds).forEach(windowId => {
       chrome.windows.remove(windowId);
     });
   }
@@ -137,7 +138,7 @@ function openProviderSearchResults(message) {
     // Open url in a new window. Not a new tab because we can't read results from inactive tabs (browser powers down inactive tabs).
     chrome.windows.create({ url, focused: false, incognito: true }, win => {
       tabIds[provider] = win.tabs[0].id;
-      windowIds.push(win.id);
+      windowIds[provider] = win.id;
     });
   });
 }
