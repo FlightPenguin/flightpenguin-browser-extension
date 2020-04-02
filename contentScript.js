@@ -152,8 +152,10 @@ function pricelineParser(itinNodes) {
     node.dataset.id = [
       departureFlight.fromTime,
       departureFlight.toTime,
+      departureFlight.airline,
       returnFlight.fromTime,
-      returnFlight.toTime
+      returnFlight.toTime,
+      returnFlight.airline
     ].join("-"); // will use this id attribute to find the itin the user selected
     // discarding (aka _) "per person" node below
     const [fareInfo, _] = queryPricelineDOM(fareNode.children, fareSelector);

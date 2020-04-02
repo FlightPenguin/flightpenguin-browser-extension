@@ -1,20 +1,22 @@
 let totalFlights = 0;
+let allItins = {};
 const headerContainer = document.querySelector(".header");
 const subheaderContainer = document.querySelector(".subheader");
 const departuresContainer = document.querySelector(".departures");
 
-// const returnsContainer = document.querySelector(".returns");
+const returnsContainer = document.querySelector(".returns");
 
 chrome.runtime.onMessage.addListener(function(message) {
+  console.log(message.event, message);
+
   switch (message.event) {
     case "FLIGHT_RESULTS_FOR_CLIENT":
-      console.log(message.event, message);
       const {
         flights: { departureList, itins },
-        formData,
-        tabId
+        formData
       } = message;
-      const departures = createNodeList(departureList, tabId, itins);
+      allItins = itins;
+      const departures = createNodeList(departureList, itins);
       const header = createHeader(formData);
       totalFlights += departureList.length;
 
@@ -22,7 +24,11 @@ chrome.runtime.onMessage.addListener(function(message) {
       headerContainer.textContent = header;
       subheaderContainer.textContent = `${totalFlights} flights found.`;
       departuresContainer.append(departures);
-      // returnsContainer.append(returns);
+      break;
+    case "RETURN_FLIGHTS":
+      const returns = createNodeList(message.flights.returnList, allItins);
+      returnsContainer.append(returns);
+      document.querySelector(".returns-section").style.display = "block";
       break;
     default:
       break;
@@ -31,7 +37,7 @@ chrome.runtime.onMessage.addListener(function(message) {
 
 let selections = [];
 
-function createNodeList(list, tabId, itins) {
+function createNodeList(list, itins) {
   const listNode = document.createDocumentFragment();
   list.forEach(item => {
     const node = document.createElement("li");
@@ -60,7 +66,6 @@ function createNodeList(list, tabId, itins) {
       span.textContent = value;
       node.append(span);
     });
-    node.dataset.tabId = tabId;
     node.dataset.id = item.id;
     listNode.append(node);
   });
@@ -73,14 +78,22 @@ function createHeader(formData) {
 }
 
 function handleClick(e) {
-  const { tabId, id } = e.currentTarget.dataset;
+  const { id } = e.currentTarget.dataset;
   e.currentTarget.style.border = "10px solid tomato";
   selections.push(id);
 
-  if (selections.length === 2) {
+  if (selections.length === 1) {
+    chrome.runtime.sendMessage({
+      event: "DEPARTURE_SELECTED",
+      departureId: id
+    });
+  } else if (selections.length === 2) {
+    const itin = allItins[selections.join("-")];
+
     chrome.runtime.sendMessage({
       event: "HIGHLIGHT_TAB",
-      tabId: Number(tabId),
+      tabId: itin.tabId,
+      provider: itin.provider,
       selectedDepartureId: selections[0],
       selectedReturnId: selections[1]
     });

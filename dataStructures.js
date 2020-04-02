@@ -93,9 +93,9 @@ function Itin(depFlight, retFlight, fare, currency, provider, windowId, tabId) {
   this.currency = currency;
 }
 
-// function findReturnFlights(depFlight, itins) {
-//   return depFlight.itinIds.map(itinId => itins[itinId].retFlight);
-// }
+function findReturnFlights(depFlight, itins) {
+  return depFlight.itinIds.map(itinId => itins[itinId].retFlight);
+}
 
 /**
  *
@@ -143,4 +143,4 @@ function makeItins(itinCollection, provider, windowId, tabId) {
   return { itins, departures, returns };
 }
 
-export { makeItins, diffDepartures };
+export { makeItins, diffDepartures, findReturnFlights };

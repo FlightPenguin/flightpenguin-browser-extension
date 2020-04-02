@@ -1,6 +1,10 @@
 // debugger and console logs can be seen by clicking background.js link for this extension under chrome://extensions,
 // it will open a developer console for this extension and in addition to logs you can see the local storage
-import { makeItins, diffDepartures } from "./dataStructures.js";
+import {
+  makeItins,
+  diffDepartures,
+  findReturnFlights
+} from "./dataStructures.js";
 
 chrome.runtime.onInstalled.addListener(function() {
   console.log("Is this thing on?");
@@ -30,8 +34,6 @@ chrome.runtime.onMessage.addListener(function(message, sender, reply) {
       } else if (sender.origin.includes("priceline")) {
         provider = "priceline";
       }
-      const sentDepartures = { ...allDepartures };
-
       const { departures, itins } = makeItins(
         message.flights,
         provider,
@@ -40,7 +42,9 @@ chrome.runtime.onMessage.addListener(function(message, sender, reply) {
       );
       allItins = { ...allItins, ...itins };
 
-      const departuresToSend = diffDepartures(sentDepartures, departures);
+      const departuresToSend = diffDepartures(allDepartures, departures);
+
+      allDepartures = { ...allDepartures, ...departures };
 
       const nextMessage = {
         event: "FLIGHT_RESULTS_FOR_CLIENT",
@@ -65,6 +69,14 @@ chrome.runtime.onMessage.addListener(function(message, sender, reply) {
       }
 
       // need to clean up variables when webpage tab is closed
+      break;
+    case "DEPARTURE_SELECTED":
+      const departure = allDepartures[message.departureId];
+      const returnList = findReturnFlights(departure, allItins);
+      chrome.tabs.sendMessage(webPageTabId, {
+        event: "RETURN_FLIGHTS",
+        flights: { returnList }
+      });
       break;
     case "HIGHLIGHT_TAB":
       const { selectedDepartureId, selectedReturnId } = message;
