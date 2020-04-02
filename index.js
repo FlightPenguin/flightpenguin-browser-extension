@@ -3,27 +3,26 @@ const headerContainer = document.querySelector(".header");
 const subheaderContainer = document.querySelector(".subheader");
 const departuresContainer = document.querySelector(".departures");
 
-const returnsContainer = document.querySelector(".returns");
+// const returnsContainer = document.querySelector(".returns");
 
 chrome.runtime.onMessage.addListener(function(message) {
   switch (message.event) {
     case "FLIGHT_RESULTS_FOR_CLIENT":
-      console.log(message.event);
+      console.log(message.event, message);
       const {
-        flights: { departureList, returnList },
+        flights: { departureList, itins },
         formData,
         tabId
       } = message;
-      const departures = createNodeList(departureList, tabId);
-      const returns = createNodeList(returnList, tabId);
+      const departures = createNodeList(departureList, tabId, itins);
       const header = createHeader(formData);
-      totalFlights += departureList.length + returnList.length;
+      totalFlights += departureList.length;
 
       // move these to variables to prevent over-querying
       headerContainer.textContent = header;
       subheaderContainer.textContent = `${totalFlights} flights found.`;
       departuresContainer.append(departures);
-      returnsContainer.append(returns);
+      // returnsContainer.append(returns);
       break;
     default:
       break;
@@ -32,12 +31,31 @@ chrome.runtime.onMessage.addListener(function(message) {
 
 let selections = [];
 
-function createNodeList(list, tabId) {
+function createNodeList(list, tabId, itins) {
   const listNode = document.createDocumentFragment();
   list.forEach(item => {
     const node = document.createElement("li");
     node.addEventListener("click", handleClick);
-    Object.values(item).forEach(value => {
+
+    let airline = item.airline;
+    let fromTime = new Date(item.fromTime);
+    fromTime = fromTime.toLocaleString("en-US", {
+      hour: "numeric",
+      minute: "numeric",
+      hour12: true
+    });
+    let toTime = new Date(item.toTime);
+    toTime = toTime.toLocaleString("en-US", {
+      hour: "numeric",
+      minute: "numeric",
+      hour12: true
+    });
+    let duration = item.duration;
+    let fares = item.itinIds.map(
+      itinId =>
+        `${itins[itinId].provider} ${itins[itinId].currency}${itins[itinId].fare}`
+    );
+    [airline, fromTime, toTime, duration, fares[0]].forEach(value => {
       const span = document.createElement("span");
       span.textContent = value;
       node.append(span);

@@ -102,7 +102,9 @@ function southwestParser() {
   const selectors = {
     fromTime: ".air-operations-time-status[type='origination'] .time--value",
     toTime: ".air-operations-time-status[type='destination'] .time--value",
-    fare: ".fare-button_primary-yellow [aria-hidden='true']",
+    fare: ".fare-button_primary-yellow [aria-hidden='true'] span:last-child",
+    currency:
+      ".fare-button_primary-yellow [aria-hidden='true'] .currency--symbol",
     duration: ".flight-stops--duration-time",
     layovers: ".flight-stops-badge"
   };
@@ -110,17 +112,25 @@ function southwestParser() {
   // const pattern = /(?<dep>.{5}(PM|AM)).+(?<arr>.{5}(PM|AM)).+(?<duration>Duration\d+h\s\d+m).+(?<stops>\d+h\s\d+m).+(?<price>\$\d+)/;
   // pat = /(?<dep>.{5}(PM|AM)).+(?<arr>.{5}(PM|AM)).+(?<stops>\d+h\s\d+m).+(?<price>\$\d+)/;
 
-  const departureList = parseText(departures.children, selectors, {
-    airline: "Southwest"
-  });
-  const returnList = parseText(returns.children, selectors, {
-    airline: "Southwest"
-  });
+  const departureList = querySouthwestDOM(departures.children, selectors);
+  const returnList = querySouthwestDOM(returns.children, selectors);
 
-  return { departureList, returnList };
+  const itins = [];
+  for (let i = 0; i < departureList.length; i++) {
+    for (let j = 0; j < returnList.length; j++) {
+      itins.push({
+        departureFlight: departureList[i],
+        returnFlight: returnList[j],
+        fare: Number(departureList[i].fare) + Number(returnList[j].fare),
+        currency: departureList[i].currency,
+        airline: "Southwest"
+      });
+    }
+  }
+
+  return itins;
 }
 function pricelineParser(itinNodes) {
-  // const [departures, returns] = document.querySelectorAll("");
   const selectors = {
     fromTime: ".departure time",
     toTime: ".arrival time",
@@ -132,41 +142,65 @@ function pricelineParser(itinNodes) {
     fare: "[data-test='rounded-dollars']",
     currency: "[data-test='currency-symbol']"
   };
-  const departureList = [];
-  const returnList = [];
-  itinNodes.forEach(node => {
-    const [departureFlight, returnFlight] = parseText(
-      node.children[0].children,
+  const itins = itinNodes.map(node => {
+    const [itinNode, fareNode] = node.children;
+
+    const [departureFlight, returnFlight] = queryPricelineDOM(
+      [itinNode.children[0], itinNode.children[1]], // third child is text about government approval
       selectors
     );
-    const price = parseText(node.children[1].children, fareSelector);
-    const { currency, fare } = price[0];
-    departureFlight.fare = `${currency}${fare}`;
-    returnFlight.fare = `${currency}${fare}`;
+    node.dataset.id = [
+      departureFlight.fromTime,
+      departureFlight.toTime,
+      returnFlight.fromTime,
+      returnFlight.toTime
+    ].join("-"); // will use this id attribute to find the itin the user selected
+    // discarding (aka _) "per person" node below
+    const [fareInfo, _] = queryPricelineDOM(fareNode.children, fareSelector);
+    const { currency, fare } = fareInfo;
 
-    departureList.push(departureFlight);
-    returnList.push(returnFlight);
+    return { departureFlight, returnFlight, currency, fare: Number(fare) };
   });
-  return { departureList, returnList };
+
+  return itins;
 }
 
-function parseText(htmlCollection, selectors, moreKeyValues = {}) {
-  return Array.from(htmlCollection).map(departure => {
-    let data = {};
+function queryPricelineDOM(htmlCollection, selectors) {
+  return Array.from(htmlCollection).map(containerNode => {
+    const data = {};
     Object.entries(selectors).forEach(([key, selector]) => {
       try {
-        data[key] = departure.querySelector(selector).textContent;
+        const node = containerNode.querySelector(selector);
+        if (["fromTime", "toTime"].includes(key)) {
+          data[key] = node.dateTime;
+        } else {
+          data[key] = node.textContent;
+        }
       } catch (e) {
         console.info("Error parsing ", key, e);
       }
     });
-    const id = [data.fromTime, data.toTime, data.fare].join("-");
-    departure.dataset.id = id;
-    data = {
-      id,
-      ...data,
-      ...moreKeyValues
-    };
+
+    return data;
+  });
+}
+
+function querySouthwestDOM(htmlCollection, selectors) {
+  return Array.from(htmlCollection).map(containerNode => {
+    const data = {};
+    Object.entries(selectors).forEach(([key, selector]) => {
+      try {
+        const node = containerNode.querySelector(selector);
+        if (["fromTime", "toTime"].includes(key)) {
+          data[key] = node.textContent.split(" ")[1]; // first part contains 'Departs'/'Arrives', alternatively can filter childNodes for nodeType === Node.TEXT_NODE
+        } else {
+          data[key] = node.textContent;
+        }
+      } catch (e) {
+        console.info("Error parsing ", key, e);
+      }
+    });
+    containerNode.dataset.id = [data.fromTime, data.toTime].join("-");
 
     return data;
   });

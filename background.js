@@ -1,5 +1,7 @@
 // debugger and console logs can be seen by clicking background.js link for this extension under chrome://extensions,
 // it will open a developer console for this extension and in addition to logs you can see the local storage
+import { makeItins, diffDepartures } from "./dataStructures.js";
+
 chrome.runtime.onInstalled.addListener(function() {
   console.log("Is this thing on?");
 });
@@ -8,6 +10,9 @@ const tabIds = {};
 const windowIds = {};
 let formData = {};
 let webPageTabId;
+
+let allDepartures = {};
+let allItins = {};
 
 chrome.runtime.onMessage.addListener(function(message, sender, reply) {
   console.info(message.event, message);
@@ -18,17 +23,32 @@ chrome.runtime.onMessage.addListener(function(message, sender, reply) {
       openProviderSearchResults(message.formData);
       break;
     case "FLIGHT_RESULTS_RECEIVED":
-      let tabId;
+      let provider;
       if (sender.origin.includes("southwest")) {
         // save results with their tab index so we know where to move the user to when they make a flight selection
-        tabId = tabIds["southwest"];
+        provider = "southwest";
       } else if (sender.origin.includes("priceline")) {
-        tabId = tabIds["priceline"];
+        provider = "priceline";
       }
-      nextMessage = {
+      const sentDepartures = { ...allDepartures };
+
+      const { departures, itins } = makeItins(
+        message.flights,
+        provider,
+        windowIds[provider],
+        tabIds[provider]
+      );
+      allItins = { ...allItins, ...itins };
+
+      const departuresToSend = diffDepartures(sentDepartures, departures);
+
+      const nextMessage = {
         event: "FLIGHT_RESULTS_FOR_CLIENT",
-        flights: message.flights,
-        tabId,
+        flights: {
+          departureList: departuresToSend,
+          itins
+        },
+        tabId: tabIds[provider],
         formData
       };
       if (!webPageTabId) {
