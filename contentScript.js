@@ -22,13 +22,27 @@ chrome.runtime.onMessage.addListener(function(message, sender, sendResponse) {
       }
       break;
     case "HIGHLIGHT_FLIGHT":
-      const { selectedDepartureId, selectedReturnId } = message;
-      findSouthwestNodes(selectedDepartureId, selectedReturnId);
+      const { selectedDepartureId, selectedReturnId, provider } = message;
+      if (provider === "Southwest") {
+        findSouthwestNodes(selectedDepartureId, selectedReturnId);
+      } else if (provider === "Priceline") {
+        highlightPricelineItin(selectedDepartureId, selectedReturnId);
+      }
       break;
     default:
       break;
   }
 });
+
+function highlightPricelineItin(depId, retId) {
+  window.cancelAnimationFrame(rafID);
+  const itinNode = findMatch(
+    Array.from(document.querySelectorAll("[class^='Itinerary__MainZone']")),
+    `${depId}-${retId}`
+  );
+  itinNode.style.border = "10px solid tomato";
+  window.scroll(0, itinNode.getBoundingClientRect().top);
+}
 
 /**
  * Priceline has "infinite scroll" results. So to get more results we need to scroll down the page.

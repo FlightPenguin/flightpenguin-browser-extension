@@ -86,7 +86,8 @@ chrome.runtime.onMessage.addListener(function(message, sender, reply) {
           chrome.tabs.sendMessage(message.tabId, {
             event: "HIGHLIGHT_FLIGHT",
             selectedDepartureId,
-            selectedReturnId
+            selectedReturnId,
+            provider: message.provider
           });
         });
       });
