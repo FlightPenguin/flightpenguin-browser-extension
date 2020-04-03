@@ -18,9 +18,9 @@ chrome.runtime.onMessage.addListener(function(message, sender, sendResponse) {
       break;
     case "HIGHLIGHT_FLIGHT":
       const { selectedDepartureId, selectedReturnId, provider } = message;
-      if (provider === "Southwest") {
+      if (provider === "southwest") {
         findSouthwestNodes(selectedDepartureId, selectedReturnId);
-      } else if (provider === "Priceline") {
+      } else if (provider === "priceline") {
         highlightPricelineItin(selectedDepartureId, selectedReturnId);
       }
       break;
@@ -31,12 +31,12 @@ chrome.runtime.onMessage.addListener(function(message, sender, sendResponse) {
 
 function highlightPricelineItin(depId, retId) {
   window.cancelAnimationFrame(rafID);
-  const itinNode = findMatch(
+  const itinNode = findMatchingDOMNode(
     Array.from(document.querySelectorAll("[class^='Itinerary__MainZone']")),
     `${depId}-${retId}`
   );
   itinNode.style.border = "10px solid tomato";
-  window.scroll(0, itinNode.getBoundingClientRect().top);
+  window.scroll(0, window.pageYOffset + itinNode.getBoundingClientRect().top);
 }
 
 /**
@@ -91,16 +91,19 @@ function findSouthwestNodes(selectedDepartureId, selectedReturnId) {
     ".transition-content.price-matrix--details-area ul"
   );
 
-  const dep = findMatch(
+  const dep = findMatchingDOMNode(
     Array.from(departureList.children),
     selectedDepartureId
   );
-  const ret = findMatch(Array.from(returnList.children), selectedReturnId);
+  const ret = findMatchingDOMNode(
+    Array.from(returnList.children),
+    selectedReturnId
+  );
   dep.style.border = "10px solid tomato";
   ret.style.border = "10px solid tomato";
 }
 
-function findMatch(list, target) {
+function findMatchingDOMNode(list, target) {
   return list.find(item => item.dataset.id === target);
 }
 
@@ -253,8 +256,10 @@ function querySouthwestDOM(htmlCollection, selectors) {
         console.info("Error parsing ", key, e);
       }
     });
-    containerNode.dataset.id = [data.fromTime, data.toTime].join("-");
-    data["airline"] = "Southwest";
+    data.airline = "Southwest";
+    containerNode.dataset.id = [data.fromTime, data.toTime, data.airline].join(
+      "-"
+    );
     return data;
   });
 }
