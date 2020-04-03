@@ -105,6 +105,12 @@ function findSouthwestNodes(selectedDepartureId, selectedReturnId) {
   );
   dep.style.border = "10px solid tomato";
   ret.style.border = "10px solid tomato";
+
+  const yPosition =
+    window.pageYOffset +
+    dep.getBoundingClientRect().top -
+    window.innerHeight / 2;
+  window.scroll(0, yPosition);
 }
 
 function findMatchingDOMNode(list, target) {
