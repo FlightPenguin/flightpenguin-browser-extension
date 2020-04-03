@@ -132,7 +132,7 @@ chrome.webRequest.onCompleted.addListener(
         // give provider page time to render
         // this has great potential to break for slow internet speeds
         chrome.tabs.sendMessage(tabId, { event: "BEGIN_PARSING" });
-      }, 2000);
+      }, 5000);
     });
   },
   {

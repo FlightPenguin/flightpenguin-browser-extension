@@ -13,12 +13,7 @@ chrome.runtime.onMessage.addListener(function(message, sender, sendResponse) {
       if (window.location.origin.includes("priceline")) {
         loadPricelineResults();
       } else if (window.location.origin.includes("southwest")) {
-        const southwestFlights = southwestParser();
-        console.info("Sending parsed results to background ", southwestFlights);
-        chrome.runtime.sendMessage({
-          event: "FLIGHT_RESULTS_RECEIVED",
-          flights: southwestFlights
-        });
+        loadSouthwestResults();
       }
       break;
     case "HIGHLIGHT_FLIGHT":
@@ -109,10 +104,52 @@ function findMatch(list, target) {
   return list.find(item => item.dataset.id === target);
 }
 
+function loadSouthwestResults() {
+  let newY = window.innerHeight;
+  let lastTime = 0;
+
+  rafID = window.requestAnimationFrame(parseMoreSouthwest);
+
+  function parseMoreSouthwest(currentTime) {
+    if (allItins.length >= 20) {
+      // arbitrary number
+      window.cancelAnimationFrame(rafID);
+      return;
+    }
+    // every 5 seconds scroll to next viewPort
+    const timeToScroll = Math.max(0, 5000 - (currentTime - lastTime));
+    if (timeToScroll === 0) {
+      window.scroll(0, newY);
+
+      const flights = southwestParser();
+      if (flights.length) {
+        chrome.runtime.sendMessage({
+          event: "FLIGHT_RESULTS_RECEIVED",
+          flights
+        });
+      } else {
+        window.cancelAnimationFrame(rafID);
+      }
+      allItins = allItins.concat(flights);
+      newY = window.scrollY + window.innerHeight;
+      lastTime = currentTime;
+    }
+
+    rafID = window.requestAnimationFrame(parseMoreSouthwest);
+  }
+}
 function southwestParser() {
   const [departures, returns] = document.querySelectorAll(
     ".transition-content.price-matrix--details-area ul"
   );
+  const depNodes = departures.querySelectorAll("li:not([data-visited='true']");
+  const retNodes = returns.querySelectorAll("li:not([data-visited='true']");
+
+  if (!depNodes.length || !retNodes.length) {
+    return;
+  }
+  // query for not visited nodes
+  // if node is still loading don't mark as visited
   const selectors = {
     fromTime: ".air-operations-time-status[type='origination'] .time--value",
     toTime: ".air-operations-time-status[type='destination'] .time--value",
@@ -126,8 +163,8 @@ function southwestParser() {
   // const pattern = /(?<dep>.{5}(PM|AM)).+(?<arr>.{5}(PM|AM)).+(?<duration>Duration\d+h\s\d+m).+(?<stops>\d+h\s\d+m).+(?<price>\$\d+)/;
   // pat = /(?<dep>.{5}(PM|AM)).+(?<arr>.{5}(PM|AM)).+(?<stops>\d+h\s\d+m).+(?<price>\$\d+)/;
 
-  const departureList = querySouthwestDOM(departures.children, selectors);
-  const returnList = querySouthwestDOM(returns.children, selectors);
+  const departureList = querySouthwestDOM(depNodes, selectors);
+  const returnList = querySouthwestDOM(retNodes, selectors);
 
   const itins = [];
   for (let i = 0; i < departureList.length; i++) {
@@ -136,8 +173,7 @@ function southwestParser() {
         departureFlight: departureList[i],
         returnFlight: returnList[j],
         fare: Number(departureList[i].fare) + Number(returnList[j].fare),
-        currency: departureList[i].currency,
-        airline: "Southwest"
+        currency: departureList[i].currency
       });
     }
   }
@@ -171,6 +207,7 @@ function pricelineParser(itinNodes) {
       returnFlight.toTime,
       returnFlight.airline
     ].join("-"); // will use this id attribute to find the itin the user selected
+    node.dataset.visited = "true";
     // discarding (aka _) "per person" node below
     const [fareInfo, _] = queryPricelineDOM(fareNode.children, fareSelector);
     const { currency, fare } = fareInfo;
@@ -217,7 +254,7 @@ function querySouthwestDOM(htmlCollection, selectors) {
       }
     });
     containerNode.dataset.id = [data.fromTime, data.toTime].join("-");
-
+    data["airline"] = "Southwest";
     return data;
   });
 }

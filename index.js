@@ -15,7 +15,7 @@ chrome.runtime.onMessage.addListener(function(message) {
         flights: { departureList, itins },
         formData
       } = message;
-      allItins = itins;
+      allItins = { ...allItins, ...itins };
       const departures = createNodeList(departureList, itins);
       const header = createHeader(formData);
       totalFlights += departureList.length;
@@ -44,19 +44,27 @@ function createNodeList(list, itins) {
     node.addEventListener("click", handleClick);
 
     let airline = item.airline;
-    let fromTime = new Date(item.fromTime);
-    fromTime = fromTime.toLocaleString("en-US", {
-      hour: "numeric",
-      minute: "numeric",
-      hour12: true
-    });
-    let toTime = new Date(item.toTime);
-    toTime = toTime.toLocaleString("en-US", {
-      hour: "numeric",
-      minute: "numeric",
-      hour12: true
-    });
+    let fromTime;
+    let toTime;
+    if (airline !== "Southwest") {
+      fromTime = new Date(item.fromTime);
+      fromTime = fromTime.toLocaleString("en-US", {
+        hour: "numeric",
+        minute: "numeric",
+        hour12: true
+      });
+      toTime = new Date(item.toTime);
+      toTime = toTime.toLocaleString("en-US", {
+        hour: "numeric",
+        minute: "numeric",
+        hour12: true
+      });
+    } else {
+      fromTime = item.fromTime;
+      toTime = item.toTime;
+    }
     let duration = item.duration;
+
     let fares = item.itinIds.map(
       itinId =>
         `${itins[itinId].provider} ${itins[itinId].currency}${itins[itinId].fare}`
