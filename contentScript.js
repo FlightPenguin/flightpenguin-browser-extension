@@ -36,7 +36,11 @@ function highlightPricelineItin(depId, retId) {
     `${depId}-${retId}`
   );
   itinNode.style.border = "10px solid tomato";
-  window.scroll(0, window.pageYOffset + itinNode.getBoundingClientRect().top);
+  const yPosition =
+    window.pageYOffset +
+    itinNode.getBoundingClientRect().top -
+    window.innerHeight / 2;
+  window.scroll(0, yPosition);
 }
 
 /**
