@@ -1,9 +1,11 @@
 let totalFlights = 0;
 let allItins = {};
+let selections = [];
+
 const headerContainer = document.querySelector(".header");
 const subheaderContainer = document.querySelector(".subheader");
 const departuresContainer = document.querySelector(".departures");
-
+const returnsSection = document.querySelector(".returns-section");
 const returnsContainer = document.querySelector(".returns");
 
 chrome.runtime.onMessage.addListener(function(message) {
@@ -27,15 +29,19 @@ chrome.runtime.onMessage.addListener(function(message) {
       break;
     case "RETURN_FLIGHTS":
       const returns = createNodeList(message.flights.returnList, allItins);
+      returnsContainer.innerHTML = "";
       returnsContainer.append(returns);
-      document.querySelector(".returns-section").style.display = "block";
+      returnsSection.style.display = "block";
+      // scroll to Returns section
+      window.scroll(
+        0,
+        window.pageYOffset + returnsContainer.getBoundingClientRect().top
+      );
       break;
     default:
       break;
   }
 });
-
-let selections = [];
 
 function createNodeList(list, itins) {
   const listNode = document.createDocumentFragment();

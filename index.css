@@ -6,4 +6,5 @@ li {
   padding: 20px;
   display: flex;
   justify-content: space-evenly;
+  border: 10px solid transparent;
 }
