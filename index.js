@@ -90,27 +90,41 @@ function createHeader(formData) {
   const { from, to, fromDate, toDate, cabin, numPax } = formData;
   return `${from}-${to} ${fromDate} to ${toDate} ${cabin} ${numPax} adults`;
 }
-
+let flightsNotSelected;
 function handleClick(e) {
-  const { id } = e.currentTarget.dataset;
-  e.currentTarget.style.border = "10px solid tomato";
-  selections.push(id);
+  const selectedNode = e.currentTarget;
+  selectedNode.style.border = "10px solid tomato";
+  selectedNode.dataset.selected = "true";
+  selections.push(selectedNode);
 
   if (selections.length === 1) {
     chrome.runtime.sendMessage({
       event: "DEPARTURE_SELECTED",
-      departureId: id
+      departureId: selectedNode.dataset.id
     });
+    flightsNotSelected = Array.from(
+      departuresContainer.querySelectorAll("li:not([data-selected='true'])")
+    );
+    flightsNotSelected.forEach(flight => (flight.style.display = "none"));
   } else if (selections.length === 2) {
-    const itin = allItins[selections.join("-")];
+    const selectionIds = selections.map(sel => sel.dataset.id);
+    const itin = allItins[selectionIds.join("-")];
 
     chrome.runtime.sendMessage({
       event: "HIGHLIGHT_TAB",
       tabId: itin.tabId,
       provider: itin.provider,
-      selectedDepartureId: selections[0],
-      selectedReturnId: selections[1]
+      selectedDepartureId: selectionIds[0],
+      selectedReturnId: selectionIds[1]
     });
+    // reset selections and DOM
+    selections.forEach(sel => {
+      sel.style.border = "";
+      sel.dataset.selected = "false";
+    });
+    flightsNotSelected.forEach(flight => (flight.style.display = "flex"));
+    returnsSection.style.display = "none";
+    returnsContainer.innerHTML = "";
     selections = [];
   }
 }
