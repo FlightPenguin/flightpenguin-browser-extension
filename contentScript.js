@@ -19,7 +19,7 @@ chrome.runtime.onMessage.addListener(function(message, sender, sendResponse) {
     case "HIGHLIGHT_FLIGHT":
       const { selectedDepartureId, selectedReturnId, provider } = message;
       if (provider === "southwest") {
-        findSouthwestNodes(selectedDepartureId, selectedReturnId);
+        highlightSouthwestItin(selectedDepartureId, selectedReturnId);
       } else if (provider === "priceline") {
         highlightPricelineItin(selectedDepartureId, selectedReturnId);
       }
@@ -31,11 +31,20 @@ chrome.runtime.onMessage.addListener(function(message, sender, sendResponse) {
 
 function highlightPricelineItin(depId, retId) {
   window.cancelAnimationFrame(rafID);
+  // reset prior selection
+  const prevSelection = document.querySelector(
+    "[class^='Itinerary__MainZone'][data-selected='true']"
+  );
+  if (prevSelection) {
+    prevSelection.dataset.selected = "false";
+    prevSelection.style.border = "";
+  }
   const itinNode = findMatchingDOMNode(
     Array.from(document.querySelectorAll("[class^='Itinerary__MainZone']")),
     `${depId}-${retId}`
   );
   itinNode.style.border = "10px solid tomato";
+  itinNode.dataset.selected = "true";
   const yPosition =
     window.pageYOffset +
     itinNode.getBoundingClientRect().top -
@@ -90,11 +99,25 @@ function loadPricelineResults() {
   }
 }
 
-function findSouthwestNodes(selectedDepartureId, selectedReturnId) {
+function highlightSouthwestItin(selectedDepartureId, selectedReturnId) {
+  window.cancelAnimationFrame(rafID);
   const [departureList, returnList] = document.querySelectorAll(
     ".transition-content.price-matrix--details-area ul"
   );
-
+  // reset prior selections
+  const prevDepSelection = departureList.querySelector(
+    "[data-selected='true']"
+  );
+  const prevRetSelection = returnList.querySelector("[data-selected='true']");
+  if (prevDepSelection) {
+    prevDepSelection.dataset.selected = "false";
+    prevDepSelection.style.border = "";
+  }
+  if (prevRetSelection) {
+    prevRetSelection.dataset.selected = "false";
+    prevRetSelection.style.border = "";
+  }
+  // highlight selections
   const dep = findMatchingDOMNode(
     Array.from(departureList.children),
     selectedDepartureId
@@ -104,7 +127,9 @@ function findSouthwestNodes(selectedDepartureId, selectedReturnId) {
     selectedReturnId
   );
   dep.style.border = "10px solid tomato";
+  dep.dataset.selected = "true";
   ret.style.border = "10px solid tomato";
+  ret.dataset.selected = "true";
 
   const yPosition =
     window.pageYOffset +
