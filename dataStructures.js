@@ -120,15 +120,19 @@ function makeItins(itinCollection, provider, windowId, tabId) {
       windowId,
       tabId
     );
-    // the deduping departure and return flights part
+    // the deduping flights part
     if (departures[itin.depFlight.id]) {
+      // set flight to existing instance
       itin.depFlight = departures[itin.depFlight.id];
     } else {
+      // add new flight
       departures[itin.depFlight.id] = itin.depFlight;
     }
     if (returns[itin.retFlight.id]) {
+      // set flight to existing instance
       itin.retFlight = returns[itin.retFlight.id];
     } else {
+      // add new flight
       returns[itin.retFlight.id] = itin.retFlight;
     }
 
