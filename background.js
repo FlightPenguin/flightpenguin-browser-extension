@@ -140,19 +140,17 @@ function createNewWebPage(message) {
 chrome.webRequest.onCompleted.addListener(
   function(args) {
     console.log("web request complete ", args.url);
-    chrome.tabs.query({ active: true, currentWindow: true }, function(tabs) {
-      let tabId;
-      if (args.url.includes("priceline")) {
-        tabId = tabIds["priceline"];
-      } else if (args.url.includes("southwest")) {
-        tabId = tabIds["southwest"];
-      }
-      window.setTimeout(() => {
-        // give provider page time to render
-        // this has great potential to break for slow internet speeds
-        chrome.tabs.sendMessage(tabId, { event: "BEGIN_PARSING" });
-      }, 5000);
-    });
+    let tabId;
+    if (args.url.includes("priceline")) {
+      tabId = tabIds["priceline"];
+    } else if (args.url.includes("southwest")) {
+      tabId = tabIds["southwest"];
+    }
+    window.setTimeout(() => {
+      // give provider page time to render
+      // this has great potential to break for slow internet speeds
+      chrome.tabs.sendMessage(tabId, { event: "BEGIN_PARSING" });
+    }, 5000);
   },
   {
     urls: [
