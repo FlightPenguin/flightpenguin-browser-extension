@@ -10,8 +10,8 @@ chrome.runtime.onInstalled.addListener(function() {
   console.log("Is this thing on?");
 });
 
-const tabIds = {};
-const windowIds = {};
+let tabIds = {};
+let windowIds = {};
 let formData = {};
 let webPageTabId;
 
@@ -25,6 +25,18 @@ chrome.runtime.onMessage.addListener(function(message, sender, reply) {
     case "FORM_DATA_RECEIVED":
       formData = message.formData;
       openProviderSearchResults(message.formData);
+      // clean up incase user is doing a different search
+      closeWindows();
+      tabIds = {};
+      windowIds = {};
+      allDepartures = {};
+      allItins = {};
+      if (webPageTabId) {
+        chrome.tabs.sendMessage(webPageTabId, {
+          event: "RESET_SEARCH",
+          formData,
+        });
+      }
       break;
     case "FLIGHT_RESULTS_RECEIVED":
       let provider;
@@ -100,20 +112,27 @@ chrome.runtime.onMessage.addListener(function(message, sender, reply) {
 // clean up provider windows when webpage tab is closed
 chrome.tabs.onRemoved.addListener(function(tabId) {
   if (tabId === webPageTabId) {
-    Object.values(windowIds).forEach(windowId => {
-      chrome.windows.remove(windowId);
-    });
+    closeWindows();
   }
 });
 
-function createNewWebPage(message) {
-  chrome.tabs.create({ url: chrome.extension.getURL("./index.html") }, tab => {
-    window.setTimeout(() => {
-      // need setTimeout here or else message will be missed by new tab.
-      chrome.tabs.sendMessage(tab.id, message);
-    }, 1000);
-    webPageTabId = tab.id;
+function closeWindows() {
+  Object.values(windowIds).forEach((windowId) => {
+    chrome.windows.remove(windowId);
   });
+}
+
+function createNewWebPage(message) {
+  chrome.tabs.create(
+    { url: chrome.extension.getURL("./index.html") },
+    (tab) => {
+      window.setTimeout(() => {
+        // need setTimeout here or else message will be missed by new tab.
+        chrome.tabs.sendMessage(tab.id, message);
+      }, 1000);
+      webPageTabId = tab.id;
+    }
+  );
 }
 
 // use chrome.webRequest API to listen for when flight results API has finished fetching

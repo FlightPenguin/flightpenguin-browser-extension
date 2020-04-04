@@ -12,6 +12,17 @@ chrome.runtime.onMessage.addListener(function(message) {
   console.log(message.event, message);
 
   switch (message.event) {
+    case "RESET_SEARCH":
+      totalFlights = 0;
+      allItins = {};
+      selections = [];
+      departuresContainer.innerHTML = "";
+      returnsContainer.innerHTML = "";
+      returnsSection.style.display = "none";
+      subheaderContainer.innerHTML = "";
+      headerContainer.textContent = createHeader(message.formData);
+
+      break;
     case "FLIGHT_RESULTS_FOR_CLIENT":
       const {
         flights: { departureList, itins },
