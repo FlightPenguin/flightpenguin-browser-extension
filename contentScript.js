@@ -195,7 +195,7 @@ function southwestParser() {
     currency:
       ".fare-button_primary-yellow [aria-hidden='true'] .currency--symbol",
     duration: ".flight-stops--duration-time",
-    layovers: ".flight-stops-badge",
+    layovers: ".flight-stops--items",
   };
   // If we want to go down the regex path (unfinished)...
   // const pattern = /(?<dep>.{5}(PM|AM)).+(?<arr>.{5}(PM|AM)).+(?<duration>Duration\d+h\s\d+m).+(?<stops>\d+h\s\d+m).+(?<price>\$\d+)/;
@@ -223,7 +223,7 @@ function pricelineParser(itinNodes) {
     fromTime: ".departure time",
     toTime: ".arrival time",
     duration: "[class^='Slice__Duration'] time",
-    layovers: "[class^='Stops__StopsText']",
+    layovers: "[class^='Stops__StopsBox'] [data-test='stops-items']",
     airline: "[class^='AirlineTitle']",
   };
   const fareSelector = {
@@ -264,6 +264,12 @@ function queryPricelineDOM(htmlCollection, selectors) {
         const node = containerNode.querySelector(selector);
         if (["fromTime", "toTime"].includes(key)) {
           data[key] = node.dateTime;
+        } else if (key === "layovers") {
+          data[key] = Array.from(node.children).map((child) => {
+            const airport = child.textContent.substring(0, 3);
+            const duration = child.textContent.substring(3);
+            return { airport, duration };
+          });
         } else {
           data[key] = node.textContent;
         }
@@ -284,6 +290,14 @@ function querySouthwestDOM(htmlCollection, selectors) {
         const node = containerNode.querySelector(selector);
         if (["fromTime", "toTime"].includes(key)) {
           data[key] = node.textContent.split(" ")[1]; // first part contains 'Departs'/'Arrives', alternatively can filter childNodes for nodeType === Node.TEXT_NODE
+        } else if (key === "layovers") {
+          data[key] = Array.from(
+            node.querySelectorAll(".flight-stops--item")
+          ).map((n) => {
+            const airport = n.textContent.substring(0, 3);
+            const duration = n.textContent.split(".")[1];
+            return { airport, duration };
+          });
         } else {
           data[key] = node.textContent;
         }
