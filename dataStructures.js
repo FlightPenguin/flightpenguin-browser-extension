@@ -47,10 +47,10 @@ function Flight(fromTime, toTime, airline, duration) {
 function diffDepartures(sentDepartures, departures) {
   const idsToSend = new Set(Object.keys(departures));
 
-  Object.keys(sentDepartures).forEach(sentId => {
+  Object.keys(sentDepartures).forEach((sentId) => {
     idsToSend.delete(sentId);
   });
-  return Array.from(idsToSend).map(id => departures[id]);
+  return Array.from(idsToSend).map((id) => departures[id]);
 }
 /**
  * Itin {
@@ -94,7 +94,7 @@ function Itin(depFlight, retFlight, fare, currency, provider, windowId, tabId) {
 }
 
 function findReturnFlights(depFlight, itins) {
-  return depFlight.itinIds.map(itinId => itins[itinId].retFlight);
+  return depFlight.itinIds.map((itinId) => itins[itinId].retFlight);
 }
 
 /**
@@ -110,7 +110,7 @@ function makeItins(itinCollection, provider, windowId, tabId) {
   const departures = {};
   const returns = {};
 
-  itinCollection.forEach(ic => {
+  itinCollection.forEach((ic) => {
     const itin = new Itin(
       ic.departureFlight,
       ic.returnFlight,

@@ -5,7 +5,7 @@ console.log("hello...");
 let rafID = 0;
 let allItins = [];
 
-chrome.runtime.onMessage.addListener(function(message, sender, sendResponse) {
+chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
   // parse page to get flights, then send background to process and display on new web page.
   console.info("Received message ", message.event);
   switch (message.event) {
@@ -83,10 +83,10 @@ function loadPricelineResults() {
         const pricelineFlights = pricelineParser(moreItins);
         chrome.runtime.sendMessage({
           event: "FLIGHT_RESULTS_RECEIVED",
-          flights: pricelineFlights
+          flights: pricelineFlights,
         });
       }
-      moreItins.forEach(itin => {
+      moreItins.forEach((itin) => {
         // itin.style.border = "10px solid tomato";
         itin.dataset.visited = true;
       });
@@ -139,7 +139,7 @@ function highlightSouthwestItin(selectedDepartureId, selectedReturnId) {
 }
 
 function findMatchingDOMNode(list, target) {
-  return list.find(item => item.dataset.id === target);
+  return list.find((item) => item.dataset.id === target);
 }
 
 function loadSouthwestResults() {
@@ -163,7 +163,7 @@ function loadSouthwestResults() {
       if (flights.length) {
         chrome.runtime.sendMessage({
           event: "FLIGHT_RESULTS_RECEIVED",
-          flights
+          flights,
         });
       } else {
         window.cancelAnimationFrame(rafID);
@@ -195,7 +195,7 @@ function southwestParser() {
     currency:
       ".fare-button_primary-yellow [aria-hidden='true'] .currency--symbol",
     duration: ".flight-stops--duration-time",
-    layovers: ".flight-stops-badge"
+    layovers: ".flight-stops-badge",
   };
   // If we want to go down the regex path (unfinished)...
   // const pattern = /(?<dep>.{5}(PM|AM)).+(?<arr>.{5}(PM|AM)).+(?<duration>Duration\d+h\s\d+m).+(?<stops>\d+h\s\d+m).+(?<price>\$\d+)/;
@@ -211,7 +211,7 @@ function southwestParser() {
         departureFlight: departureList[i],
         returnFlight: returnList[j],
         fare: Number(departureList[i].fare) + Number(returnList[j].fare),
-        currency: departureList[i].currency
+        currency: departureList[i].currency,
       });
     }
   }
@@ -224,13 +224,13 @@ function pricelineParser(itinNodes) {
     toTime: ".arrival time",
     duration: "[class^='Slice__Duration'] time",
     layovers: "[class^='Stops__StopsText']",
-    airline: "[class^='AirlineTitle']"
+    airline: "[class^='AirlineTitle']",
   };
   const fareSelector = {
     fare: "[data-test='rounded-dollars']",
-    currency: "[data-test='currency-symbol']"
+    currency: "[data-test='currency-symbol']",
   };
-  const itins = itinNodes.map(node => {
+  const itins = itinNodes.map((node) => {
     const [itinNode, fareNode] = node.children;
 
     const [departureFlight, returnFlight] = queryPricelineDOM(
@@ -243,7 +243,7 @@ function pricelineParser(itinNodes) {
       departureFlight.airline,
       returnFlight.fromTime,
       returnFlight.toTime,
-      returnFlight.airline
+      returnFlight.airline,
     ].join("-"); // will use this id attribute to find the itin the user selected
     node.dataset.visited = "true";
     // discarding (aka _) "per person" node below
@@ -257,7 +257,7 @@ function pricelineParser(itinNodes) {
 }
 
 function queryPricelineDOM(htmlCollection, selectors) {
-  return Array.from(htmlCollection).map(containerNode => {
+  return Array.from(htmlCollection).map((containerNode) => {
     const data = {};
     Object.entries(selectors).forEach(([key, selector]) => {
       try {
@@ -277,7 +277,7 @@ function queryPricelineDOM(htmlCollection, selectors) {
 }
 
 function querySouthwestDOM(htmlCollection, selectors) {
-  return Array.from(htmlCollection).map(containerNode => {
+  return Array.from(htmlCollection).map((containerNode) => {
     const data = {};
     Object.entries(selectors).forEach(([key, selector]) => {
       try {

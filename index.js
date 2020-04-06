@@ -8,7 +8,7 @@ const departuresContainer = document.querySelector(".departures");
 const returnsSection = document.querySelector(".returns-section");
 const returnsContainer = document.querySelector(".returns");
 
-chrome.runtime.onMessage.addListener(function(message) {
+chrome.runtime.onMessage.addListener(function (message) {
   console.log(message.event, message);
 
   switch (message.event) {
@@ -26,7 +26,7 @@ chrome.runtime.onMessage.addListener(function(message) {
     case "FLIGHT_RESULTS_FOR_CLIENT":
       const {
         flights: { departureList, itins },
-        formData
+        formData,
       } = message;
       allItins = { ...allItins, ...itins };
       const departures = createNodeList(departureList, itins);
@@ -56,7 +56,7 @@ chrome.runtime.onMessage.addListener(function(message) {
 
 function createNodeList(list, itins) {
   const listNode = document.createDocumentFragment();
-  list.forEach(item => {
+  list.forEach((item) => {
     const node = document.createElement("li");
     node.addEventListener("click", handleClick);
 
@@ -68,13 +68,13 @@ function createNodeList(list, itins) {
       fromTime = fromTime.toLocaleString("en-US", {
         hour: "numeric",
         minute: "numeric",
-        hour12: true
+        hour12: true,
       });
       toTime = new Date(item.toTime);
       toTime = toTime.toLocaleString("en-US", {
         hour: "numeric",
         minute: "numeric",
-        hour12: true
+        hour12: true,
       });
     } else {
       fromTime = item.fromTime;
@@ -83,10 +83,10 @@ function createNodeList(list, itins) {
     let duration = item.duration;
 
     let fares = item.itinIds.map(
-      itinId =>
+      (itinId) =>
         `${itins[itinId].provider} ${itins[itinId].currency}${itins[itinId].fare}`
     );
-    [airline, fromTime, toTime, duration, fares[0]].forEach(value => {
+    [airline, fromTime, toTime, duration, fares[0]].forEach((value) => {
       const span = document.createElement("span");
       span.textContent = value;
       node.append(span);
@@ -111,14 +111,14 @@ function handleClick(e) {
   if (selections.length === 1) {
     chrome.runtime.sendMessage({
       event: "DEPARTURE_SELECTED",
-      departureId: selectedNode.dataset.id
+      departureId: selectedNode.dataset.id,
     });
     flightsNotSelected = Array.from(
       departuresContainer.querySelectorAll("li:not([data-selected='true'])")
     );
-    flightsNotSelected.forEach(flight => (flight.style.display = "none"));
+    flightsNotSelected.forEach((flight) => (flight.style.display = "none"));
   } else if (selections.length === 2) {
-    const selectionIds = selections.map(sel => sel.dataset.id);
+    const selectionIds = selections.map((sel) => sel.dataset.id);
     const itin = allItins[selectionIds.join("-")];
 
     chrome.runtime.sendMessage({
@@ -126,14 +126,14 @@ function handleClick(e) {
       tabId: itin.tabId,
       provider: itin.provider,
       selectedDepartureId: selectionIds[0],
-      selectedReturnId: selectionIds[1]
+      selectedReturnId: selectionIds[1],
     });
     // reset selections and DOM
-    selections.forEach(sel => {
+    selections.forEach((sel) => {
       sel.style.border = "";
       sel.dataset.selected = "false";
     });
-    flightsNotSelected.forEach(flight => (flight.style.display = "flex"));
+    flightsNotSelected.forEach((flight) => (flight.style.display = "flex"));
     returnsSection.style.display = "none";
     returnsContainer.innerHTML = "";
     selections = [];

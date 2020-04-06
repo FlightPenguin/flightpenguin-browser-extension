@@ -3,10 +3,10 @@
 import {
   makeItins,
   diffDepartures,
-  findReturnFlights
+  findReturnFlights,
 } from "./dataStructures.js";
 
-chrome.runtime.onInstalled.addListener(function() {
+chrome.runtime.onInstalled.addListener(function () {
   console.log("Is this thing on?");
 });
 
@@ -18,7 +18,7 @@ let webPageTabId;
 let allDepartures = {};
 let allItins = {};
 
-chrome.runtime.onMessage.addListener(function(message, sender, reply) {
+chrome.runtime.onMessage.addListener(function (message, sender, reply) {
   console.info(message.event, message);
 
   switch (message.event) {
@@ -62,16 +62,16 @@ chrome.runtime.onMessage.addListener(function(message, sender, reply) {
         event: "FLIGHT_RESULTS_FOR_CLIENT",
         flights: {
           departureList: departuresToSend,
-          itins
+          itins,
         },
         tabId: tabIds[provider],
-        formData
+        formData,
       };
       if (!webPageTabId) {
         createNewWebPage(nextMessage);
       } else {
         // make sure webpage still exists
-        chrome.tabs.get(webPageTabId, tab => {
+        chrome.tabs.get(webPageTabId, (tab) => {
           if (!tab) {
             createNewWebPage(nextMessage);
           } else {
@@ -87,19 +87,19 @@ chrome.runtime.onMessage.addListener(function(message, sender, reply) {
       const returnList = findReturnFlights(departure, allItins);
       chrome.tabs.sendMessage(webPageTabId, {
         event: "RETURN_FLIGHTS",
-        flights: { returnList }
+        flights: { returnList },
       });
       break;
     case "HIGHLIGHT_TAB":
       const { selectedDepartureId, selectedReturnId } = message;
       // remove this line once you weave windowId from message var
-      chrome.tabs.get(message.tabId, tab => {
-        chrome.windows.update(tab.windowId, { focused: true }, win => {
+      chrome.tabs.get(message.tabId, (tab) => {
+        chrome.windows.update(tab.windowId, { focused: true }, (win) => {
           chrome.tabs.sendMessage(message.tabId, {
             event: "HIGHLIGHT_FLIGHT",
             selectedDepartureId,
             selectedReturnId,
-            provider: message.provider
+            provider: message.provider,
           });
         });
       });
@@ -110,7 +110,7 @@ chrome.runtime.onMessage.addListener(function(message, sender, reply) {
   }
 });
 // clean up provider windows when webpage tab is closed
-chrome.tabs.onRemoved.addListener(function(tabId) {
+chrome.tabs.onRemoved.addListener(function (tabId) {
   if (tabId === webPageTabId) {
     closeWindows();
   }
@@ -138,7 +138,7 @@ function createNewWebPage(message) {
 // use chrome.webRequest API to listen for when flight results API has finished fetching
 // then send message to content script to begin parsing results off DOM
 chrome.webRequest.onCompleted.addListener(
-  function(args) {
+  function (args) {
     console.log("web request complete ", args.url);
     let tabId;
     if (args.url.includes("priceline")) {
@@ -155,8 +155,8 @@ chrome.webRequest.onCompleted.addListener(
   {
     urls: [
       "https://www.southwest.com/api/air-booking/v1/air-booking/page/air/booking/shopping",
-      "https://www.priceline.com/pws/v0/fly/graph/query"
-    ]
+      "https://www.priceline.com/pws/v0/fly/graph/query",
+    ],
   }
 );
 
@@ -183,10 +183,10 @@ function openProviderSearchResults(message) {
   if (priceline) {
     providers.push("priceline");
   }
-  providers.forEach(provider => {
+  providers.forEach((provider) => {
     const url = providerURLBaseMap[provider](message);
     // Open url in a new window. Not a new tab because we can't read results from inactive tabs (browser powers down inactive tabs).
-    chrome.windows.create({ url, focused: false }, win => {
+    chrome.windows.create({ url, focused: false }, (win) => {
       tabIds[provider] = win.tabs[0].id;
       windowIds[provider] = win.id;
     });
@@ -195,13 +195,13 @@ function openProviderSearchResults(message) {
 
 const providerURLBaseMap = {
   priceline: pricelineTabURL,
-  southwest: southwestTabURL
+  southwest: southwestTabURL,
 };
 const priceline_cabin_map = {
   econ: "ECO", // to get Basic Econ, set requestBasicEconomy to "true" in request body
   prem_econ: "PEC",
   business: "BUS",
-  first: "FST"
+  first: "FST",
 };
 function southwestTabURL(formData) {
   const { from, to, fromDate, toDate, numPax } = formData;
