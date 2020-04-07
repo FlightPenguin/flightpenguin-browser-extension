@@ -1,3 +1,5 @@
+import airlinesMap from "./airlineMap.js";
+
 /**
  * Flight {
  *  id: <fromTime-toTime-airline>,
@@ -16,9 +18,9 @@
 function Flight(fromTime, toTime, airline, duration) {
   this.fromTime = fromTime;
   this.toTime = toTime;
-  this.airline = airline;
+  this.airline = airlinesMap[airline] || { display: airline, color: "#DFCCFB" };
 
-  this.id = `${this.fromTime}-${this.toTime}-${this.airline}`;
+  this.id = `${this.fromTime}-${this.toTime}-${this.airline.display}`;
   this.duration = duration;
   this.layovers = [];
   this.itinIds = [];

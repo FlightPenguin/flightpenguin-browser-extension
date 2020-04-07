@@ -3,10 +3,10 @@
 // Added two-letter code in case we need it so we we have a way to map the same airline across providers
 // Also, for Pricline I'm using the name that shows up when you hover over the logo
 const airlinesMap = {
-  "American Airlines": { display: "American", color: "#C5423E", code: "AA" },
-  "Delta Air Lines": { display: "Delta", color: "#EE722E", code: "DL" },
+  American: { display: "American", color: "#C5423E", code: "AA" },
+  Delta: { display: "Delta", color: "#EE722E", code: "DL" },
   Southwest: { display: "Southwest", color: "#F6C04D", code: "WN" },
-  "United Airlines": { display: "United", color: "#235EA6", code: "UA" },
+  United: { display: "United", color: "#235EA6", code: "UA" },
   "Air Canada": { display: "Air Canada", color: "#E53222", code: "AC" },
   "Alaska Airlines": { display: "Alaska", color: "#51172C", code: "AS" },
   "JetBlue Airways": { display: "JetBlue", color: "#5F90C8", code: "B6" },
@@ -27,3 +27,4 @@ const airlinesMap = {
   "Porter Airlines": { display: "Porter", color: "#0F2B53", code: "PD" },
 };
 // For other airlines not listed above let's use #DFCCFB
+export default airlinesMap;
