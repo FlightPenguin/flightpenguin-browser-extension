@@ -15,14 +15,14 @@ import airlinesMap from "./airlineMap.js";
  * @param {string} airline
  * @param {string} duration
  */
-function Flight(fromTime, toTime, airline, duration) {
+function Flight(fromTime, toTime, airline, duration, layovers) {
   this.fromTime = fromTime;
   this.toTime = toTime;
   this.airline = airlinesMap[airline] || { display: airline, color: "#DFCCFB" };
 
   this.id = `${this.fromTime}-${this.toTime}-${this.airline.display}`;
   this.duration = duration;
-  this.layovers = [];
+  this.layovers = layovers;
   this.itinIds = [];
 }
 // TODO
@@ -77,13 +77,15 @@ function Itin(depFlight, retFlight, fare, currency, provider, windowId, tabId) {
     depFlight.fromTime,
     depFlight.toTime,
     depFlight.airline,
-    depFlight.duration
+    depFlight.duration,
+    depFlight.layovers
   );
   this.retFlight = new Flight(
     retFlight.fromTime,
     retFlight.toTime,
     retFlight.airline,
-    retFlight.duration
+    retFlight.duration,
+    retFlight.layovers
   );
 
   this.id = `${this.depFlight.id}-${this.retFlight.id}`;

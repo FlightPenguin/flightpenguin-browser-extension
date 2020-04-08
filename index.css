@@ -12,10 +12,19 @@ ul {
 li {
   display: flex;
   justify-content: space-between;
-  height: 30px;
   box-sizing: border-box;
   white-space: nowrap;
 }
+li,
+.time-bar-row {
+  height: 30px;
+  margin-bottom: 10px;
+}
+.time-bar-row {
+  position: relative;
+  width: 600px;
+}
+
 .departures-content,
 .returns-content {
   display: flex;

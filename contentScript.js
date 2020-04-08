@@ -14,6 +14,20 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
         loadPricelineResults();
       } else if (window.location.origin.includes("southwest")) {
         loadSouthwestResults();
+        const southwestFlights = JSON.parse(
+          window.sessionStorage.getItem(
+            "AirBookingSearchResultsSearchStore-searchResults-v1"
+          )
+        );
+        const [
+          departures,
+          returns,
+        ] = southwestFlights.searchResults.airProducts;
+        const itins = createSouthwestItins(departures.details, returns.details);
+        chrome.runtime.sendMessage({
+          event: "FLIGHT_RESULTS_RECEIVED",
+          flights: itins,
+        });
       }
       break;
     case "HIGHLIGHT_FLIGHT":
@@ -161,10 +175,11 @@ function loadSouthwestResults() {
 
       const flights = southwestParser();
       if (flights.length) {
-        chrome.runtime.sendMessage({
-          event: "FLIGHT_RESULTS_RECEIVED",
-          flights,
-        });
+        // just running this function to make and set dataset.id
+        // chrome.runtime.sendMessage({
+        //   event: "FLIGHT_RESULTS_RECEIVED",
+        //   flights,
+        // });
       } else {
         window.cancelAnimationFrame(rafID);
       }
@@ -218,6 +233,62 @@ function southwestParser() {
 
   return itins;
 }
+
+function formatTimeTo12HourClock(time) {
+  let [hours, minutes] = time.split(":");
+  hours = Number(hours);
+  const timeOfDay = hours >= 12 ? "PM" : "AM";
+
+  if (hours === 0) {
+    hours = 12;
+  } else if (hours > 12) {
+    hours -= 12;
+  }
+  return `${hours}:${minutes}${timeOfDay}`;
+}
+
+function getIndividualSouthwestLegDetails(flight) {
+  let layovers = [];
+  if (flight.stopsDetails.length > 1) {
+    layovers = flight.stopsDetails.map((stop) => {
+      return {
+        fromTime: formatTimeTo12HourClock(stop.departureTime),
+        toTime: formatTimeTo12HourClock(stop.arrivalTime),
+        operatingCarrierCode: "WN",
+        marketingCarrierCode: "WN",
+      };
+    });
+  }
+  return {
+    fromTime: formatTimeTo12HourClock(flight.departureTime),
+    toTime: formatTimeTo12HourClock(flight.arrivalTime),
+    airline: "Southwest",
+    layovers,
+    fare: Math.round(
+      Number(flight.fareProducts.ADULT.WGA.fare.totalFare.value)
+    ),
+    currency: "$",
+  };
+}
+
+function createSouthwestItins(departureList, returnList) {
+  const itins = [];
+  for (let departureItem of departureList) {
+    const departureFlight = getIndividualSouthwestLegDetails(departureItem);
+    for (let returnItem of returnList) {
+      const returnFlight = getIndividualSouthwestLegDetails(returnItem);
+      itins.push({
+        departureFlight,
+        returnFlight,
+        fare: departureFlight.fare + returnFlight.fare,
+        currency: departureFlight.currency,
+      });
+    }
+  }
+
+  return itins;
+}
+
 function pricelineParser(itinNodes) {
   const selectors = {
     fromTime: ".departure time",

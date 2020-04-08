@@ -75,43 +75,49 @@ function createNodeList(list, itins, containerNode) {
     node.addEventListener("click", handleClick);
 
     let airline = item.airline.display;
-    let { fromTime, toTime } = getTimes(item);
+    let { fromTimeFormatted, toTimeFormatted } = getTimes(
+      item.fromTime,
+      item.toTime
+    );
     let duration = item.duration;
 
     let fares = item.itinIds.map(
       (itinId) => `${itins[itinId].currency}${itins[itinId].fare}`
     );
-    [fromTime, toTime, duration, airline, fares[0]].forEach((value) => {
-      const span = document.createElement("span");
-      span.textContent = value;
-      node.append(span);
-    });
+    [fromTimeFormatted, toTimeFormatted, duration, airline, fares[0]].forEach(
+      (value) => {
+        const span = document.createElement("span");
+        span.textContent = value;
+        node.append(span);
+      }
+    );
     node.dataset.id = item.id;
     containerNode.append(node);
   });
 }
 
-function getTimes(flight) {
-  let fromTime;
-  let toTime;
-  if (flight.fromTime.includes("T")) {
-    fromTime = new Date(flight.fromTime);
-    fromTime = fromTime.toLocaleString("en-US", {
+function getTimes(fromTime, toTime) {
+  let fromTimeFormatted;
+  let toTimeFormatted;
+
+  if (fromTime.includes("T")) {
+    fromTimeFormatted = new Date(fromTime);
+    fromTimeFormatted = fromTimeFormatted.toLocaleString("en-US", {
       hour: "numeric",
       minute: "numeric",
       hour12: true,
     });
-    toTime = new Date(flight.toTime);
-    toTime = toTime.toLocaleString("en-US", {
+    toTimeFormatted = new Date(toTime);
+    toTimeFormatted = toTimeFormatted.toLocaleString("en-US", {
       hour: "numeric",
       minute: "numeric",
       hour12: true,
     });
   } else {
-    fromTime = flight.fromTime;
-    toTime = flight.toTime;
+    fromTimeFormatted = fromTime;
+    toTimeFormatted = toTime;
   }
-  return { fromTime, toTime };
+  return { fromTimeFormatted, toTimeFormatted };
 }
 
 function createHeader(formData) {
@@ -190,22 +196,50 @@ function createTimeBars(flights, timeBarContainer) {
 
   for (let flight of flights) {
     const timeBarRow = document.createElement("div");
+    timeBarRow.classList.add("time-bar-row");
 
-    const { timeBarWidth, startPositionPx } = createIndividualTimeBarPosition(
-      flight
-    );
-
-    let { fromTime, toTime } = getTimes(flight);
-    timeBarRow.title = `${flight.airline.display} ${fromTime}-${toTime}`;
-    timeBarRow.style.width = `${timeBarWidth}px`;
-    timeBarRow.style.height = "30px";
-    timeBarRow.style.marginLeft = `${startPositionPx}px`;
-    timeBarRow.style.backgroundColor = flight.airline.color;
+    if (flight.layovers.length) {
+      for (let { fromTime, toTime } of flight.layovers) {
+        const timeBar = createTimeBar(
+          fromTime,
+          toTime,
+          flight.airline.color,
+          flight.airline.display
+        );
+        timeBarRow.append(timeBar);
+      }
+    } else {
+      const timeBar = createTimeBar(
+        flight.fromTime,
+        flight.toTime,
+        flight.airline.color,
+        flight.airline.display
+      );
+      timeBarRow.append(timeBar);
+    }
 
     timeBarTempContainer.append(timeBarRow);
   }
 
   timeBarContainer.append(timeBarTempContainer);
+}
+
+function createTimeBar(fromTime, toTime, airlineColor, airlineName) {
+  const timeBarSegment = document.createElement("div");
+  const { timeBarWidth, startPositionPx } = createIndividualTimeBarPosition(
+    fromTime,
+    toTime
+  );
+
+  let { fromTimeFormatted, toTimeFormatted } = getTimes(fromTime, toTime);
+  timeBarSegment.title = `${airlineName} ${fromTimeFormatted}-${toTimeFormatted}`;
+  timeBarSegment.style.width = `${timeBarWidth}px`;
+  timeBarSegment.style.height = "30px";
+  timeBarSegment.style.position = "absolute";
+  timeBarSegment.style.left = `${startPositionPx}px`;
+  timeBarSegment.style.backgroundColor = airlineColor;
+
+  return timeBarSegment;
 }
 
 function getHoursMinutes(timeString) {
@@ -241,7 +275,7 @@ function getHoursMinutes(timeString) {
   return { hours: newHours, minutes: Number(minutes) };
 }
 
-function createIndividualTimeBarPosition(flight) {
+function createIndividualTimeBarPosition(fromTime, toTime) {
   /**
    * 1. Intervals [12am, 6am, 12pm, 6pm, 12am]
    * 2. IntervalPX[0px, 100px, 200px, 300px, 400px]
@@ -251,7 +285,6 @@ function createIndividualTimeBarPosition(flight) {
    */
   const width = timeBarContainerWidth; // px
   const dayInMinutes = 1440;
-  const { fromTime, toTime } = flight;
   const pxPerHr = width / dayInMinutes;
   const minutesPerHour = 60;
   const fromTimeAttrs = getHoursMinutes(fromTime);
