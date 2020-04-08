@@ -294,7 +294,6 @@ function pricelineParser(itinNodes) {
     fromTime: ".departure time",
     toTime: ".arrival time",
     duration: "[class^='Slice__Duration'] time",
-    layovers: "[class^='Stops__StopsBox'] [data-test='stops-items']",
     airline: "[class^='AirlineTitle']",
   };
   const fareSelector = {
@@ -334,13 +333,7 @@ function queryPricelineDOM(htmlCollection, selectors) {
       try {
         const node = containerNode.querySelector(selector);
         if (["fromTime", "toTime"].includes(key)) {
-          data[key] = node.dateTime;
-        } else if (key === "layovers") {
-          data[key] = Array.from(node.children).map((child) => {
-            const airport = child.textContent.substring(0, 3);
-            const duration = child.textContent.substring(3);
-            return { airport, duration };
-          });
+          data[key] = node.textContent.replace("a", "AM").replace("p", "PM");
         } else {
           data[key] = node.textContent;
         }

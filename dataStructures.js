@@ -22,7 +22,7 @@ function Flight(fromTime, toTime, airline, duration, layovers) {
 
   this.id = `${this.fromTime}-${this.toTime}-${this.airline.display}`;
   this.duration = duration;
-  this.layovers = layovers;
+  this.layovers = layovers || [];
   this.itinIds = [];
 }
 // TODO
