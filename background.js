@@ -150,6 +150,8 @@ chrome.webRequest.onCompleted.addListener(
       tabId = tabIds["priceline"];
     } else if (args.url.includes("southwest")) {
       tabId = tabIds["southwest"];
+    } else if (args.url.includes("skyscanner")) {
+      tabId = tabIds["skyscanner"];
     }
     window.setTimeout(() => {
       // give provider page time to render
@@ -159,8 +161,9 @@ chrome.webRequest.onCompleted.addListener(
   },
   {
     urls: [
-      "https://www.southwest.com/api/air-booking/v1/air-booking/page/air/booking/shopping",
-      "https://www.priceline.com/pws/v0/fly/graph/query",
+      "https://www.southwest.com/api/air-booking/v1/air-booking/page/air/booking/shopping*",
+      "https://www.priceline.com/pws/v0/fly/graph/query*",
+      "https://www.skyscanner.com/g/conductor/v1/fps3/search/*",
     ],
   }
 );
@@ -180,13 +183,16 @@ function openProviderSearchResults(message) {
     toDate: "2020-03-25"
     numPax: 2
      */
-  const { southwest, priceline } = message;
+  const { southwest, priceline, skyscanner } = message;
   const providers = [];
   if (southwest) {
     providers.push("southwest");
   }
   if (priceline) {
     providers.push("priceline");
+  }
+  if (skyscanner) {
+    providers.push("skyscanner");
   }
   providers.forEach((provider) => {
     const url = providerURLBaseMap[provider](message);
@@ -201,7 +207,22 @@ function openProviderSearchResults(message) {
 const providerURLBaseMap = {
   priceline: pricelineTabURL,
   southwest: southwestTabURL,
+  skyscanner: skyscannerTabURL,
 };
+const skyscanner_cabin_map = {
+  econ: "economy",
+  prem_econ: "premiumeconomy",
+  business: "business",
+  first: "first",
+};
+function skyscannerTabURL(formData) {
+  const { from, to, fromDate, toDate, numPax, cabin } = formData;
+  let startDate = fromDate.replace(/-/g, "").substring(2);
+  let endDate = toDate.replace(/-/g, "").substring(2);
+
+  return `https://www.skyscanner.com/transport/flights/${from}/${to}/${startDate}/${endDate}/?adults=${numPax}&children=0&adultsv2=${numPax}&childrenv2=&infants=0&cabinclass=${skyscanner_cabin_map[cabin]}`;
+}
+
 const priceline_cabin_map = {
   econ: "ECO", // to get Basic Econ, set requestBasicEconomy to "true" in request body
   prem_econ: "PEC",

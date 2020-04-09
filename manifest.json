@@ -15,6 +15,10 @@
     {
       "matches": ["https://www.southwest.com/air/booking/select.html?*"],
       "js": ["southwest/contentScript.js"]
+    },
+    {
+      "matches": ["https://www.skyscanner.com/transport/flights/*"],
+      "js": ["skyscanner/contentScript.js"]
     }
   ],
   "browser_action": {
