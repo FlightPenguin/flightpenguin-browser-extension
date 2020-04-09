@@ -9,6 +9,9 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
   // parse page to get flights, then send background to process and display on new web page.
   console.info("Received message ", message.event);
   switch (message.event) {
+    case "STOP_PARSING":
+      window.cancelAnimationFrame(rafID);
+      break;
     case "BEGIN_PARSING":
       if (window.location.origin.includes("priceline")) {
         loadPricelineResults();

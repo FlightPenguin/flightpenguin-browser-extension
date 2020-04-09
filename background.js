@@ -17,6 +17,7 @@ let webPageTabId;
 
 let allDepartures = {};
 let allItins = {};
+let departureSelected = false;
 
 chrome.runtime.onMessage.addListener(function (message, sender, reply) {
   console.info(message.event, message);
@@ -31,6 +32,7 @@ chrome.runtime.onMessage.addListener(function (message, sender, reply) {
       windowIds = {};
       allDepartures = {};
       allItins = {};
+      departureSelected = false;
       if (webPageTabId) {
         chrome.tabs.sendMessage(webPageTabId, {
           event: "RESET_SEARCH",
@@ -39,6 +41,9 @@ chrome.runtime.onMessage.addListener(function (message, sender, reply) {
       }
       break;
     case "FLIGHT_RESULTS_RECEIVED":
+      if (departureSelected) {
+        break;
+      }
       let provider;
       if (sender.origin.includes("southwest")) {
         // save results with their tab index so we know where to move the user to when they make a flight selection
@@ -83,8 +88,12 @@ chrome.runtime.onMessage.addListener(function (message, sender, reply) {
       // need to clean up variables when webpage tab is closed
       break;
     case "DEPARTURE_SELECTED":
+      departureSelected = true;
       const departure = allDepartures[message.departureId];
       const returnList = findReturnFlights(departure, allItins);
+      Object.values(tabIds).forEach((tabId) => {
+        chrome.tabs.sendMessage(tabId, { event: "STOP_PARSING" });
+      });
       chrome.tabs.sendMessage(webPageTabId, {
         event: "RETURN_FLIGHTS",
         flights: { returnList },
