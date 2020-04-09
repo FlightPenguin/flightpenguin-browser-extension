@@ -9,12 +9,12 @@
   },
   "content_scripts": [
     {
-      "matches": [
-        // TODO break up content script, so each url has it's own file
-        "https://www.southwest.com/air/booking/select.html?*",
-        "https://www.priceline.com/m/fly/search/*"
-      ],
-      "js": ["contentScript.js"]
+      "matches": ["https://www.priceline.com/m/fly/search/*"],
+      "js": ["priceline/contentScript.js"]
+    },
+    {
+      "matches": ["https://www.southwest.com/air/booking/select.html?*"],
+      "js": ["southwest/contentScript.js"]
     }
   ],
   "browser_action": {
