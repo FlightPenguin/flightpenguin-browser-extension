@@ -1,10 +1,6 @@
 // debugger and console logs can be seen by clicking background.js link for this extension under chrome://extensions,
 // it will open a developer console for this extension and in addition to logs you can see the local storage
-import {
-  makeItins,
-  diffDepartures,
-  findReturnFlights,
-} from "./dataStructures.js";
+import { makeItins, diffDepartures, findReturnFlights } from "./dataModels.js";
 
 chrome.runtime.onInstalled.addListener(function () {
   console.log("Is this thing on?");
