@@ -4,6 +4,7 @@ console.log("hello...");
 
 let rafID = 0;
 let allItins = [];
+let firstParse = true;
 
 chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
   // parse page to get flights, then send background to process and display on new web page.
@@ -48,20 +49,25 @@ function highlightItin(depId, retId) {
 }
 
 /**
- * Priceline has "infinite scroll" results. So to get more results we need to scroll down the page.
- * Every time Priceline needs to fetch more results, our background picks up the API request and
+ * Skyscanner has a button that you need to click to see more results, then
+ * the rest of the results are loaded has you scroll. So to get more results we need to scroll down the page.
+ * Every time Skyscanner needs to fetch more results, our background picks up the API request and
  * calls this function again.
  */
 function loadResults() {
   let newY = window.innerHeight;
   let lastTime = 0;
-  const seeMoreFlightsButton = document.querySelector(
-    "[class^='FlightsDayView_results__'] > div > button"
-  );
+  if (firstParse) {
+    const seeMoreFlightsButton = document.querySelector(
+      "[class^='FlightsDayView_results__'] > div > button"
+    );
+    seeMoreFlightsButton.click();
+    firstParse = false;
+  }
 
-  rafID = window.requestAnimationFrame(parseMorePriceline);
+  rafID = window.requestAnimationFrame(parseMoreFlights);
 
-  function parseMorePriceline(currentTime) {
+  function parseMoreFlights(currentTime) {
     if (allItins.length >= 20) {
       // arbitrary number
       window.cancelAnimationFrame(rafID);
@@ -85,15 +91,14 @@ function loadResults() {
         });
       }
       moreItins.forEach((itin) => {
-        // itin.style.border = "10px solid tomato";
         itin.dataset.visited = true;
       });
       allItins = allItins.concat(moreItins);
-      //   seeMoreFlightsButton.click();
+      newY = window.scrollY + window.innerHeight;
       lastTime = currentTime;
     }
 
-    rafID = window.requestAnimationFrame(parseMorePriceline);
+    rafID = window.requestAnimationFrame(parseMoreFlights);
   }
 }
 
