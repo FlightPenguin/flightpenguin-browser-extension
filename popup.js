@@ -2,7 +2,7 @@
 document.querySelector("form#search").addEventListener("submit", (e) => {
   e.preventDefault();
 
-  if (!e.target.southwest.checked && !e.target.priceline.checked) {
+  if (!e.target.southwest.checked && !e.target.skyscanner.checked) {
     const node = document.querySelector(".validation-error");
     node.textContent = "Please select a provider to continue";
     return;

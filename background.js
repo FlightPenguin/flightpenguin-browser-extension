@@ -46,6 +46,8 @@ chrome.runtime.onMessage.addListener(function (message, sender, reply) {
         provider = "southwest";
       } else if (sender.origin.includes("priceline")) {
         provider = "priceline";
+      } else if (sender.origin.includes("skyscanner")) {
+        provider = "skyscanner";
       }
       const { departures, itins } = makeItins(
         message.flights,
