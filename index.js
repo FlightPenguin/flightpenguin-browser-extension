@@ -16,8 +16,14 @@ const retListNode = document.querySelector(".returns-list");
 const depTimeBarContainer = document.querySelector(
   ".departures-time-bar-container"
 );
+const depTimeBarHeaderContainer = document.querySelector(
+  ".departures-time-bar-container-header"
+);
 const retTimeBarContainer = document.querySelector(
   ".returns-time-bar-container"
+);
+const retTimeBarHeaderContainer = document.querySelector(
+  ".returns-time-bar-container-header"
 );
 
 chrome.runtime.onMessage.addListener(function (message) {
@@ -29,7 +35,10 @@ chrome.runtime.onMessage.addListener(function (message) {
       allItins = {};
       selections = [];
       depListNode.innerHTML = "";
+      const timeBarHeader = depTimeBarContainer.children[0];
+      timeBarHeader.innerHTML = "";
       depTimeBarContainer.innerHTML = "";
+      depTimeBarContainer.append(timeBarHeader);
       returnsSection.style.display = "none";
       subheaderContainer.innerHTML = "";
 
@@ -44,7 +53,11 @@ chrome.runtime.onMessage.addListener(function (message) {
       allItins = { ...allItins, ...itins };
 
       createNodeList(departureList, itins, depListNode);
-      createTimeBars(departureList, depTimeBarContainer);
+      createTimeBars(
+        departureList,
+        depTimeBarContainer,
+        depTimeBarHeaderContainer
+      );
 
       const header = createHeader(formData);
       totalFlights += departureList.length;
@@ -55,7 +68,11 @@ chrome.runtime.onMessage.addListener(function (message) {
     case "RETURN_FLIGHTS":
       const { returnList } = message.flights;
       createNodeList(returnList, allItins, retListNode);
-      createTimeBars(returnList, retTimeBarContainer);
+      createTimeBars(
+        returnList,
+        retTimeBarContainer,
+        retTimeBarHeaderContainer
+      );
 
       returnsSection.style.display = "block";
       // scroll to Returns section
@@ -160,142 +177,152 @@ function handleClick(e) {
     depTimeBarContainer.style.display = "block";
     returnsSection.style.display = "none";
     retListNode.innerHTML = "";
+    const timeBarHeader = retTimeBarContainer.children[0];
+    timeBarHeader.innerHTML = "";
     retTimeBarContainer.innerHTML = "";
+    retTimeBarContainer.append(timeBarHeader);
     selections = [];
   }
 }
 
-function createTimeBarHeader(timeBarContainer) {
-  const timeBarContainerHeader = document.createElement("div");
-  timeBarContainerHeader.style.position = "relative";
-  timeBarContainerHeader.style.height = "30px";
-
-  const intervals = ["12am", "6am", "12pm", "6pm", "12am"];
+function createTimeBarHeader(intervals) {
+  const container = document.createElement("div");
   const intervalWidth = timeBarContainerWidth / (intervals.length - 1);
 
-  for (let [index, interval] of intervals.entries()) {
+  for (let index = 0; index < intervals.length; index++) {
+    const interval = intervals[index];
     const intervalNode = document.createElement("div");
 
     intervalNode.style.position = "absolute";
     intervalNode.innerText = interval;
     intervalNode.style.left = intervalWidth * index + "px";
 
-    timeBarContainerHeader.append(intervalNode);
+    container.append(intervalNode);
   }
 
-  timeBarContainer.append(timeBarContainerHeader);
+  return container;
 }
 
-function createTimeBars(flights, timeBarContainer) {
+function createTimeBars(flights, timeBarContainer, timeBarHeaderContainer) {
   const timeBarTempContainer = document.createDocumentFragment();
-
-  if (!timeBarContainer.children.length) {
-    timeBarContainer.style.width = timeBarContainerWidth + "px";
-    createTimeBarHeader(timeBarContainer);
-  }
+  let intervals = ["12am", "6am", "12pm", "6pm", "12am", "6am", "12pm"];
 
   for (let flight of flights) {
     const timeBarRow = document.createElement("div");
     timeBarRow.classList.add("time-bar-row");
 
-    if (flight.layovers.length) {
-      for (let { fromTime, toTime } of flight.layovers) {
-        const timeBar = createTimeBar(
-          fromTime,
-          toTime,
-          flight.airline.color,
-          flight.airline.display
-        );
-        timeBarRow.append(timeBar);
-      }
-    } else {
-      const timeBar = createTimeBar(
-        flight.fromTime,
-        flight.toTime,
+    const iterator = flight.layovers.length ? flight.layovers : [flight];
+    for (let { fromTime, toTime } of iterator) {
+      const { timeBarSegment, newIntervals } = createTimeBar(
+        fromTime,
+        toTime,
         flight.airline.color,
-        flight.airline.display
+        flight.airline.display,
+        intervals
       );
-      timeBarRow.append(timeBar);
+      intervals = newIntervals;
+      timeBarRow.append(timeBarSegment);
     }
 
     timeBarTempContainer.append(timeBarRow);
   }
 
+  timeBarContainer.style.width = timeBarContainerWidth + "px";
+  const timeBarHeader = createTimeBarHeader(intervals);
+  timeBarHeaderContainer.innerHTML = "";
+  timeBarHeaderContainer.append(timeBarHeader);
   timeBarContainer.append(timeBarTempContainer);
 }
 
-function createTimeBar(fromTime, toTime, airlineColor, airlineName) {
+function createTimeBar(fromTime, toTime, airlineColor, airlineName, intervals) {
   const timeBarSegment = document.createElement("div");
-  const { timeBarWidth, startPositionPx } = createIndividualTimeBarPosition(
-    fromTime,
-    toTime
-  );
+  const {
+    timeBarWidth,
+    startPositionPx,
+    newIntervals,
+  } = createIndividualTimeBarPosition(fromTime, toTime, intervals);
 
-  let { fromTimeFormatted, toTimeFormatted } = getTimes(fromTime, toTime);
-  timeBarSegment.title = `${airlineName} ${fromTimeFormatted}-${toTimeFormatted}`;
+  // let { fromTimeFormatted, toTimeFormatted } = getTimes(fromTime, toTime);
+  timeBarSegment.title = `${airlineName} ${fromTime}-${toTime}`;
   timeBarSegment.style.width = `${timeBarWidth}px`;
   timeBarSegment.style.height = "30px";
   timeBarSegment.style.position = "absolute";
   timeBarSegment.style.left = `${startPositionPx}px`;
   timeBarSegment.style.backgroundColor = airlineColor;
-
-  return timeBarSegment;
+  // TODO update intervals if needed
+  return { timeBarSegment, newIntervals };
 }
 
-function getHoursMinutes(timeString) {
-  let timeStringFormatted = timeString;
-  if (timeStringFormatted.includes("T")) {
-    timeStringFormatted = new Date(timeStringFormatted);
-    timeStringFormatted = timeStringFormatted.toLocaleString("en-US", {
-      hour: "numeric",
-      minute: "numeric",
-      hour12: true,
-    });
+function convertTimeTo24HourClock(time) {
+  let timeFormatted = time.toLowerCase();
+  let [hours, minutesAndTimeOfDay] = timeFormatted.split(":");
+  hours = Number(hours);
+  minutes = Number(minutesAndTimeOfDay.replace(/(pm)|(am)/, "").trim());
+
+  if (timeFormatted.includes("pm") && hours !== 12) {
+    hours += 12;
+  } else if (timeFormatted.includes("am") && hours === 12) {
+    hours = 0;
   }
-  console.log(timeStringFormatted);
-  let newHours;
-  const [hours, minutes] = timeStringFormatted
-    .replace(/(PM)|(AM)/, "")
-    .trim()
-    .split(":");
-  let oldTimeString = timeStringFormatted.toLowerCase();
-  if (oldTimeString.includes("am")) {
-    if (hours == "12") {
-      newHours = 0;
-    } else {
-      newHours = Number(hours);
-    }
-  } else if (oldTimeString.includes("pm")) {
-    newHours = Number(hours);
-    if (hours !== "12") {
-      newHours += 12;
-    }
-  }
-  console.log("hours", newHours, "min", minutes);
-  return { hours: newHours, minutes: Number(minutes) };
+  return { hours, minutes };
 }
 
-function createIndividualTimeBarPosition(fromTime, toTime) {
+function createIndividualTimeBarPosition(fromTime, toTime, intervals) {
   /**
-   * 1. Intervals [12am, 6am, 12pm, 6pm, 12am]
-   * 2. IntervalPX[0px, 100px, 200px, 300px, 400px]
-   * 400 px / 24 hours = 33.33 px/hr
-   * 6:05am, (33.33 * 6) + (5 * 33.33/60) = start position in pixels
+   * Basically this is what's happening here:
+   * Intervals for 24 hours
+   * [12am, 6am, 12pm, 6pm, 12am]
+   * [0px, 100px, 200px, 300px, 400px]
+   * If we want the whole thing to be 400 px, 400 px / 24 hours = 33.33 px/hr
+   * So 6:05am would be (33.33 * 6) + (5 * 33.33/60) = start position in pixels
    * width = end position in pixels - start position in pixels
    */
   const width = timeBarContainerWidth; // px
-  const dayInMinutes = 1440;
-  const pxPerHr = width / dayInMinutes;
+  const totalRangeTimeInMinutes = (intervals.length - 1) * 6 * 60;
+  const pxPerMinute = width / totalRangeTimeInMinutes;
   const minutesPerHour = 60;
-  const fromTimeAttrs = getHoursMinutes(fromTime);
+  // If we want time range to grow with longer flights...
+  // let startHour = convertHoursTo24HourClock(fromTime);
+  // let endHour = convertHoursTo24HourClock(toTime);
+  // if (endHour < startHour) {
+  //   // journey ends the next day
+  //   const positionAtMidnight = pxPerMinute * minutesPerHour * 24;
+
+  //   let newInterval = 0;
+  //   let totalHours = 0;
+  //   let timeOfDay = "am";
+  //   let hours = [6, 12];
+  //   let timeOfDayInterval = 1;
+  //   while (totalHours < endHour) {
+  //     newInterval = hours[timeOfDayInterval % 2];
+  //     const switchTimeOfDay = timeOfDayInterval % 2 === 0 ? false : true;
+  //     if (switchTimeOfDay) {
+  //       timeOfDay = timeOfDay === "am" ? "pm" : "am";
+  //     }
+  //     intervals.push(newInterval + timeOfDay);
+  //     timeOfDayInterval += 1;
+  //     totalHours += 6;
+  //   }
+  //   return intervals;
+  // }
+
+  const fromTimeAttrs = convertTimeTo24HourClock(fromTime);
   const startTimeInMinutes =
     fromTimeAttrs.minutes + fromTimeAttrs.hours * minutesPerHour;
-  let toTimeAttrs = getHoursMinutes(toTime);
+
+  const toTimeAttrs = convertTimeTo24HourClock(toTime);
   const endTimeInMinutes =
     toTimeAttrs.minutes + toTimeAttrs.hours * minutesPerHour;
-  const startPositionPx = startTimeInMinutes * pxPerHr;
-  const endPositionPx = endTimeInMinutes * pxPerHr;
+
+  const startPositionPx = startTimeInMinutes * pxPerMinute;
+  let endPositionPx = endTimeInMinutes * pxPerMinute;
+
+  if (endPositionPx < startPositionPx) {
+    const positionAtMidnight = pxPerMinute * minutesPerHour * 24;
+    endPositionPx += positionAtMidnight;
+  }
+
   const timeBarWidth = endPositionPx - startPositionPx;
 
-  return { timeBarWidth, startPositionPx };
+  return { timeBarWidth, startPositionPx, newIntervals: intervals };
 }

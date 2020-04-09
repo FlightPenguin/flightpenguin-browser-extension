@@ -29,3 +29,8 @@ li,
 .returns-content {
   display: flex;
 }
+.departures-time-bar-container-header,
+.returns-time-bar-container-header {
+  position: relative;
+  height: 30px;
+}
