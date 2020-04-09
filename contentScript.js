@@ -262,6 +262,10 @@ function getIndividualSouthwestLegDetails(flight) {
       };
     });
   }
+  const durationHours = Math.floor(flight.totalDuration / 60);
+  const durationMinutes = flight.totalDuration % 60;
+  const durationString = `${durationHours}h ${durationMinutes}m`;
+
   return {
     fromTime: formatTimeTo12HourClock(flight.departureTime),
     toTime: formatTimeTo12HourClock(flight.arrivalTime),
@@ -271,6 +275,7 @@ function getIndividualSouthwestLegDetails(flight) {
       Number(flight.fareProducts.ADULT.WGA.fare.totalFare.value)
     ),
     currency: "$",
+    duration: durationString,
   };
 }
 
