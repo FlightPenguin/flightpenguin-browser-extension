@@ -91,50 +91,24 @@ function createNodeList(list, itins, containerNode) {
     const node = document.createElement("li");
     node.addEventListener("click", handleClick);
 
-    let airline = item.airline.display;
-    let { fromTimeFormatted, toTimeFormatted } = getTimes(
-      item.fromTime,
-      item.toTime
-    );
+    const {
+      fromTime,
+      toTime,
+      airline: { display: airline },
+    } = item;
     let duration = item.duration;
 
     let fares = item.itinIds.map(
       (itinId) => `${itins[itinId].currency}${itins[itinId].fare}`
     );
-    [fromTimeFormatted, toTimeFormatted, duration, airline, fares[0]].forEach(
-      (value) => {
-        const span = document.createElement("span");
-        span.textContent = value;
-        node.append(span);
-      }
-    );
+    [fromTime, toTime, duration, airline, fares[0]].forEach((value) => {
+      const span = document.createElement("span");
+      span.textContent = value;
+      node.append(span);
+    });
     node.dataset.id = item.id;
     containerNode.append(node);
   });
-}
-
-function getTimes(fromTime, toTime) {
-  let fromTimeFormatted;
-  let toTimeFormatted;
-
-  if (fromTime.includes("T")) {
-    fromTimeFormatted = new Date(fromTime);
-    fromTimeFormatted = fromTimeFormatted.toLocaleString("en-US", {
-      hour: "numeric",
-      minute: "numeric",
-      hour12: true,
-    });
-    toTimeFormatted = new Date(toTime);
-    toTimeFormatted = toTimeFormatted.toLocaleString("en-US", {
-      hour: "numeric",
-      minute: "numeric",
-      hour12: true,
-    });
-  } else {
-    fromTimeFormatted = fromTime;
-    toTimeFormatted = toTime;
-  }
-  return { fromTimeFormatted, toTimeFormatted };
 }
 
 function createHeader(formData) {
