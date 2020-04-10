@@ -3,6 +3,7 @@ console.clear();
 console.log("hello...");
 
 let rafID = 0;
+let intervalID = 0;
 let allItins = [];
 let firstParse = true;
 
@@ -11,7 +12,7 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
   console.info("Received message ", message.event);
   switch (message.event) {
     case "STOP_PARSING":
-      window.cancelAnimationFrame(rafID);
+      stopParsing();
       break;
     case "BEGIN_PARSING":
       loadResults();
@@ -49,6 +50,23 @@ function highlightItin(depId, retId) {
 }
 
 /**
+ * Cancel requestAnimationFrame and close all the modals we opened to get the layovers.
+ */
+function stopParsing() {
+  window.cancelAnimationFrame(rafID);
+  // need to wait a second for DOM to update or else UI will crash
+  intervalID = window.setInterval(() => {
+    let button = document.querySelector("button[class^='BpkCloseButton']");
+    if (!button) {
+      window.clearInterval(intervalID);
+      return;
+    }
+    button.click();
+    button = document.querySelector("button[class^='BpkCloseButton']");
+  }, 500);
+}
+
+/**
  * Skyscanner has a button that you need to click to see more results, then
  * the rest of the results are loaded has you scroll. So to get more results we need to scroll down the page.
  * Every time Skyscanner needs to fetch more results, our background picks up the API request and
@@ -66,25 +84,16 @@ function loadResults() {
   const seeMoreFlightsButton = document.querySelector(
     "[class^='FlightsDayView_results__'] > div > button"
   );
-  seeMoreFlightsButton.click();
+  if (seeMoreFlightsButton) {
+    seeMoreFlightsButton.click();
+  }
 
-  window.cancelAnimationFrame(rafID);
   rafID = window.requestAnimationFrame(parseMoreFlights);
 
   function parseMoreFlights(currentTime) {
-    if (allItins.length >= 20) {
-      // arbitrary number
-      window.cancelAnimationFrame(rafID);
-      // close all the modals we opened to get the layovers
-      // need to wait a second for DOM to update or else UI will crash
-      const intervalID = window.setInterval(() => {
-        let button = document.querySelector("button[class^='BpkCloseButton']");
-        if (!button) {
-          window.clearInterval(intervalID);
-        }
-        button.click();
-        button = document.querySelector("button[class^='BpkCloseButton']");
-      }, 1000);
+    if (allItins.length >= 10) {
+      stopParsing();
+
       return;
     }
     // every 5 seconds scroll to next viewPort
@@ -134,6 +143,8 @@ function parser(itinNodes) {
     airline: "[class^='LogoImage_container']",
   };
   const itins = itinNodes.map((node) => {
+    node.dataset.visited = "true";
+
     const fare = node.querySelector(fareSelector.fare).textContent.trim();
     const [departureNode, returnNode] = node.querySelector(
       "[class^='TicketBody_legsContainer']"
@@ -163,7 +174,6 @@ function parser(itinNodes) {
       returnFlight.toTime,
       returnFlight.airline,
     ].join("-"); // will use this id attribute to find the itin the user selected
-    node.dataset.visited = "true";
 
     return {
       departureFlight,
