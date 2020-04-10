@@ -246,7 +246,7 @@ function convertTimeTo24HourClock(time) {
   let timeFormatted = time.toLowerCase();
   let [hours, minutesAndTimeOfDay] = timeFormatted.split(":");
   hours = Number(hours);
-  minutes = Number(minutesAndTimeOfDay.replace(/(pm)|(am)/, "").trim());
+  minutes = Number(minutesAndTimeOfDay.replace(/(pm)|(am)|(\+\d)/g, "").trim());
 
   if (timeFormatted.includes("pm") && hours !== 12) {
     hours += 12;
