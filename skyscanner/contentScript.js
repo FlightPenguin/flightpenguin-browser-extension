@@ -55,22 +55,36 @@ function highlightItin(depId, retId) {
  * calls this function again.
  */
 function loadResults() {
+  if (!firstParse) {
+    return;
+  }
+  firstParse = false;
+
   let newY = window.innerHeight;
   let lastTime = 0;
-  if (firstParse) {
-    const seeMoreFlightsButton = document.querySelector(
-      "[class^='FlightsDayView_results__'] > div > button"
-    );
-    seeMoreFlightsButton.click();
-    firstParse = false;
-  }
 
+  const seeMoreFlightsButton = document.querySelector(
+    "[class^='FlightsDayView_results__'] > div > button"
+  );
+  seeMoreFlightsButton.click();
+
+  window.cancelAnimationFrame(rafID);
   rafID = window.requestAnimationFrame(parseMoreFlights);
 
   function parseMoreFlights(currentTime) {
     if (allItins.length >= 20) {
       // arbitrary number
       window.cancelAnimationFrame(rafID);
+      // close all the modals we opened to get the layovers
+      // need to wait a second for DOM to update or else UI will crash
+      const intervalID = window.setInterval(() => {
+        let button = document.querySelector("button[class^='BpkCloseButton']");
+        if (!button) {
+          window.clearInterval(intervalID);
+        }
+        button.click();
+        button = document.querySelector("button[class^='BpkCloseButton']");
+      }, 1000);
       return;
     }
     // every 5 seconds scroll to next viewPort
@@ -111,7 +125,7 @@ function parser(itinNodes) {
     fromTime: "[class^='LegInfo_routePartialDepart']",
     toTime: "[class^='LegInfo_routePartialArrive']",
     duration: "[class^='LegInfo_stopsContainer']",
-    // if  "[class^='LegInfo_stopsContainer']".children[3].textContent.toLowerCase().includes('non')
+    layovers: "[class^='LegInfo_stopsLabelContainer']",
   };
   const fareSelector = {
     fare: "[class^='Price_mainPriceContainer']",
@@ -163,17 +177,68 @@ function parser(itinNodes) {
 }
 
 function queryDOM(htmlCollection, selectors) {
-  return Array.from(htmlCollection).map((containerNode) => {
+  return Array.from(htmlCollection).map((containerNode, itinIdx) => {
     const data = {};
     Object.entries(selectors).forEach(([key, selector]) => {
       try {
         const node = containerNode.querySelector(selector).children[0];
-        data[key] = node.textContent.trim();
+
+        if (key === "layovers") {
+          if (!node.textContent.toLowerCase().includes("non")) {
+            containerNode.click();
+
+            const modalNode = document.querySelector("#details-modal");
+            const itinNode = modalNode.querySelectorAll(
+              "[class^='Itinerary_leg']"
+            )[itinIdx];
+
+            const stopsNode = itinNode.querySelector(
+              "[class^='LegInfo_stopsLabelContainer']"
+            );
+
+            if (!stopsNode.textContent.toLowerCase().includes("non")) {
+              stopsNode.click();
+              const layoversNode = itinNode.querySelector(
+                "[class^='LegSegmentSummary_container']"
+              );
+              const airlines = Array.from(
+                layoversNode.querySelectorAll(
+                  "[class^='LogoImage_container'] span:first-of-type"
+                )
+              );
+              const segments = Array.from(
+                layoversNode.querySelectorAll(
+                  "[class^='LegSegmentDetails_container']"
+                )
+              );
+              const layovers = [];
+              for (let i = 0; i < airlines.length; i++) {
+                const [fromTime, toTime] = segments[i].querySelectorAll(
+                  "[class^='Times_segmentTimes'] > div"
+                );
+                let [from, to] = segments[i].querySelectorAll(
+                  "[class^='Routes_routes'] > span"
+                );
+                from = from.textContent.split(" ")[0];
+                to = to.textContent.split(" ")[0];
+                layovers.push({
+                  airline: airlines[i].textContent,
+                  from,
+                  fromTime: fromTime.textContent,
+                  to,
+                  toTime: toTime.textContent,
+                });
+              }
+              data.layovers = layovers;
+            }
+          }
+        } else {
+          data[key] = node.textContent.trim();
+        }
       } catch (e) {
         console.info("Error parsing ", key, e);
       }
     });
-
     return data;
   });
 }

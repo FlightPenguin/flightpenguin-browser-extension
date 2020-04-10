@@ -20,7 +20,7 @@ function Flight(fromTime, toTime, airline, duration, layovers) {
   this.toTime = toTime;
   this.airline = airlinesMap[airline] || { display: airline, color: "#DFCCFB" };
 
-  this.id = `${this.fromTime}-${this.toTime}-${this.airline.display}`;
+  this.id = `${this.fromTime}-${this.toTime}-${airline}`;
   this.duration = duration;
   this.layovers = layovers || [];
   this.itinIds = [];

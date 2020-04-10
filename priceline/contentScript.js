@@ -82,7 +82,6 @@ function loadPricelineResults() {
         });
       }
       moreItins.forEach((itin) => {
-        // itin.style.border = "10px solid tomato";
         itin.dataset.visited = true;
       });
       allItins = allItins.concat(moreItins);

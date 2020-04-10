@@ -1,15 +1,14 @@
-// We only have Priceline and Southwest so only need to use one mapping system right now.
-// In the future, we can have maps for each provider.
-// Added two-letter code in case we need it so we we have a way to map the same airline across providers
-// Also, for Pricline I'm using the name that shows up when you hover over the logo
+// TODO when another airline provider is added
+// Change this to use the Map class.
+// Set default when no key is found #DFCCFB
 const airlinesMap = {
-  American: { display: "American", color: "#C5423E", code: "AA" },
+  "American Airlines": { display: "American", color: "#C5423E", code: "AA" },
   Delta: { display: "Delta", color: "#EE722E", code: "DL" },
   Southwest: { display: "Southwest", color: "#F6C04D", code: "WN" },
   United: { display: "United", color: "#235EA6", code: "UA" },
   "Air Canada": { display: "Air Canada", color: "#E53222", code: "AC" },
   "Alaska Airlines": { display: "Alaska", color: "#51172C", code: "AS" },
-  "JetBlue Airways": { display: "JetBlue", color: "#5F90C8", code: "B6" },
+  jetBlue: { display: "jetBlue", color: "#5F90C8", code: "B6" },
   "Spirit Airlines": { display: "Spirit", color: "#BBB140", code: "NK" },
   WestJet: { display: "WestJet", color: "#4BA89C", code: "WS" },
   Aeromexico: { display: "Aeromexico", color: "#000000", code: "AM" },
@@ -26,5 +25,4 @@ const airlinesMap = {
   },
   "Porter Airlines": { display: "Porter", color: "#0F2B53", code: "PD" },
 };
-// For other airlines not listed above let's use #DFCCFB
 export default airlinesMap;
