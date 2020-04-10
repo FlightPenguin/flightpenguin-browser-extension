@@ -31,19 +31,34 @@ chrome.runtime.onMessage.addListener(function (message) {
 
   switch (message.event) {
     case "RESET_SEARCH":
+      // state variables
       totalFlights = 0;
       allItins = {};
       selections = [];
+      // search header
+      headerContainer.textContent = createHeader(message.formData);
+
+      // number of flights header
+      subheaderContainer.innerHTML = "";
+
+      // departure list
       depListNode.innerHTML = "";
-      const timeBarHeader = depTimeBarContainer.children[0];
+
+      // departure time bars
+      let timeBarHeader = depTimeBarContainer.children[0];
       timeBarHeader.innerHTML = "";
       depTimeBarContainer.innerHTML = "";
       depTimeBarContainer.append(timeBarHeader);
+
+      // return list
       returnsSection.style.display = "none";
-      subheaderContainer.innerHTML = "";
+      retListNode.innerHTML = "";
 
-      headerContainer.textContent = createHeader(message.formData);
-
+      // return time bars
+      timeBarHeader = retTimeBarContainer.children[0];
+      timeBarHeader.innerHTML = "";
+      retTimeBarContainer.innerHTML = "";
+      retTimeBarContainer.append(timeBarHeader);
       break;
     case "FLIGHT_RESULTS_FOR_CLIENT":
       const {
