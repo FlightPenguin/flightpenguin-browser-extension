@@ -24,5 +24,25 @@ const airlinesMap = {
     code: "SY",
   },
   "Porter Airlines": { display: "Porter", color: "#0F2B53", code: "PD" },
+  // "Ryanair": {display: "Ryanair", color: "#ECC954", code: "FR" }, // Seems like Priceline doesn't show Ryanair
+  "China Southern Airlines": { display: "China Southern", color: "#93ACCA", code: "CZ" },
+  "Lufthansa": { display: "Lufthansa", color: "#EFB95D", code: "LH" },
+  "SWISS": { display: "Swiss", color: "#D42D21", code: "LX" },
+  "China Eastern Airlines": { display: "China Eastern", color: "#A9545F", code: "MU" },
+  "British Airways": { display: "British", color: "#EA8E8C", code: "BA" },
+  "Iberia": { display: "Iberia", color: "#D05653", code: "IB" },
+  "Air China": { display: "Air China", color: "#DF524B", code: "CA" },
+  "Emirates Airlines": { display: "Emirates", color: "#CF534F", code: "EK" },
+  "KLM-Royal Dutch Airlines": { display: "KLM", color: "#44A0DC", code: "KL" },
+  "Air France": { display: "Air France", color: "#DB3832", code: "AF" },
+  "Turkish Airlines": { display: "Turkish", color: "#DB3832", code: "TK" },
+  "Cathay Pacific": { display: "Cathay", color: "#2A645A", code: "CX" },
+  "EVA Airways": { display: "EVA", color: "#6F9F64", code: "BR" },
+  "China Airlines": { display: "China Airlines", color: "#DAABB1", code: "CI" },
+  "ANA Airlines": { display: "ANA", color: "#254897", code: "NH" },
+  "Japan Airlines": { display: "Japan Airlines", color: "#E56E69", code: "JL" },
+  "Air India": { display: "Air India", color: "#D47346", code: "AI" },
+  "Qantas Airways": { display: "Qantas", color: "#E34538", code: "QF" },
+  "Singapore Airlines": { display: "Sinagpore", color: "#EFA952", code: "SQ" }
 };
 export default airlinesMap;
