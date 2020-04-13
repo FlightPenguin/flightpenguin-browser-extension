@@ -34,7 +34,14 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
         });
       };
       let obs = new IntersectionObserver(callback, options);
-      obs.observe(document.querySelector("[class^='BpkSpinner_bpk-spinner']"));
+      const spinnerNode = document.querySelector(
+        "[class^='BpkSpinner_bpk-spinner']"
+      );
+      if (spinnerNode) {
+        obs.observe(spinnerNode);
+      } else {
+        loadResults();
+      }
       break;
     case "HIGHLIGHT_FLIGHT":
       const { selectedDepartureId, selectedReturnId } = message;
