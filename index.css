@@ -9,12 +9,18 @@ ul {
   width: 350px;
   padding-right: 20px;
 }
-li {
+li > div {
   display: flex;
   justify-content: space-between;
   box-sizing: border-box;
   white-space: nowrap;
 }
+li > span {
+  color: gray;
+  font-size: 10px;
+  white-space: nowrap;
+}
+
 li,
 .time-bar-row {
   height: 30px;

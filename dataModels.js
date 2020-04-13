@@ -15,12 +15,41 @@ import airlinesMap from "./airlineMap.js";
  * @param {string} airline
  * @param {string} duration
  */
-function Flight(fromTime, toTime, airline, duration, layovers) {
+function Flight(
+  fromTime,
+  toTime,
+  operatingAirline,
+  marketingAirline,
+  duration,
+  layovers
+) {
   this.fromTime = fromTime;
   this.toTime = toTime;
-  this.airline = airlinesMap[airline] || { display: airline, color: "#DFCCFB" };
+  if (operatingAirline) {
+    if (operatingAirline.includes("Partially operated by ")) {
+      // regional airlines don't get the primary airline spot
+      // they'll be displayed where we display marketing airlines
+      this.operatingAirline = marketingAirline;
+      this.marketingAirline = operatingAirline;
+      this.marketingAirlineText = operatingAirline;
+    } else {
+      this.operatingAirline = operatingAirline;
+      this.marketingAirline = marketingAirline;
+      this.marketingAirlineText = `Marketed by ${marketingAirline}`;
+    }
+  } else {
+    // operating and marketing are the same airline
+    this.operatingAirline = marketingAirline;
+    this.marketingAirline = marketingAirline;
+  }
 
-  this.id = `${this.fromTime}-${this.toTime}-${airline}`;
+  this.operatingAirline = airlinesMap[this.operatingAirline] || {
+    display: this.operatingAirline,
+    color: "#DFCCFB",
+  };
+
+  // marketing airline is unique, not operating
+  this.id = `${this.fromTime}-${this.toTime}-${marketingAirline}`;
   this.duration = duration;
   this.layovers = layovers || [];
   this.itinIds = [];
@@ -76,14 +105,16 @@ function Itin(depFlight, retFlight, fare, currency, provider, windowId, tabId) {
   this.depFlight = new Flight(
     depFlight.fromTime,
     depFlight.toTime,
-    depFlight.airline,
+    depFlight.operatingAirline,
+    depFlight.marketingAirline,
     depFlight.duration,
     depFlight.layovers
   );
   this.retFlight = new Flight(
     retFlight.fromTime,
     retFlight.toTime,
-    retFlight.airline,
+    retFlight.operatingAirline,
+    depFlight.marketingAirline,
     retFlight.duration,
     retFlight.layovers
   );

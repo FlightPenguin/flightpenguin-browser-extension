@@ -151,16 +151,15 @@ function findMatchingDOMNode(list, target) {
 
 function parser(itinNodes) {
   const selectors = {
-    fromTime: "[class^='LegInfo_routePartialDepart']",
-    toTime: "[class^='LegInfo_routePartialArrive']",
-    duration: "[class^='LegInfo_stopsContainer']",
-    layovers: "[class^='LegInfo_stopsLabelContainer']",
+    fromTime: "[class^='LegInfo_routePartialDepart'] *:first-child",
+    toTime: "[class^='LegInfo_routePartialArrive'] *:first-child",
+    duration: "[class^='LegInfo_stopsContainer'] *:first-child",
+    layovers: "[class^='LegInfo_stopsLabelContainer'] *:first-child",
+    marketingAirlines: "[class^='LogoImage_container'] img",
+    operatingAirline: "[class*='Operators_operator']",
   };
   const fareSelector = {
     fare: "[class^='Price_mainPriceContainer']",
-  };
-  const airlineSelector = {
-    airline: "[class^='LogoImage_container']",
   };
   const itins = itinNodes.map((node) => {
     node.dataset.visited = "true";
@@ -174,25 +173,14 @@ function parser(itinNodes) {
       [departureNode, returnNode], // third child is text about government approval
       selectors
     );
-    const airlines = node
-      .querySelector(airlineSelector.airline)
-      .textContent.split("+")
-      .map((airline) => airline.trim());
-    // this isn't right
-    departureFlight.airline = airlines[0];
-    if (airlines.length === 1) {
-      returnFlight.airline = airlines[0];
-    } else {
-      returnFlight.airline = airlines[1];
-    }
 
     node.dataset.id = [
       departureFlight.fromTime,
       departureFlight.toTime,
-      departureFlight.airline,
+      departureFlight.marketingAirline,
       returnFlight.fromTime,
       returnFlight.toTime,
-      returnFlight.airline,
+      returnFlight.marketingAirline,
     ].join("-"); // will use this id attribute to find the itin the user selected
 
     return {
@@ -206,69 +194,91 @@ function parser(itinNodes) {
   return itins;
 }
 
-function queryDOM(htmlCollection, selectors) {
-  return Array.from(htmlCollection).map((containerNode, itinIdx) => {
-    const data = {};
-    Object.entries(selectors).forEach(([key, selector]) => {
-      try {
-        const node = containerNode.querySelector(selector).children[0];
+function getLayovers(itinIdx) {
+  // get for all legs of itin since we go through so much work opening the modal that shows us the entire itin
+  const modalNode = document.querySelector("#details-modal");
+  const legNode = modalNode.querySelectorAll("[class^='Itinerary_leg']")[
+    itinIdx
+  ];
 
-        if (key === "layovers") {
-          if (!node.textContent.toLowerCase().includes("non")) {
-            containerNode.click();
+  const stopsNode = legNode.querySelector(
+    "[class^='LegInfo_stopsLabelContainer']"
+  );
 
-            const modalNode = document.querySelector("#details-modal");
-            const itinNode = modalNode.querySelectorAll(
-              "[class^='Itinerary_leg']"
-            )[itinIdx];
-
-            const stopsNode = itinNode.querySelector(
-              "[class^='LegInfo_stopsLabelContainer']"
-            );
-
-            if (!stopsNode.textContent.toLowerCase().includes("non")) {
-              stopsNode.click();
-              const layoversNode = itinNode.querySelector(
-                "[class^='LegSegmentSummary_container']"
-              );
-              const airlines = Array.from(
-                layoversNode.querySelectorAll(
-                  "[class^='LogoImage_container'] span:first-of-type"
-                )
-              );
-              const segments = Array.from(
-                layoversNode.querySelectorAll(
-                  "[class^='LegSegmentDetails_container']"
-                )
-              );
-              const layovers = [];
-              for (let i = 0; i < airlines.length; i++) {
-                const [fromTime, toTime] = segments[i].querySelectorAll(
-                  "[class^='Times_segmentTimes'] > div"
-                );
-                let [from, to] = segments[i].querySelectorAll(
-                  "[class^='Routes_routes'] > span"
-                );
-                from = from.textContent.split(" ")[0];
-                to = to.textContent.split(" ")[0];
-                layovers.push({
-                  airline: airlines[i].textContent,
-                  from,
-                  fromTime: fromTime.textContent,
-                  to,
-                  toTime: toTime.textContent,
-                });
-              }
-              data.layovers = layovers;
-            }
-          }
-        } else {
-          data[key] = node.textContent.trim();
-        }
-      } catch (e) {
-        console.info("Error parsing ", key, e);
-      }
+  if (stopsNode.textContent.toLowerCase().includes("non")) {
+    // non-stop, no layovers
+    return [];
+  }
+  stopsNode.click();
+  const layoversNode = legNode.querySelector(
+    "[class^='LegSegmentSummary_container']"
+  );
+  const airlines = Array.from(
+    layoversNode.querySelectorAll(
+      "[class^='LogoImage_container'] span:first-of-type"
+    )
+  );
+  const segments = Array.from(
+    layoversNode.querySelectorAll("[class^='LegSegmentDetails_container']")
+  );
+  const layovers = [];
+  for (let i = 0; i < airlines.length; i++) {
+    const [fromTime, toTime] = segments[i].querySelectorAll(
+      "[class^='Times_segmentTimes'] > div"
+    );
+    let [from, to] = segments[i].querySelectorAll(
+      "[class^='Routes_routes'] > span"
+    );
+    from = from.textContent.split(" ")[0];
+    to = to.textContent.split(" ")[0];
+    layovers.push({
+      airline: airlines[i].textContent,
+      from,
+      fromTime: fromTime.textContent,
+      to,
+      toTime: toTime.textContent,
     });
-    return data;
-  });
+  }
+
+  return layovers;
+}
+
+function queryDOM(htmlCollection, selectors) {
+  const flightObjects = Array.from(htmlCollection).map(
+    (containerNode, itinIdx) => {
+      const data = {};
+      Object.entries(selectors).forEach(([key, selector]) => {
+        try {
+          const node = containerNode.querySelector(selector);
+          if (key === "operatingAirline") {
+            if (node) {
+              data.operatingAirline = node.textContent.replace(
+                "Operated by ",
+                ""
+              );
+            } else {
+              data.operatingAirline = null;
+            }
+          } else if (key === "marketingAirlines") {
+            data.marketingAirline = node.alt;
+          } else if (key === "layovers") {
+            // going to get layovers for both departure/return flights
+            let layovers = [];
+            if (!node.textContent.toLowerCase().includes("non")) {
+              containerNode.click();
+              layovers = getLayovers(itinIdx);
+            }
+            data.layovers = layovers;
+          } else {
+            data[key] = node.textContent.trim();
+          }
+        } catch (e) {
+          console.info("Error parsing ", key, e);
+        }
+      });
+      return data;
+    }
+  );
+
+  return flightObjects;
 }

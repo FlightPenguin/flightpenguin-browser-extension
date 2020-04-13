@@ -106,22 +106,32 @@ function createNodeList(list, itins, containerNode) {
   list.forEach((item) => {
     const node = document.createElement("li");
     node.addEventListener("click", handleClick);
+    const primaryListItemContainer = document.createElement("div");
+    node.append(primaryListItemContainer);
 
     const {
       fromTime,
       toTime,
-      airline: { display: airline },
+      operatingAirline: { display: operatingAirline },
+      marketingAirlineText,
     } = item;
     let duration = item.duration;
 
     let fares = item.itinIds.map(
       (itinId) => `${itins[itinId].currency}${itins[itinId].fare}`
     );
-    [fromTime, toTime, duration, airline, fares[0]].forEach((value) => {
-      const span = document.createElement("span");
-      span.textContent = value;
-      node.append(span);
-    });
+    [fromTime, toTime, duration, operatingAirline, fares[0]].forEach(
+      (value) => {
+        const span = document.createElement("span");
+        span.textContent = value;
+        primaryListItemContainer.append(span);
+      }
+    );
+    if (marketingAirlineText) {
+      para = document.createElement("span");
+      para.innerText = marketingAirlineText;
+      node.append(para);
+    }
     node.dataset.id = item.id;
     containerNode.append(node);
   });
@@ -163,7 +173,7 @@ function handleClick(e) {
       sel.style.border = "";
       sel.dataset.selected = "false";
     });
-    flightsNotSelected.forEach((flight) => (flight.style.display = "flex"));
+    flightsNotSelected.forEach((flight) => (flight.style.display = "block"));
     depTimeBarContainer.style.display = "block";
     returnsSection.style.display = "none";
     retListNode.innerHTML = "";
@@ -200,14 +210,17 @@ function createTimeBars(flights, timeBarContainer, timeBarHeaderContainer) {
   for (let flight of flights) {
     const timeBarRow = document.createElement("div");
     timeBarRow.classList.add("time-bar-row");
-
-    const iterator = flight.layovers.length ? flight.layovers : [flight];
+    const {
+      layovers,
+      operatingAirline: { display, color },
+    } = flight;
+    const iterator = layovers.length ? layovers : [flight];
     for (let { fromTime, toTime } of iterator) {
       const { timeBarSegment, newIntervals } = createTimeBar(
         fromTime,
         toTime,
-        flight.airline.color,
-        flight.airline.display,
+        color,
+        display,
         intervals
       );
       intervals = newIntervals;

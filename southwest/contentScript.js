@@ -190,7 +190,7 @@ function getIndividualSouthwestLegDetails(flight) {
   return {
     fromTime: formatTimeTo12HourClock(flight.departureTime),
     toTime: formatTimeTo12HourClock(flight.arrivalTime),
-    airline: "Southwest",
+    marketingAirline: "Southwest",
     layovers,
     fare: Math.round(
       Number(flight.fareProducts.ADULT.WGA.fare.totalFare.value)
