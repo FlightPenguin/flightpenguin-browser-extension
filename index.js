@@ -48,6 +48,7 @@ chrome.runtime.onMessage.addListener(function (message) {
       let timeBarHeader = depTimeBarContainer.children[0];
       timeBarHeader.innerHTML = "";
       depTimeBarContainer.innerHTML = "";
+      depTimeBarContainer.style.display = "block";
       depTimeBarContainer.append(timeBarHeader);
 
       // return list

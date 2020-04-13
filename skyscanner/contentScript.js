@@ -15,10 +15,30 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
       stopParsing();
       break;
     case "BEGIN_PARSING":
-      loadResults();
+      // Wait until flights results stop loading, then parse.
+      // We can do this by observing the spinner's visibility.
+      let options = {
+        root: document.querySelector("[class^='ResultsSummary_container']"),
+        threshold: [0, 0.5, 1],
+      };
+      let prevRatio = 0;
+      let callback = function (entries) {
+        entries.forEach((entry) => {
+          if (
+            entry.intersectionRatio === 0 &&
+            entry.intersectionRatio < prevRatio
+          ) {
+            loadResults();
+          }
+          prevRatio = entry.intersectionRatio;
+        });
+      };
+      let obs = new IntersectionObserver(callback, options);
+      obs.observe(document.querySelector("[class^='BpkSpinner_bpk-spinner']"));
       break;
     case "HIGHLIGHT_FLIGHT":
       const { selectedDepartureId, selectedReturnId } = message;
+      // use IntersectionObserver again, observe #details-modal
       highlightItin(selectedDepartureId, selectedReturnId);
       break;
     default:
