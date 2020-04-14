@@ -1,7 +1,7 @@
 let totalFlights = 0;
 let allItins = {};
 let selections = [];
-const timeBarContainerWidth = 600;
+const timeBarContainerWidth = 700;
 
 const headerContainer = document.querySelector(".header");
 const subheaderContainer = document.querySelector(".subheader");
@@ -205,7 +205,8 @@ function createTimeBarHeader(intervals) {
 
 function createTimeBars(flights, timeBarContainer, timeBarHeaderContainer) {
   const timeBarTempContainer = document.createDocumentFragment();
-  let intervals = ["12am", "6am", "12pm", "6pm", "12am", "6am", "12pm"];
+  let intervals = ["12am", "", "12pm", "", "12am", "", "12pm", "", "12am", ""];
+  let maxEndDayOffset = 1;
 
   for (let flight of flights) {
     const timeBarRow = document.createElement("div");
@@ -215,44 +216,81 @@ function createTimeBars(flights, timeBarContainer, timeBarHeaderContainer) {
       operatingAirline: { display, color },
     } = flight;
     const iterator = layovers.length ? layovers : [flight];
+    let startDayOffset = 0;
+    let endDayOffset = 0;
+
     for (let { fromTime, toTime } of iterator) {
+      const endsNextDay = toTime.match(/(\+\d)/);
+
+      if (endsNextDay) {
+        const [_, days] = endsNextDay[0].split("+");
+        endDayOffset += Number(days);
+      }
+
       const { timeBarSegment, newIntervals } = createTimeBar(
         fromTime,
         toTime,
         color,
         display,
-        intervals
+        intervals,
+        startDayOffset,
+        endDayOffset
       );
+
+      if (endsNextDay) {
+        startDayOffset = endDayOffset;
+      }
+
       intervals = newIntervals;
       timeBarRow.append(timeBarSegment);
+    }
+
+    if (endDayOffset > maxEndDayOffset) {
+      maxEndDayOffset = endDayOffset;
     }
 
     timeBarTempContainer.append(timeBarRow);
   }
 
   timeBarContainer.style.width = timeBarContainerWidth + "px";
+
+  // intervals = intervals.slice(0, maxEndDayOffset * 4);
+
   const timeBarHeader = createTimeBarHeader(intervals);
   timeBarHeaderContainer.innerHTML = "";
   timeBarHeaderContainer.append(timeBarHeader);
   timeBarContainer.append(timeBarTempContainer);
 }
 
-function createTimeBar(fromTime, toTime, airlineColor, airlineName, intervals) {
+function createTimeBar(
+  fromTime,
+  toTime,
+  airlineColor,
+  airlineName,
+  intervals,
+  startDayOffset,
+  endDayOffset
+) {
   const timeBarSegment = document.createElement("div");
   const {
     timeBarWidth,
     startPositionPx,
     newIntervals,
-  } = createIndividualTimeBarPosition(fromTime, toTime, intervals);
+  } = createIndividualTimeBarPosition(
+    fromTime,
+    toTime,
+    intervals,
+    startDayOffset,
+    endDayOffset
+  );
 
-  // let { fromTimeFormatted, toTimeFormatted } = getTimes(fromTime, toTime);
   timeBarSegment.title = `${airlineName} ${fromTime}-${toTime}`;
   timeBarSegment.style.width = `${timeBarWidth}px`;
   timeBarSegment.style.height = "30px";
   timeBarSegment.style.position = "absolute";
   timeBarSegment.style.left = `${startPositionPx}px`;
   timeBarSegment.style.backgroundColor = airlineColor;
-  // TODO update intervals if needed
+
   return { timeBarSegment, newIntervals };
 }
 
@@ -270,7 +308,13 @@ function convertTimeTo24HourClock(time) {
   return { hours, minutes };
 }
 
-function createIndividualTimeBarPosition(fromTime, toTime, intervals) {
+function createIndividualTimeBarPosition(
+  fromTime,
+  toTime,
+  intervals,
+  startDayOffset,
+  endDayOffset
+) {
   /**
    * Basically this is what's happening here:
    * Intervals for 24 hours
@@ -284,48 +328,28 @@ function createIndividualTimeBarPosition(fromTime, toTime, intervals) {
   const totalRangeTimeInMinutes = (intervals.length - 1) * 6 * 60;
   const pxPerMinute = width / totalRangeTimeInMinutes;
   const minutesPerHour = 60;
-  // If we want time range to grow with longer flights...
-  // let startHour = convertHoursTo24HourClock(fromTime);
-  // let endHour = convertHoursTo24HourClock(toTime);
-  // if (endHour < startHour) {
-  //   // journey ends the next day
-  //   const positionAtMidnight = pxPerMinute * minutesPerHour * 24;
-
-  //   let newInterval = 0;
-  //   let totalHours = 0;
-  //   let timeOfDay = "am";
-  //   let hours = [6, 12];
-  //   let timeOfDayInterval = 1;
-  //   while (totalHours < endHour) {
-  //     newInterval = hours[timeOfDayInterval % 2];
-  //     const switchTimeOfDay = timeOfDayInterval % 2 === 0 ? false : true;
-  //     if (switchTimeOfDay) {
-  //       timeOfDay = timeOfDay === "am" ? "pm" : "am";
-  //     }
-  //     intervals.push(newInterval + timeOfDay);
-  //     timeOfDayInterval += 1;
-  //     totalHours += 6;
-  //   }
-  //   return intervals;
-  // }
+  const minutesPerDay = minutesPerHour * 24;
+  const positionAtMidnight = pxPerMinute * minutesPerDay;
+  const startMinutesOffset = startDayOffset * minutesPerDay; // if flight starts on a following day, happens with layovers
+  const endMinutesOffset = endDayOffset * minutesPerDay; // if flight ends on a following day, happens with long distance flights and layovers
 
   const fromTimeAttrs = convertTimeTo24HourClock(fromTime);
   const startTimeInMinutes =
-    fromTimeAttrs.minutes + fromTimeAttrs.hours * minutesPerHour;
+    startMinutesOffset +
+    fromTimeAttrs.minutes +
+    fromTimeAttrs.hours * minutesPerHour;
 
   const toTimeAttrs = convertTimeTo24HourClock(toTime);
   const endTimeInMinutes =
-    toTimeAttrs.minutes + toTimeAttrs.hours * minutesPerHour;
+    endMinutesOffset + toTimeAttrs.minutes + toTimeAttrs.hours * minutesPerHour;
 
   const startPositionPx = startTimeInMinutes * pxPerMinute;
   let endPositionPx = endTimeInMinutes * pxPerMinute;
 
   if (endPositionPx < startPositionPx) {
-    const positionAtMidnight = pxPerMinute * minutesPerHour * 24;
     endPositionPx += positionAtMidnight;
   }
 
   const timeBarWidth = endPositionPx - startPositionPx;
-
   return { timeBarWidth, startPositionPx, newIntervals: intervals };
 }
