@@ -162,7 +162,7 @@ function parser(itinNodes) {
     toTime: "[class^='LegInfo_routePartialArrive'] *:first-child",
     duration: "[class^='LegInfo_stopsContainer'] *:first-child",
     layovers: "[class^='LegInfo_stopsLabelContainer'] *:first-child",
-    marketingAirlines: "[class^='LogoImage_container'] img",
+    marketingAirlines: "[class^='LogoImage_container']",
     operatingAirline: "[class*='Operators_operator']",
   };
   const fareSelector = {
@@ -172,14 +172,10 @@ function parser(itinNodes) {
     node.dataset.visited = "true";
 
     const fare = node.querySelector(fareSelector.fare).textContent.trim();
-    const [departureNode, returnNode] = node.querySelector(
-      "[class^='TicketBody_legsContainer']"
-    ).children;
+    const legs = node.querySelector("[class^='TicketBody_legsContainer']")
+      .children;
 
-    const [departureFlight, returnFlight] = queryDOM(
-      [departureNode, returnNode], // third child is text about government approval
-      selectors
-    );
+    const [departureFlight, returnFlight] = queryDOM(legs, selectors);
 
     node.dataset.id = [
       departureFlight.fromTime,
@@ -267,7 +263,12 @@ function queryDOM(htmlCollection, selectors) {
               data.operatingAirline = null;
             }
           } else if (key === "marketingAirlines") {
-            data.marketingAirline = node.alt;
+            const logo = node.querySelector("img");
+            if (logo) {
+              data.marketingAirline = logo.alt;
+            } else {
+              data.marketingAirline = node.textContent;
+            }
           } else if (key === "layovers") {
             // going to get layovers for both departure/return flights
             let layovers = [];

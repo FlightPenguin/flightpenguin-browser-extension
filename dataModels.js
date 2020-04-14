@@ -114,7 +114,7 @@ function Itin(depFlight, retFlight, fare, currency, provider, windowId, tabId) {
     retFlight.fromTime,
     retFlight.toTime,
     retFlight.operatingAirline,
-    depFlight.marketingAirline,
+    retFlight.marketingAirline,
     retFlight.duration,
     retFlight.layovers
   );
