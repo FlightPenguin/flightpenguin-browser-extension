@@ -1,4 +1,9 @@
 import airlinesMap from "./airlineMap.js";
+import {
+  getTimezoneOffset,
+  convertTimeTo24HourClock,
+  convertDurationToMinutes,
+} from "./utilityFunctions.js";
 
 /**
  * Flight {
@@ -25,6 +30,7 @@ function Flight(
 ) {
   this.fromTime = fromTime;
   this.toTime = toTime;
+
   if (operatingAirline) {
     if (operatingAirline.includes("Partially operated by ")) {
       // regional airlines don't get the primary airline spot
@@ -53,7 +59,32 @@ function Flight(
   this.duration = duration;
   this.layovers = layovers || [];
   this.itinIds = [];
+  this.timezoneOffset = this.calculateTimezoneOffset();
 }
+
+Flight.prototype.calculateTimezoneOffset = function () {
+  let totalTimeMinutes = 0;
+  if (!this.layovers.length) {
+    totalTimeMinutes = convertDurationToMinutes(this.duration);
+  } else {
+    this.layovers.forEach(({ fromTime, toTime }) => {
+      const { hours: fromHr, minutes: fromMin } = convertTimeTo24HourClock(
+        fromTime
+      );
+      let { hours: toHr, minutes: toMin } = convertTimeTo24HourClock(toTime);
+      const endsNextDay = toTime.match(/(\+\d)/);
+
+      if (endsNextDay) {
+        const [_, days] = endsNextDay[0].split("+");
+        toHr += Number(days) * 24;
+      }
+      const fromTotalMinutes = fromHr * 60 + fromMin;
+      const toTotalMinutes = toHr * 60 + toMin;
+      totalTimeMinutes += toTotalMinutes - fromTotalMinutes;
+    });
+  }
+  return getTimezoneOffset(this.fromTime, this.toTime, totalTimeMinutes);
+};
 // TODO
 // Flight.prototype.addLayover = function(layover) {
 //   // new Layover(layover)

@@ -1,6 +1,13 @@
+import {
+  convertTimeTo24HourClock,
+  convert12HourTimeToMinutes,
+  convertMinutesTo12HourClock,
+} from "./utilityFunctions.js";
+
 let totalFlights = 0;
 let allItins = {};
 let selections = [];
+let search = {};
 const timeBarContainerWidth = 700;
 
 const headerContainer = document.querySelector(".header");
@@ -35,6 +42,7 @@ chrome.runtime.onMessage.addListener(function (message) {
       totalFlights = 0;
       allItins = {};
       selections = [];
+      search = {};
       // search header
       headerContainer.textContent = createHeader(message.formData);
 
@@ -66,6 +74,7 @@ chrome.runtime.onMessage.addListener(function (message) {
         flights: { departureList, itins },
         formData,
       } = message;
+      search = formData;
       allItins = { ...allItins, ...itins };
 
       createNodeList(departureList, itins, depListNode);
@@ -128,7 +137,7 @@ function createNodeList(list, itins, containerNode) {
       }
     );
     if (marketingAirlineText) {
-      para = document.createElement("span");
+      let para = document.createElement("span");
       para.innerText = marketingAirlineText;
       node.append(para);
     }
@@ -203,6 +212,29 @@ function createTimeBarHeader(intervals) {
   return container;
 }
 
+function createTimezoneNodes(flight) {
+  const fromTzNode = document.createElement("span");
+  fromTzNode.classList.add("timezone__first");
+  const fromTotalMins = convert12HourTimeToMinutes(flight.fromTime);
+  const fromTimeInOtherAirportMins = fromTotalMins + flight.timezoneOffset * -1;
+  const fromTimeInOtherAirport = convertMinutesTo12HourClock(
+    fromTimeInOtherAirportMins
+  );
+  fromTzNode.title = `${fromTimeInOtherAirport} in ${search.to}`;
+
+  const toTzNode = document.createElement("span");
+  toTzNode.classList.add("timezone__last");
+
+  const toTotalMins = convert12HourTimeToMinutes(flight.toTime);
+  const toTimeInOtherAirportMins = toTotalMins + flight.timezoneOffset;
+  const toTimeInOtherAirport = convertMinutesTo12HourClock(
+    toTimeInOtherAirportMins
+  );
+  toTzNode.title = `${toTimeInOtherAirport} in ${search.from}`;
+
+  return { fromTzNode, toTzNode };
+}
+
 function createTimeBars(flights, timeBarContainer, timeBarHeaderContainer) {
   const timeBarTempContainer = document.createDocumentFragment();
   let intervals = ["12am", "", "12pm", "", "12am", "", "12pm", "", "12am", ""];
@@ -218,6 +250,7 @@ function createTimeBars(flights, timeBarContainer, timeBarHeaderContainer) {
     const iterator = layovers.length ? layovers : [flight];
     let startDayOffset = 0;
     let endDayOffset = 0;
+    const timeSegments = document.createDocumentFragment();
 
     for (let { fromTime, toTime } of iterator) {
       const endsNextDay = toTime.match(/(\+\d)/);
@@ -242,8 +275,31 @@ function createTimeBars(flights, timeBarContainer, timeBarHeaderContainer) {
       }
 
       intervals = newIntervals;
-      timeBarRow.append(timeBarSegment);
+      timeSegments.append(timeBarSegment);
     }
+    // Position timezone nodes based on first and last time bar in row:
+    if (flight.timezoneOffset) {
+      const { fromTzNode, toTzNode } = createTimezoneNodes(flight);
+
+      fromTzNode.style.left = timeSegments.children[0].style.left;
+      toTzNode.style.left =
+        Number(
+          timeSegments.children[
+            timeSegments.childElementCount - 1
+          ].style.left.replace("px", "")
+        ) +
+        Number(
+          timeSegments.children[
+            timeSegments.childElementCount - 1
+          ].style.width.replace("px", "")
+        ) -
+        20 + // 20px is how wide the node is and is defined in css
+        "px";
+      timeBarRow.append(fromTzNode);
+      timeBarRow.append(toTzNode);
+    }
+
+    timeBarRow.append(timeSegments);
 
     if (endDayOffset > maxEndDayOffset) {
       maxEndDayOffset = endDayOffset;
@@ -292,20 +348,6 @@ function createTimeBar(
   timeBarSegment.style.backgroundColor = airlineColor;
 
   return { timeBarSegment, newIntervals };
-}
-
-function convertTimeTo24HourClock(time) {
-  let timeFormatted = time.toLowerCase();
-  let [hours, minutesAndTimeOfDay] = timeFormatted.split(":");
-  hours = Number(hours);
-  minutes = Number(minutesAndTimeOfDay.replace(/(pm)|(am)|(\+\d)/g, "").trim());
-
-  if (timeFormatted.includes("pm") && hours !== 12) {
-    hours += 12;
-  } else if (timeFormatted.includes("am") && hours === 12) {
-    hours = 0;
-  }
-  return { hours, minutes };
 }
 
 function createIndividualTimeBarPosition(

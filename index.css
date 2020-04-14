@@ -30,6 +30,23 @@ li,
   position: relative;
   width: 600px;
 }
+.timezone__first,
+.timezone__last {
+  width: 20px;
+  height: 30px;
+  z-index: 1;
+  position: absolute;
+}
+.timezone__first:hover,
+.timezone__last:hover {
+  border-color: tomato;
+}
+.timezone__first {
+  border-left: 4px solid black;
+}
+.timezone__last {
+  border-right: 4px solid black;
+}
 
 .departures-content,
 .returns-content {
