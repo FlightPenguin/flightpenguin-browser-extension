@@ -92,6 +92,8 @@ chrome.runtime.onMessage.addListener(function (message) {
       break;
     case "RETURN_FLIGHTS":
       const { returnList } = message.flights;
+      returnsSection.style.display = "block";
+
       createNodeList(returnList, allItins, retListNode);
       createTimeBars(
         returnList,
@@ -99,7 +101,6 @@ chrome.runtime.onMessage.addListener(function (message) {
         retTimeBarHeaderContainer
       );
 
-      returnsSection.style.display = "block";
       // scroll to Returns section
       window.scroll(
         0,
@@ -220,7 +221,14 @@ function createTimezoneNodes(flight) {
   const fromTimeInOtherAirport = convertMinutesTo12HourClock(
     fromTimeInOtherAirportMins
   );
-  fromTzNode.title = `${fromTimeInOtherAirport} in ${search.to}`;
+  let from = search.from;
+  let to = search.to;
+
+  if (returnsSection.style.display !== "none") {
+    from = search.to;
+    to = search.from;
+  }
+  fromTzNode.title = `${fromTimeInOtherAirport} in ${to}`;
 
   const toTzNode = document.createElement("span");
   toTzNode.classList.add("timezone__last");
@@ -230,7 +238,7 @@ function createTimezoneNodes(flight) {
   const toTimeInOtherAirport = convertMinutesTo12HourClock(
     toTimeInOtherAirportMins
   );
-  toTzNode.title = `${toTimeInOtherAirport} in ${search.from}`;
+  toTzNode.title = `${toTimeInOtherAirport} in ${from}`;
 
   return { fromTzNode, toTzNode };
 }
@@ -242,6 +250,7 @@ function createTimeBars(flights, timeBarContainer, timeBarHeaderContainer) {
 
   for (let flight of flights) {
     const timeBarRow = document.createElement("div");
+
     timeBarRow.classList.add("time-bar-row");
     const {
       layovers,
