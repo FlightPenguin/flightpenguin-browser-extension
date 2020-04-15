@@ -63,27 +63,31 @@ function Flight(
 }
 
 Flight.prototype.calculateTimezoneOffset = function () {
-  let totalTimeMinutes = 0;
-  if (!this.layovers.length) {
-    totalTimeMinutes = convertDurationToMinutes(this.duration);
-  } else {
-    this.layovers.forEach(({ fromTime, toTime }) => {
-      const { hours: fromHr, minutes: fromMin } = convertTimeTo24HourClock(
-        fromTime
-      );
-      let { hours: toHr, minutes: toMin } = convertTimeTo24HourClock(toTime);
-      const endsNextDay = toTime.match(/(\+\d)/);
+  let timezoneOffset = 0;
 
-      if (endsNextDay) {
-        const [_, days] = endsNextDay[0].split("+");
-        toHr += Number(days) * 24;
-      }
+  if (!this.layovers.length) {
+    timezoneOffset = getTimezoneOffset(
+      this.fromTime,
+      this.toTime,
+      convertDurationToMinutes(this.duration)
+    );
+  } else {
+    this.layovers.forEach(({ fromTime, toTime, duration }) => {
+      let { hours: fromHr, minutes: fromMin } = convertTimeTo24HourClock(
+        fromTime,
+        true
+      );
+      let { hours: toHr, minutes: toMin } = convertTimeTo24HourClock(
+        toTime,
+        true
+      );
       const fromTotalMinutes = fromHr * 60 + fromMin;
       const toTotalMinutes = toHr * 60 + toMin;
-      totalTimeMinutes += toTotalMinutes - fromTotalMinutes;
+      const durationMinutes = convertDurationToMinutes(duration);
+      timezoneOffset += durationMinutes - (toTotalMinutes - fromTotalMinutes);
     });
   }
-  return getTimezoneOffset(this.fromTime, this.toTime, totalTimeMinutes);
+  return timezoneOffset;
 };
 // TODO
 // Flight.prototype.addLayover = function(layover) {
@@ -94,6 +98,7 @@ Flight.prototype.calculateTimezoneOffset = function () {
  * Layover {
  *   from: "",
  *   to: "",
+ *   duration: "",
  *   fromTime: "",
  *   toTime: "",
  *   airline: "",

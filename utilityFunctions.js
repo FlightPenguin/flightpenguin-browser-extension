@@ -1,21 +1,27 @@
-function convertTimeTo24HourClock(time) {
+function convertTimeTo24HourClock(time, addDays) {
   let timeFormatted = time.toLowerCase();
   let [hours, minutesAndTimeOfDay] = timeFormatted.split(":");
   hours = Number(hours);
   let minutes = Number(
     minutesAndTimeOfDay.replace(/(pm)|(am)|(\+\d)/g, "").trim()
   );
+  if (addDays) {
+    const daysToAdd = time.match(/(\+\d)/);
+    if (daysToAdd) {
+      hours += daysToAdd[0].split("+")[1] * 24;
+    }
+  }
 
-  if (timeFormatted.includes("pm") && hours !== 12) {
+  if (timeFormatted.includes("pm") && hours % 12 !== 0) {
     hours += 12;
-  } else if (timeFormatted.includes("am") && hours === 12) {
-    hours = 0;
+  } else if (timeFormatted.includes("am") && hours % 12 === 0) {
+    hours -= 12;
   }
   return { hours, minutes };
 }
 
 function convert12HourTimeToMinutes(time) {
-  const { hours, minutes } = convertTimeTo24HourClock(time);
+  const { hours, minutes } = convertTimeTo24HourClock(time, true);
   return hours * 60 + minutes;
 }
 
@@ -47,7 +53,7 @@ function convertMinutesTo12HourClock(time) {
 function convertDurationToMinutes(duration) {
   // duration looks like 10h 30m
   let [durationHours, durationRest] = duration.split("h");
-  let durationMinutes = durationRest.trim().split("m")[0];
+  let durationMinutes = durationRest.trim().split("m")[0] || 0;
   let durationTotalMinutes =
     Number(durationMinutes) + Number(durationHours) * 60;
   return durationTotalMinutes;

@@ -226,18 +226,19 @@ function getLayovers(itinIdx) {
   );
   const layovers = [];
   for (let i = 0; i < airlines.length; i++) {
-    const [fromTime, toTime] = segments[i].querySelectorAll(
-      "[class^='Times_segmentTimes'] > div"
-    );
+    const [fromTime, duration, toTime] = segments[i].querySelector(
+      "[class^='Times_segmentTimes']"
+    ).children;
     let [from, to] = segments[i].querySelectorAll(
       "[class^='Routes_routes'] > span"
     );
-    from = from.textContent.split(" ")[0];
-    to = to.textContent.split(" ")[0];
+    from = Array.from(from.childNodes)[0];
+    to = Array.from(to.childNodes)[0];
     layovers.push({
       airline: airlines[i].textContent,
       from,
       fromTime: fromTime.textContent,
+      duration: duration.textContent,
       to,
       toTime: toTime.textContent,
     });

@@ -171,6 +171,12 @@ function formatTimeTo12HourClock(time) {
   return `${hours}:${minutes}${timeOfDay}`;
 }
 
+function convertDurationMinutesToString(duration) {
+  const durationHours = Math.floor(duration / 60);
+  const durationMinutes = duration % 60;
+  return `${durationHours}h ${durationMinutes}m`;
+}
+
 function getIndividualSouthwestLegDetails(flight) {
   let layovers = [];
   if (flight.stopsDetails.length > 1) {
@@ -180,13 +186,10 @@ function getIndividualSouthwestLegDetails(flight) {
         toTime: formatTimeTo12HourClock(stop.arrivalTime),
         operatingCarrierCode: "WN",
         marketingCarrierCode: "WN",
+        duration: convertDurationMinutesToString(stop.legDuration),
       };
     });
   }
-  const durationHours = Math.floor(flight.totalDuration / 60);
-  const durationMinutes = flight.totalDuration % 60;
-  const durationString = `${durationHours}h ${durationMinutes}m`;
-
   return {
     fromTime: formatTimeTo12HourClock(flight.departureTime),
     toTime: formatTimeTo12HourClock(flight.arrivalTime),
@@ -196,7 +199,7 @@ function getIndividualSouthwestLegDetails(flight) {
       Number(flight.fareProducts.ADULT.WGA.fare.totalFare.value)
     ),
     currency: "$",
-    duration: durationString,
+    duration: convertDurationMinutesToString(flight.totalDuration),
   };
 }
 
