@@ -263,10 +263,15 @@ function createTimeBars(flights, timeBarContainer, timeBarHeaderContainer) {
 
     for (let { fromTime, toTime } of iterator) {
       const endsNextDay = toTime.match(/(\+\d)/);
+      const startsNextDay = fromTime.match(/(\+\d)/);
 
       if (endsNextDay) {
-        const [_, days] = endsNextDay[0].split("+");
-        endDayOffset += Number(days);
+        const [_, endDays] = endsNextDay[0].split("+");
+        endDayOffset += Number(endDays);
+      }
+      if (startsNextDay) {
+        const [_, startDays] = startsNextDay[0].split("+");
+        startDayOffset += Number(startDays);
       }
 
       const { timeBarSegment, newIntervals } = createTimeBar(
