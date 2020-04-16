@@ -18,14 +18,14 @@ ul {
   padding: 10px;
 }
 
-.times {
+/* .times {
   display: flex;
   flex-direction: column;
   font-size: 18px;
   width: 122px;
   height: 60px;
   justify-content: space-between;
-}
+} */
 .times__hour {
   font-size: 22px;
 }
@@ -36,24 +36,46 @@ ul {
   font-size: 15px;
 }
 .day-time {
-  background-image: url(http://clipart-library.com/images/Biarp47MT.png);
+  /* background-image: url(http://clipart-library.com/images/Biarp47MT.png); */
 }
 .night-time {
-  background-image: url(http://clipart-library.com/images_k/moon-transparent-png/moon-transparent-png-20.png);
+  /* background-image: url(http://clipart-library.com/images_k/moon-transparent-png/moon-transparent-png-20.png); */
+}
+.departure-time {
+  position: absolute;
+  left: -65px;
+  text-align: right;
+}
+.arrival-time {
+  position: absolute;
+  right: -97px;
+}
+.departure-time,
+.arrival-time {
+  width: 85px;
 }
 .day-time,
 .night-time {
-  background-size: 20%;
+  /* background-size: 20%;
   background-color: rgba(255, 255, 255, 0.7);
   background-position-x: right;
   background-position-y: center;
   background-repeat: no-repeat;
   background-position: right;
-  background-blend-mode: soft-light;
+  background-blend-mode: soft-light; */
+
+  /* position: absolute; */
+  border-radius: 0;
+  padding: 4px;
+  box-shadow: 3px 12px 6px 0px #eee;
+  background-color: white;
 }
 
 .time-minutes {
   font-size: 10px;
+}
+.time-minutes::before {
+  content: ":";
 }
 
 .airlines {
@@ -61,10 +83,10 @@ ul {
   flex-direction: column;
   width: 200px;
   padding-left: 10px;
+  white-space: normal;
 }
 .primary-airline {
   font-size: 19px;
-  white-space: normal;
 }
 .primary-airline__small-font-size {
   font-size: 16px;
@@ -72,7 +94,6 @@ ul {
 .secondary-airline {
   font-size: 8px;
   color: gray;
-  white-space: normal;
 }
 .fare {
   font-size: 20px;
@@ -100,10 +121,13 @@ li,
 }
 .time-bar-row {
   position: relative;
-  width: 600px;
+  /* width: 600px; */
   display: flex;
   align-items: center;
   margin-top: 10px;
+}
+.time-bar-segment {
+  box-shadow: 3px 12px 6px 0px #eee;
 }
 .timezone__first,
 .timezone__last {
