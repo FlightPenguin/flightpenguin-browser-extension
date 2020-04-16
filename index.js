@@ -56,7 +56,7 @@ chrome.runtime.onMessage.addListener(function (message) {
       let timeBarHeader = depTimeBarContainer.children[0];
       timeBarHeader.innerHTML = "";
       depTimeBarContainer.innerHTML = "";
-      depTimeBarContainer.style.display = "block";
+      depTimeBarContainer.style.display = null;
       depTimeBarContainer.append(timeBarHeader);
 
       // return list
@@ -115,33 +115,88 @@ chrome.runtime.onMessage.addListener(function (message) {
 function createNodeList(list, itins, containerNode) {
   list.forEach((item) => {
     const node = document.createElement("li");
+    node.classList.add("flight-list-item");
     node.addEventListener("click", handleClick);
-    const primaryListItemContainer = document.createElement("div");
-    node.append(primaryListItemContainer);
 
     const {
-      fromTime,
-      toTime,
+      fromTimeDetails,
+      toTimeDetails,
       operatingAirline: { display: operatingAirline },
       marketingAirlineText,
     } = item;
-    let duration = item.duration;
 
+    // Create and append fare HTML
     let fares = item.itinIds.map(
       (itinId) => `${itins[itinId].currency}${itins[itinId].fare}`
     );
-    [fromTime, toTime, duration, operatingAirline, fares[0]].forEach(
-      (value) => {
-        const span = document.createElement("span");
-        span.textContent = value;
-        primaryListItemContainer.append(span);
-      }
-    );
+    const fare = document.createElement("span");
+    fare.textContent = fares[0];
+    fare.classList.add("fare");
+    node.append(fare);
+    // Create and append airline HTML
+    const airlinesContainer = document.createElement("div");
+    airlinesContainer.classList.add("airlines");
+    const airlines = [operatingAirline];
     if (marketingAirlineText) {
-      let para = document.createElement("span");
-      para.innerText = marketingAirlineText;
-      node.append(para);
+      airlines.push(marketingAirlineText);
     }
+    airlines.forEach((airline, idx) => {
+      const span = document.createElement("span");
+      span.textContent = airline;
+
+      if (idx === 0) {
+        if (airline.length > 17) {
+          span.classList("primary-airline__small-font-size");
+        } else {
+          span.classList.add("primary-airline");
+        }
+      } else {
+        span.classList.add("secondary-airline");
+      }
+      airlinesContainer.append(span);
+    });
+    node.append(airlinesContainer);
+    // Create and append times HTML
+    const timesContainer = document.createElement("div");
+    timesContainer.classList.add("times");
+    [fromTimeDetails, toTimeDetails].forEach((timeDetails) => {
+      const { hours, minutes, timeOfDay, excessDays, isDayTime } = timeDetails;
+      const timeContainer = document.createElement("div");
+      const minuteSup = document.createElement("sup");
+      const hourSpan = document.createElement("span");
+      const timeOfDaySpan = document.createElement("span");
+
+      minuteSup.classList.add("times__minute");
+      hourSpan.classList.add("times__hour");
+      timeOfDaySpan.classList.add("times__time-of-day");
+
+      let minuteString = String(minutes);
+      minuteString = minuteString.padStart(2, "0");
+      minuteSup.textContent = minuteString;
+      hourSpan.innerHTML =
+        String(hours).length === 1 ? "&nbsp;&nbsp;" + hours : hours;
+      timeOfDaySpan.innerText = timeOfDay.toUpperCase();
+
+      timeContainer.append(hourSpan);
+      timeContainer.append(minuteSup);
+      timeContainer.append(timeOfDaySpan);
+
+      if (excessDays) {
+        const excessNode = document.createElement("sup");
+        excessNode.innerText = excessDays;
+        timeContainer.append(excessNode);
+      }
+
+      if (isDayTime) {
+        timeContainer.classList.add("day-time");
+      } else {
+        timeContainer.classList.add("night-time");
+      }
+      timesContainer.append(timeContainer);
+    });
+
+    node.append(timesContainer);
+
     node.dataset.id = item.id;
     containerNode.append(node);
   });
@@ -183,8 +238,8 @@ function handleClick(e) {
       sel.style.border = "";
       sel.dataset.selected = "false";
     });
-    flightsNotSelected.forEach((flight) => (flight.style.display = "block"));
-    depTimeBarContainer.style.display = "block";
+    flightsNotSelected.forEach((flight) => (flight.style.display = null));
+    depTimeBarContainer.style.display = null;
     returnsSection.style.display = "none";
     retListNode.innerHTML = "";
     const timeBarHeader = retTimeBarContainer.children[0];
@@ -196,18 +251,24 @@ function handleClick(e) {
 }
 
 function createTimeBarHeader(intervals) {
-  const container = document.createElement("div");
+  // const container = document.createElement("div");
+  const container = document.createDocumentFragment();
   const intervalWidth = timeBarContainerWidth / (intervals.length - 1);
 
   for (let index = 0; index < intervals.length; index++) {
     const interval = intervals[index];
     const intervalNode = document.createElement("div");
+    const intervalLineNode = document.createElement("div");
 
-    intervalNode.style.position = "absolute";
+    intervalLineNode.classList.add("interval-line");
+    intervalNode.classList.add("interval-time");
+
     intervalNode.innerText = interval;
     intervalNode.style.left = intervalWidth * index + "px";
+    intervalLineNode.style.left = intervalWidth * index + "px";
 
     container.append(intervalNode);
+    container.append(intervalLineNode);
   }
 
   return container;

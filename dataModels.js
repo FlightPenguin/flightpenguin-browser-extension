@@ -3,6 +3,7 @@ import {
   getTimezoneOffset,
   convertTimeTo24HourClock,
   convertDurationToMinutes,
+  getTimeDetails,
 } from "./utilityFunctions.js";
 
 /**
@@ -30,6 +31,9 @@ function Flight(
 ) {
   this.fromTime = fromTime;
   this.toTime = toTime;
+
+  this.fromTimeDetails = getTimeDetails(fromTime);
+  this.toTimeDetails = getTimeDetails(toTime);
 
   if (operatingAirline) {
     if (operatingAirline.includes("Partially operated by ")) {

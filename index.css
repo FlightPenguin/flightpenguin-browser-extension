@@ -5,30 +5,105 @@ body {
 ul {
   padding: 0; /* remove browser style */
   margin: 0; /* remove browser style */
-  padding-top: 30px; /* to line up flight info with time bars which have a header */
+  padding-top: 15px; /* to line up flight info with time bars which have a header */
   width: 350px;
   padding-right: 20px;
 }
-li > div {
+.flight-list-item {
   display: flex;
-  justify-content: space-between;
   box-sizing: border-box;
   white-space: nowrap;
+  align-items: center;
+  width: 350px;
+  padding: 10px;
 }
-li > span {
-  color: gray;
+
+.times {
+  display: flex;
+  flex-direction: column;
+  font-size: 18px;
+  width: 122px;
+  height: 60px;
+  justify-content: space-between;
+}
+.times__hour {
+  font-size: 22px;
+}
+.times__minute {
+  font-size: 12px;
+}
+.times__time-of-day {
+  font-size: 15px;
+}
+.day-time {
+  background-image: url(http://clipart-library.com/images/Biarp47MT.png);
+}
+.night-time {
+  background-image: url(http://clipart-library.com/images_k/moon-transparent-png/moon-transparent-png-20.png);
+}
+.day-time,
+.night-time {
+  background-size: 20%;
+  background-color: rgba(255, 255, 255, 0.7);
+  background-position-x: right;
+  background-position-y: center;
+  background-repeat: no-repeat;
+  background-position: right;
+  background-blend-mode: soft-light;
+}
+
+.time-minutes {
   font-size: 10px;
-  white-space: nowrap;
+}
+
+.airlines {
+  display: flex;
+  flex-direction: column;
+  width: 200px;
+  padding-left: 10px;
+}
+.primary-airline {
+  font-size: 19px;
+  white-space: normal;
+}
+.primary-airline__small-font-size {
+  font-size: 16px;
+}
+.secondary-airline {
+  font-size: 8px;
+  color: gray;
+  white-space: normal;
+}
+.fare {
+  font-size: 20px;
+  width: 85px;
+  text-align: right;
+}
+
+.interval-time {
+  position: absolute;
+  margin-left: -10px;
+}
+.interval-line {
+  position: absolute;
+  height: 100%;
+  width: 1px;
+  top: 18px;
+  box-shadow: 1px 1px 1px 0px #9e9e9e66;
 }
 
 li,
 .time-bar-row {
-  height: 30px;
   margin-bottom: 10px;
+  height: 67px;
+  /* margin-top: 24px; */
 }
 .time-bar-row {
   position: relative;
   width: 600px;
+  display: flex;
+  align-items: center;
+  margin-top: 10px;
 }
 .timezone__first,
 .timezone__last {
@@ -54,6 +129,11 @@ li,
 }
 .departures-time-bar-container-header,
 .returns-time-bar-container-header {
+  position: absolute;
+  height: 100%;
+  /* box-shadow: 9px 11px 0px 12px #80808040; */
+}
+.time-bar-container {
   position: relative;
-  height: 30px;
+  height: 100%;
 }

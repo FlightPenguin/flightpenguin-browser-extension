@@ -76,10 +76,27 @@ function getTimezoneOffset(fromTime, toTime, duration) {
   return timezoneOffset;
 }
 
+function getTimeDetails(time) {
+  let { hours, minutes } = convertTimeTo24HourClock(time);
+  const timeOfDay = time.toLowerCase().match(/(pm)|(am)/)[0];
+  const excessDays = time.match(/(\+\d)/);
+  const isDayTime = hours <= 18 && hours >= 6;
+  hours = Number(time.split(":")[0]); // want 12 hour clock
+
+  return {
+    hours,
+    minutes,
+    timeOfDay,
+    excessDays: excessDays ? excessDays[0] : excessDays,
+    isDayTime,
+  };
+}
+
 export {
   convertTimeTo24HourClock,
   convertMinutesTo12HourClock,
   convert12HourTimeToMinutes,
   getTimezoneOffset,
   convertDurationToMinutes,
+  getTimeDetails,
 };
