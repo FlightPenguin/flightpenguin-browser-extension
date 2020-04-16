@@ -168,7 +168,10 @@ function parser(itinNodes) {
   const fareSelector = {
     fare: "[class^='Price_mainPriceContainer']",
   };
-  const itins = itinNodes.map((node) => {
+  let itins = itinNodes.map((node) => {
+    if (node.textContent.includes("Sponsored")) {
+      return null;
+    }
     node.dataset.visited = "true";
 
     const fare = node.querySelector(fareSelector.fare).textContent.trim();
@@ -193,6 +196,7 @@ function parser(itinNodes) {
       currency: "$", // no currency node
     };
   });
+  itins = itins.filter((itin) => itin);
 
   return itins;
 }
