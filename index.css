@@ -1,13 +1,20 @@
+:root {
+  --time-bar-container-width: 700px;
+  --flight-list-left-column-width: 350px;
+}
 body {
   background-color: white;
   font-size: 1em;
   font-family: "Helvetica Neue";
 }
+* {
+  box-sizing: border-box;
+}
 ul {
   padding: 0; /* remove browser style */
   margin: 0; /* remove browser style */
   padding-top: 15px; /* to line up flight info with time bars which have a header */
-  width: 350px;
+  width: var(--flight-list-left-column-width);
   padding-right: 20px;
 }
 .flight-list-item {
@@ -15,7 +22,9 @@ ul {
   box-sizing: border-box;
   white-space: nowrap;
   align-items: center;
-  width: 1050px;
+  width: calc(
+    var(--time-bar-container-width) + var(--flight-list-left-column-width) + 1px
+  );
 }
 .flight-list-item:hover {
   cursor: pointer;
@@ -26,7 +35,7 @@ ul {
   box-sizing: border-box;
   white-space: nowrap;
   align-items: center;
-  width: 350px;
+  width: var(--flight-list-left-column-width);
   padding: 10px;
 }
 
@@ -133,8 +142,7 @@ li,
   height: 67px;
 }
 .time-bar-row {
-  width: 700px !important;
-  margin-left: 21px;
+  width: var(--time-bar-container-width) !important;
   z-index: 1;
   position: relative;
   display: flex;

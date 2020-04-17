@@ -159,6 +159,10 @@ function createNodeList(list, itins, containerNode) {
       if (idx === 0) {
         if (airline.length > 17) {
           span.classList.add("primary-airline__small-font-size");
+          if (airline.includes("+")) {
+            const airlinesHTML = airline.split("+").join("and<br/>");
+            span.innerHTML = airlinesHTML;
+          }
         } else {
           span.classList.add("primary-airline");
         }
