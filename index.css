@@ -1,6 +1,7 @@
 body {
   background-color: white;
   font-size: 1em;
+  font-family: "Helvetica Neue";
 }
 ul {
   padding: 0; /* remove browser style */
@@ -71,10 +72,10 @@ ul {
   background-color: white;
 }
 
-.time-minutes {
+.times__minute {
   font-size: 10px;
 }
-.time-minutes::before {
+.times__minute::before {
   content: ":";
 }
 
@@ -104,6 +105,7 @@ ul {
 .interval-time {
   position: absolute;
   margin-left: -10px;
+  white-space: nowrap;
 }
 .interval-line {
   position: absolute;
@@ -135,6 +137,7 @@ li,
   height: 30px;
   z-index: 1;
   position: absolute;
+  display: none;
 }
 .timezone__first:hover,
 .timezone__last:hover {
@@ -155,7 +158,22 @@ li,
 .returns-time-bar-container-header {
   position: absolute;
   height: 100%;
-  /* box-shadow: 9px 11px 0px 12px #80808040; */
+}
+.time-bar-header__date-container {
+  display: flex;
+  margin-top: -65px;
+}
+.time-bar-header__date {
+  width: 311px;
+  text-align: center;
+  height: 47px;
+  border-width: 0px 1px 0px 1px;
+  border-color: #9e9e9e66;
+  border-style: solid;
+  margin-bottom: 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 .time-bar-container {
   position: relative;

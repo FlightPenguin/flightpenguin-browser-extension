@@ -209,7 +209,28 @@ function handleClick(e) {
 }
 
 function createTimeBarHeader(intervals) {
+  const dateHeaderContainer = document.createElement("div");
+  dateHeaderContainer.classList.add("time-bar-header__date-container");
+  const departureDayNode = document.createElement("div");
+  const arrivalDayNode = document.createElement("div");
+  departureDayNode.classList.add("time-bar-header__date");
+  arrivalDayNode.classList.add("time-bar-header__date");
+  let date = search.fromDate;
+  if (returnsSection.style.display !== "none") {
+    date = search.toDate;
+  }
+  const [year, month, day] = date
+    .split("-")
+    .map((dateString) => Number(dateString));
+  const departureDate = new Date(year, month, day);
+  departureDayNode.textContent = departureDate.toDateString();
+  departureDate.setDate(departureDate.getDate() + 1);
+  arrivalDayNode.textContent = departureDate.toDateString();
+  dateHeaderContainer.append(departureDayNode);
+  dateHeaderContainer.append(arrivalDayNode);
+
   const container = document.createDocumentFragment();
+  container.append(dateHeaderContainer);
   const intervalWidth = timeBarContainerWidth / (intervals.length - 1);
 
   for (let index = 0; index < intervals.length; index++) {
@@ -263,7 +284,18 @@ function createTimezoneNodes(flight) {
 
 function createTimeBars(flights, timeBarContainer, timeBarHeaderContainer) {
   const timeBarTempContainer = document.createDocumentFragment();
-  let intervals = ["12am", "", "12pm", "", "12am", "", "12pm", "", "12am", ""];
+  let intervals = [
+    "12 AM",
+    "",
+    "12 PM",
+    "",
+    "12 AM",
+    "",
+    "12 PM",
+    "",
+    "12 AM",
+    "",
+  ];
   let maxEndDayOffset = 1;
 
   for (let flight of flights) {
