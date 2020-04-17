@@ -9,6 +9,18 @@ let allItins = {};
 let selections = [];
 let search = {};
 const timeBarContainerWidth = 700;
+let intervals = [
+  "12 AM",
+  "",
+  "12 PM",
+  "",
+  "12 AM",
+  "",
+  "12 PM",
+  "",
+  "12 AM",
+  "",
+];
 
 const headerContainer = document.querySelector(".header");
 const subheaderContainer = document.querySelector(".subheader");
@@ -118,6 +130,8 @@ function createNodeList(list, itins, containerNode) {
     node.classList.add("flight-list-item");
     node.addEventListener("click", handleClick);
 
+    const contentNode = document.createElement("div");
+    contentNode.classList.add("flight-list-item__text");
     const {
       operatingAirline: { display: operatingAirline },
       marketingAirlineText,
@@ -130,7 +144,7 @@ function createNodeList(list, itins, containerNode) {
     const fare = document.createElement("span");
     fare.textContent = fares[0];
     fare.classList.add("fare");
-    node.append(fare);
+    contentNode.append(fare);
     // Create and append airline HTML
     const airlinesContainer = document.createElement("div");
     airlinesContainer.classList.add("airlines");
@@ -153,8 +167,10 @@ function createNodeList(list, itins, containerNode) {
       }
       airlinesContainer.append(span);
     });
-    node.append(airlinesContainer);
-
+    contentNode.append(airlinesContainer);
+    const timeBarNode = createTimeBarRow(item);
+    node.append(contentNode);
+    node.append(timeBarNode);
     node.dataset.id = item.id;
     containerNode.append(node);
   });
@@ -244,7 +260,7 @@ function createTimeBarHeader(intervals) {
     intervalNode.innerText = interval;
     intervalNode.style.left = intervalWidth * index + "px";
     intervalLineNode.style.left = intervalWidth * index + "px";
-
+    // intervalLineNode.style.width = intervalWidth + "px";
     container.append(intervalNode);
     container.append(intervalLineNode);
   }
@@ -283,152 +299,11 @@ function createTimezoneNodes(flight) {
 }
 
 function createTimeBars(flights, timeBarContainer, timeBarHeaderContainer) {
-  const timeBarTempContainer = document.createDocumentFragment();
-  let intervals = [
-    "12 AM",
-    "",
-    "12 PM",
-    "",
-    "12 AM",
-    "",
-    "12 PM",
-    "",
-    "12 AM",
-    "",
-  ];
-  let maxEndDayOffset = 1;
+  // const timeBarTempContainer = document.createDocumentFragment();
 
-  for (let flight of flights) {
-    const {
-      layovers,
-      operatingAirline: { display, color },
-      fromTimeDetails,
-      toTimeDetails,
-    } = flight;
-    const timeBarRow = document.createElement("div");
-    timeBarRow.classList.add("time-bar-row");
-    // Create and append times HTML
-    // const timesContainer = document.createElement("div");
-    // timesContainer.classList.add("times");
-    const timeNodes = [fromTimeDetails, toTimeDetails].map(
-      (timeDetails, idx) => {
-        const {
-          hours,
-          minutes,
-          timeOfDay,
-          excessDays,
-          isDayTime,
-        } = timeDetails;
-        const timeContainer = document.createElement("div");
-        if (idx === 0) {
-          timeContainer.classList.add("departure-time");
-        } else {
-          timeContainer.classList.add("arrival-time");
-        }
-        const minuteSup = document.createElement("sup");
-        const hourSpan = document.createElement("span");
-        const timeOfDaySpan = document.createElement("span");
+  // let maxEndDayOffset = 1;
 
-        minuteSup.classList.add("times__minute");
-        hourSpan.classList.add("times__hour");
-        timeOfDaySpan.classList.add("times__time-of-day");
-
-        let minuteString = String(minutes);
-        minuteString = minuteString.padStart(2, "0");
-        minuteSup.textContent = minuteString;
-        hourSpan.innerHTML =
-          String(hours).length === 1 ? "&nbsp;&nbsp;" + hours : hours;
-        timeOfDaySpan.innerText = timeOfDay.toUpperCase();
-
-        timeContainer.append(hourSpan);
-        timeContainer.append(minuteSup);
-        timeContainer.append(timeOfDaySpan);
-
-        if (excessDays) {
-          const excessNode = document.createElement("sup");
-          excessNode.innerText = excessDays;
-          timeContainer.append(excessNode);
-        }
-
-        if (isDayTime) {
-          timeContainer.classList.add("day-time");
-        } else {
-          timeContainer.classList.add("night-time");
-        }
-        return timeContainer;
-      }
-    );
-
-    const iterator = layovers.length ? layovers : [flight];
-    let startDayOffset = 0;
-    let endDayOffset = 0;
-    let width = 0;
-    const timeSegments = document.createDocumentFragment();
-
-    for (let { fromTime, toTime } of iterator) {
-      const endsNextDay = toTime.match(/(\+\d)/);
-      const startsNextDay = fromTime.match(/(\+\d)/);
-
-      if (endsNextDay) {
-        const [_, endDays] = endsNextDay[0].split("+");
-        endDayOffset += Number(endDays);
-      }
-      if (startsNextDay) {
-        const [_, startDays] = startsNextDay[0].split("+");
-        startDayOffset += Number(startDays);
-      }
-
-      const { timeBarSegment, newIntervals } = createTimeBar(
-        fromTime,
-        toTime,
-        color,
-        display,
-        intervals,
-        startDayOffset,
-        endDayOffset
-      );
-
-      if (endsNextDay) {
-        startDayOffset = endDayOffset;
-      }
-
-      intervals = newIntervals;
-      timeBarSegment.classList.add("time-bar-segment");
-      timeSegments.append(timeBarSegment);
-    }
-    let lastTimeSegment =
-      timeSegments.children[timeSegments.childElementCount - 1];
-    let rightPositionNumber =
-      Number(lastTimeSegment.style.left.replace("px", "")) +
-      Number(lastTimeSegment.style.width.replace("px", ""));
-    let leftPosition = timeSegments.children[0].style.left;
-    let leftPositionNumber = Number(leftPosition.replace("px", ""));
-
-    width = rightPositionNumber - leftPositionNumber;
-    // Position timezone nodes based on first and last time bar in row:
-    if (flight.timezoneOffset) {
-      const { fromTzNode, toTzNode } = createTimezoneNodes(flight);
-
-      fromTzNode.style.left = leftPosition;
-      toTzNode.style.left = rightPositionNumber - 20 + "px"; // 20px is how wide the node is and is defined in css
-
-      timeBarRow.append(fromTzNode);
-      timeBarRow.append(toTzNode);
-    }
-
-    if (endDayOffset > maxEndDayOffset) {
-      maxEndDayOffset = endDayOffset;
-    }
-    timeBarRow.append(timeSegments);
-    timeBarRow.style.width = width + "px";
-    timeNodes[0].style.left = leftPositionNumber - 97 + "px";
-    timeNodes[1].style.left = rightPositionNumber + 10 + "px";
-
-    timeBarRow.append(timeNodes[0]);
-    timeBarRow.append(timeNodes[1]);
-    timeBarRow.style.width = width + "px";
-    timeBarTempContainer.append(timeBarRow);
-  }
+  // for (let flight of flights) {
 
   timeBarContainer.style.width = timeBarContainerWidth + "px";
 
@@ -437,15 +312,137 @@ function createTimeBars(flights, timeBarContainer, timeBarHeaderContainer) {
   const timeBarHeader = createTimeBarHeader(intervals);
   timeBarHeaderContainer.innerHTML = "";
   timeBarHeaderContainer.append(timeBarHeader);
-  timeBarContainer.append(timeBarTempContainer);
+  // timeBarContainer.append(timeBarTempContainer);
 }
 
+function createTimeNodes(fromTimeDetails, toTimeDetails) {
+  return [fromTimeDetails, toTimeDetails].map((timeDetails, idx) => {
+    const { hours, minutes, timeOfDay, excessDays, isDayTime } = timeDetails;
+    const timeContainer = document.createElement("div");
+    if (idx === 0) {
+      timeContainer.classList.add("departure-time");
+    } else {
+      timeContainer.classList.add("arrival-time");
+    }
+    const minuteSup = document.createElement("sup");
+    const hourSpan = document.createElement("span");
+    const timeOfDaySpan = document.createElement("span");
+
+    minuteSup.classList.add("times__minute");
+    hourSpan.classList.add("times__hour");
+    timeOfDaySpan.classList.add("times__time-of-day");
+
+    let minuteString = String(minutes);
+    minuteString = minuteString.padStart(2, "0");
+    minuteSup.textContent = minuteString;
+    hourSpan.innerHTML =
+      String(hours).length === 1 ? "&nbsp;&nbsp;" + hours : hours;
+    timeOfDaySpan.innerText = timeOfDay.toUpperCase();
+
+    timeContainer.append(hourSpan);
+    timeContainer.append(minuteSup);
+    timeContainer.append(timeOfDaySpan);
+
+    if (excessDays) {
+      const excessNode = document.createElement("sup");
+      excessNode.innerText = excessDays;
+      timeContainer.append(excessNode);
+    }
+
+    if (isDayTime) {
+      timeContainer.classList.add("day-time");
+    } else {
+      timeContainer.classList.add("night-time");
+    }
+    return timeContainer;
+  });
+}
+function createTimeBarRow(flight) {
+  const {
+    layovers,
+    operatingAirline: { display, color },
+    fromTimeDetails,
+    toTimeDetails,
+  } = flight;
+  const timeBarRow = document.createElement("div");
+  timeBarRow.classList.add("time-bar-row");
+  // Create and append times HTML
+  // const timesContainer = document.createElement("div");
+  // timesContainer.classList.add("times");
+  const timeNodes = createTimeNodes(fromTimeDetails, toTimeDetails);
+
+  const iterator = layovers.length ? layovers : [flight];
+  let startDayOffset = 0;
+  let endDayOffset = 0;
+  let width = 0;
+  const timeSegments = document.createDocumentFragment();
+
+  for (let { fromTime, toTime } of iterator) {
+    const endsNextDay = toTime.match(/(\+\d)/);
+    const startsNextDay = fromTime.match(/(\+\d)/);
+
+    if (endsNextDay) {
+      const [_, endDays] = endsNextDay[0].split("+");
+      endDayOffset += Number(endDays);
+    }
+    if (startsNextDay) {
+      const [_, startDays] = startsNextDay[0].split("+");
+      startDayOffset += Number(startDays);
+    }
+
+    const { timeBarSegment } = createTimeBar(
+      fromTime,
+      toTime,
+      color,
+      display,
+      startDayOffset,
+      endDayOffset
+    );
+
+    if (endsNextDay) {
+      startDayOffset = endDayOffset;
+    }
+    timeBarSegment.classList.add("time-bar-segment");
+    timeSegments.append(timeBarSegment);
+  }
+  let lastTimeSegment =
+    timeSegments.children[timeSegments.childElementCount - 1];
+  let rightPositionNumber =
+    Number(lastTimeSegment.style.left.replace("px", "")) +
+    Number(lastTimeSegment.style.width.replace("px", ""));
+  let leftPosition = timeSegments.children[0].style.left;
+  let leftPositionNumber = Number(leftPosition.replace("px", ""));
+
+  width = rightPositionNumber - leftPositionNumber;
+  // Position timezone nodes based on first and last time bar in row:
+  if (flight.timezoneOffset) {
+    const { fromTzNode, toTzNode } = createTimezoneNodes(flight);
+
+    fromTzNode.style.left = leftPosition;
+    toTzNode.style.left = rightPositionNumber - 20 + "px"; // 20px is how wide the node is and is defined in css
+
+    timeBarRow.append(fromTzNode);
+    timeBarRow.append(toTzNode);
+  }
+
+  // if (endDayOffset > maxEndDayOffset) {
+  //   maxEndDayOffset = endDayOffset;
+  // }
+  timeBarRow.append(timeSegments);
+  timeBarRow.style.width = width + "px";
+  timeNodes[0].style.left = leftPositionNumber - 97 + "px";
+  timeNodes[1].style.left = rightPositionNumber + 10 + "px";
+
+  timeBarRow.append(timeNodes[0]);
+  timeBarRow.append(timeNodes[1]);
+  timeBarRow.style.width = width + "px";
+  return timeBarRow;
+}
 function createTimeBar(
   fromTime,
   toTime,
   airlineColor,
   airlineName,
-  intervals,
   startDayOffset,
   endDayOffset
 ) {

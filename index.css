@@ -15,6 +15,17 @@ ul {
   box-sizing: border-box;
   white-space: nowrap;
   align-items: center;
+  width: 911px;
+}
+.flight-list-item:hover {
+  cursor: pointer;
+  box-shadow: 5px 2px 7px 1px #eee;
+}
+.flight-list-item__text {
+  display: flex;
+  box-sizing: border-box;
+  white-space: nowrap;
+  align-items: center;
   width: 350px;
   padding: 10px;
 }
@@ -82,7 +93,7 @@ ul {
 .airlines {
   display: flex;
   flex-direction: column;
-  width: 200px;
+  width: 265px;
   padding-left: 10px;
   white-space: normal;
 }
@@ -108,6 +119,7 @@ ul {
   white-space: nowrap;
 }
 .interval-line {
+  z-index: -1;
   position: absolute;
   height: 100%;
   width: 1px;
@@ -119,11 +131,12 @@ li,
 .time-bar-row {
   margin-bottom: 10px;
   height: 67px;
-  /* margin-top: 24px; */
 }
 .time-bar-row {
+  width: 700px !important;
+  margin-left: 21px;
+  z-index: 1;
   position: relative;
-  /* width: 600px; */
   display: flex;
   align-items: center;
   margin-top: 10px;
@@ -177,5 +190,5 @@ li,
 }
 .time-bar-container {
   position: relative;
-  height: 100%;
+  /* height: 100%; */
 }
