@@ -1,0 +1,72 @@
+fieldset {
+  border: none;
+  margin: 0;
+  /* padding: 0; */
+  box-shadow: none;
+}
+input {
+  width: 155px;
+}
+input,
+button {
+  border: 1px solid #eee;
+  font-family: "Helvetica Neue";
+  font-size: 20px;
+  margin-bottom: 10px;
+  color: #3c4257;
+}
+button {
+  width: 161px;
+  margin-left: 10px;
+}
+button:hover {
+  background: linear-gradient(180deg, #fff, #e6ebf1) bottom/100% 150px repeat-x;
+}
+input[type="date"] {
+  color: #3c4257;
+  width: 155px;
+  font-size: 16px;
+}
+input[type="date"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  display: none;
+}
+
+input:hover {
+  background: linear-gradient(180deg, #fff, #e6ebf1) bottom/100% 150px repeat-x;
+}
+label.inline {
+  display: flex;
+  align-items: center;
+}
+.num-pax-label {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+form#search {
+  width: 180px;
+  display: flex;
+  flex-direction: column;
+}
+
+select {
+  font-family: "Helvetica Neue";
+  font-size: 14px;
+  width: 100%;
+  color: #3c4257;
+}
+
+.validation-error {
+  color: tomato;
+}
+body {
+  font-family: "Helvetica Neue";
+  font-size: 14px;
+  font-weight: 500;
+  color: #3c4257;
+}
+#loading {
+  display: none;
+}

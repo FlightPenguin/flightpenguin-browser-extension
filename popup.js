@@ -14,7 +14,6 @@ document.querySelector("form#search").addEventListener("submit", (e) => {
     from: e.target.from.value,
     to: e.target.to.value,
     southwest: e.target.southwest.checked,
-    // priceline: e.target.priceline.checked,
     skyscanner: e.target.skyscanner.checked,
     cabin: e.target.cabin.value,
     fromDate: e.target.fromDate.value,
@@ -23,4 +22,7 @@ document.querySelector("form#search").addEventListener("submit", (e) => {
     // add oneway roundtrip selections
   };
   chrome.runtime.sendMessage({ event: "FORM_DATA_RECEIVED", formData });
+
+  e.target.remove();
+  document.querySelector("#loading").style.display = "flex";
 });

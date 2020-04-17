@@ -1,75 +1,122 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <style>
-      .validation-error {
-        color: tomato;
-      }
-      button[type="submit"] {
-        float: right;
-        border: 2px solid tomato;
-      }
-    </style>
+    <link rel="stylesheet" href="./popup.css" />
   </head>
   <body>
     <form id="search">
-      <input type="text" placeholder="From" name="from" value="SFO" />
-      <input type="text" placeholder="To" name="to" value="LAX" />
-      <label>
-        From
-        <input type="date" name="fromDate" value="2020-06-26" />
-      </label>
-      <label>
-        To
-        <input type="date" name="toDate" value="2020-06-28" />
-      </label>
-      <select name="cabin">
-        <option value="econ">Economy</option>
-        <option value="prem_econ">Premium Economy</option>
-        <option value="business">Business</option>
-        <option value="first">First</option>
-      </select>
-      <br />
-      <label>
-        Oneway
-        <input type="radio" name="oneway" value="Oneway" />
-      </label>
-      <br />
-      <label>
-        Roundtrip
-        <input type="radio" name="roundtrip" value="Roundtrip" checked />
-      </label>
-      <br />
-      <label>
-        Total Passengers
-        <select name="numPax">
-          <option>1</option>
-          <option>2</option>
-          <option>3</option>
-          <option>4</option>
+      <fieldset>
+        <label title="Please enter your departure airport."
+          >From (airport code)
+          <input
+            type="text"
+            placeholder="SFO"
+            name="from"
+            value=""
+            required="required"
+          />
+        </label>
+        <label title="Please enter your destination airport."
+          >To (airport code)
+          <input
+            type="text"
+            placeholder="JFK"
+            name="to"
+            value=""
+            required="required"
+          />
+        </label>
+      </fieldset>
+      <fieldset>
+        <label title="Please enter the date you wish to depart.">
+          From
+          <input type="date" name="fromDate" required="required" />
+        </label>
+        <label title="Please enter the date you wish to arrive.">
+          To
+          <input type="date" name="toDate" required="required" />
+        </label>
+      </fieldset>
+      <fieldset>
+        <select name="cabin">
+          <option value="econ">Economy</option>
+          <option value="prem_econ">Premium Economy</option>
+          <option value="business">Business</option>
+          <option value="first">First</option>
         </select>
-      </label>
-      <br />
-      <h4>Providers:</h4>
-      <!-- <label>
-        Priceline
-        <input type="radio" name="priceline" value="Priceline" />
-      </label> -->
-      <label>
-        Skyscanner
-        <input type="radio" name="skyscanner" value="Skyscanner" />
-      </label>
-      <br />
-      <label>
-        Southwest
-        <input type="radio" name="southwest" value="Southwest" />
-      </label>
-      <br />
-      <br />
+      </fieldset>
+      <fieldset>
+        <legend>Trip type:</legend>
+        <label class="inline">
+          Roundtrip
+          <input
+            type="radio"
+            id="roundtrip"
+            name="trip-type"
+            value="Roundtrip"
+          />
+        </label>
+        <label class="inline">
+          Oneway
+          <input type="radio" id="oneway" name="trip-type" value="Oneway" />
+        </label>
+      </fieldset>
+      <fieldset>
+        <label class="num-pax-label">
+          # of tickets
+          <select name="numPax">
+            <option>1</option>
+            <option>2</option>
+            <option>3</option>
+            <option>4</option>
+          </select>
+        </label>
+      </fieldset>
+      <fieldset>
+        <b>Sources:</b>
+        <label class="inline">
+          Skyscanner
+          <input type="radio" name="skyscanner" value="Skyscanner" />
+        </label>
+        <label class="inline">
+          Southwest
+          <input type="radio" name="southwest" value="Southwest" />
+        </label>
+      </fieldset>
       <button type="submit" name="button">Search</button>
-      <br />
       <div class="validation-error"></div>
     </form>
+    <h3 id="loading">
+      <svg
+        version="1.1"
+        id="L9"
+        xmlns="http://www.w3.org/2000/svg"
+        xmlns:xlink="http://www.w3.org/1999/xlink"
+        x="0px"
+        y="0px"
+        viewBox="0 0 100 100"
+        enable-background="new 0 0 0 0"
+        xml:space="preserve"
+        style="width: 99px; height: 51px;"
+      >
+        <path
+          fill="#000"
+          d="M73,50c0-12.7-10.3-23-23-23S27,37.3,27,50 M30.9,50c0-10.5,8.5-19.1,19.1-19.1S69.1,39.5,69.1,50"
+          transform="rotate(201.747 50 50)"
+        >
+          <animateTransform
+            attributeName="transform"
+            attributeType="XML"
+            type="rotate"
+            dur="1s"
+            from="0 50 50"
+            to="360 50 50"
+            repeatCount="indefinite"
+          ></animateTransform>
+        </path></svg
+      >Searching flights, you'll see them soon!
+    </h3>
+
     <script src="./popup.js"></script>
   </body>
 </html>
