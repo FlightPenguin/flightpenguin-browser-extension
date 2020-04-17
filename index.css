@@ -15,11 +15,11 @@ ul {
   box-sizing: border-box;
   white-space: nowrap;
   align-items: center;
-  width: 911px;
+  width: 1050px;
 }
 .flight-list-item:hover {
   cursor: pointer;
-  box-shadow: 5px 2px 7px 1px #eee;
+  background: linear-gradient(180deg, #fff, #e6ebf1) bottom/100% 150px repeat-x;
 }
 .flight-list-item__text {
   display: flex;
