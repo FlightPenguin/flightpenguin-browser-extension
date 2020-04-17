@@ -6,18 +6,24 @@ fieldset {
 }
 input {
   width: 155px;
+  border: 1px solid #eee;
 }
 input,
 button {
-  border: 1px solid #eee;
   font-family: "Helvetica Neue";
   font-size: 20px;
-  margin-bottom: 10px;
   color: #3c4257;
+}
+input[type="text"],
+input[type="date"],
+button {
+  margin-bottom: 10px;
 }
 button {
   width: 161px;
-  margin-left: 10px;
+  height: 43px;
+  border: 1px solid rgb(166, 166, 166);
+  margin: 0 auto;
 }
 button:hover {
   background: linear-gradient(180deg, #fff, #e6ebf1) bottom/100% 150px repeat-x;
@@ -31,6 +37,10 @@ input[type="date"]::-webkit-inner-spin-button {
   -webkit-appearance: none;
   display: none;
 }
+input,
+select {
+  height: 28px;
+}
 
 input:hover {
   background: linear-gradient(180deg, #fff, #e6ebf1) bottom/100% 150px repeat-x;
@@ -38,6 +48,11 @@ input:hover {
 label.inline {
   display: flex;
   align-items: center;
+  height: 20px;
+  width: 159px;
+}
+label.inline:hover {
+  background: linear-gradient(180deg, #fff, #e6ebf1) bottom/100% 150px repeat-x;
 }
 .num-pax-label {
   display: flex;
@@ -49,13 +64,17 @@ form#search {
   width: 180px;
   display: flex;
   flex-direction: column;
+  padding: 10px 0;
 }
-
 select {
   font-family: "Helvetica Neue";
   font-size: 14px;
   width: 100%;
   color: #3c4257;
+  border-color: #fff;
+}
+select:hover {
+  border-color: rgb(166, 166, 166);
 }
 
 .validation-error {
