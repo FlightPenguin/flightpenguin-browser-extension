@@ -47,11 +47,30 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
       const { selectedDepartureId, selectedReturnId } = message;
       // use IntersectionObserver again, observe #details-modal
       highlightItin(selectedDepartureId, selectedReturnId);
+      addBackToSearchButton();
       break;
     default:
       break;
   }
 });
+
+function addBackToSearchButton() {
+  if (document.querySelector("#back-to-search")) {
+    return;
+  }
+  const button = document.createElement("button");
+  button.id = "back-to-search";
+  button.innerText = "Return to FlightPenguin";
+  button.title = "Click to return to FlightPenguin and keep browsing.";
+  button.addEventListener("click", handleBackToSearchButtonClick);
+  document.body.append(button);
+}
+
+function handleBackToSearchButtonClick() {
+  chrome.runtime.sendMessage({
+    event: "FOCUS_WEBPAGE",
+  });
+}
 
 function highlightItin(depId, retId) {
   window.cancelAnimationFrame(rafID);

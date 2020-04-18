@@ -18,6 +18,7 @@
     },
     {
       "matches": ["https://www.skyscanner.com/transport/flights/*"],
+      "css": ["skyscanner/contentStyles.css"],
       "js": ["skyscanner/contentScript.js"]
     }
   ],

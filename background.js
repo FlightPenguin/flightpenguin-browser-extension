@@ -10,6 +10,8 @@ let tabIds = {};
 let windowIds = {};
 let formData = {};
 let webPageTabId;
+let webPageWindowId;
+let webPageTabIndex;
 
 let allDepartures = {};
 let allItins = {};
@@ -116,6 +118,13 @@ chrome.runtime.onMessage.addListener(function (message, sender, reply) {
         });
       }
       break;
+    case "FOCUS_WEBPAGE":
+      chrome.windows.update(webPageWindowId, { focused: true }, (win) => {
+        chrome.tabs.highlight({
+          tabs: [webPageTabIndex],
+        });
+      });
+      break;
     default:
       console.error("Unhandled message ", message);
       break;
@@ -156,7 +165,9 @@ function createNewWebPage(message) {
         // need setTimeout here or else message will be missed by new tab.
         chrome.tabs.sendMessage(tab.id, message);
       }, 1000);
+      webPageWindowId = tab.windowId;
       webPageTabId = tab.id;
+      webPageTabIndex = tab.index;
     }
   );
 }
