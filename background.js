@@ -14,6 +14,8 @@ let webPageTabId;
 let allDepartures = {};
 let allItins = {};
 let departureSelected = false;
+let canHighlightSkyscannerTab = false;
+let messageQueue = [];
 
 chrome.runtime.onMessage.addListener(function (message, sender, reply) {
   console.info(message.event, message);
@@ -29,6 +31,7 @@ chrome.runtime.onMessage.addListener(function (message, sender, reply) {
       allDepartures = {};
       allItins = {};
       departureSelected = false;
+      messageQueue = [];
       if (webPageTabId) {
         chrome.tabs.sendMessage(webPageTabId, {
           event: "RESET_SEARCH",
@@ -98,24 +101,40 @@ chrome.runtime.onMessage.addListener(function (message, sender, reply) {
       });
       break;
     case "HIGHLIGHT_TAB":
-      const { selectedDepartureId, selectedReturnId } = message;
       // remove this line once you weave windowId from message var
-      chrome.tabs.get(message.tabId, (tab) => {
-        chrome.windows.update(tab.windowId, { focused: true }, (win) => {
-          chrome.tabs.sendMessage(message.tabId, {
-            event: "HIGHLIGHT_FLIGHT",
-            selectedDepartureId,
-            selectedReturnId,
-            provider: message.provider,
-          });
+      if (message.provider === "skyscanner" && !canHighlightSkyscannerTab) {
+        messageQueue.push(message);
+      } else {
+        highlightTab(message);
+      }
+      break;
+    case "SKYSCANNER_READY":
+      canHighlightSkyscannerTab = true;
+      if (messageQueue.length) {
+        messageQueue.forEach((msg) => {
+          highlightTab(msg);
         });
-      });
+      }
       break;
     default:
       console.error("Unhandled message ", message);
       break;
   }
 });
+function highlightTab(message) {
+  const { selectedDepartureId, selectedReturnId, tabId, provider } = message;
+  chrome.windows.update(windowIds[provider], { focused: true }, (win) => {
+    chrome.tabs.sendMessage(tabId, {
+      event: "HIGHLIGHT_FLIGHT",
+      selectedDepartureId,
+      selectedReturnId,
+      provider,
+    });
+    chrome.tabs.sendMessage(webPageTabId, {
+      event: "RESET_SELECTIONS",
+    });
+  });
+}
 // clean up provider windows when webpage tab is closed
 chrome.tabs.onRemoved.addListener(function (tabId) {
   if (tabId === webPageTabId) {

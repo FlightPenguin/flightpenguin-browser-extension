@@ -86,6 +86,9 @@ function stopParsing() {
     let button = document.querySelector("button[class^='BpkCloseButton']");
     if (!button) {
       window.clearInterval(intervalID);
+      chrome.runtime.sendMessage({
+        event: "SKYSCANNER_READY",
+      });
       return;
     }
     button.click();
