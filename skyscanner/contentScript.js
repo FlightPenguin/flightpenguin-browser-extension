@@ -6,6 +6,7 @@ let rafID = 0;
 let intervalID = 0;
 let allItins = [];
 let firstParse = true;
+let resultSummaryResultsTextContainer;
 
 chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
   // parse page to get flights, then send background to process and display on new web page.
@@ -17,6 +18,9 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
     case "BEGIN_PARSING":
       // Wait until flights results stop loading, then parse.
       // We can do this by observing the spinner's visibility.
+      resultSummaryResultsTextContainer = document.querySelector(
+        "[class^='ResultsSummary_summaryContainer']"
+      );
       let options = {
         root: document.querySelector("[class^='ResultsSummary_container']"),
         threshold: [0, 0.5, 1],
@@ -144,10 +148,12 @@ function loadResults() {
   rafID = window.requestAnimationFrame(parseMoreFlights);
 
   function parseMoreFlights(currentTime) {
-    if (allItins.length >= 10) {
-      stopParsing();
-
-      return;
+    if (resultSummaryResultsTextContainer.textContent.match(/^0 results/)) {
+      window.cancelAnimationFrame(rafID);
+      chrome.runtime.sendMessage({
+        event: "FLIGHT_RESULTS_RECEIVED",
+        flights: [],
+      });
     }
     // every 5 seconds scroll to next viewPort
     const timeToScroll = Math.max(0, 5000 - (currentTime - lastTime));
