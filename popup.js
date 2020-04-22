@@ -4,6 +4,10 @@ document.querySelector("#roundtrip").addEventListener("change", (e) => {
     const toDateLabel = document.querySelector("#toDate");
     toDateLabel.style.display = null;
     toDateLabel.children.toDate.required = true;
+  } else {
+    const toDateLabel = document.querySelector("#toDate");
+    toDateLabel.style.display = "none";
+    toDateLabel.children.toDate.required = false;
   }
 });
 document.querySelector("#fromDateInput").addEventListener("change", (e) => {
