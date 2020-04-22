@@ -1,16 +1,30 @@
 // debuggers and console logs can be found by right clicking extension button in browser toolbar, then click "Inspect popup"
+const today = new Date();
+const todayString = [
+  today.getFullYear(),
+  `${today.getMonth() + 1}`.padStart(2, "0"),
+  `${today.getDate()}`.padStart(2, "0"),
+].join("-");
+const fromDateInput = document.querySelector("#fromDateInput");
+fromDateInput.min = todayString;
+fromDateInput.value = todayString;
+
 document.querySelector("#roundtrip").addEventListener("change", (e) => {
+  const toDateLabel = document.querySelector("#toDate");
+  const toDateInput = toDateLabel.children.toDate;
+
   if (e.target.checked) {
-    const toDateLabel = document.querySelector("#toDate");
     toDateLabel.style.display = null;
-    toDateLabel.children.toDate.required = true;
+    toDateInput.required = true;
+    toDateInput.min = todayString;
+    toDateInput.value = todayString;
   } else {
-    const toDateLabel = document.querySelector("#toDate");
     toDateLabel.style.display = "none";
-    toDateLabel.children.toDate.required = false;
+    toDateInput.required = false;
   }
 });
-document.querySelector("#fromDateInput").addEventListener("change", (e) => {
+
+fromDateInput.addEventListener("change", (e) => {
   const toDate = document.querySelector("#toDateInput");
   toDate.value = e.target.value;
 });
