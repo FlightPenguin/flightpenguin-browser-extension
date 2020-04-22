@@ -12,6 +12,7 @@ let formData = {};
 let webPageTabId;
 let webPageWindowId;
 let webPageTabIndex;
+let setTimeoutId = 0;
 
 let allDepartures = {};
 let allItins = {};
@@ -66,37 +67,19 @@ chrome.runtime.onMessage.addListener(function (message, sender, reply) {
 
       allDepartures = { ...allDepartures, ...departures };
 
-      const nextMessage = {
-        event: "FLIGHT_RESULTS_FOR_CLIENT",
-        flights: {
-          departureList: departuresToSend,
-          itins,
-        },
-        tabId: tabIds[provider],
-        formData,
-      };
-      if (!webPageTabId) {
-        createNewWebPage(nextMessage);
-      } else {
-        // make sure webpage still exists
-        chrome.tabs.get(webPageTabId, (tab) => {
-          if (!tab) {
-            createNewWebPage(nextMessage);
-          } else {
-            chrome.tabs.sendMessage(tab.id, nextMessage);
-          }
+      sendFlightsToWebpage(departuresToSend, provider, itins);
+      window.clearTimeout(setTimeoutId);
+      setTimeoutId = window.setTimeout(() => {
+        Object.values(tabIds).forEach((tabId) => {
+          chrome.tabs.sendMessage(tabId, { event: "STOP_PARSING" });
         });
-      }
-
-      // need to clean up variables when webpage tab is closed
+      }, 5000);
       break;
     case "DEPARTURE_SELECTED":
       departureSelected = true;
       const departure = allDepartures[message.departureId];
       const returnList = findReturnFlights(departure, allItins);
-      Object.values(tabIds).forEach((tabId) => {
-        chrome.tabs.sendMessage(tabId, { event: "STOP_PARSING" });
-      });
+
       chrome.tabs.sendMessage(webPageTabId, {
         event: "RETURN_FLIGHTS",
         flights: { returnList },
@@ -130,6 +113,31 @@ chrome.runtime.onMessage.addListener(function (message, sender, reply) {
       break;
   }
 });
+
+function sendFlightsToWebpage(departuresToSend, provider, itins) {
+  const nextMessage = {
+    event: "FLIGHT_RESULTS_FOR_CLIENT",
+    flights: {
+      departureList: departuresToSend,
+      itins,
+    },
+    tabId: tabIds[provider],
+    formData,
+  };
+  if (!webPageTabId) {
+    createNewWebPage(nextMessage);
+  } else {
+    // make sure webpage still exists
+    chrome.tabs.get(webPageTabId, (tab) => {
+      if (!tab) {
+        createNewWebPage(nextMessage);
+      } else {
+        chrome.tabs.sendMessage(tab.id, nextMessage);
+      }
+    });
+  }
+}
+
 function highlightTab(message) {
   const { selectedDepartureId, selectedReturnId, tabId, provider } = message;
   chrome.windows.update(windowIds[provider], { focused: true }, (win) => {
