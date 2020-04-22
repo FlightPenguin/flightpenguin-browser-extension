@@ -18,6 +18,10 @@
       "js": ["southwest/contentScript.js"]
     },
     {
+      "matches": ["https://www.southwest.com/air/booking/index.html?*"],
+      "js": ["southwest/emptySearchContentScript.js"]
+    },
+    {
       "matches": ["https://www.skyscanner.com/transport/flights/*"],
       "css": ["skyscanner/contentStyles.css"],
       "js": ["skyscanner/contentScript.js"]

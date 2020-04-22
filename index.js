@@ -25,6 +25,7 @@ let intervals = [
 const headerContainer = document.querySelector(".header");
 const subheaderContainer = document.querySelector(".subheader");
 
+const departuresSection = document.querySelector(".departures-section");
 const departuresContainer = document.querySelector(".departures-content");
 const depListNode = document.querySelector(".departures-list");
 
@@ -62,6 +63,7 @@ chrome.runtime.onMessage.addListener(function (message) {
       subheaderContainer.innerHTML = "";
 
       // departure list
+      departuresSection.style.display = "none";
       depListNode.innerHTML = "";
 
       // departure time bars
@@ -89,13 +91,15 @@ chrome.runtime.onMessage.addListener(function (message) {
       search = formData;
       allItins = { ...allItins, ...itins };
 
-      createNodeList(departureList, itins, depListNode);
-      createTimeBars(
-        departureList,
-        depTimeBarContainer,
-        depTimeBarHeaderContainer
-      );
-
+      if (departureList.length) {
+        departuresSection.style.display = null;
+        createNodeList(departureList, itins, depListNode);
+        createTimeBars(
+          departureList,
+          depTimeBarContainer,
+          depTimeBarHeaderContainer
+        );
+      }
       const header = createHeader(formData);
       totalFlights += departureList.length;
 
