@@ -1,4 +1,15 @@
 // debuggers and console logs can be found by right clicking extension button in browser toolbar, then click "Inspect popup"
+document.querySelector("#roundtrip").addEventListener("change", (e) => {
+  if (e.target.checked) {
+    const toDateLabel = document.querySelector("#toDate");
+    toDateLabel.style.display = null;
+    toDateLabel.children.toDate.required = true;
+  }
+});
+document.querySelector("#fromDateInput").addEventListener("change", (e) => {
+  const toDate = document.querySelector("#toDateInput");
+  toDate.value = e.target.value;
+});
 document.querySelector("form#search").addEventListener("submit", (e) => {
   e.preventDefault();
 
@@ -17,9 +28,9 @@ document.querySelector("form#search").addEventListener("submit", (e) => {
     skyscanner: e.target.skyscanner.checked,
     cabin: e.target.cabin.value,
     fromDate: e.target.fromDate.value,
-    toDate: e.target.toDate.value,
+    toDate: e.target.toDate ? e.target.toDate.value : "",
     numPax: Number(e.target.numPax.value),
-    // add oneway roundtrip selections
+    roundtrip: e.target.roundtrip.checked,
   };
   chrome.runtime.sendMessage({ event: "FORM_DATA_RECEIVED", formData });
 

@@ -72,7 +72,7 @@ function handleBackToSearchButtonClick() {
   });
 }
 
-function highlightItin(depId, retId) {
+function highlightItin(selectedDepartureId, selectedReturnId) {
   window.cancelAnimationFrame(rafID);
   // reset prior selection
   const prevSelection = document.querySelector(
@@ -82,9 +82,13 @@ function highlightItin(depId, retId) {
     prevSelection.dataset.selected = "false";
     prevSelection.style.border = "";
   }
+  let idToSearchFor = selectedDepartureId;
+  if (selectedReturnId) {
+    idToSearchFor += `-${selectedReturnId}`;
+  }
   const itinNode = findMatchingDOMNode(
     Array.from(document.querySelectorAll(".BpkTicket_bpk-ticket__Brlno")),
-    `${depId}-${retId}`
+    idToSearchFor
   );
   itinNode.style.border = "10px solid tomato";
   itinNode.dataset.selected = "true";
@@ -201,15 +205,20 @@ function parser(itinNodes) {
       .children;
 
     const [departureFlight, returnFlight] = queryDOM(legs, selectors);
-
-    node.dataset.id = [
+    let dataForId = [
       departureFlight.fromTime,
       departureFlight.toTime,
       departureFlight.marketingAirline,
-      returnFlight.fromTime,
-      returnFlight.toTime,
-      returnFlight.marketingAirline,
-    ].join("-"); // will use this id attribute to find the itin the user selected
+    ];
+    if (returnFlight) {
+      dataForId = dataForId.concat([
+        returnFlight.fromTime,
+        returnFlight.toTime,
+        returnFlight.marketingAirline,
+      ]);
+    }
+
+    node.dataset.id = dataForId.join("-"); // will use this id attribute to find the itin the user selected
 
     return {
       departureFlight,

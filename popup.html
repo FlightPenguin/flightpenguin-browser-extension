@@ -28,35 +28,6 @@
         </label>
       </fieldset>
       <fieldset>
-        <label title="Please enter the date you wish to depart.">
-          From
-          <input
-            type="date"
-            name="fromDate"
-            required="required"
-            value="2020-06-15"
-          />
-        </label>
-        <label title="Please enter the date you wish to arrive.">
-          To
-          <input
-            type="date"
-            name="toDate"
-            required="required"
-            value="2020-06-22"
-          />
-        </label>
-      </fieldset>
-      <fieldset>
-        <select name="cabin">
-          <option value="econ">Economy</option>
-          <option value="prem_econ">Premium Economy</option>
-          <option value="business">Business</option>
-          <option value="first">First</option>
-        </select>
-      </fieldset>
-      <fieldset>
-        <legend>Trip type:</legend>
         <label class="inline">
           Roundtrip
           <input
@@ -66,10 +37,33 @@
             value="Roundtrip"
           />
         </label>
-        <label class="inline">
-          Oneway
-          <input type="radio" id="oneway" name="trip-type" value="Oneway" />
+      </fieldset>
+      <fieldset>
+        <label title="Please enter the date you wish to depart.">
+          From
+          <input
+            type="date"
+            name="fromDate"
+            id="fromDateInput"
+            required="required"
+          />
         </label>
+        <label
+          title="Please enter the date you wish to return."
+          style="display: none;"
+          id="toDate"
+        >
+          To
+          <input type="date" name="toDate" id="toDateInput" />
+        </label>
+      </fieldset>
+      <fieldset>
+        <select name="cabin">
+          <option value="econ">Economy</option>
+          <option value="prem_econ">Premium Economy</option>
+          <option value="business">Business</option>
+          <option value="first">First</option>
+        </select>
       </fieldset>
       <fieldset>
         <label class="num-pax-label">

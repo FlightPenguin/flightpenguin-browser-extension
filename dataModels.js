@@ -150,16 +150,19 @@ function Itin(depFlight, retFlight, fare, currency, provider, windowId, tabId) {
     depFlight.duration,
     depFlight.layovers
   );
-  this.retFlight = new Flight(
-    retFlight.fromTime,
-    retFlight.toTime,
-    retFlight.operatingAirline,
-    retFlight.marketingAirline,
-    retFlight.duration,
-    retFlight.layovers
-  );
-
-  this.id = `${this.depFlight.id}-${this.retFlight.id}`;
+  if (retFlight) {
+    this.retFlight = new Flight(
+      retFlight.fromTime,
+      retFlight.toTime,
+      retFlight.operatingAirline,
+      retFlight.marketingAirline,
+      retFlight.duration,
+      retFlight.layovers
+    );
+    this.id = `${this.depFlight.id}-${this.retFlight.id}`;
+  } else {
+    this.id = this.depFlight.id;
+  }
 
   this.provider = provider;
   this.windowId = windowId;
@@ -203,16 +206,19 @@ function makeItins(itinCollection, provider, windowId, tabId) {
       // add new flight
       departures[itin.depFlight.id] = itin.depFlight;
     }
-    if (returns[itin.retFlight.id]) {
-      // set flight to existing instance
-      itin.retFlight = returns[itin.retFlight.id];
-    } else {
-      // add new flight
-      returns[itin.retFlight.id] = itin.retFlight;
+    if (itin.retFlight) {
+      if (returns[itin.retFlight.id]) {
+        // set flight to existing instance
+        itin.retFlight = returns[itin.retFlight.id];
+      } else {
+        // add new flight
+        returns[itin.retFlight.id] = itin.retFlight;
+      }
+
+      itin.retFlight.itinIds.push(itin.id);
     }
 
     itin.depFlight.itinIds.push(itin.id);
-    itin.retFlight.itinIds.push(itin.id);
 
     itins[itin.id] = itin;
 

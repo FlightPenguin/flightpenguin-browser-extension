@@ -4,6 +4,31 @@ console.log("hello...");
 
 let rafID = 0;
 let allItins = [];
+let southwestFlights;
+let flightsSent = false;
+window.addEventListener("load", () => {
+  southwestFlights = JSON.parse(
+    window.sessionStorage.getItem(
+      "AirBookingSearchResultsSearchStore-searchResults-v1"
+    )
+  );
+  sendFlightsToBackground(southwestFlights);
+});
+
+function sendFlightsToBackground(southwestFlights) {
+  if (!southwestFlights) {
+    return;
+  }
+  flightsSent = true;
+  let [departures, returns] = southwestFlights.searchResults.airProducts;
+  departures = departures.details;
+  returns = returns ? returns.details : [];
+  const itins = createSouthwestItins(departures, returns);
+  chrome.runtime.sendMessage({
+    event: "FLIGHT_RESULTS_RECEIVED",
+    flights: itins,
+  });
+}
 
 chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
   // parse page to get flights, then send background to process and display on new web page.
@@ -13,22 +38,18 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
       window.cancelAnimationFrame(rafID);
       break;
     case "BEGIN_PARSING":
-      loadSouthwestResults();
-      const southwestFlights = JSON.parse(
-        window.sessionStorage.getItem(
-          "AirBookingSearchResultsSearchStore-searchResults-v1"
-        )
-      );
-      const [departures, returns] = southwestFlights.searchResults.airProducts;
-      const itins = createSouthwestItins(departures.details, returns.details);
-      chrome.runtime.sendMessage({
-        event: "FLIGHT_RESULTS_RECEIVED",
-        flights: itins,
-      });
-
+      if (!flightsSent) {
+        southwestFlights = JSON.parse(
+          window.sessionStorage.getItem(
+            "AirBookingSearchResultsSearchStore-searchResults-v1"
+          )
+        );
+        sendFlightsToBackground(southwestFlights);
+      }
       break;
     case "HIGHLIGHT_FLIGHT":
-      const { selectedDepartureId, selectedReturnId, provider } = message;
+      const { selectedDepartureId, selectedReturnId } = message;
+      southwestParser();
       highlightSouthwestItin(selectedDepartureId, selectedReturnId);
 
       break;
@@ -46,28 +67,31 @@ function highlightSouthwestItin(selectedDepartureId, selectedReturnId) {
   const prevDepSelection = departureList.querySelector(
     "[data-selected='true']"
   );
-  const prevRetSelection = returnList.querySelector("[data-selected='true']");
   if (prevDepSelection) {
     prevDepSelection.dataset.selected = "false";
     prevDepSelection.style.border = "";
-  }
-  if (prevRetSelection) {
-    prevRetSelection.dataset.selected = "false";
-    prevRetSelection.style.border = "";
   }
   // highlight selections
   const dep = findMatchingDOMNode(
     Array.from(departureList.children),
     selectedDepartureId
   );
-  const ret = findMatchingDOMNode(
-    Array.from(returnList.children),
-    selectedReturnId
-  );
   dep.style.border = "10px solid tomato";
   dep.dataset.selected = "true";
-  ret.style.border = "10px solid tomato";
-  ret.dataset.selected = "true";
+
+  if (selectedReturnId) {
+    const prevRetSelection = returnList.querySelector("[data-selected='true']");
+    if (prevRetSelection) {
+      prevRetSelection.dataset.selected = "false";
+      prevRetSelection.style.border = "";
+    }
+    const ret = findMatchingDOMNode(
+      Array.from(returnList.children),
+      selectedReturnId
+    );
+    ret.style.border = "10px solid tomato";
+    ret.dataset.selected = "true";
+  }
 
   const yPosition =
     window.pageYOffset +
@@ -115,18 +139,8 @@ function loadSouthwestResults() {
     rafID = window.requestAnimationFrame(parseMoreSouthwest);
   }
 }
-function southwestParser() {
-  const [departures, returns] = document.querySelectorAll(
-    ".transition-content.price-matrix--details-area ul"
-  );
-  const depNodes = departures.querySelectorAll("li:not([data-visited='true']");
-  const retNodes = returns.querySelectorAll("li:not([data-visited='true']");
 
-  if (!depNodes.length || !retNodes.length) {
-    return;
-  }
-  // query for not visited nodes
-  // if node is still loading don't mark as visited
+function southwestParser() {
   const selectors = {
     fromTime: ".air-operations-time-status[type='origination'] .time--value",
     toTime: ".air-operations-time-status[type='destination'] .time--value",
@@ -136,26 +150,22 @@ function southwestParser() {
     duration: ".flight-stops--duration-time",
     layovers: ".flight-stops--items",
   };
+  const [departures, returns] = document.querySelectorAll(
+    ".transition-content.price-matrix--details-area ul"
+  );
+  const depNodes = departures.querySelectorAll("li:not([data-visited='true']");
+  let flights = [];
+  if (returns) {
+    const retNodes = returns.querySelectorAll("li:not([data-visited='true']");
+    flights = flights.concat(querySouthwestDOM(retNodes, selectors));
+  }
+
   // If we want to go down the regex path (unfinished)...
   // const pattern = /(?<dep>.{5}(PM|AM)).+(?<arr>.{5}(PM|AM)).+(?<duration>Duration\d+h\s\d+m).+(?<stops>\d+h\s\d+m).+(?<price>\$\d+)/;
   // pat = /(?<dep>.{5}(PM|AM)).+(?<arr>.{5}(PM|AM)).+(?<stops>\d+h\s\d+m).+(?<price>\$\d+)/;
 
-  const departureList = querySouthwestDOM(depNodes, selectors);
-  const returnList = querySouthwestDOM(retNodes, selectors);
-
-  const itins = [];
-  for (let i = 0; i < departureList.length; i++) {
-    for (let j = 0; j < returnList.length; j++) {
-      itins.push({
-        departureFlight: departureList[i],
-        returnFlight: returnList[j],
-        fare: Number(departureList[i].fare) + Number(returnList[j].fare),
-        currency: departureList[i].currency,
-      });
-    }
-  }
-
-  return itins;
+  flights = flights.concat(querySouthwestDOM(depNodes, selectors));
+  return flights;
 }
 
 function formatTimeTo12HourClock(time) {
@@ -190,14 +200,16 @@ function getIndividualSouthwestLegDetails(flight) {
       };
     });
   }
+  const fare = flight.fareProducts.ADULT.WGA.fare.totalFare;
+  if (!fare) {
+    return null;
+  }
   return {
     fromTime: formatTimeTo12HourClock(flight.departureTime),
     toTime: formatTimeTo12HourClock(flight.arrivalTime),
     marketingAirline: "Southwest",
     layovers,
-    fare: Math.round(
-      Number(flight.fareProducts.ADULT.WGA.fare.totalFare.value)
-    ),
+    fare: Math.round(Number(fare.value)),
     currency: "$",
     duration: convertDurationMinutesToString(flight.totalDuration),
   };
@@ -205,14 +217,39 @@ function getIndividualSouthwestLegDetails(flight) {
 
 function createSouthwestItins(departureList, returnList) {
   const itins = [];
-  for (let departureItem of departureList) {
-    const departureFlight = getIndividualSouthwestLegDetails(departureItem);
-    for (let returnItem of returnList) {
-      const returnFlight = getIndividualSouthwestLegDetails(returnItem);
+  if (returnList.length) {
+    // roundtrip
+    for (let departureItem of departureList) {
+      const departureFlight = getIndividualSouthwestLegDetails(departureItem);
+      if (!departureFlight) {
+        // unavailable flight
+        continue;
+      }
+      for (let returnItem of returnList) {
+        const returnFlight = getIndividualSouthwestLegDetails(returnItem);
+        if (!returnFlight) {
+          // unavailable flight
+          continue;
+        }
+        itins.push({
+          departureFlight,
+          returnFlight,
+          fare: departureFlight.fare + returnFlight.fare,
+          currency: departureFlight.currency,
+        });
+      }
+    }
+  } else {
+    // oneway
+    for (let departureItem of departureList) {
+      const departureFlight = getIndividualSouthwestLegDetails(departureItem);
+      if (!departureFlight) {
+        // unavailable flight
+        continue;
+      }
       itins.push({
         departureFlight,
-        returnFlight,
-        fare: departureFlight.fare + returnFlight.fare,
+        fare: departureFlight.fare,
         currency: departureFlight.currency,
       });
     }

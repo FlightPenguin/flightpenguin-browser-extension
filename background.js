@@ -189,7 +189,7 @@ chrome.webRequest.onCompleted.addListener(
       // give provider page time to render
       // this has great potential to break for slow internet speeds
       chrome.tabs.sendMessage(tabId, { event: "BEGIN_PARSING" });
-    }, 5000);
+    }, 1000);
   },
   {
     urls: [
@@ -248,11 +248,16 @@ const skyscanner_cabin_map = {
   first: "first",
 };
 function skyscannerTabURL(formData) {
-  const { from, to, fromDate, toDate, numPax, cabin } = formData;
-  let startDate = fromDate.replace(/-/g, "").substring(2);
-  let endDate = toDate.replace(/-/g, "").substring(2);
+  const { from, to, fromDate, toDate, numPax, cabin, roundtrip } = formData;
+  const startDate = fromDate.replace(/-/g, "").substring(2);
+  let url = `https://www.skyscanner.com/transport/flights/${from}/${to}/${startDate}/`;
 
-  return `https://www.skyscanner.com/transport/flights/${from}/${to}/${startDate}/${endDate}/?adults=${numPax}&children=0&adultsv2=${numPax}&childrenv2=&infants=0&cabinclass=${skyscanner_cabin_map[cabin]}`;
+  if (roundtrip) {
+    const endDate = toDate.replace(/-/g, "").substring(2);
+    url += `${endDate}/`;
+  }
+
+  return `${url}?adults=${numPax}&children=0&adultsv2=${numPax}&childrenv2=&infants=0&cabinclass=${skyscanner_cabin_map[cabin]}`;
 }
 
 const priceline_cabin_map = {
@@ -262,17 +267,16 @@ const priceline_cabin_map = {
   first: "FST",
 };
 function southwestTabURL(formData) {
-  const { from, to, fromDate, toDate, numPax } = formData;
-  // sub in search args
-  let newFrom = from.toUpperCase();
-  switch (from) {
-    case "SFO":
-      newFrom = "OAK";
-      break;
-    default:
-      break;
+  const { from, to, fromDate, toDate, numPax, roundtrip } = formData;
+  let url = `https://www.southwest.com/air/booking/select.html?adultPassengersCount=${numPax}&departureDate=${fromDate}&departureTimeOfDay=ALL_DAY&destinationAirportCode=${to}&fareType=USD&int=HOMEQBOMAIR&originationAirportCode=${from}&passengerType=ADULT&reset=true&seniorPassengersCount=0`;
+  if (roundtrip) {
+    url += `&returnDate=${toDate}&returnTimeOfDay=ALL_DAY&tripType=roundtrip`;
+  } else {
+    url += `&returnDate=&returnTimeOfDay=ALL_DAY&tripType=oneway`;
   }
-  return `https://www.southwest.com/air/booking/select.html?adultPassengersCount=${numPax}&departureDate=${fromDate}&departureTimeOfDay=ALL_DAY&destinationAirportCode=${to}&fareType=USD&int=HOMEQBOMAIR&originationAirportCode=${from}&passengerType=ADULT&reset=true&returnDate=${toDate}&returnTimeOfDay=ALL_DAY&seniorPassengersCount=0&tripType=roundtrip`;
+  //www.southwest.com/air/booking/select.html?adultPassengersCount=1&departureDate=2020-04-28&departureTimeOfDay=ALL_DAY&destinationAirportCode=LGA&fareType=USD&int=HOMEQBOMAIR&originationAirportCode=SFO&passengerType=ADULT&reset=true&returnDate=&returnTimeOfDay=ALL_DAY&seniorPassengersCount=0&tripType=oneway
+
+  return url;
 }
 function pricelineTabURL(formData) {
   const { from, to, fromDate, toDate, numPax, cabin } = formData;

@@ -190,7 +190,7 @@ function handleClick(e) {
   selectedNode.dataset.selected = "true";
   selections.push(selectedNode);
 
-  if (selections.length === 1) {
+  if (selections.length === 1 && search.roundtrip) {
     chrome.runtime.sendMessage({
       event: "DEPARTURE_SELECTED",
       departureId: selectedNode.dataset.id,
@@ -200,7 +200,7 @@ function handleClick(e) {
     );
     flightsNotSelected.forEach((flight) => (flight.style.display = "none"));
     depTimeBarContainer.style.display = "none";
-  } else if (selections.length === 2) {
+  } else if (selections.length === 2 || !search.roundtrip) {
     const selectionIds = selections.map((sel) => sel.dataset.id);
     const itin = allItins[selectionIds.join("-")];
 
@@ -210,20 +210,25 @@ function handleClick(e) {
       provider: itin.provider,
       selectedDepartureId: selectionIds[0],
       selectedReturnId: selectionIds[1],
+      itinId: itin.id,
     });
     // reset selections and DOM
     selections.forEach((sel) => {
       sel.style.border = "";
       sel.dataset.selected = "false";
     });
-    flightsNotSelected.forEach((flight) => (flight.style.display = null));
-    depTimeBarContainer.style.display = null;
-    returnsSection.style.display = "none";
-    retListNode.innerHTML = "";
-    const timeBarHeader = retTimeBarContainer.children[0];
-    timeBarHeader.innerHTML = "";
-    retTimeBarContainer.innerHTML = "";
-    retTimeBarContainer.append(timeBarHeader);
+    if (search.roundtrip) {
+      // update UI to show departures
+      flightsNotSelected.forEach((flight) => (flight.style.display = null));
+      depTimeBarContainer.style.display = null;
+      returnsSection.style.display = "none";
+      retListNode.innerHTML = "";
+      const timeBarHeader = retTimeBarContainer.children[0];
+      timeBarHeader.innerHTML = "";
+      retTimeBarContainer.innerHTML = "";
+      retTimeBarContainer.append(timeBarHeader);
+    }
+
     selections = [];
   }
 }
