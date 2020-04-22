@@ -141,12 +141,9 @@ function createNodeList(list, itins, containerNode) {
       marketingAirlineText,
     } = item;
 
-    // Create and append fare HTML
-    let fares = item.itinIds.map(
-      (itinId) => `${itins[itinId].currency}${itins[itinId].fare}`
-    );
+    let fares = item.itinIds.map((itinId) => itins[itinId].fare).sort();
     const fare = document.createElement("span");
-    fare.textContent = fares[0];
+    fare.textContent = "$" + fares[0];
     fare.classList.add("fare");
     contentNode.append(fare);
     // Create and append airline HTML
