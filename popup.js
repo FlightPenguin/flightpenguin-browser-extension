@@ -6,8 +6,11 @@ const todayString = [
   `${today.getDate()}`.padStart(2, "0"),
 ].join("-");
 const fromDateInput = document.querySelector("#fromDateInput");
+const toDateInput = document.querySelector("#toDateInput");
+
 fromDateInput.min = todayString;
 fromDateInput.value = todayString;
+toDateInput.min = todayString;
 
 document.querySelector("#roundtrip").addEventListener("change", (e) => {
   const toDateLabel = document.querySelector("#toDate");
