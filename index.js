@@ -401,6 +401,7 @@ function createTimeBarRow(flight) {
     if (startsNextDay) {
       const [_, startDays] = startsNextDay[0].split("+");
       startDayOffset += Number(startDays);
+      endDayOffset = startDayOffset;
     }
 
     const { timeBarSegment } = createTimeBar(

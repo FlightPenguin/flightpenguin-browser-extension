@@ -316,6 +316,7 @@ function queryDOM(htmlCollection, selectors) {
             let layovers = [];
             if (!node.textContent.toLowerCase().includes("non")) {
               containerNode.click();
+              // const hasLongWait = containerNode.querySelector("[class*='Connection_longWaitInfo']");
               layovers = getLayovers(itinIdx);
             }
             data.layovers = layovers;
