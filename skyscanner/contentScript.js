@@ -174,9 +174,7 @@ function loadResults() {
         stopParsing();
         return;
       }
-      moreItins.forEach((itin) => {
-        itin.dataset.visited = true;
-      });
+
       allItins = allItins.concat(moreItins);
       newY = window.scrollY + window.innerHeight;
       lastTime = currentTime;
