@@ -21,6 +21,17 @@ function sendFlightsToBackground(southwestFlights) {
   }
   flightsSent = true;
   let [departures, returns] = southwestFlights.searchResults.airProducts;
+  if (
+    (departures && !departures.details.length) ||
+    (returns && !returns.details.length)
+  ) {
+    // no complete itins
+    chrome.runtime.sendMessage({
+      event: "FLIGHT_RESULTS_RECEIVED",
+      flights: [],
+    });
+    return;
+  }
   departures = departures.details;
   returns = returns ? returns.details : [];
   const itins = createSouthwestItins(departures, returns);
