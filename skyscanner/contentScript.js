@@ -12,9 +12,6 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
   // parse page to get flights, then send background to process and display on new web page.
   console.info("Received message ", message.event);
   switch (message.event) {
-    case "STOP_PARSING":
-      stopParsing();
-      break;
     case "BEGIN_PARSING":
       // Wait until flights results stop loading, then parse.
       // We can do this by observing the spinner's visibility.

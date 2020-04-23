@@ -68,12 +68,6 @@ chrome.runtime.onMessage.addListener(function (message, sender, reply) {
       allDepartures = { ...allDepartures, ...departures };
 
       sendFlightsToWebpage(departuresToSend, provider, itins);
-      window.clearTimeout(setTimeoutId);
-      setTimeoutId = window.setTimeout(() => {
-        Object.values(tabIds).forEach((tabId) => {
-          chrome.tabs.sendMessage(tabId, { event: "STOP_PARSING" });
-        });
-      }, 5000);
       break;
     case "DEPARTURE_SELECTED":
       departureSelected = true;
@@ -88,7 +82,7 @@ chrome.runtime.onMessage.addListener(function (message, sender, reply) {
     case "HIGHLIGHT_TAB":
       // remove this line once you weave windowId from message var
       if (message.provider === "skyscanner" && !canHighlightSkyscannerTab) {
-        messageQueue.push(message);
+        messageQueue = [message];
       } else {
         highlightTab(message);
       }
