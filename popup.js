@@ -16,8 +16,6 @@ document.querySelector("#roundtrip").addEventListener("change", (e) => {
   if (e.target.checked) {
     toDateLabel.style.display = null;
     toDateInput.required = true;
-    toDateInput.min = todayString;
-    toDateInput.value = todayString;
   } else {
     toDateLabel.style.display = "none";
     toDateInput.required = false;
@@ -26,8 +24,9 @@ document.querySelector("#roundtrip").addEventListener("change", (e) => {
 
 fromDateInput.addEventListener("change", (e) => {
   const toDate = document.querySelector("#toDateInput");
-  toDate.value = e.target.value;
+  toDate.min = e.target.value;
 });
+
 document.querySelector("form#search").addEventListener("submit", (e) => {
   e.preventDefault();
 
