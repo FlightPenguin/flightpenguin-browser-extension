@@ -161,7 +161,7 @@ li,
   height: 30px;
   z-index: 1;
   position: absolute;
-  display: none;
+  /* display: none; */
 }
 .timezone__first:hover,
 .timezone__last:hover {
