@@ -170,6 +170,9 @@ function loadResults() {
           event: "FLIGHT_RESULTS_RECEIVED",
           flights,
         });
+      } else {
+        stopParsing();
+        return;
       }
       moreItins.forEach((itin) => {
         itin.dataset.visited = true;
