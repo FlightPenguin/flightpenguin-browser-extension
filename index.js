@@ -207,15 +207,11 @@ function handleClick(e) {
     depTimeBarContainer.style.display = "none";
   } else if (selections.length === 2 || !search.roundtrip) {
     const selectionIds = selections.map((sel) => sel.dataset.id);
-    const itin = allItins[selectionIds.join("-")];
 
     chrome.runtime.sendMessage({
       event: "HIGHLIGHT_TAB",
-      tabId: itin.tabId,
-      provider: itin.provider,
       selectedDepartureId: selectionIds[0],
       selectedReturnId: selectionIds[1],
-      itinId: itin.id,
     });
     document.querySelector("#loading").style.display = null;
     // reset selections and DOM

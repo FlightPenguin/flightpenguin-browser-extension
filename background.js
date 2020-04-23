@@ -12,7 +12,6 @@ let formData = {};
 let webPageTabId;
 let webPageWindowId;
 let webPageTabIndex;
-let setTimeoutId = 0;
 
 let allDepartures = {};
 let allItins = {};
@@ -35,6 +34,7 @@ chrome.runtime.onMessage.addListener(function (message, sender, reply) {
       allItins = {};
       departureSelected = false;
       messageQueue = [];
+      canHighlightSkyscannerTab = false;
       if (webPageTabId) {
         chrome.tabs.sendMessage(webPageTabId, {
           event: "RESET_SEARCH",
@@ -80,11 +80,13 @@ chrome.runtime.onMessage.addListener(function (message, sender, reply) {
       });
       break;
     case "HIGHLIGHT_TAB":
-      // remove this line once you weave windowId from message var
-      if (message.provider === "skyscanner" && !canHighlightSkyscannerTab) {
-        messageQueue = [message];
+      const { selectedDepartureId, selectedReturnId } = message;
+      const itin = allItins[`${selectedDepartureId}-${selectedReturnId}`];
+
+      if (itin.provider === "skyscanner" && !canHighlightSkyscannerTab) {
+        messageQueue = [itin];
       } else {
-        highlightTab(message);
+        highlightTab(itin);
       }
       break;
     case "SKYSCANNER_READY":
@@ -132,14 +134,13 @@ function sendFlightsToWebpage(departuresToSend, provider, itins) {
   }
 }
 
-function highlightTab(message) {
-  const { selectedDepartureId, selectedReturnId, tabId, provider } = message;
-  chrome.windows.update(windowIds[provider], { focused: true }, (win) => {
-    chrome.tabs.sendMessage(tabId, {
+function highlightTab(itin) {
+  chrome.windows.update(windowIds[itin.provider], { focused: true }, (win) => {
+    chrome.tabs.sendMessage(itin.tabId, {
       event: "HIGHLIGHT_FLIGHT",
-      selectedDepartureId,
-      selectedReturnId,
-      provider,
+      selectedDepartureId: itin.depFlight.id,
+      selectedReturnId: itin.retFlight ? itin.retFlight.id : "",
+      provider: itin.provider,
     });
     chrome.tabs.sendMessage(webPageTabId, {
       event: "RESET_SELECTIONS",
