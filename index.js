@@ -124,6 +124,9 @@ chrome.runtime.onMessage.addListener(function (message) {
         window.pageYOffset + returnsSection.getBoundingClientRect().top
       );
       break;
+    case "RESET_SELECTIONS":
+      document.querySelector("#loading").style.display = "none";
+      break;
     default:
       break;
   }
@@ -214,6 +217,7 @@ function handleClick(e) {
       selectedReturnId: selectionIds[1],
       itinId: itin.id,
     });
+    document.querySelector("#loading").style.display = null;
     // reset selections and DOM
     selections.forEach((sel) => {
       sel.style.border = "";
