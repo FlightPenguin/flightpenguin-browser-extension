@@ -81,7 +81,11 @@ chrome.runtime.onMessage.addListener(function (message, sender, reply) {
       break;
     case "HIGHLIGHT_TAB":
       const { selectedDepartureId, selectedReturnId } = message;
-      const itin = allItins[`${selectedDepartureId}-${selectedReturnId}`];
+      let key = selectedDepartureId;
+      if (selectedReturnId) {
+        key += `-${selectedReturnId}`;
+      }
+      const itin = allItins[key];
 
       if (itin.provider === "skyscanner" && !canHighlightSkyscannerTab) {
         messageQueue = [itin];
