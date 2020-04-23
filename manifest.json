@@ -1,5 +1,5 @@
 {
-  "name": "hinhilla Browser Extension",
+  "name": "Flight Penguin Browser Extension",
   "version": "1.0",
   "description": "Best one in town!",
   "permissions": ["webRequest", "<all_urls>"],
@@ -29,7 +29,7 @@
   ],
   "browser_action": {
     "default_popup": "popup.html",
-    "default_title": "Default title"
+    "default_title": "Flight Penguin"
   },
   "manifest_version": 2
 }
