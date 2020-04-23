@@ -207,8 +207,13 @@ function parser(itinNodes) {
       return null;
     }
     node.dataset.visited = "true";
-
-    const fare = node.querySelector(fareSelector.fare).textContent.trim();
+    let fare;
+    try {
+      fare = node.querySelector(fareSelector.fare).textContent.trim();
+    } catch (e) {
+      // one of those itins that say for example "See Southwest for prices"
+      return null;
+    }
     const legs = node.querySelector("[class^='TicketBody_legsContainer']")
       .children;
 
