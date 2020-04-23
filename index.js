@@ -20,6 +20,7 @@ let intervals = [
   "",
   "12 AM",
   "",
+  "12 PM",
 ];
 
 const headerContainer = document.querySelector(".header");
@@ -237,10 +238,6 @@ function handleClick(e) {
 function createTimeBarHeader(intervals) {
   const dateHeaderContainer = document.createElement("div");
   dateHeaderContainer.classList.add("time-bar-header__date-container");
-  const departureDayNode = document.createElement("div");
-  const arrivalDayNode = document.createElement("div");
-  departureDayNode.classList.add("time-bar-header__date");
-  arrivalDayNode.classList.add("time-bar-header__date");
   let date = search.fromDate;
   if (returnsSection.style.display !== "none") {
     date = search.toDate;
@@ -249,11 +246,14 @@ function createTimeBarHeader(intervals) {
     .split("-")
     .map((dateString) => Number(dateString));
   const departureDate = new Date(year, month, day);
-  departureDayNode.textContent = departureDate.toDateString();
-  departureDate.setDate(departureDate.getDate() + 1);
-  arrivalDayNode.textContent = departureDate.toDateString();
-  dateHeaderContainer.append(departureDayNode);
-  dateHeaderContainer.append(arrivalDayNode);
+
+  for (let idx of [0, 1, 2]) {
+    const dateNode = document.createElement("div");
+    dateNode.classList.add("time-bar-header__date");
+    departureDate.setDate(departureDate.getDate() + idx);
+    dateNode.textContent = departureDate.toDateString();
+    dateHeaderContainer.append(dateNode);
+  }
 
   const container = document.createDocumentFragment();
   container.append(dateHeaderContainer);
