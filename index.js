@@ -265,6 +265,9 @@ function createTimeBarHeader(intervals) {
     const intervalLineNode = document.createElement("div");
 
     intervalLineNode.classList.add("interval-line");
+    if (interval === "12 AM") {
+      intervalLineNode.classList.add("midnight");
+    }
     intervalNode.classList.add("interval-time");
 
     intervalNode.innerText = interval;
