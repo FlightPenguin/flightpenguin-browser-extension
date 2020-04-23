@@ -135,6 +135,7 @@ function stopParsing() {
 function loadResults() {
   let newY = window.innerHeight;
   let lastTime = 0;
+  window.scroll(0, newY);
 
   const seeMoreFlightsButton = document.querySelector(
     "[class^='FlightsDayView_results__'] > div > button"
@@ -154,7 +155,7 @@ function loadResults() {
       });
     }
     // every 5 seconds scroll to next viewPort
-    const timeToScroll = Math.max(0, 5000 - (currentTime - lastTime));
+    const timeToScroll = Math.max(0, 9000 - (currentTime - lastTime));
     if (timeToScroll === 0) {
       window.scroll(0, newY);
 
