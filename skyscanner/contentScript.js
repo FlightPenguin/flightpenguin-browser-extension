@@ -3,7 +3,6 @@ console.clear();
 console.log("hello...");
 
 let rafID = 0;
-let intervalID = 0;
 let allItins = [];
 let firstParse = true;
 let resultSummaryResultsTextContainer;
@@ -113,7 +112,7 @@ function highlightItin(selectedDepartureId, selectedReturnId) {
 function stopParsing() {
   window.cancelAnimationFrame(rafID);
   // need to wait a second for DOM to update or else UI will crash
-  intervalID = window.setInterval(() => {
+  const intervalID = window.setInterval(function () {
     let button = document.querySelector("button[class^='BpkCloseButton']");
     if (!button) {
       window.clearInterval(intervalID);
