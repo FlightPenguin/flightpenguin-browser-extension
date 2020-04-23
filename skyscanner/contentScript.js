@@ -13,13 +13,20 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
   console.info("Received message ", message.event);
   switch (message.event) {
     case "BEGIN_PARSING":
+      if (!firstParse) {
+        return;
+      }
+      firstParse = false;
       // Wait until flights results stop loading, then parse.
       // We can do this by observing the spinner's visibility.
       resultSummaryResultsTextContainer = document.querySelector(
         "[class^='ResultsSummary_summaryContainer']"
       );
+      const root = document.querySelector(
+        "[class^='ResultsSummary_container']"
+      );
       let options = {
-        root: document.querySelector("[class^='ResultsSummary_container']"),
+        root,
         threshold: [0, 0.5, 1],
       };
       let prevRatio = 0;
@@ -29,13 +36,13 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
             entry.intersectionRatio === 0 &&
             entry.intersectionRatio < prevRatio
           ) {
-            loadResults();
+            window.setTimeout(loadResults, 2000);
           }
           prevRatio = entry.intersectionRatio;
         });
       };
       let obs = new IntersectionObserver(callback, options);
-      const spinnerNode = document.querySelector(
+      const spinnerNode = root.querySelector(
         "[class^='BpkSpinner_bpk-spinner']"
       );
       if (spinnerNode) {
@@ -127,11 +134,6 @@ function stopParsing() {
  * calls this function again.
  */
 function loadResults() {
-  if (!firstParse) {
-    return;
-  }
-  firstParse = false;
-
   let newY = window.innerHeight;
   let lastTime = 0;
 
