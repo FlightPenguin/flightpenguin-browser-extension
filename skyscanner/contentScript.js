@@ -21,34 +21,30 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
       resultSummaryResultsTextContainer = document.querySelector(
         "[class^='ResultsSummary_summaryContainer']"
       );
-      const root = document.querySelector(
-        "[class^='ResultsSummary_container']"
-      );
-      let options = {
-        root,
-        threshold: [0, 0.5, 1],
-      };
-      let prevRatio = 0;
-      let callback = function (entries) {
-        entries.forEach((entry) => {
-          if (
-            entry.intersectionRatio === 0 &&
-            entry.intersectionRatio < prevRatio
-          ) {
-            window.setTimeout(loadResults, 2000);
-          }
-          prevRatio = entry.intersectionRatio;
-        });
-      };
-      let obs = new IntersectionObserver(callback, options);
-      const spinnerNode = root.querySelector(
-        "[class^='BpkSpinner_bpk-spinner']"
-      );
-      if (spinnerNode) {
-        obs.observe(spinnerNode);
+      root = document.querySelector("[class^='ResultsSummary_container']");
+      if (!root) {
+        const directDaysMessage = document.querySelector(
+          "[class^='DirectDays']"
+        );
+        if (
+          directDaysMessage &&
+          directDaysMessage.textContent.includes("Want non-stop flights?")
+        ) {
+          const continueButton = document.querySelector(
+            "[type=button][class*='DirectDays']"
+          );
+          continueButton.click();
+          setTimeout(() => {
+            root = document.querySelector(
+              "[class^='ResultsSummary_container']"
+            );
+            loadResults(root);
+          }, 2000);
+        }
       } else {
-        loadResults();
+        loadResults(root);
       }
+
       break;
     case "HIGHLIGHT_FLIGHT":
       const { selectedDepartureId, selectedReturnId } = message;
@@ -60,6 +56,32 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
       break;
   }
 });
+
+function loadResults(root) {
+  let options = {
+    root,
+    threshold: [0, 0.5, 1],
+  };
+  let prevRatio = 0;
+  let callback = function (entries) {
+    entries.forEach((entry) => {
+      if (
+        entry.intersectionRatio === 0 &&
+        entry.intersectionRatio < prevRatio
+      ) {
+        window.setTimeout(parseResults, 2000);
+      }
+      prevRatio = entry.intersectionRatio;
+    });
+  };
+  let obs = new IntersectionObserver(callback, options);
+  const spinnerNode = root.querySelector("[class^='BpkSpinner_bpk-spinner']");
+  if (spinnerNode) {
+    obs.observe(spinnerNode);
+  } else {
+    parseResults();
+  }
+}
 
 function addBackToSearchButton() {
   if (document.querySelector("#back-to-search")) {
@@ -132,7 +154,7 @@ function stopParsing() {
  * Every time Skyscanner needs to fetch more results, our background picks up the API request and
  * calls this function again.
  */
-function loadResults() {
+function parseResults() {
   let newY = window.innerHeight;
   let lastTime = 0;
   window.scroll(0, newY);
