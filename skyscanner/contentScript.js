@@ -171,7 +171,10 @@ function parseResults() {
         flights: [],
       });
     }
-    // every 5 seconds scroll to next viewPort
+    // every 9 seconds scroll to next viewPort
+    // timeToScroll will initially resolve to 0 because currentTime
+    // is the timestamp since the page's origin.
+    // So subtracting a very big number from 9000 will be negative, and 0 is greater.
     const timeToScroll = Math.max(0, 9000 - (currentTime - lastTime));
     if (timeToScroll === 0) {
       window.scroll(0, newY);
@@ -229,9 +232,9 @@ function parser(itinNodes) {
       // one of those itins that say for example "See Southwest for prices"
       return null;
     }
-    const legs = node.querySelector("[class^='TicketBody_legsContainer']")
-      .children;
-
+    const legs = Array.from(
+      node.querySelector("[class^='TicketBody_legsContainer']").children
+    );
     const [departureFlight, returnFlight] = queryDOM(legs, selectors);
     let dataForId = [
       departureFlight.fromTime,
@@ -260,22 +263,7 @@ function parser(itinNodes) {
   return itins;
 }
 
-function getLayovers(itinIdx) {
-  // get for all legs of itin since we go through so much work opening the modal that shows us the entire itin
-  const modalNode = document.querySelector("#details-modal");
-  const legNode = modalNode.querySelectorAll("[class^='Itinerary_leg']")[
-    itinIdx
-  ];
-
-  const stopsNode = legNode.querySelector(
-    "[class^='LegInfo_stopsLabelContainer']"
-  );
-
-  if (stopsNode.textContent.toLowerCase().includes("non")) {
-    // non-stop, no layovers
-    return [];
-  }
-  stopsNode.click();
+function getLayovers(legNode) {
   const layoversNode = legNode.querySelector(
     "[class^='LegSegmentSummary_container']"
   );
@@ -310,48 +298,65 @@ function getLayovers(itinIdx) {
   return layovers;
 }
 
-function queryDOM(htmlCollection, selectors) {
-  const flightObjects = Array.from(htmlCollection).map(
-    (containerNode, itinIdx) => {
-      const data = {};
-      Object.entries(selectors).forEach(([key, selector]) => {
-        try {
-          const node = containerNode.querySelector(selector);
-          if (key === "operatingAirline") {
-            if (node) {
-              data.operatingAirline = node.textContent.replace(
-                "Operated by ",
-                ""
-              );
-            } else {
-              data.operatingAirline = null;
-            }
-          } else if (key === "marketingAirlines") {
-            const logo = node.querySelector("img");
-            if (logo) {
-              data.marketingAirline = logo.alt;
-            } else {
-              data.marketingAirline = node.textContent;
-            }
-          } else if (key === "layovers") {
-            // going to get layovers for both departure/return flights
-            let layovers = [];
-            if (!node.textContent.toLowerCase().includes("non")) {
-              containerNode.click();
-              // const hasLongWait = containerNode.querySelector("[class*='Connection_longWaitInfo']");
-              layovers = getLayovers(itinIdx);
-            }
-            data.layovers = layovers;
-          } else {
-            data[key] = node.textContent.trim();
-          }
-        } catch (e) {
-          console.info("Error parsing ", key, e);
-        }
-      });
-      return data;
-    }
-  );
+function queryDOM(nodes, selectors) {
+  const flights = [];
+  let legs = nodes;
 
-  return flightObjects;
+  const hasLayovers = nodes.find((leg) => {
+    return !leg
+      .querySelector("[class^='LegInfo_stopsLabelContainer']")
+      .textContent.toLowerCase()
+      .includes("non");
+  });
+  if (hasLayovers) {
+    nodes[0].click();
+    const modalContainerNode = document.querySelector("#details-modal");
+    legs = Array.from(
+      modalContainerNode.querySelectorAll("[class^='Itinerary_leg']")
+    );
+  }
+
+  for (const containerNode of legs) {
+    const leg = queryLeg(selectors, containerNode);
+    flights.push(leg);
+  }
+
+  return flights;
+}
+
+function queryLeg(selectors, containerNode) {
+  const data = {};
+
+  Object.entries(selectors).forEach(([key, selector]) => {
+    try {
+      const node = containerNode.querySelector(selector);
+      if (key === "operatingAirline") {
+        if (node) {
+          data.operatingAirline = node.textContent.replace("Operated by ", "");
+        } else {
+          data.operatingAirline = null;
+        }
+      } else if (key === "marketingAirlines") {
+        const logo = node.querySelector("img");
+        if (logo) {
+          data.marketingAirline = logo.alt;
+        } else {
+          data.marketingAirline = node.textContent;
+        }
+      } else if (key === "layovers") {
+        let layovers = [];
+        if (!node.textContent.toLowerCase().includes("non")) {
+          node.click();
+          layovers = getLayovers(containerNode);
+          // const hasLongWait = containerNode.querySelector("[class*='Connection_longWaitInfo']");
+        }
+        data.layovers = layovers;
+      } else {
+        data[key] = node.textContent.trim();
+      }
+    } catch (e) {
+      console.info("Error parsing ", key, e);
+    }
+  });
+  return data;
 }
