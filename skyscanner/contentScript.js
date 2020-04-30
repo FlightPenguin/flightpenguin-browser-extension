@@ -221,10 +221,11 @@ function parser(itinNodes) {
     fare: "[class^='Price_mainPriceContainer']",
   };
   let itins = itinNodes.map((node) => {
+    node.dataset.visited = "true";
+
     if (node.textContent.includes("Sponsored")) {
       return null;
     }
-    node.dataset.visited = "true";
     let fare;
     try {
       fare = node.querySelector(fareSelector.fare).textContent.trim();
