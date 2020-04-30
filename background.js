@@ -18,7 +18,7 @@ let allItins = {};
 let departureSelected = false;
 let canHighlightSkyscannerTab = false;
 let messageQueue = [];
-
+let beginTime = 0;
 chrome.runtime.onMessage.addListener(function (message, sender, reply) {
   console.info(message.event, message);
 
@@ -125,11 +125,13 @@ function sendFlightsToWebpage(departuresToSend, provider, itins) {
     formData,
   };
   if (!webPageTabId) {
+    console.log("first results", performance.now() - beginTime);
     createNewWebPage(nextMessage);
   } else {
     // make sure webpage still exists
     chrome.tabs.get(webPageTabId, (tab) => {
       if (!tab) {
+        console.log("first results", performance.now() - beginTime);
         createNewWebPage(nextMessage);
       } else {
         chrome.tabs.sendMessage(tab.id, nextMessage);
@@ -179,34 +181,6 @@ function createNewWebPage(message) {
   );
 }
 
-// use chrome.webRequest API to listen for when flight results API has finished fetching
-// then send message to content script to begin parsing results off DOM
-chrome.webRequest.onCompleted.addListener(
-  function (args) {
-    console.log("web request complete ", args.url);
-    let tabId;
-    if (args.url.includes("priceline")) {
-      tabId = tabIds["priceline"];
-    } else if (args.url.includes("southwest")) {
-      tabId = tabIds["southwest"];
-    } else if (args.url.includes("skyscanner")) {
-      tabId = tabIds["skyscanner"];
-    }
-    window.setTimeout(() => {
-      // give provider page time to render
-      // this has great potential to break for slow internet speeds
-      chrome.tabs.sendMessage(tabId, { event: "BEGIN_PARSING" });
-    }, 1000);
-  },
-  {
-    urls: [
-      "https://www.southwest.com/api/air-booking/v1/air-booking/page/air/booking/shopping*",
-      "https://www.priceline.com/pws/v0/fly/graph/query*",
-      "https://www.skyscanner.com/g/conductor/v1/fps3/search/*",
-    ],
-  }
-);
-
 function openProviderSearchResults(message) {
   /**
    * Open tabs to provider search results pages.
@@ -233,13 +207,33 @@ function openProviderSearchResults(message) {
   if (skyscanner) {
     providers.push("skyscanner");
   }
-  providers.forEach((provider) => {
+  providers.forEach(async (provider) => {
     const url = providerURLBaseMap[provider](message);
     // Open url in a new window. Not a new tab because we can't read results from inactive tabs (browser powers down inactive tabs).
-    chrome.windows.create({ url, focused: false }, (win) => {
-      tabIds[provider] = win.tabs[0].id;
-      windowIds[provider] = win.id;
-    });
+    await createWindow(url, provider);
+    if (!beginTime) {
+      beginTime = performance.now();
+      console.log("begin", beginTime);
+    }
+    chrome.tabs.sendMessage(tabIds[provider], { event: "BEGIN_PARSING" });
+  });
+}
+function createWindow(url, provider) {
+  return new Promise((resolve) => {
+    chrome.windows.create(
+      { url, focused: false, incognito: true },
+      async (win) => {
+        tabIds[provider] = win.tabs[0].id;
+        windowIds[provider] = win.id;
+        chrome.tabs.onUpdated.addListener(function listener(tabId, info) {
+          console.log(info, tabId, tabIds[provider]);
+          if (info.status === "complete" && tabId === tabIds[provider]) {
+            chrome.tabs.onUpdated.removeListener(listener);
+            resolve();
+          }
+        });
+      }
+    );
   });
 }
 

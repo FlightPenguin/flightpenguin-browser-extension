@@ -4,7 +4,6 @@ console.log("hello...");
 
 let rafID = 0;
 let allItins = [];
-let firstParse = true;
 let resultSummaryResultsTextContainer;
 
 chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
@@ -12,10 +11,6 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
   console.info("Received message ", message.event);
   switch (message.event) {
     case "BEGIN_PARSING":
-      if (!firstParse) {
-        return;
-      }
-      firstParse = false;
       // Wait until flights results stop loading, then parse.
       // We can do this by observing the spinner's visibility.
       resultSummaryResultsTextContainer = document.querySelector(
