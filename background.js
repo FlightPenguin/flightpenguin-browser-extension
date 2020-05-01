@@ -67,7 +67,7 @@ chrome.runtime.onMessage.addListener(function (message, sender, reply) {
 
       allDepartures = { ...allDepartures, ...departures };
 
-      sendFlightsToWebpage(departuresToSend, provider, itins);
+      sendFlightsToWebpage(departuresToSend, provider, allItins);
       break;
     case "DEPARTURE_SELECTED":
       departureSelected = true;
