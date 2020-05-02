@@ -26,7 +26,8 @@ ul {
     var(--time-bar-container-width) + var(--flight-list-left-column-width) + 1px
   );
 }
-.flight-list-item:hover {
+.flight-list-item:hover,
+.flight-list-item:focus {
   cursor: pointer;
   background: linear-gradient(180deg, #fff, #e6ebf1) bottom/100% 150px repeat-x;
 }

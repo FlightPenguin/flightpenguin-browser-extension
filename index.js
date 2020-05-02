@@ -164,7 +164,14 @@ function createNodeList(list, itins, containerNode) {
   list.forEach((item) => {
     const node = document.createElement("li");
     node.classList.add("flight-list-item");
+    node.tabIndex = "0";
     node.addEventListener("click", handleClick);
+    node.addEventListener("keypress", (e) => {
+      if ([13, 32].includes(e.keyCode)) {
+        // 13 is enter key code, 32 is space bar
+        handleClick(e);
+      }
+    });
 
     const contentNode = document.createElement("div");
     contentNode.classList.add("flight-list-item__text");
@@ -219,8 +226,12 @@ function createHeader(formData) {
 }
 let flightsNotSelected;
 function handleClick(e) {
+  if (e.currentTarget.dataset.selected) {
+    return;
+  }
   const selectedNode = e.currentTarget;
-  selectedNode.dataset.selected = "true";
+  selectedNode.dataset.selected = true;
+  selectedNode.tabIndex = "-1";
   selections.push(selectedNode);
 
   if (selections.length === 1 && search.roundtrip) {
@@ -252,7 +263,8 @@ function handleClick(e) {
     // reset selections and DOM
     selections.forEach((sel) => {
       sel.style.border = "";
-      sel.dataset.selected = "false";
+      delete sel.dataset.selected;
+      sel.tabIndex = "0";
     });
     if (search.roundtrip) {
       // update UI to show departures
