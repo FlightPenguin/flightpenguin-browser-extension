@@ -78,15 +78,29 @@ Flight.prototype.calculateTimezoneOffset = function () {
   } else {
     this.layovers.forEach(({ fromTime, toTime, duration }) => {
       let { hours: fromHr, minutes: fromMin } = convertTimeTo24HourClock(
-        fromTime,
-        true
+        fromTime
       );
-      let { hours: toHr, minutes: toMin } = convertTimeTo24HourClock(
-        toTime,
-        true
-      );
-      const fromTotalMinutes = fromHr * 60 + fromMin;
-      const toTotalMinutes = toHr * 60 + toMin;
+
+      let { hours: toHr, minutes: toMin } = convertTimeTo24HourClock(toTime);
+
+      const endsNextDay = toTime.match(/(\+\d)/);
+      const startsNextDay = fromTime.match(/(\+\d)/);
+      let startDayOffset = 0;
+      let endDayOffset = 0;
+
+      if (endsNextDay) {
+        const [_, endDays] = endsNextDay[0].split("+");
+        endDayOffset += Number(endDays);
+      }
+      if (startsNextDay) {
+        const [_, startDays] = startsNextDay[0].split("+");
+        startDayOffset += Number(startDays);
+        endDayOffset = startDayOffset;
+      }
+
+      const fromTotalMinutes = (fromHr + 24 * startDayOffset) * 60 + fromMin;
+      const toTotalMinutes = (toHr + 24 * endDayOffset) * 60 + toMin;
+
       const durationMinutes = convertDurationToMinutes(duration);
       timezoneOffset += durationMinutes - (toTotalMinutes - fromTotalMinutes);
     });
