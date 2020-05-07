@@ -155,6 +155,19 @@ chrome.runtime.onMessage.addListener(function (message) {
     case "RESET_SELECTIONS":
       document.querySelector("#loading").style.display = "none";
       break;
+    case "FAILED_SCRAPER":
+      if (totalFlights === 0) {
+        const header = createHeader(formData);
+        headerContainer.textContent = header;
+        subheaderContainer.textContent = `${totalFlights} flights found.`;
+      }
+      ga("send", {
+        hitType: "event",
+        eventCategory: "failed scraper",
+        eventAction: message.source,
+        eventLabel: message.description,
+      });
+      break;
     default:
       break;
   }

@@ -1,7 +1,7 @@
 // console.log and debugger work here, open dev tools on web page (how you normally would) to see them
 console.clear();
 console.log("hello...");
-
+const errors = {};
 let rafID = 0;
 let allItins = [];
 let resultSummaryResultsTextContainer;
@@ -16,7 +16,9 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
       resultSummaryResultsTextContainer = document.querySelector(
         "[class^='ResultsSummary_summaryContainer']"
       );
-      root = document.querySelector("[class^='ResultsSummary_container']");
+      const root = document.querySelector(
+        "[class^='ResultsSummary_container']"
+      );
       if (!root) {
         const directDaysMessage = document.querySelector(
           "[class^='DirectDays']"
@@ -37,7 +39,16 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
           }, 2000);
         }
       } else {
-        loadResults(root);
+        try {
+          loadResults(root);
+        } catch (e) {
+          console.log(e);
+          chrome.runtime.sendMessage({
+            event: "FAILED_SCRAPER",
+            source: "skyscanner",
+            description: `${e.name} ${e.message}`,
+          });
+        }
       }
 
       break;
@@ -356,7 +367,16 @@ function queryLeg(selectors, containerNode) {
         data[key] = node.textContent.trim();
       }
     } catch (e) {
+      if (errors[e.name]) {
+        return;
+      }
       console.info("Error parsing ", key, e);
+      chrome.runtime.sendMessage({
+        event: "FAILED_SCRAPER",
+        source: "skyscanner",
+        description: `${e.name} ${e.message}`,
+      });
+      errors[e.name] = true;
     }
   });
   return data;

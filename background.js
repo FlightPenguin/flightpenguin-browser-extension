@@ -66,14 +66,22 @@ chrome.runtime.onMessage.addListener(function (message, sender, reply) {
       const departuresToSend = diffDepartures(allDepartures, departures);
 
       allDepartures = { ...allDepartures, ...departures };
-
-      sendFlightsToWebpage(departuresToSend, provider, allItins);
+      const nextMessage = {
+        event: "FLIGHT_RESULTS_FOR_CLIENT",
+        flights: {
+          departureList: departuresToSend,
+          allItins,
+        },
+        tabId: tabIds[provider],
+        formData,
+      };
+      sendMessageToWebpage(nextMessage);
       break;
     case "DEPARTURE_SELECTED":
       departureSelected = true;
       const departure = allDepartures[message.departureId];
       const returnList = findReturnFlights(departure, allItins);
-
+      console.log("return", returnList);
       chrome.tabs.sendMessage(webPageTabId, {
         event: "RETURN_FLIGHTS",
         flights: { returnList },
@@ -108,33 +116,27 @@ chrome.runtime.onMessage.addListener(function (message, sender, reply) {
         });
       });
       break;
+    case "FAILED_SCRAPER":
+      sendMessageToWebpage(message);
+      break;
     default:
       console.error("Unhandled message ", message);
       break;
   }
 });
 
-function sendFlightsToWebpage(departuresToSend, provider, itins) {
-  const nextMessage = {
-    event: "FLIGHT_RESULTS_FOR_CLIENT",
-    flights: {
-      departureList: departuresToSend,
-      itins,
-    },
-    tabId: tabIds[provider],
-    formData,
-  };
+function sendMessageToWebpage(message) {
   if (!webPageTabId) {
     console.log("first results", performance.now() - beginTime);
-    createNewWebPage(nextMessage);
+    createNewWebPage(message);
   } else {
     // make sure webpage still exists
     chrome.tabs.get(webPageTabId, (tab) => {
       if (!tab) {
         console.log("first results", performance.now() - beginTime);
-        createNewWebPage(nextMessage);
+        createNewWebPage(message);
       } else {
-        chrome.tabs.sendMessage(tab.id, nextMessage);
+        chrome.tabs.sendMessage(tab.id, message);
       }
     });
   }
