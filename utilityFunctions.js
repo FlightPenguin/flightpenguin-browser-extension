@@ -25,8 +25,15 @@ function convert12HourTimeToMinutes(time) {
   return hours * 60 + minutes;
 }
 
-function convertMinutesTo12HourClock(time) {
+function addTimezoneOffset(time, tzOffset) {
+  const minutes = convert12HourTimeToMinutes(time);
+  const newTimeInMinutes = minutes - tzOffset;
+  return convertMinutesTo12HourClock(newTimeInMinutes, true);
+}
+
+function convertMinutesTo12HourClock(time, addDay) {
   const hours = Math.floor(time / 60) % 24;
+
   const minutes = time % 60;
   let minuteString = "" + minutes;
   minuteString = minuteString.padStart(2, "0");
@@ -48,6 +55,10 @@ function convertMinutesTo12HourClock(time) {
     timeString += `:${minuteString} PM`;
   }
 
+  if (addDay && time / 60 > 24) {
+    timeString += "+1";
+  }
+
   return timeString;
 }
 function convertDurationToMinutes(duration) {
@@ -60,20 +71,31 @@ function convertDurationToMinutes(duration) {
 }
 // calculate timezone offset in minutes
 function getTimezoneOffset(fromTime, toTime, duration) {
-  let { hours: toHours, minutes: toMinutes } = convertTimeTo24HourClock(toTime);
-  let { hours: fromHours, minutes: fromMinutes } = convertTimeTo24HourClock(
-    fromTime
-  );
-  let toTotalMinutes = toMinutes + toHours * 60;
-  const daysToAdd = toTime.match(/(\+\d)/);
-  if (daysToAdd) {
-    toTotalMinutes += daysToAdd[0].split("+")[1] * 24 * 60;
+  let { hours: fromHr, minutes: fromMin } = convertTimeTo24HourClock(fromTime);
+
+  let { hours: toHr, minutes: toMin } = convertTimeTo24HourClock(toTime);
+
+  const endsNextDay = toTime.match(/(\+\d)/);
+  const startsNextDay = fromTime.match(/(\+\d)/);
+  let startDayOffset = 0;
+  let endDayOffset = 0;
+
+  if (startsNextDay) {
+    const [_, startDays] = startsNextDay[0].split("+");
+    startDayOffset += Number(startDays);
+    endDayOffset = startDayOffset;
   }
-  let fromTotalMinutes = fromMinutes + fromHours * 60;
+  if (endsNextDay) {
+    const [_, endDays] = endsNextDay[0].split("+");
+    endDayOffset += Number(endDays);
+  }
 
-  let timezoneOffset = duration - (toTotalMinutes - fromTotalMinutes);
+  const fromTotalMinutes = (fromHr + 24 * startDayOffset) * 60 + fromMin;
+  const toTotalMinutes = (toHr + 24 * endDayOffset) * 60 + toMin;
 
-  return timezoneOffset;
+  const durationMinutes = convertDurationToMinutes(duration);
+
+  return durationMinutes - (toTotalMinutes - fromTotalMinutes);
 }
 
 function getTimeDetails(time) {
@@ -99,4 +121,5 @@ export {
   getTimezoneOffset,
   convertDurationToMinutes,
   getTimeDetails,
+  addTimezoneOffset,
 };

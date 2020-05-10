@@ -124,7 +124,7 @@ chrome.runtime.onMessage.addListener(function (message) {
         departuresSection.style.display = null;
         createNodeList(departureList, itins, depListNode);
         createTimeBars(
-          departureList,
+          departureList[0].timezoneOffset,
           depTimeBarContainer,
           depTimeBarHeaderContainer
         );
@@ -141,7 +141,7 @@ chrome.runtime.onMessage.addListener(function (message) {
 
       createNodeList(returnList, allItins, retListNode);
       createTimeBars(
-        returnList,
+        returnList[0].timezoneOffset,
         retTimeBarContainer,
         retTimeBarHeaderContainer
       );
@@ -213,7 +213,7 @@ function createNodeList(list, itins, containerNode) {
         if (airline.length > 17) {
           span.classList.add("primary-airline__small-font-size");
           if (airline.includes("+")) {
-            const airlinesHTML = airline.split("+").join("and<br/>");
+            const airlinesHTML = airline.split(" + ").join(", ");
             span.innerHTML = airlinesHTML;
           }
         } else {
@@ -295,45 +295,76 @@ function handleClick(e) {
   }
 }
 
-function createTimeBarHeader(intervals) {
-  const dateHeaderContainer = document.createElement("div");
-  dateHeaderContainer.classList.add("time-bar-header__date-container");
+function createTimeBarHeader(intervals, tzOffset) {
+  const container = document.createDocumentFragment();
+  const intervalWidth = timeBarContainerWidth / (intervals.length - 1);
+  const airportCodeContainer = document.createElement("div");
+  airportCodeContainer.classList.add("time-bar-header__airport-code-container");
+  const departureSpan = document.createElement("span");
+  const arrivalSpan = document.createElement("span");
+  airportCodeContainer.append(arrivalSpan);
+  airportCodeContainer.append(departureSpan);
+
   let date = search.fromDate;
+  let depAirportCode = search.from;
+  let arrAirportCode = search.to;
   if (returnsSection.style.display !== "none") {
     date = search.toDate;
+    depAirportCode = search.to;
+    arrAirportCode = search.from;
   }
+  departureSpan.innerText = depAirportCode;
+  arrivalSpan.innerText = arrAirportCode;
+
   const [year, month, day] = date
     .split("-")
     .map((dateString) => Number(dateString));
-  const departureDate = new Date(year, month, day);
+  const departureDate = new Date(year, month - 1, day);
+  let dayOfWeek = departureDate.getDay();
+  let tzDayOfWeek = dayOfWeek;
 
-  for (let idx of [0, 1, 2]) {
-    const dateNode = document.createElement("div");
-    dateNode.classList.add("time-bar-header__date");
-    departureDate.setDate(departureDate.getDate() + idx);
-    dateNode.textContent = departureDate.toDateString();
-    dateHeaderContainer.append(dateNode);
+  function dayOfWeekAsInteger(day) {
+    return ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"][day % 7];
   }
 
-  const container = document.createDocumentFragment();
-  container.append(dateHeaderContainer);
-  const intervalWidth = timeBarContainerWidth / (intervals.length - 1);
-
   for (let index = 0; index < intervals.length; index++) {
+    const timeMinutes = index * 6 * 60;
     const interval = intervals[index];
+    if (!interval) {
+      continue;
+    }
     const intervalNode = document.createElement("div");
+    intervalNode.classList.add("interval-time");
     const intervalLineNode = document.createElement("div");
-
     intervalLineNode.classList.add("interval-line");
     if (interval === "12 AM") {
       intervalLineNode.classList.add("midnight");
     }
-    intervalNode.classList.add("interval-time");
 
-    intervalNode.innerText = interval;
+    if (tzOffset && interval) {
+      const tzTimeMinutes = timeMinutes - tzOffset;
+      if (tzTimeMinutes > 24 * 60) {
+        tzDayOfWeek = dayOfWeek + 1;
+      }
+      const tzTime = convertMinutesTo12HourClock(
+        Math.abs(tzTimeMinutes)
+      ).replace(":00", "");
+
+      const tzTimeNode = document.createElement("span");
+      tzTimeNode.innerText = `${dayOfWeekAsInteger(tzDayOfWeek)} ${tzTime}`;
+      intervalNode.append(tzTimeNode);
+    }
+    if (index % 4 === 0 && index > 0) {
+      dayOfWeek += 1;
+    }
+
+    const timeNode = document.createElement("span");
+    timeNode.innerText = ` ${dayOfWeekAsInteger(dayOfWeek)} ${interval}`;
+    intervalNode.append(timeNode);
     intervalNode.style.left = intervalWidth * index + "px";
     intervalLineNode.style.left = intervalWidth * index + "px";
-    // intervalLineNode.style.width = intervalWidth + "px";
+
+    container.append(airportCodeContainer);
     container.append(intervalNode);
     container.append(intervalLineNode);
   }
@@ -341,51 +372,16 @@ function createTimeBarHeader(intervals) {
   return container;
 }
 
-function createTimezoneNodes(flight) {
-  const fromTzNode = document.createElement("span");
-  fromTzNode.classList.add("timezone__first");
-  const fromTotalMins = convert12HourTimeToMinutes(flight.fromTime);
-  const fromTimeInOtherAirportMins = fromTotalMins + flight.timezoneOffset * -1;
-  const fromTimeInOtherAirport = convertMinutesTo12HourClock(
-    fromTimeInOtherAirportMins
-  );
-  let from = search.from;
-  let to = search.to;
-
-  if (returnsSection.style.display !== "none") {
-    from = search.to;
-    to = search.from;
-  }
-  fromTzNode.title = `${fromTimeInOtherAirport} in ${to}`;
-
-  const toTzNode = document.createElement("span");
-  toTzNode.classList.add("timezone__last");
-
-  const toTotalMins = convert12HourTimeToMinutes(flight.toTime);
-  const toTimeInOtherAirportMins = toTotalMins + flight.timezoneOffset;
-  const toTimeInOtherAirport = convertMinutesTo12HourClock(
-    toTimeInOtherAirportMins
-  );
-  toTzNode.title = `${toTimeInOtherAirport} in ${from}`;
-
-  return { fromTzNode, toTzNode };
-}
-
-function createTimeBars(flights, timeBarContainer, timeBarHeaderContainer) {
-  // const timeBarTempContainer = document.createDocumentFragment();
-
-  // let maxEndDayOffset = 1;
-
-  // for (let flight of flights) {
-
+function createTimeBars(
+  timezoneOffset,
+  timeBarContainer,
+  timeBarHeaderContainer
+) {
   timeBarContainer.style.width = timeBarContainerWidth + "px";
 
-  // intervals = intervals.slice(0, maxEndDayOffset * 4);
-
-  const timeBarHeader = createTimeBarHeader(intervals);
+  const timeBarHeader = createTimeBarHeader(intervals, timezoneOffset);
   timeBarHeaderContainer.innerHTML = "";
   timeBarHeaderContainer.append(timeBarHeader);
-  // timeBarContainer.append(timeBarTempContainer);
 }
 
 function createTimeNodes(fromTimeDetails, toTimeDetails) {
@@ -439,9 +435,6 @@ function createTimeBarRow(flight) {
   } = flight;
   const timeBarRow = document.createElement("div");
   timeBarRow.classList.add("time-bar-row");
-  // Create and append times HTML
-  // const timesContainer = document.createElement("div");
-  // timesContainer.classList.add("times");
   const timeNodes = createTimeNodes(fromTimeDetails, toTimeDetails);
 
   const iterator = layovers.length ? layovers : [flight];
@@ -454,14 +447,15 @@ function createTimeBarRow(flight) {
     const endsNextDay = toTime.match(/(\+\d)/);
     const startsNextDay = fromTime.match(/(\+\d)/);
 
-    if (endsNextDay) {
-      const [_, endDays] = endsNextDay[0].split("+");
-      endDayOffset += Number(endDays);
-    }
     if (startsNextDay) {
       const [_, startDays] = startsNextDay[0].split("+");
       startDayOffset += Number(startDays);
       endDayOffset = startDayOffset;
+    }
+
+    if (endsNextDay) {
+      const [_, endDays] = endsNextDay[0].split("+");
+      endDayOffset += Number(endDays);
     }
 
     const { timeBarSegment } = createTimeBar(
@@ -488,20 +482,7 @@ function createTimeBarRow(flight) {
   let leftPositionNumber = Number(leftPosition.replace("px", ""));
 
   width = rightPositionNumber - leftPositionNumber;
-  // Position timezone nodes based on first and last time bar in row:
-  if (flight.timezoneOffset) {
-    const { fromTzNode, toTzNode } = createTimezoneNodes(flight);
 
-    fromTzNode.style.left = leftPosition;
-    toTzNode.style.left = rightPositionNumber - 20 + "px"; // 20px is how wide the node is and is defined in css
-
-    timeBarRow.append(fromTzNode);
-    timeBarRow.append(toTzNode);
-  }
-
-  // if (endDayOffset > maxEndDayOffset) {
-  //   maxEndDayOffset = endDayOffset;
-  // }
   timeBarRow.append(timeSegments);
   timeBarRow.style.width = width + "px";
   timeNodes[0].style.left = leftPositionNumber - 97 + "px";

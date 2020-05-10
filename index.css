@@ -40,14 +40,6 @@ ul {
   padding: 10px;
 }
 
-/* .times {
-  display: flex;
-  flex-direction: column;
-  font-size: 18px;
-  width: 122px;
-  height: 60px;
-  justify-content: space-between;
-} */
 .times__hour {
   font-size: 22px;
 }
@@ -111,7 +103,7 @@ ul {
   font-size: 19px;
 }
 .primary-airline__small-font-size {
-  font-size: 16px;
+  font-size: 15px;
 }
 .secondary-airline {
   font-size: 8px;
@@ -125,8 +117,13 @@ ul {
 
 .interval-time {
   position: absolute;
-  margin-left: -10px;
-  white-space: nowrap;
+  margin-left: -28px;
+  width: 83px;
+  display: flex;
+  flex-direction: column;
+  margin-top: -23px;
+  justify-content: flex-end;
+  height: 40px;
 }
 .interval-line {
   z-index: -1;
@@ -155,6 +152,7 @@ li,
 }
 .time-bar-segment {
   box-shadow: 3px 12px 6px 0px #eee;
+  border: 1px solid black;
 }
 .timezone__first,
 .timezone__last {
@@ -187,6 +185,13 @@ li,
 .time-bar-header__date-container {
   display: flex;
   margin-top: -65px;
+}
+.time-bar-header__airport-code-container {
+  position: absolute;
+  left: -70px;
+  display: flex;
+  flex-direction: column;
+  margin-top: -19px;
 }
 .time-bar-header__date {
   width: 311px;

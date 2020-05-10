@@ -1,9 +1,8 @@
 import airlinesMap from "./airlineMap.js";
 import {
   getTimezoneOffset,
-  convertTimeTo24HourClock,
-  convertDurationToMinutes,
   getTimeDetails,
+  addTimezoneOffset,
 } from "./utilityFunctions.js";
 
 /**
@@ -67,45 +66,27 @@ function Flight(
 }
 
 Flight.prototype.calculateTimezoneOffset = function () {
-  let timezoneOffset = 0;
+  let totalTimezoneOffset = 0;
 
   if (!this.layovers.length) {
-    timezoneOffset = getTimezoneOffset(
+    totalTimezoneOffset = getTimezoneOffset(
       this.fromTime,
       this.toTime,
-      convertDurationToMinutes(this.duration)
+      this.duration
     );
   } else {
-    this.layovers.forEach(({ fromTime, toTime, duration }) => {
-      let { hours: fromHr, minutes: fromMin } = convertTimeTo24HourClock(
-        fromTime
-      );
-
-      let { hours: toHr, minutes: toMin } = convertTimeTo24HourClock(toTime);
-
-      const endsNextDay = toTime.match(/(\+\d)/);
-      const startsNextDay = fromTime.match(/(\+\d)/);
-      let startDayOffset = 0;
-      let endDayOffset = 0;
-
-      if (endsNextDay) {
-        const [_, endDays] = endsNextDay[0].split("+");
-        endDayOffset += Number(endDays);
+    const newLayovers = this.layovers.map(
+      ({ fromTime, toTime, duration }, idx) => {
+        totalTimezoneOffset += getTimezoneOffset(fromTime, toTime, duration);
+        return {
+          ...this.layovers[idx],
+          timezoneOffset: totalTimezoneOffset,
+        };
       }
-      if (startsNextDay) {
-        const [_, startDays] = startsNextDay[0].split("+");
-        startDayOffset += Number(startDays);
-        endDayOffset = startDayOffset;
-      }
-
-      const fromTotalMinutes = (fromHr + 24 * startDayOffset) * 60 + fromMin;
-      const toTotalMinutes = (toHr + 24 * endDayOffset) * 60 + toMin;
-
-      const durationMinutes = convertDurationToMinutes(duration);
-      timezoneOffset += durationMinutes - (toTotalMinutes - fromTotalMinutes);
-    });
+    );
+    this.layovers = newLayovers;
   }
-  return timezoneOffset;
+  return totalTimezoneOffset;
 };
 // TODO
 // Flight.prototype.addLayover = function(layover) {
