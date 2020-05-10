@@ -70,7 +70,7 @@ chrome.runtime.onMessage.addListener(function (message, sender, reply) {
         event: "FLIGHT_RESULTS_FOR_CLIENT",
         flights: {
           departureList: departuresToSend,
-          allItins,
+          itins: allItins,
         },
         tabId: tabIds[provider],
         formData,
