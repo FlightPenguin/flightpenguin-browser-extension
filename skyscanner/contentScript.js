@@ -16,31 +16,14 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
       resultSummaryResultsTextContainer = document.querySelector(
         "[class^='ResultsSummary_summaryContainer']"
       );
-      const root = document.querySelector(
+      const results = document.querySelector(
         "[class^='ResultsSummary_container']"
       );
-      if (!root) {
-        const directDaysMessage = document.querySelector(
-          "[class^='DirectDays']"
-        );
-        if (
-          directDaysMessage &&
-          directDaysMessage.textContent.includes("Want non-stop flights?")
-        ) {
-          const continueButton = document.querySelector(
-            "[type=button][class*='DirectDays']"
-          );
-          continueButton.click();
-          setTimeout(() => {
-            root = document.querySelector(
-              "[class^='ResultsSummary_container']"
-            );
-            loadResults(root);
-          }, 2000);
-        }
+      if (!results) {
+        clickContinueThenLoadResults();
       } else {
         try {
-          loadResults(root);
+          loadResults();
         } catch (e) {
           console.log(e);
           chrome.runtime.sendMessage({
@@ -63,27 +46,61 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
   }
 });
 
-function loadResults(root) {
-  let options = {
-    root,
-    threshold: [0, 0.5, 1],
-  };
-  let prevRatio = 0;
-  let callback = function (entries) {
-    entries.forEach((entry) => {
-      if (
-        entry.intersectionRatio === 0 &&
-        entry.intersectionRatio < prevRatio
-      ) {
-        window.setTimeout(parseResults, 2000);
+function clickContinueThenLoadResults() {
+  const directDaysMessage = document.querySelector("[class^='DirectDays']");
+  if (
+    directDaysMessage &&
+    directDaysMessage.textContent.includes("Want non-stop flights?")
+  ) {
+    const continueButton = document.querySelector(
+      "[type=button][class*='DirectDays']"
+    );
+    continueButton.click();
+    try {
+      loadResults();
+    } catch (e) {
+      console.log(e);
+      chrome.runtime.sendMessage({
+        event: "FAILED_SCRAPER",
+        source: "skyscanner",
+        description: `${e.name} ${e.message}`,
+      });
+    }
+  } else {
+    parseResults();
+  }
+}
+
+function loadResults() {
+  const config = { childList: true, subtree: true };
+  const callback = function (mutationlist, observer) {
+    for (let m of mutationlist) {
+      // const isPriceContainer = /Price/.test(m.target.classList[0]);
+      const isPriceContainer = /ProgressBar_container/.test(
+        m.target.classList[0]
+      );
+
+      if (isPriceContainer) {
+        // const isDoneLoading = Array.from(m.removedNodes).find(
+        //   (n) => n instanceof SVGElement
+        // );
+        const isDoneLoading = Array.from(m.removedNodes).find((n) =>
+          /BpkProgress_bpk-progress/.test(n.classList[0])
+        );
+        if (isDoneLoading) {
+          parseResults();
+          observer.disconnect();
+          return;
+        }
       }
-      prevRatio = entry.intersectionRatio;
-    });
+    }
   };
-  let obs = new IntersectionObserver(callback, options);
-  const spinnerNode = root.querySelector("[class^='BpkSpinner_bpk-spinner']");
-  if (spinnerNode) {
-    obs.observe(spinnerNode);
+  observer = new MutationObserver(callback);
+  let observerTarget = document.querySelector(
+    "[class*='BpkTicket_bpk-ticket__stub']"
+  );
+  if (observerTarget) {
+    observer.observe(document.body, config);
   } else {
     parseResults();
   }
@@ -135,26 +152,6 @@ function highlightItin(selectedDepartureId, selectedReturnId) {
 }
 
 /**
- * Cancel requestAnimationFrame and close all the modals we opened to get the layovers.
- */
-function stopParsing() {
-  window.cancelAnimationFrame(rafID);
-  // need to wait a second for DOM to update or else UI will crash
-  const intervalID = window.setInterval(function () {
-    let button = document.querySelector("button[class^='BpkCloseButton']");
-    if (!button) {
-      window.clearInterval(intervalID);
-      chrome.runtime.sendMessage({
-        event: "SKYSCANNER_READY",
-      });
-      return;
-    }
-    button.click();
-    button = document.querySelector("button[class^='BpkCloseButton']");
-  }, 500);
-}
-
-/**
  * Skyscanner has a button that you need to click to see more results, then
  * the rest of the results are loaded has you scroll. So to get more results we need to scroll down the page.
  * Every time Skyscanner needs to fetch more results, our background picks up the API request and
@@ -202,7 +199,7 @@ function parseResults() {
           flights,
         });
       } else {
-        stopParsing();
+        window.cancelAnimationFrame(rafID);
         return;
       }
 
@@ -219,18 +216,18 @@ function findMatchingDOMNode(list, target) {
   return list.find((item) => item.dataset.id === target);
 }
 
+const SELECTORS = {
+  fromTime: "[class^='LegInfo_routePartialDepart'] *:first-child",
+  toTime: "[class^='LegInfo_routePartialArrive'] *:first-child",
+  duration: "[class^='LegInfo_stopsContainer'] *:first-child",
+  layovers: "[class^='LegInfo_stopsLabelContainer'] *:first-child",
+  marketingAirlines: "[class^='LogoImage_container']",
+  operatingAirline: "[class*='Operators_operator']",
+};
+const fareSelector = {
+  fare: "[class^='Price_mainPriceContainer']",
+};
 function parser(itinNodes) {
-  const selectors = {
-    fromTime: "[class^='LegInfo_routePartialDepart'] *:first-child",
-    toTime: "[class^='LegInfo_routePartialArrive'] *:first-child",
-    duration: "[class^='LegInfo_stopsContainer'] *:first-child",
-    layovers: "[class^='LegInfo_stopsLabelContainer'] *:first-child",
-    marketingAirlines: "[class^='LogoImage_container']",
-    operatingAirline: "[class*='Operators_operator']",
-  };
-  const fareSelector = {
-    fare: "[class^='Price_mainPriceContainer']",
-  };
   let itins = itinNodes.map((node) => {
     node.dataset.visited = "true";
 
@@ -244,24 +241,11 @@ function parser(itinNodes) {
       // one of those itins that say for example "See Southwest for prices"
       return null;
     }
-    const legs = Array.from(
-      node.querySelector("[class^='TicketBody_legsContainer']").children
-    );
-    const [departureFlight, returnFlight] = queryDOM(legs, selectors);
-    let dataForId = [
-      departureFlight.fromTime,
-      departureFlight.toTime,
-      departureFlight.marketingAirline,
-    ];
-    if (returnFlight) {
-      dataForId = dataForId.concat([
-        returnFlight.fromTime,
-        returnFlight.toTime,
-        returnFlight.marketingAirline,
-      ]);
-    }
 
-    node.dataset.id = dataForId.join("-"); // will use this id attribute to find the itin the user selected
+    const [departureFlight, returnFlight] = queryDOM(node);
+    if (!departureFlight) {
+      return null;
+    }
 
     return {
       departureFlight,
@@ -309,37 +293,135 @@ function getLayovers(legNode) {
 
   return layovers;
 }
+let calledLayoverModalObserver = false;
+const flightsWithLayoversToSend = [];
 
-function queryDOM(nodes, selectors) {
-  const flights = [];
-  let legs = nodes;
-
-  const hasLayovers = nodes.find((leg) => {
-    return !leg
-      .querySelector("[class^='LegInfo_stopsLabelContainer']")
-      .textContent.toLowerCase()
-      .includes("non");
-  });
-  if (hasLayovers) {
-    nodes[0].click();
-    const modalContainerNode = document.querySelector("#details-modal");
-    legs = Array.from(
-      modalContainerNode.querySelectorAll("[class^='Itinerary_leg']")
+function loadModalCallback(mutationList, observer) {
+  for (let m of mutationList) {
+    // const isDetailPane = Array.from(m.target.classList).find((mClass) =>
+    //   /DetailsPanelModal_modalContainer/.test(mClass)
+    // );
+    const isDetailPane = Array.from(m.target.classList).find((mClass) =>
+      /DetailsPanelContent_item/.test(mClass)
     );
-  }
+    if (m.target.id === "modal-container" && m.removedNodes.length) {
+      observer.disconnect();
+      chrome.runtime.sendMessage({
+        event: "FLIGHT_RESULTS_RECEIVED",
+        flights: flightsWithLayoversToSend,
+      });
+      chrome.runtime.sendMessage({
+        event: "SKYSCANNER_READY",
+      });
+      return;
+    }
+    if (isDetailPane) {
+      const modalContainerNode = document.getElementById("details-modal");
+      const isLoading = modalContainerNode.querySelector(
+        "[class^='DetailsPanel_loading']"
+      );
+      if (isLoading) {
+        continue;
+      }
+      const legNodes = Array.from(
+        modalContainerNode.querySelectorAll("[class^='Itinerary_leg']")
+      );
+      const [departureFlight, returnFlight] = parseLegs(legNodes);
 
-  for (const containerNode of legs) {
-    const leg = queryLeg(selectors, containerNode);
-    flights.push(leg);
-  }
+      let fare;
+      try {
+        fare = modalContainerNode
+          .querySelector(fareSelector.fare)
+          .textContent.trim();
+      } catch (e) {
+        if (errors[e.name]) {
+          return;
+        }
+        chrome.runtime.sendMessage({
+          event: "FAILED_SCRAPER",
+          source: "skyscanner",
+          description: `${e.name} ${e.message}`,
+        });
+        errors[e.name] = true;
+      }
+      flightsWithLayoversToSend.push({
+        departureFlight,
+        returnFlight,
+        fare: fare.replace("$", ""),
+        currency: "$",
+      });
 
-  return flights;
+      // close modal
+      const button = document.querySelector("button[class^='BpkCloseButton']");
+      button.click();
+      return;
+    }
+  }
 }
 
-function queryLeg(selectors, containerNode) {
+function loadLayoverModal() {
+  if (calledLayoverModalObserver) {
+    return;
+  }
+  calledLayoverModalObserver = true;
+  const observer = new MutationObserver(loadModalCallback);
+  observer.observe(document.body, { childList: true, subtree: true });
+}
+
+function setIdDataset(itinNode, legNodes) {
+  let dataForId = [];
+  for (let legNode of legNodes) {
+    const [fromTime, toTime] = legNode.querySelectorAll(
+      "[class*='LegInfo_routePartialTime']"
+    );
+    const marketingAirlinesNode = legNode.querySelector(
+      SELECTORS.marketingAirlines
+    );
+    const logo = legNode.getElementsByTagName("img")[0];
+    let marketingAirline = "";
+    if (logo) {
+      marketingAirline = logo.alt;
+    } else {
+      marketingAirline = marketingAirlinesNode.textContent;
+    }
+    dataForId = dataForId.concat([
+      fromTime.textContent.trim(),
+      toTime.textContent.trim(),
+      marketingAirline.trim(),
+    ]);
+  }
+
+  itinNode.dataset.id = dataForId.join("-"); // will use this id attribute to find the itin the user selected
+}
+
+function queryDOM(itinNode) {
+  const hasLayovers = /\d stop/.test(itinNode.textContent);
+  const legNodes = Array.from(
+    itinNode.querySelector("[class^='TicketBody_legsContainer']").children
+  );
+  setIdDataset(itinNode, legNodes);
+
+  if (hasLayovers) {
+    itinNode.click();
+    loadLayoverModal(itinNode);
+    return [];
+  }
+
+  return parseLegs(legNodes);
+}
+
+function parseLegs(legNodes) {
+  const flights = [];
+  for (const containerNode of legNodes) {
+    const leg = queryLeg(containerNode);
+    flights.push(leg);
+  }
+  return flights;
+}
+function queryLeg(containerNode) {
   const data = {};
 
-  Object.entries(selectors).forEach(([key, selector]) => {
+  Object.entries(SELECTORS).forEach(([key, selector]) => {
     try {
       const node = containerNode.querySelector(selector);
       if (key === "operatingAirline") {
@@ -353,7 +435,7 @@ function queryLeg(selectors, containerNode) {
         if (logo) {
           data.marketingAirline = logo.alt;
         } else {
-          data.marketingAirline = node.textContent;
+          data.marketingAirline = node.textContent.trim();
         }
       } else if (key === "layovers") {
         let layovers = [];
