@@ -32,9 +32,10 @@ function addTimezoneOffset(time, tzOffset) {
 }
 
 function convertMinutesTo12HourClock(time, addDay) {
-  const hours = Math.floor(time / 60) % 24;
+  const totalMinutes = Math.abs(time);
+  const hours = Math.floor(totalMinutes / 60) % 24;
 
-  const minutes = time % 60;
+  const minutes = totalMinutes % 60;
   let minuteString = "" + minutes;
   minuteString = minuteString.padStart(2, "0");
 
@@ -55,8 +56,8 @@ function convertMinutesTo12HourClock(time, addDay) {
     timeString += `:${minuteString} PM`;
   }
 
-  if (addDay && time / 60 > 24) {
-    timeString += "+1";
+  if (addDay && totalMinutes / 60 > 24) {
+    timeString += `+${Math.floor(totalMinutes / 60 / 24)}`;
   }
 
   return timeString;
@@ -99,18 +100,17 @@ function getTimezoneOffset(fromTime, toTime, duration) {
 }
 
 function getTimeDetails(time) {
-  let { hours, minutes } = convertTimeTo24HourClock(time);
+  const { hours, minutes } = convertTimeTo24HourClock(time, true);
   const timeOfDay = time.toLowerCase().match(/(pm)|(am)/)[0];
   const excessDays = time.match(/(\+\d)/);
-  const isDayTime = hours <= 18 && hours >= 6;
-  hours = Number(time.split(":")[0]); // want 12 hour clock
+  const displayHours = Number(time.split(":")[0]); // want 12 hour clock
 
   return {
     hours,
+    displayHours,
     minutes,
     timeOfDay,
     excessDays: excessDays ? excessDays[0] : excessDays,
-    isDayTime,
   };
 }
 

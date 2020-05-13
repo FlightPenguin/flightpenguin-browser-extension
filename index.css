@@ -1,5 +1,5 @@
 :root {
-  --time-bar-container-width: 700px;
+  --time-bar-container-width: 765px;
   --flight-list-left-column-width: 350px;
 }
 body {
@@ -67,18 +67,6 @@ ul {
 .departure-time,
 .arrival-time {
   width: 85px;
-}
-.day-time,
-.night-time {
-  /* background-size: 20%;
-  background-color: rgba(255, 255, 255, 0.7);
-  background-position-x: right;
-  background-position-y: center;
-  background-repeat: no-repeat;
-  background-position: right;
-  background-blend-mode: soft-light; */
-
-  /* position: absolute; */
   border-radius: 0;
   padding: 4px;
   box-shadow: 3px 12px 6px 0px #eee;
@@ -117,13 +105,14 @@ ul {
 
 .interval-time {
   position: absolute;
-  margin-left: -28px;
-  width: 83px;
+  margin-left: -17px;
+  width: 48px;
   display: flex;
   flex-direction: column;
   margin-top: -23px;
   justify-content: flex-end;
   height: 40px;
+  align-items: center;
 }
 .interval-line {
   z-index: -1;
@@ -194,7 +183,6 @@ li,
   margin-top: -19px;
 }
 .time-bar-header__date {
-  width: 311px;
   text-align: center;
   height: 47px;
   border-width: 0px 1px 0px 1px;
