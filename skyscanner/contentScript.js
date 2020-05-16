@@ -327,32 +327,31 @@ function loadModalCallback(mutationList, observer) {
         modalContainerNode.querySelectorAll("[class^='Itinerary_leg']")
       );
       const [departureFlight, returnFlight] = parseLegs(legNodes);
-
-      let fare;
       try {
-        fare = modalContainerNode
+        const fare = modalContainerNode
           .querySelector(fareSelector.fare)
           .textContent.trim();
-      } catch (e) {
-        if (errors[e.name]) {
-          return;
-        }
-        chrome.runtime.sendMessage({
-          event: "FAILED_SCRAPER",
-          source: "skyscanner",
-          description: `${e.name} ${e.message}`,
+        flightsWithLayoversToSend.push({
+          departureFlight,
+          returnFlight,
+          fare: fare.replace("$", ""),
+          currency: "$",
         });
-        errors[e.name] = true;
+      } catch (e) {
+        if (!errors[e.name]) {
+          chrome.runtime.sendMessage({
+            event: "FAILED_SCRAPER",
+            source: "skyscanner",
+            description: `${e.name} ${e.message}`,
+          });
+          errors[e.name] = true;
+        }
       }
-      flightsWithLayoversToSend.push({
-        departureFlight,
-        returnFlight,
-        fare: fare.replace("$", ""),
-        currency: "$",
-      });
 
       // close modal
-      const button = document.querySelector("button[class^='BpkCloseButton']");
+      const button = modalContainerNode.querySelector(
+        "button[class^='BpkCloseButton']"
+      );
       button.click();
       return;
     }
@@ -397,13 +396,13 @@ function setIdDataset(itinNode, legNodes) {
 function queryDOM(itinNode) {
   const hasLayovers = /\d stop/.test(itinNode.textContent);
   const legNodes = Array.from(
-    itinNode.querySelector("[class^='TicketBody_legsContainer']").children
+    itinNode.querySelectorAll("[class^='LegDetails_container']")
   );
   setIdDataset(itinNode, legNodes);
 
   if (hasLayovers) {
     itinNode.click();
-    loadLayoverModal(itinNode);
+    loadLayoverModal();
     return [];
   }
 
