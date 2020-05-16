@@ -120,7 +120,7 @@ chrome.runtime.onMessage.addListener(function (message, sender, reply) {
       sendMessageToWebpage(message);
       break;
     default:
-      console.error("Unhandled message ", message);
+      console.error(message);
       break;
   }
 });
@@ -228,7 +228,6 @@ function createWindow(url, provider) {
         tabIds[provider] = win.tabs[0].id;
         windowIds[provider] = win.id;
         chrome.tabs.onUpdated.addListener(function listener(tabId, info) {
-          console.log(info, tabId, tabIds[provider]);
           if (info.status === "complete" && tabId === tabIds[provider]) {
             chrome.tabs.onUpdated.removeListener(listener);
             resolve();

@@ -1,11 +1,13 @@
 import {
   convertTimeTo24HourClock,
-  convert12HourTimeToMinutes,
   convertMinutesTo12HourClock,
+  nearestFactorOf24,
+  findBestStartHourOffset,
 } from "./utilityFunctions.js";
 
 let totalFlights = 0;
 let allItins = {};
+let allDepartures = [];
 let selections = [];
 let search = {};
 let earliestTakeoffTime = Number.POSITIVE_INFINITY;
@@ -110,13 +112,14 @@ chrome.runtime.onMessage.addListener(function (message) {
       allItins = { ...allItins, ...itins };
 
       if (departureList.length) {
+        allDepartures = [...departureList, ...allDepartures];
         departuresSection.style.display = null;
         const {
           intervalScale,
           startHourOffset,
           intervals,
           dayWidths,
-        } = createIntervals(departureList);
+        } = createIntervals(allDepartures);
         createNodeList(
           departureList,
           itins,
@@ -197,6 +200,7 @@ function createNodeList(
   intervalScale,
   startHourOffset
 ) {
+  containerNode.innerHTML = "";
   list.forEach((item) => {
     const node = document.createElement("li");
     node.classList.add("flight-list-item");
@@ -350,9 +354,9 @@ function createTimeBarHeader(intervals, tzOffset, dayWidths) {
     .map((dateString) => Number(dateString));
   const departureDate = new Date(year, month - 1, day);
 
-  function dayOfWeekAsInteger(day) {
-    return ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"][day % 7];
-  }
+  // function dayOfWeekAsInteger(day) {
+  //   return ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"][day % 7];
+  // }
 
   let dayOfWeek = departureDate.getDay();
   let tzDayOfWeek = dayOfWeek;
@@ -386,7 +390,8 @@ function createTimeBarHeader(intervals, tzOffset, dayWidths) {
       tzTimeNode.innerText = `${tzTime} `;
       intervalNode.append(tzTimeNode);
     }
-    if (interval % 24 === 0 && index > 0) {
+    const currDays = Math.floor(interval / 24);
+    if (currDays > 0 && currDays !== dayOfWeek && index > 0) {
       const dateNode = document.createElement("div");
       dateNode.classList.add("time-bar-header__date");
 
@@ -576,7 +581,7 @@ function createTimeBar(
 
   return { timeBarSegment };
 }
-const numTicks = 18;
+const numTicks = 12;
 
 function createIntervals(flights) {
   const earliestFlight = flights.sort(
@@ -591,30 +596,14 @@ function createIntervals(flights) {
   if (latestFlight.toTimeDetails.hours > latestLandingTime) {
     latestLandingTime = latestFlight.toTimeDetails.hours;
   }
-
-  const timeRange = latestLandingTime - earliestTakeoffTime;
+  let timeRange = latestLandingTime - earliestTakeoffTime;
   let intervalScale = Math.ceil(timeRange / numTicks);
-
-  function nearestMultipleOfFour(number) {
-    let numberToRound = number;
-
-    if ([1, 2].includes(numberToRound)) {
-      return numberToRound;
-    }
-    const remainder = numberToRound % 4;
-    if (remainder == 0) {
-      return numberToRound;
-    }
-    return numberToRound + 4 - remainder;
-  }
-  intervalScale = nearestMultipleOfFour(intervalScale);
-
   let startHourOffset = Math.max(0, earliestTakeoffTime - intervalScale);
-  if (startHourOffset / 2 !== 0) {
-    startHourOffset++;
-  }
+  startHourOffset = findBestStartHourOffset(startHourOffset);
+  timeRange += startHourOffset;
+  intervalScale = nearestFactorOf24(Math.ceil(timeRange / numTicks));
+
   const intervalWidth = timeBarContainerWidth / (numTicks - 1);
-  // ex: interval = 4, interval is every 4 hours
   const intervals = [];
   const dayWidths = [];
 
@@ -656,12 +645,13 @@ function createIndividualTimeBarPosition(
    * So 6:05am would be (33.33 * 6) + (5 * 33.33/60) = start position in pixels
    * width = end position in pixels - start position in pixels
    */
-  const totalHours = numTicks * intervalScale;
+  const totalHours = (numTicks - 1) * intervalScale;
   const totalMinutes = totalHours * 60;
   const pxPerMinute = timeBarContainerWidth / totalMinutes;
   const minutesPerHour = 60;
   const minutesPerDay = minutesPerHour * 24;
   const positionAtMidnight = pxPerMinute * minutesPerDay;
+
   const startMinutesOffset =
     startDayOffset * minutesPerDay - startHourOffset * minutesPerHour; // if flight starts on a following day, happens with layovers
   const endMinutesOffset =
