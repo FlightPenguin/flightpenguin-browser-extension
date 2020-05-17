@@ -1,8 +1,6 @@
 import {
   convertTimeTo24HourClock,
   convertMinutesTo12HourClock,
-  nearestFactorOf24,
-  findBestStartHourOffset,
 } from "./utilityFunctions.js";
 
 let totalFlights = 0;
@@ -10,6 +8,7 @@ let allItins = {};
 let allDepartures = [];
 let selections = [];
 let search = {};
+let numTicks;
 let earliestTakeoffTime = Number.POSITIVE_INFINITY;
 let latestLandingTime = Number.NEGATIVE_INFINITY;
 const timeBarContainerWidth = 765; // if you update this, update CSS too
@@ -87,7 +86,7 @@ chrome.runtime.onMessage.addListener(function (message) {
       depListNode.innerHTML = "";
 
       // departure time bars
-      let timeBarHeader = depTimeBarContainer.children[0];
+      let timeBarHeader = depTimeBarHeaderContainer;
       timeBarHeader.innerHTML = "";
       depTimeBarContainer.innerHTML = "";
       depTimeBarContainer.style.display = null;
@@ -98,7 +97,7 @@ chrome.runtime.onMessage.addListener(function (message) {
       retListNode.innerHTML = "";
 
       // return time bars
-      timeBarHeader = retTimeBarContainer.children[0];
+      timeBarHeader = retTimeBarHeaderContainer;
       timeBarHeader.innerHTML = "";
       retTimeBarContainer.innerHTML = "";
       retTimeBarContainer.append(timeBarHeader);
@@ -112,23 +111,23 @@ chrome.runtime.onMessage.addListener(function (message) {
       allItins = { ...allItins, ...itins };
 
       if (departureList.length) {
-        allDepartures = [...departureList, ...allDepartures];
+        allDepartures = allDepartures.concat(departureList);
         departuresSection.style.display = null;
         const {
-          intervalScale,
+          increment,
           startHourOffset,
           intervals,
           dayWidths,
         } = createIntervals(allDepartures);
         createNodeList(
-          departureList,
+          allDepartures,
           itins,
           depListNode,
-          intervalScale,
+          increment,
           startHourOffset
         );
         createTimeBarContainer(
-          departureList[0].timezoneOffset,
+          allDepartures[0].timezoneOffset,
           depTimeBarContainer,
           depTimeBarHeaderContainer,
           intervals,
@@ -136,7 +135,7 @@ chrome.runtime.onMessage.addListener(function (message) {
         );
       }
       const header = createHeader(formData);
-      totalFlights += departureList.length;
+      totalFlights = allDepartures.length;
 
       headerContainer.textContent = header;
       subheaderContainer.textContent = `${totalFlights} flights found.`;
@@ -146,7 +145,7 @@ chrome.runtime.onMessage.addListener(function (message) {
       returnsSection.style.display = "block";
 
       const {
-        intervalScale,
+        increment,
         startHourOffset,
         intervals,
         dayWidths,
@@ -155,7 +154,7 @@ chrome.runtime.onMessage.addListener(function (message) {
         returnList,
         allItins,
         retListNode,
-        intervalScale,
+        increment,
         startHourOffset
       );
       createTimeBarContainer(
@@ -197,7 +196,7 @@ function createNodeList(
   list,
   itins,
   containerNode,
-  intervalScale,
+  increment,
   startHourOffset
 ) {
   containerNode.innerHTML = "";
@@ -252,7 +251,7 @@ function createNodeList(
       airlinesContainer.append(span);
     });
     contentNode.append(airlinesContainer);
-    const timeBarNode = createTimeBarRow(item, intervalScale, startHourOffset);
+    const timeBarNode = createTimeBarRow(item, increment, startHourOffset);
     node.append(contentNode);
     node.append(timeBarNode);
     node.dataset.id = item.id;
@@ -372,7 +371,7 @@ function createTimeBarHeader(intervals, tzOffset, dayWidths) {
     intervalNode.classList.add("interval-time");
     const intervalLineNode = document.createElement("div");
     intervalLineNode.classList.add("interval-line");
-    if (originTime === "12 AM") {
+    if (["12 AM", "12 PM"].includes(originTime)) {
       intervalLineNode.classList.add("midnight");
     }
 
@@ -387,9 +386,10 @@ function createTimeBarHeader(intervals, tzOffset, dayWidths) {
 
       const tzTimeNode = document.createElement("span");
       // tzTimeNode.innerText = `${dayOfWeekAsInteger(tzDayOfWeek)} ${tzTime} `;
-      tzTimeNode.innerText = `${tzTime} `;
+      tzTimeNode.innerText = tzTime.replace("AM", "a").replace("PM", "p");
       intervalNode.append(tzTimeNode);
     }
+
     const currDays = Math.floor(interval / 24);
     if (currDays > 0 && currDays !== dayOfWeek && index > 0) {
       const dateNode = document.createElement("div");
@@ -397,14 +397,18 @@ function createTimeBarHeader(intervals, tzOffset, dayWidths) {
 
       dateNode.style.width = `${dayWidths.shift()}px`;
       departureDate.setDate(departureDate.getDate() + dayOfWeek);
-      dateNode.textContent = departureDate.toDateString();
+      dateNode.textContent = departureDate
+        .toDateString()
+        .split(" ")
+        .slice(0, 3)
+        .join(" ");
       dateHeaderContainer.append(dateNode);
 
-      dayOfWeek += 1;
+      dayOfWeek = (dayOfWeek + 1) % 7;
     }
 
     const timeNode = document.createElement("span");
-    timeNode.innerText = `${originTime}`;
+    timeNode.innerText = originTime.replace("AM", "a").replace("PM", "p");
     intervalNode.append(timeNode);
     intervalNode.style.left = intervalWidth * index + "px";
     intervalLineNode.style.left = intervalWidth * index + "px";
@@ -412,14 +416,18 @@ function createTimeBarHeader(intervals, tzOffset, dayWidths) {
     container.append(intervalNode);
     container.append(intervalLineNode);
   }
-
+  // if dayWidths, means the remaining width isn't for a full day
   if (dayWidths.length) {
     const dateNode = document.createElement("div");
     dateNode.classList.add("time-bar-header__date");
 
     dateNode.style.width = `${dayWidths.shift()}px`;
     departureDate.setDate(departureDate.getDate() + dayOfWeek);
-    dateNode.textContent = departureDate.toDateString();
+    dateNode.textContent = departureDate
+      .toDateString()
+      .split(" ")
+      .slice(0, 3)
+      .join(" ");
     dateHeaderContainer.append(dateNode);
   }
 
@@ -483,7 +491,7 @@ function createTimeNodes(fromTimeDetails, toTimeDetails) {
     return timeContainer;
   });
 }
-function createTimeBarRow(flight, intervalScale, startHourOffset) {
+function createTimeBarRow(flight, increment, startHourOffset) {
   const {
     layovers,
     operatingAirline: { display, color },
@@ -522,7 +530,7 @@ function createTimeBarRow(flight, intervalScale, startHourOffset) {
       display,
       startDayOffset,
       endDayOffset,
-      intervalScale,
+      increment,
       startHourOffset
     );
     if (!isLayoverStop) {
@@ -564,7 +572,7 @@ function createTimeBar(
   airlineName,
   startDayOffset,
   endDayOffset,
-  intervalScale,
+  increment,
   startHourOffset
 ) {
   const timeBarSegment = document.createElement("div");
@@ -573,7 +581,7 @@ function createTimeBar(
     toTime,
     startDayOffset,
     endDayOffset,
-    intervalScale,
+    increment,
     startHourOffset
   );
 
@@ -586,7 +594,6 @@ function createTimeBar(
 
   return { timeBarSegment };
 }
-const numTicks = 12;
 
 function createIntervals(flights) {
   const earliestFlight = flights.sort(
@@ -601,36 +608,40 @@ function createIntervals(flights) {
   if (latestFlight.toTimeDetails.hours > latestLandingTime) {
     latestLandingTime = latestFlight.toTimeDetails.hours;
   }
-  let timeRange = latestLandingTime - earliestTakeoffTime;
-  let intervalScale = Math.ceil(timeRange / numTicks);
-  let startHourOffset = Math.max(0, earliestTakeoffTime - intervalScale);
-  startHourOffset = findBestStartHourOffset(startHourOffset);
-  timeRange += startHourOffset;
-  intervalScale = nearestFactorOf24(Math.ceil(timeRange / numTicks));
 
-  const intervalWidth = timeBarContainerWidth / (numTicks - 1);
+  let startHour = earliestTakeoffTime;
+
+  while (startHour % 4 !== 0 && startHour % 3 !== 0) {
+    startHour--;
+  }
+  let increment;
+  if (startHour % 4 === 0) {
+    increment = 4;
+  } else {
+    increment = 3;
+  }
   const intervals = [];
-  const dayWidths = [];
+  let time = startHour;
 
-  let time = startHourOffset;
-  let lastDayIdx = 0;
-  let days;
-  for (let i = 0; i < numTicks; i++) {
-    const currDays = Math.floor(time / 24);
-    if (currDays > 0 && currDays !== days && i > 0) {
-      const dayWidth = intervalWidth * (i - lastDayIdx);
-      dayWidths.push(dayWidth);
-      lastDayIdx = i;
-      days = Math.floor(time / 24);
-    }
+  while (time <= latestLandingTime + increment) {
     intervals.push(time);
-    time += intervalScale;
+    time += increment;
   }
-  if (lastDayIdx !== numTicks - 1) {
-    dayWidths.push(intervalWidth * (numTicks - 1 - lastDayIdx));
+  numTicks = intervals.length;
+  const intervalWidth = timeBarContainerWidth / (numTicks - 1);
+  const dayWidths = [];
+  let lastDayIdx = 0;
+  for (let [idx, interval] of intervals.entries()) {
+    if (interval % 24 === 0 && interval !== 0) {
+      dayWidths.push(intervalWidth * (idx - lastDayIdx));
+      lastDayIdx = idx;
+    }
   }
 
-  return { intervals, intervalScale, time, startHourOffset, dayWidths };
+  if (lastDayIdx !== intervals.length - 1) {
+    dayWidths.push(intervalWidth * (intervals.length - 1 - lastDayIdx));
+  }
+  return { intervals, increment, startHourOffset: startHour, dayWidths };
 }
 
 function createIndividualTimeBarPosition(
@@ -638,7 +649,7 @@ function createIndividualTimeBarPosition(
   toTime,
   startDayOffset,
   endDayOffset,
-  intervalScale,
+  increment,
   startHourOffset
 ) {
   /**
@@ -650,7 +661,7 @@ function createIndividualTimeBarPosition(
    * So 6:05am would be (33.33 * 6) + (5 * 33.33/60) = start position in pixels
    * width = end position in pixels - start position in pixels
    */
-  const totalHours = (numTicks - 1) * intervalScale;
+  const totalHours = (numTicks - 1) * increment;
   const totalMinutes = totalHours * 60;
   const pxPerMinute = timeBarContainerWidth / totalMinutes;
   const minutesPerHour = 60;

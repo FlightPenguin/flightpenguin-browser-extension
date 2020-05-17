@@ -114,42 +114,6 @@ function getTimeDetails(time) {
   };
 }
 
-function nearestFactorOf24(number) {
-  const factorsOf24 = [1, 2, 3, 4, 6, 8, 12];
-
-  if (factorsOf24.includes(number)) {
-    return number;
-  }
-
-  const sorted = [...factorsOf24, number].sort((a, b) => a - b);
-  const idx = sorted.indexOf(number);
-  if (idx === sorted.length - 1) {
-    return number;
-  } else {
-    return sorted[idx + 1];
-  }
-}
-/**
- * Want Midnight 12 AM to be an interval.
- * @param {Number} startHourOffset
- */
-function findBestStartHourOffset(startHourOffset) {
-  const possibleOffsets = [0, 6, 12, startHourOffset].sort((a, b) => a - b);
-  const startIdx = possibleOffsets.indexOf(startHourOffset);
-  if (startIdx === 0) {
-    return possibleOffsets[1];
-  } else if (startIdx === possibleOffsets.length - 1) {
-    return possibleOffsets[possibleOffsets.length - 2];
-  } else if (
-    startHourOffset - possibleOffsets[startIdx - 1] <
-    possibleOffsets[startIdx + 1] - startHourOffset
-  ) {
-    return possibleOffsets[startIdx - 1];
-  } else {
-    return possibleOffsets[startIdx + 1];
-  }
-}
-
 export {
   convertTimeTo24HourClock,
   convertMinutesTo12HourClock,
@@ -158,6 +122,4 @@ export {
   convertDurationToMinutes,
   getTimeDetails,
   addTimezoneOffset,
-  nearestFactorOf24,
-  findBestStartHourOffset,
 };
