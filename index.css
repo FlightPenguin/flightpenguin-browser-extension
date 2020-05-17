@@ -140,8 +140,23 @@ li,
   margin-top: 10px;
 }
 .time-bar-segment {
-  box-shadow: 3px 12px 6px 0px #eee;
   border: 1px solid black;
+}
+.time-bar-segment.layover {
+  background: repeating-linear-gradient(
+    45deg,
+    #7d82a2,
+    #9399bf 5px,
+    #7a80a5 5px,
+    #626992 10px
+  );
+}
+.time-bar-segment::after {
+  content: attr(data-content);
+  display: flex;
+  justify-content: center;
+  margin-top: 30px;
+  background: white;
 }
 .timezone__first,
 .timezone__last {
@@ -149,7 +164,6 @@ li,
   height: 30px;
   z-index: 1;
   position: absolute;
-  /* display: none; */
 }
 .timezone__first:hover,
 .timezone__last:hover {

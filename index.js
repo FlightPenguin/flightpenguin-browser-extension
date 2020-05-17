@@ -494,27 +494,27 @@ function createTimeBarRow(flight, intervalScale, startHourOffset) {
   timeBarRow.classList.add("time-bar-row");
   const timeNodes = createTimeNodes(fromTimeDetails, toTimeDetails);
 
-  const iterator = layovers.length ? layovers : [flight];
   let startDayOffset = 0;
   let endDayOffset = 0;
   let width = 0;
   const timeSegments = document.createDocumentFragment();
+  const iterator = layovers.length ? layovers : [flight];
 
-  for (let { fromTime, toTime } of iterator) {
+  for (let { fromTime, toTime, isLayoverStop, from, to } of iterator) {
     const endsNextDay = toTime.match(/(\+\d)/);
     const startsNextDay = fromTime.match(/(\+\d)/);
+    if (!isLayoverStop) {
+      if (startsNextDay) {
+        const [_, startDays] = startsNextDay[0].split("+");
+        startDayOffset += Number(startDays);
+        endDayOffset = startDayOffset;
+      }
 
-    if (startsNextDay) {
-      const [_, startDays] = startsNextDay[0].split("+");
-      startDayOffset += Number(startDays);
-      endDayOffset = startDayOffset;
+      if (endsNextDay) {
+        const [_, endDays] = endsNextDay[0].split("+");
+        endDayOffset += Number(endDays);
+      }
     }
-
-    if (endsNextDay) {
-      const [_, endDays] = endsNextDay[0].split("+");
-      endDayOffset += Number(endDays);
-    }
-
     const { timeBarSegment } = createTimeBar(
       fromTime,
       toTime,
@@ -525,11 +525,16 @@ function createTimeBarRow(flight, intervalScale, startHourOffset) {
       intervalScale,
       startHourOffset
     );
-
-    if (endsNextDay) {
-      startDayOffset = endDayOffset;
+    if (!isLayoverStop) {
+      if (endsNextDay) {
+        startDayOffset = endDayOffset;
+      }
     }
     timeBarSegment.classList.add("time-bar-segment");
+    if (isLayoverStop) {
+      timeBarSegment.classList.add("layover");
+      timeBarSegment.dataset.content = from;
+    }
     timeSegments.append(timeBarSegment);
   }
   let lastTimeSegment =

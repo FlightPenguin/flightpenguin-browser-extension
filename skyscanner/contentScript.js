@@ -200,6 +200,11 @@ function parseResults() {
         });
       } else {
         window.cancelAnimationFrame(rafID);
+        if (!flightsWithLayoversToSend.length) {
+          chrome.runtime.sendMessage({
+            event: "SKYSCANNER_READY",
+          });
+        }
         return;
       }
 
@@ -223,6 +228,12 @@ const SELECTORS = {
   layovers: "[class^='LegInfo_stopsLabelContainer'] *:first-child",
   marketingAirlines: "[class^='LogoImage_container']",
   operatingAirline: "[class*='Operators_operator']",
+  from: "[class*='LegInfo_routePartialDepart'] *:nth-child(2)",
+  to: "[class*='LegInfo_routePartialArrive'] *:nth-child(2)",
+};
+const layoverFromToSelectors = {
+  from: "[class*='Routes_routes'] *:first-child",
+  to: "[class*='Routes_routes'] *:nth-child(2)",
 };
 const fareSelector = {
   fare: "[class^='Price_mainPriceContainer']",
@@ -276,18 +287,17 @@ function getLayovers(legNode) {
     const [fromTime, duration, toTime] = segments[i].querySelector(
       "[class^='Times_segmentTimes']"
     ).children;
-    let [from, to] = segments[i].querySelectorAll(
-      "[class^='Routes_routes'] > span"
-    );
-    from = Array.from(from.childNodes)[0];
-    to = Array.from(to.childNodes)[0];
+    const locations = {};
+    for (let [key, selector] of Object.entries(layoverFromToSelectors)) {
+      const locationNode = segments[i].querySelector(selector);
+      locations[key] = locationNode.textContent.split(/\s/)[0];
+    }
     layovers.push({
       airline: airlines[i].textContent,
-      from,
       fromTime: fromTime.textContent,
       duration: duration.textContent,
-      to,
       toTime: toTime.textContent,
+      ...locations,
     });
   }
 
@@ -298,12 +308,10 @@ const flightsWithLayoversToSend = [];
 
 function loadModalCallback(mutationList, observer) {
   for (let m of mutationList) {
-    // const isDetailPane = Array.from(m.target.classList).find((mClass) =>
-    //   /DetailsPanelModal_modalContainer/.test(mClass)
-    // );
     const isDetailPane = Array.from(m.target.classList).find((mClass) =>
-      /DetailsPanelContent_item/.test(mClass)
+      /DetailsPanel/.test(mClass)
     );
+
     if (m.target.id === "modal-container" && m.removedNodes.length) {
       observer.disconnect();
       chrome.runtime.sendMessage({
@@ -441,8 +449,8 @@ function queryLeg(containerNode) {
         if (!node.textContent.toLowerCase().includes("non")) {
           node.click();
           layovers = getLayovers(containerNode);
-          // const hasLongWait = containerNode.querySelector("[class*='Connection_longWaitInfo']");
         }
+        // const hasLongWait = containerNode.querySelector("[class*='Connection_longWaitInfo']");
         data.layovers = layovers;
       } else {
         data[key] = node.textContent.trim();

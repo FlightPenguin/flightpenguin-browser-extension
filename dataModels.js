@@ -75,7 +75,7 @@ Flight.prototype.calculateTimezoneOffset = function () {
       this.duration
     );
   } else {
-    const newLayovers = this.layovers.map(
+    const layovers = this.layovers.map(
       ({ fromTime, toTime, duration }, idx) => {
         totalTimezoneOffset += getTimezoneOffset(fromTime, toTime, duration);
         return {
@@ -84,7 +84,24 @@ Flight.prototype.calculateTimezoneOffset = function () {
         };
       }
     );
-    this.layovers = newLayovers;
+    const layoversWithStops = [];
+    for (let i = 0; i < layovers.length - 1; i++) {
+      const previousFlight = layovers[i];
+      const nextFlight = layovers[i + 1];
+      const { toTime: fromTime, to: from } = previousFlight;
+      const { fromTime: toTime, from: to } = nextFlight;
+
+      layoversWithStops.push(previousFlight);
+      layoversWithStops.push({
+        fromTime,
+        toTime,
+        from,
+        to,
+        isLayoverStop: true,
+      });
+    }
+    layoversWithStops.push(layovers[layovers.length - 1]);
+    this.layovers = layoversWithStops;
   }
   return totalTimezoneOffset;
 };
