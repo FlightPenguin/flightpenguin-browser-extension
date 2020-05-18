@@ -609,23 +609,32 @@ function createIntervals(flights) {
     (a, b) => b.toTimeDetails.hours - a.toTimeDetails.hours
   )[0];
   if (earliestFlight.fromTimeDetails.hours < earliestTakeoffTime) {
-    earliestTakeoffTime = earliestFlight.fromTimeDetails.hours;
+    earliestTakeoffTime = Math.max(0, earliestFlight.fromTimeDetails.hours - 2);
   }
   if (latestFlight.toTimeDetails.hours > latestLandingTime) {
-    latestLandingTime = latestFlight.toTimeDetails.hours;
+    latestLandingTime = latestFlight.toTimeDetails.hours + 2;
   }
 
   let startHour = earliestTakeoffTime;
-
+  // Want to always have midnight (12 AM) as an interval.
   while (startHour % 4 !== 0 && startHour % 3 !== 0) {
     startHour--;
   }
   let increment;
-  if (startHour % 4 === 0) {
+
+  if (latestLandingTime - earliestTakeoffTime > 72) {
+    startHour = 0;
+    increment = 6;
+  } else if (latestLandingTime - startHour <= 12) {
+    increment = 1;
+  } else if (latestLandingTime - startHour <= 24) {
+    increment = 2;
+  } else if (startHour % 4 === 0) {
     increment = 4;
   } else {
     increment = 3;
   }
+
   const intervals = [];
   let time = startHour;
 
