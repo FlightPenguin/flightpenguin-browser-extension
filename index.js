@@ -75,6 +75,9 @@ chrome.runtime.onMessage.addListener(function (message) {
       allItins = {};
       selections = [];
       search = {};
+      numTicks = 0;
+      earliestTakeoffTime = Number.POSITIVE_INFINITY;
+      latestLandingTime = Number.NEGATIVE_INFINITY;
       // search header
       headerContainer.textContent = createHeader(message.formData);
 
