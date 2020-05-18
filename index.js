@@ -221,8 +221,7 @@ function createNodeList(
       operatingAirline: { display: operatingAirline },
       marketingAirlineText,
     } = item;
-
-    let fares = item.itinIds.map((itinId) => itins[itinId].fare).sort();
+    let fares = item.itinIds.map((itinId) => allItins[itinId].fare).sort();
     const fare = document.createElement("span");
     fare.textContent = "$" + fares[0];
     fare.classList.add("fare");

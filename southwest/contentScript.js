@@ -7,12 +7,17 @@ let allItins = [];
 let southwestFlights;
 let flightsSent = false;
 window.addEventListener("load", () => {
-  southwestFlights = JSON.parse(
-    window.sessionStorage.getItem(
-      "AirBookingSearchResultsSearchStore-searchResults-v1"
-    )
-  );
-  sendFlightsToBackground(southwestFlights);
+  const id = window.setInterval(() => {
+    southwestFlights = JSON.parse(
+      window.sessionStorage.getItem(
+        "AirBookingSearchResultsSearchStore-searchResults-v1"
+      )
+    );
+    if (southwestFlights && southwestFlights.searchResults) {
+      sendFlightsToBackground(southwestFlights);
+      window.clearInterval(id);
+    }
+  }, 500);
 });
 
 function sendFlightsToBackground(southwestFlights) {
@@ -226,6 +231,8 @@ function getIndividualSouthwestLegDetails(flight) {
         operatingCarrierCode: "WN",
         marketingCarrierCode: "WN",
         duration: convertDurationMinutesToString(stop.legDuration),
+        from: stop.originationAirportCode,
+        to: stop.destinationAirportCode,
       };
     });
   }
@@ -241,6 +248,8 @@ function getIndividualSouthwestLegDetails(flight) {
     fare: Math.round(Number(fare.value)),
     currency: "$",
     duration: convertDurationMinutesToString(flight.totalDuration),
+    from: flight.originationAirportCode,
+    to: flight.destinationAirportCode,
   };
 }
 
