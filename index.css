@@ -31,6 +31,10 @@ ul {
   cursor: pointer;
   background: linear-gradient(180deg, #fff, #e6ebf1) bottom/100% 150px repeat-x;
 }
+.flight-list-item:hover .time-bar-segment::after {
+  background: transparent;
+}
+
 .flight-list-item__text {
   display: flex;
   box-sizing: border-box;
@@ -113,6 +117,7 @@ ul {
   justify-content: flex-end;
   height: 40px;
   align-items: center;
+  background: white;
 }
 .interval-line {
   z-index: -1;
@@ -139,9 +144,7 @@ li,
   align-items: center;
   margin-top: 10px;
 }
-.time-bar-segment {
-  border: 1px solid black;
-}
+
 .time-bar-segment.layover {
   background: repeating-linear-gradient(
     45deg,

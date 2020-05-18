@@ -542,6 +542,9 @@ function createTimeBarRow(flight, increment, startHourOffset) {
     if (isLayoverStop) {
       timeBarSegment.classList.add("layover");
       timeBarSegment.dataset.content = from;
+      // Some segments have a gap even when the calculated positions and width should line up!
+      timeBarSegment.style.width =
+        timeBarSegment.style.width.replace("px", "") * 1 + 1 + "px";
     }
     timeSegments.append(timeBarSegment);
   }
