@@ -5,26 +5,42 @@ console.log("hello...");
 let rafID = 0;
 let allItins = [];
 let southwestFlights;
-let flightsSent = false;
-window.addEventListener("load", () => {
-  const id = window.setInterval(() => {
-    southwestFlights = JSON.parse(
-      window.sessionStorage.getItem(
-        "AirBookingSearchResultsSearchStore-searchResults-v1"
-      )
-    );
-    if (southwestFlights && southwestFlights.searchResults) {
-      sendFlightsToBackground(southwestFlights);
-      window.clearInterval(id);
-    }
-  }, 500);
+
+chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
+  // parse page to get flights, then send background to process and display on new web page.
+  console.info("Received message ", message.event);
+  switch (message.event) {
+    case "STOP_PARSING":
+      window.cancelAnimationFrame(rafID);
+      break;
+    case "BEGIN_PARSING":
+      const id = window.setInterval(() => {
+        southwestFlights = JSON.parse(
+          window.sessionStorage.getItem(
+            "AirBookingSearchResultsSearchStore-searchResults-v1"
+          )
+        );
+        if (southwestFlights && southwestFlights.searchResults) {
+          sendFlightsToBackground(southwestFlights);
+          window.clearInterval(id);
+        }
+      }, 500);
+      break;
+    case "HIGHLIGHT_FLIGHT":
+      const { selectedDepartureId, selectedReturnId } = message;
+      southwestParser();
+      highlightSouthwestItin(selectedDepartureId, selectedReturnId);
+      addBackToSearchButton();
+      break;
+    default:
+      break;
+  }
 });
 
 function sendFlightsToBackground(southwestFlights) {
   if (!southwestFlights) {
     return;
   }
-  flightsSent = true;
   let [departures, returns] = southwestFlights.searchResults.airProducts;
   if (
     (departures && !departures.details.length) ||
@@ -45,34 +61,6 @@ function sendFlightsToBackground(southwestFlights) {
     flights: itins,
   });
 }
-
-chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
-  // parse page to get flights, then send background to process and display on new web page.
-  console.info("Received message ", message.event);
-  switch (message.event) {
-    case "STOP_PARSING":
-      window.cancelAnimationFrame(rafID);
-      break;
-    case "BEGIN_PARSING":
-      if (!flightsSent) {
-        southwestFlights = JSON.parse(
-          window.sessionStorage.getItem(
-            "AirBookingSearchResultsSearchStore-searchResults-v1"
-          )
-        );
-        sendFlightsToBackground(southwestFlights);
-      }
-      break;
-    case "HIGHLIGHT_FLIGHT":
-      const { selectedDepartureId, selectedReturnId } = message;
-      southwestParser();
-      highlightSouthwestItin(selectedDepartureId, selectedReturnId);
-      addBackToSearchButton();
-      break;
-    default:
-      break;
-  }
-});
 
 function addBackToSearchButton() {
   if (document.querySelector("#back-to-search")) {
