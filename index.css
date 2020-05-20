@@ -122,7 +122,9 @@ ul {
   justify-content: flex-end;
   height: 40px;
   align-items: center;
-  background: white;
+}
+.interval-time-text {
+  letter-spacing: -1px;
 }
 .interval-line {
   z-index: -1;

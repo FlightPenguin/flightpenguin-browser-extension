@@ -405,6 +405,7 @@ function createTimeBarHeader(intervals, tzOffset, dayWidths) {
       ).replace(":00", "");
 
       const tzTimeNode = document.createElement("span");
+      tzTimeNode.classList.add("interval-time-text");
       // tzTimeNode.innerText = `${dayOfWeekAsInteger(tzDayOfWeek)} ${tzTime} `;
       tzTimeNode.innerText = tzTime.replace("AM", "a").replace("PM", "p");
       intervalNode.append(tzTimeNode);
@@ -428,6 +429,7 @@ function createTimeBarHeader(intervals, tzOffset, dayWidths) {
     }
 
     const timeNode = document.createElement("span");
+    timeNode.classList.add("interval-time-text");
     timeNode.innerText = originTime.replace("AM", "a").replace("PM", "p");
     intervalNode.append(timeNode);
     intervalNode.style.left = intervalWidth * index + "px";
