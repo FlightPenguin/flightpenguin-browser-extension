@@ -179,7 +179,9 @@ function Itin(depFlight, retFlight, fare, currency, provider, windowId, tabId) {
   this.provider = provider;
   this.windowId = windowId;
   this.tabId = tabId;
-  this.fare = fare;
+  this.fareText = fare;
+  // String interpolate to make sure we're dealing with a string
+  this.fareNumber = `${fare}`.match(/\d+/g).join("");
   this.currency = currency;
 }
 

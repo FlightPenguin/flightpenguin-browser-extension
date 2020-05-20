@@ -124,10 +124,10 @@ chrome.runtime.onMessage.addListener(function (message) {
         } = createIntervals(allDepartures);
         createNodeList(
           allDepartures,
-          itins,
           depListNode,
           increment,
-          startHourOffset
+          startHourOffset,
+          true
         );
         createTimeBarContainer(
           allDepartures[0].timezoneOffset,
@@ -146,6 +146,7 @@ chrome.runtime.onMessage.addListener(function (message) {
     case "RETURN_FLIGHTS":
       const { returnList } = message.flights;
       returnsSection.style.display = "block";
+      selections[0].querySelector(".fare").style.display = "none";
 
       const {
         increment,
@@ -155,10 +156,10 @@ chrome.runtime.onMessage.addListener(function (message) {
       } = createIntervals(returnList);
       createNodeList(
         returnList,
-        allItins,
         retListNode,
         increment,
-        startHourOffset
+        startHourOffset,
+        false
       );
       createTimeBarContainer(
         returnList[0].timezoneOffset,
@@ -197,10 +198,10 @@ chrome.runtime.onMessage.addListener(function (message) {
 
 function createNodeList(
   list,
-  itins,
   containerNode,
   increment,
-  startHourOffset
+  startHourOffset,
+  isDeparture
 ) {
   containerNode.innerHTML = "";
   list.forEach((item) => {
@@ -220,12 +221,28 @@ function createNodeList(
     const {
       operatingAirline: { display: operatingAirline },
       marketingAirlineText,
+      id,
     } = item;
-    let fares = item.itinIds.map((itinId) => allItins[itinId].fare).sort();
-    const fare = document.createElement("span");
-    fare.textContent = "$" + fares[0];
-    fare.classList.add("fare");
-    contentNode.append(fare);
+
+    let fareText;
+    if (isDeparture) {
+      // departures
+      const cheapestItin = item.itinIds
+        .map((itinId) => allItins[itinId])
+        .sort((a, b) => a.fareNumber - b.fareNumber)[0];
+      fareText = cheapestItin.fareText;
+    } else {
+      // returns
+      fareText = allItins[`${selections[0].dataset.id}-${id}`].fareText;
+    }
+
+    const costContainer = document.createElement("div");
+    costContainer.classList.add("cost-container");
+    const fareContainer = document.createElement("span");
+    fareContainer.classList.add("fare");
+    fareContainer.textContent = "$" + fareText;
+    costContainer.append(fareContainer);
+    contentNode.append(costContainer);
     // Create and append airline HTML
     const airlinesContainer = document.createElement("div");
     airlinesContainer.classList.add("airlines");
@@ -310,6 +327,7 @@ function handleClick(e) {
     if (search.roundtrip) {
       // update UI to show departures
       flightsNotSelected.forEach((flight) => (flight.style.display = null));
+      selections[0].querySelector(".fare").style.display = null;
       depTimeBarContainer.style.display = null;
       returnsSection.style.display = "none";
       retListNode.innerHTML = "";

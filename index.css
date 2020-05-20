@@ -31,7 +31,8 @@ ul {
   cursor: pointer;
   background: linear-gradient(180deg, #fff, #e6ebf1) bottom/100% 150px repeat-x;
 }
-.flight-list-item:hover .time-bar-segment::after {
+.flight-list-item:hover .time-bar-segment::after,
+.flight-list-item:focus .time-bar-segment::after {
   background: transparent;
 }
 
@@ -101,10 +102,14 @@ ul {
   font-size: 8px;
   color: gray;
 }
+.cost-container {
+  width: 140px;
+  text-align: right;
+  display: flex;
+  flex-direction: column;
+}
 .fare {
   font-size: 20px;
-  width: 85px;
-  text-align: right;
 }
 
 .interval-time {
