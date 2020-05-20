@@ -222,19 +222,16 @@ function openProviderSearchResults(message) {
 }
 function createWindow(url, provider) {
   return new Promise((resolve) => {
-    chrome.windows.create(
-      { url, focused: false, incognito: true },
-      async (win) => {
-        tabIds[provider] = win.tabs[0].id;
-        windowIds[provider] = win.id;
-        chrome.tabs.onUpdated.addListener(function listener(tabId, info) {
-          if (info.status === "complete" && tabId === tabIds[provider]) {
-            chrome.tabs.onUpdated.removeListener(listener);
-            resolve();
-          }
-        });
-      }
-    );
+    chrome.windows.create({ url, focused: false }, async (win) => {
+      tabIds[provider] = win.tabs[0].id;
+      windowIds[provider] = win.id;
+      chrome.tabs.onUpdated.addListener(function listener(tabId, info) {
+        if (info.status === "complete" && tabId === tabIds[provider]) {
+          chrome.tabs.onUpdated.removeListener(listener);
+          resolve();
+        }
+      });
+    });
   });
 }
 
