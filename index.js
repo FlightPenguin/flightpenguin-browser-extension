@@ -255,15 +255,7 @@ function createNodeList(
       span.textContent = airline;
 
       if (idx === 0) {
-        if (airline.length > 17) {
-          span.classList.add("primary-airline__small-font-size");
-          if (airline.includes("+")) {
-            const airlinesHTML = airline.split(" + ").join(", ");
-            span.innerHTML = airlinesHTML;
-          }
-        } else {
-          span.classList.add("primary-airline");
-        }
+        span.classList.add("primary-airline");
       } else {
         span.classList.add("secondary-airline");
       }
@@ -514,12 +506,7 @@ function createTimeNodes(fromTimeDetails, toTimeDetails) {
   });
 }
 function createTimeBarRow(flight, increment, startHourOffset) {
-  const {
-    layovers,
-    operatingAirline: { display, color },
-    fromTimeDetails,
-    toTimeDetails,
-  } = flight;
+  const { layovers, fromTimeDetails, toTimeDetails } = flight;
   const timeBarRow = document.createElement("div");
   timeBarRow.classList.add("time-bar-row");
   const timeNodes = createTimeNodes(fromTimeDetails, toTimeDetails);
@@ -530,7 +517,14 @@ function createTimeBarRow(flight, increment, startHourOffset) {
   const timeSegments = document.createDocumentFragment();
   const iterator = layovers.length ? layovers : [flight];
 
-  for (let { fromTime, toTime, isLayoverStop, from, to } of iterator) {
+  for (let {
+    fromTime,
+    toTime,
+    isLayoverStop,
+    from,
+    to,
+    operatingAirline: { color, display },
+  } of iterator) {
     const endsNextDay = toTime.match(/(\+\d)/);
     const startsNextDay = fromTime.match(/(\+\d)/);
     if (!isLayoverStop) {

@@ -17,7 +17,8 @@ import {
  * }
  * @param {string} fromTime
  * @param {string} toTime
- * @param {string} airline
+ * @param {string} operatingAirline
+ * @param {string} marketingAirline
  * @param {string} duration
  */
 function Flight(
@@ -76,10 +77,14 @@ Flight.prototype.calculateTimezoneOffset = function () {
     );
   } else {
     const layovers = this.layovers.map(
-      ({ fromTime, toTime, duration }, idx) => {
+      ({ fromTime, toTime, duration, operatingAirline }, idx) => {
         totalTimezoneOffset += getTimezoneOffset(fromTime, toTime, duration);
         return {
           ...this.layovers[idx],
+          operatingAirline: airlinesMap[operatingAirline] || {
+            display: operatingAirline,
+            color: "#DFCCFB",
+          },
           timezoneOffset: totalTimezoneOffset,
         };
       }
@@ -98,6 +103,10 @@ Flight.prototype.calculateTimezoneOffset = function () {
         from,
         to,
         isLayoverStop: true,
+        operatingAirline: {
+          display: `Layover at ${from}.`,
+          color: "transparent",
+        },
       });
     }
     layoversWithStops.push(layovers[layovers.length - 1]);

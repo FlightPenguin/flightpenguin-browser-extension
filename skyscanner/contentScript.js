@@ -275,15 +275,13 @@ function getLayovers(legNode) {
     "[class^='LegSegmentSummary_container']"
   );
   const airlines = Array.from(
-    layoversNode.querySelectorAll(
-      "[class^='LogoImage_container'] span:first-of-type"
-    )
+    layoversNode.querySelectorAll("[class^='AirlineLogoTitle_container']")
   );
   const segments = Array.from(
     layoversNode.querySelectorAll("[class^='LegSegmentDetails_container']")
   );
   const layovers = [];
-  for (let i = 0; i < airlines.length; i++) {
+  for (let i = 0; i < segments.length; i++) {
     const [fromTime, duration, toTime] = segments[i].querySelector(
       "[class^='Times_segmentTimes']"
     ).children;
@@ -292,11 +290,23 @@ function getLayovers(legNode) {
       const locationNode = segments[i].querySelector(selector);
       locations[key] = locationNode.textContent.split(/\s/)[0];
     }
+    const marketingAirline = airlines[i].querySelector(
+      "[class^='LogoImage_container']"
+    ).textContent;
+    const operatingAirlines = airlines[i]
+      .querySelector("[class*='OperatedBy']")
+      .textContent.split("Operated by");
+
+    let operatingAirline = marketingAirline;
+    if (operatingAirlines.length > 1) {
+      operatingAirline = operatingAirlines[operatingAirlines.length - 1];
+    }
+
     layovers.push({
-      airline: airlines[i].textContent,
       fromTime: fromTime.textContent,
       duration: duration.textContent,
       toTime: toTime.textContent,
+      operatingAirline: operatingAirline.trim(),
       ...locations,
     });
   }

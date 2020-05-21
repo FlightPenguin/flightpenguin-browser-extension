@@ -216,8 +216,7 @@ function getIndividualSouthwestLegDetails(flight) {
       return {
         fromTime: formatTimeTo12HourClock(stop.departureTime),
         toTime: formatTimeTo12HourClock(stop.arrivalTime),
-        operatingCarrierCode: "WN",
-        marketingCarrierCode: "WN",
+        operatingAirline: "Southwest",
         duration: convertDurationMinutesToString(stop.legDuration),
         from: stop.originationAirportCode,
         to: stop.destinationAirportCode,

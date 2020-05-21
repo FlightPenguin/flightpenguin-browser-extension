@@ -95,9 +95,6 @@ ul {
 .primary-airline {
   font-size: 19px;
 }
-.primary-airline__small-font-size {
-  font-size: 15px;
-}
 .secondary-airline {
   font-size: 8px;
   color: gray;
