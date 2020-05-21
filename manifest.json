@@ -4,7 +4,7 @@
   "description": "Best one in town!",
   "background": {
     "page": "background.html",
-    "persistent": true // prevents following error "The 'webRequest' API cannot be used with event pages." https://developer.chrome.com/extensions/background_pages#persistentWarning
+    "persistent": false
   },
   "content_scripts": [
     {
