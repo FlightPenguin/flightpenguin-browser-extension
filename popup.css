@@ -1,10 +1,13 @@
+form {
+  font-size: 16px;
+}
 fieldset {
   border: none;
   margin: 0;
   /* padding: 0; */
   box-shadow: none;
 }
-input {
+input[type="text"] {
   width: 155px;
   border: 1px solid #eee;
 }
@@ -37,10 +40,6 @@ input[type="date"]::-webkit-inner-spin-button {
   -webkit-appearance: none;
   display: none;
 }
-input,
-select {
-  height: 28px;
-}
 
 input:hover {
   background: linear-gradient(180deg, #fff, #e6ebf1) bottom/100% 150px repeat-x;
@@ -48,8 +47,7 @@ input:hover {
 label.inline {
   display: flex;
   align-items: center;
-  height: 20px;
-  width: 159px;
+  justify-content: space-between;
 }
 label.inline:hover {
   background: linear-gradient(180deg, #fff, #e6ebf1) bottom/100% 150px repeat-x;
@@ -67,11 +65,18 @@ form#search {
   padding: 10px 0;
 }
 select {
-  font-family: "Helvetica Neue";
-  font-size: 14px;
-  width: 100%;
+  font-family: inherit;
+  font-size: inherit;
   color: #3c4257;
-  border-color: #fff;
+  border-color: #3c4257;
+  height: 28px;
+}
+
+input[type="checkbox"] {
+  transform: scale(1.5);
+}
+fieldset.sources label.inline {
+  margin-bottom: 10px;
 }
 select:hover {
   border-color: rgb(166, 166, 166);

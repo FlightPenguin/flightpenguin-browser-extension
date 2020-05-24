@@ -8,16 +8,11 @@
       <fieldset>
         <label title="Please enter your departure airport."
           >From (airport code)
-          <input
-            type="text"
-            placeholder="SFO"
-            name="from"
-            required="required"
-          />
+          <input type="text" placeholder="" name="from" required="required" />
         </label>
         <label title="Please enter your destination airport."
           >To (airport code)
-          <input type="text" placeholder="JFK" name="to" required="required" />
+          <input type="text" placeholder="" name="to" required="required" />
         </label>
       </fieldset>
       <fieldset>
@@ -51,7 +46,7 @@
         </label>
       </fieldset>
       <fieldset>
-        <select name="cabin">
+        <select name="cabin" class="cabin">
           <option value="econ">Economy</option>
           <option value="prem_econ">Premium Economy</option>
           <option value="business">Business</option>
@@ -69,7 +64,7 @@
           </select>
         </label>
       </fieldset>
-      <fieldset>
+      <fieldset class="sources">
         <b>Sources:</b>
         <label class="inline">
           Skyscanner
