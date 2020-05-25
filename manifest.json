@@ -24,6 +24,10 @@
       "matches": ["https://www.skyscanner.com/transport/flights/*"],
       "css": ["skyscanner/contentStyles.css"],
       "js": ["skyscanner/contentScript.js"]
+    },
+    {
+      "matches": ["https://www.expedia.com/Flights-Search?*"],
+      "js": ["expedia/contentScript.js"]
     }
   ],
   "browser_action": {

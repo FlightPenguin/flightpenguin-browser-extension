@@ -224,23 +224,31 @@ function createNodeList(
       id,
     } = item;
 
-    let fareText;
+    let cheapestItin;
     if (isDeparture) {
       // departures
-      const cheapestItin = item.itinIds
+      cheapestItin = item.itinIds
         .map((itinId) => allItins[itinId])
         .sort((a, b) => a.fareNumber - b.fareNumber)[0];
-      fareText = cheapestItin.fareText;
     } else {
       // returns
-      fareText = allItins[`${selections[0].dataset.id}-${id}`].fareText;
+      cheapestItin = allItins[`${selections[0].dataset.id}-${id}`];
     }
+    const fareText = cheapestItin.fareText;
 
     const costContainer = document.createElement("div");
     costContainer.classList.add("cost-container");
     const fareContainer = document.createElement("span");
     fareContainer.classList.add("fare");
-    fareContainer.textContent = "$" + fareText;
+    let fareTextContent;
+    if (search.searchByPoints) {
+      fareTextContent = `${Math.floor(
+        cheapestItin.fareNumber / 0.012499999
+      )} points`;
+    } else {
+      fareTextContent = `$${fareText}`;
+    }
+    fareContainer.textContent = fareTextContent;
     costContainer.append(fareContainer);
     contentNode.append(costContainer);
     // Create and append airline HTML

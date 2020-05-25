@@ -198,17 +198,24 @@ function openProviderSearchResults(message) {
     toDate: "2020-03-25"
     numPax: 2
      */
-  const { southwest, priceline, skyscanner } = message;
+  const { southwest, priceline, skyscanner, searchByPoints } = message;
+
   const providers = [];
-  if (southwest) {
-    providers.push("southwest");
+
+  if (searchByPoints) {
+    providers.push("expedia");
+  } else {
+    if (southwest) {
+      providers.push("southwest");
+    }
+    if (priceline) {
+      providers.push("priceline");
+    }
+    if (skyscanner) {
+      providers.push("skyscanner");
+    }
   }
-  if (priceline) {
-    providers.push("priceline");
-  }
-  if (skyscanner) {
-    providers.push("skyscanner");
-  }
+
   providers.forEach(async (provider) => {
     const url = providerURLBaseMap[provider](message);
     // Open url in a new window. Not a new tab because we can't read results from inactive tabs (browser powers down inactive tabs).
@@ -239,7 +246,36 @@ const providerURLBaseMap = {
   priceline: pricelineTabURL,
   southwest: southwestTabURL,
   skyscanner: skyscannerTabURL,
+  expedia: expediaTabUrl,
 };
+const expedia_cabin_map = {
+  econ: "economy",
+  prem_econ: "premiumeconomy",
+  business: "business",
+  first: "first",
+};
+function expediaTabUrl(formData) {
+  // http://www.expedia.com/Flights-Search?trip=roundtrip&leg1=from:sfo,to:lax,departure:6/14/2020TANYT&leg2=from:lax,to:sfo,departure:06/16/2020TANYT&passengers=adults:1,children:0,seniors:0,infantinlap:Y&options=cabinclass:economy&mode=search&origref=www.expedia.com
+  const { from, to, fromDate, toDate, numPax, cabin, roundtrip } = formData;
+  const startDate = formatDate(fromDate);
+  const tripType = roundtrip ? "roundtrip" : "oneway";
+  let url = `https://www.expedia.com/Flights-Search?trip=${tripType}&leg1=from:${from},to:${to},departure:${startDate}TANYT`;
+
+  function formatDate(dateStr) {
+    const [year, month, day] = dateStr.split("-");
+    return [month, day, year].join("/");
+  }
+
+  if (roundtrip) {
+    const endDate = formatDate(toDate);
+    url += `&leg2=from:${to},to:${from},departure:${endDate}TANYT`;
+  }
+  url += `&passengers=adults:${numPax},children:0,seniors:0,infantinlap:0`;
+  url += `&cabinclass:${cabin}`;
+  url += "&mode=search&origref=www.expedia.com";
+
+  return url;
+}
 const skyscanner_cabin_map = {
   econ: "economy",
   prem_econ: "premiumeconomy",
