@@ -208,11 +208,11 @@ function createNodeList(
     const node = document.createElement("li");
     node.classList.add("flight-list-item");
     node.tabIndex = "0";
-    node.addEventListener("click", handleClick);
+    node.addEventListener("click", handleFlightSelection);
     node.addEventListener("keypress", (e) => {
       if ([13, 32].includes(e.keyCode)) {
         // 13 is enter key code, 32 is space bar
-        handleClick(e);
+        handleFlightSelection(e);
       }
     });
 
@@ -283,7 +283,7 @@ function createHeader(formData) {
   return `${from}-${to} ${fromDate} to ${toDate} ${cabin} ${numPax} adults`;
 }
 let flightsNotSelected;
-function handleClick(e) {
+function handleFlightSelection(e) {
   if (e.currentTarget.dataset.selected) {
     return;
   }

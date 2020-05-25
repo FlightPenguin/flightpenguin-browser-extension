@@ -13,7 +13,7 @@
     },
     {
       "matches": ["https://www.southwest.com/air/booking/select.html?*"],
-      "css": ["skyscanner/contentStyles.css"],
+      "css": ["shared/contentStyles.css"],
       "js": ["southwest/contentScript.js"]
     },
     {
@@ -22,11 +22,12 @@
     },
     {
       "matches": ["https://www.skyscanner.com/transport/flights/*"],
-      "css": ["skyscanner/contentStyles.css"],
+      "css": ["shared/contentStyles.css"],
       "js": ["skyscanner/contentScript.js"]
     },
     {
       "matches": ["https://www.expedia.com/Flights-Search?*"],
+      "css": ["shared/contentStyles.css"],
       "js": ["expedia/contentScript.js"]
     }
   ],

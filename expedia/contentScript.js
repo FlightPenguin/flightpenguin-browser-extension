@@ -67,7 +67,6 @@ function handleBackToSearchButtonClick() {
 }
 
 function highlightItin(selectedDepartureId, selectedReturnId) {
-  //   window.cancelAnimationFrame(rafID);
   // reset prior selection
   const prevSelection = document.querySelector(
     `${flightContainer}[data-selected='true']`
@@ -107,15 +106,13 @@ function parseResults() {
     document.querySelectorAll(`${flightContainer}:not([data-visited='true']`)
   );
   if (!moreItins.length) {
-    chrome.runtime.sendMessage({
-      event: "EXPEDIA_READY",
-    });
     return;
   }
   const flights = parser(moreItins);
   chrome.runtime.sendMessage({
     event: "FLIGHT_RESULTS_RECEIVED",
     flights,
+    provider: "expedia",
   });
   allItins = allItins.concat(moreItins);
 }

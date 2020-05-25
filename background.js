@@ -46,17 +46,10 @@ chrome.runtime.onMessage.addListener(function (message, sender, reply) {
       if (departureSelected) {
         break;
       }
-      let provider;
-      if (sender.origin.includes("southwest")) {
-        // save results with their tab index so we know where to move the user to when they make a flight selection
-        provider = "southwest";
-      } else if (sender.origin.includes("priceline")) {
-        provider = "priceline";
-      } else if (sender.origin.includes("skyscanner")) {
-        provider = "skyscanner";
-      }
+      const { flights, provider } = message;
+
       const { departures, itins } = makeItins(
-        message.flights,
+        flights,
         provider,
         windowIds[provider],
         tabIds[provider]

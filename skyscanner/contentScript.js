@@ -177,6 +177,7 @@ function parseResults() {
       chrome.runtime.sendMessage({
         event: "FLIGHT_RESULTS_RECEIVED",
         flights: [],
+        provider: "skyscanner",
       });
     }
     // every 9 seconds scroll to next viewPort
@@ -197,6 +198,7 @@ function parseResults() {
         chrome.runtime.sendMessage({
           event: "FLIGHT_RESULTS_RECEIVED",
           flights,
+          provider: "skyscanner",
         });
       } else {
         window.cancelAnimationFrame(rafID);
@@ -327,6 +329,7 @@ function loadModalCallback(mutationList, observer) {
       chrome.runtime.sendMessage({
         event: "FLIGHT_RESULTS_RECEIVED",
         flights: flightsWithLayoversToSend,
+        provider: "skyscanner",
       });
       chrome.runtime.sendMessage({
         event: "SKYSCANNER_READY",

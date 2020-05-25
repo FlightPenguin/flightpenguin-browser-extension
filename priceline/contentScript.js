@@ -79,6 +79,7 @@ function loadPricelineResults() {
         chrome.runtime.sendMessage({
           event: "FLIGHT_RESULTS_RECEIVED",
           flights: pricelineFlights,
+          provider: "priceline",
         });
       }
       moreItins.forEach((itin) => {

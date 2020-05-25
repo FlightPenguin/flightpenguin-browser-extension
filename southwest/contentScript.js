@@ -50,6 +50,7 @@ function sendFlightsToBackground(southwestFlights) {
     chrome.runtime.sendMessage({
       event: "FLIGHT_RESULTS_RECEIVED",
       flights: [],
+      provider: "southwest",
     });
     return;
   }
@@ -59,6 +60,7 @@ function sendFlightsToBackground(southwestFlights) {
   chrome.runtime.sendMessage({
     event: "FLIGHT_RESULTS_RECEIVED",
     flights: itins,
+    provider: "southwest",
   });
 }
 
