@@ -52,7 +52,7 @@ label.inline {
 label.inline:hover {
   background: linear-gradient(180deg, #fff, #e6ebf1) bottom/100% 150px repeat-x;
 }
-.num-pax-label {
+#num-pax-label {
   display: flex;
   flex-direction: row;
   justify-content: space-between;
@@ -75,7 +75,7 @@ select {
 input[type="checkbox"] {
   transform: scale(1.5);
 }
-fieldset.sources label.inline {
+#sources label.inline {
   margin-bottom: 10px;
 }
 select:hover {

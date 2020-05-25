@@ -46,7 +46,7 @@
         </label>
       </fieldset>
       <fieldset>
-        <select name="cabin" class="cabin">
+        <select name="cabin" id="cabin">
           <option value="econ">Economy</option>
           <option value="prem_econ">Premium Economy</option>
           <option value="business">Business</option>
@@ -54,7 +54,7 @@
         </select>
       </fieldset>
       <fieldset>
-        <label class="num-pax-label">
+        <label id="num-pax-label">
           # of tickets
           <select name="numPax">
             <option>1</option>
@@ -64,7 +64,16 @@
           </select>
         </label>
       </fieldset>
-      <fieldset class="sources">
+      <fieldset id="method">
+        <b>Search by:</b>
+        <label class="inline"
+          >Price<input type="radio" name="method" id="price" value="price" />
+        </label>
+        <label class="inline"
+          >Points<input type="radio" name="method" id="points" value="points" />
+        </label>
+      </fieldset>
+      <fieldset id="sources" style="display: none;">
         <b>Sources:</b>
         <label class="inline">
           Skyscanner

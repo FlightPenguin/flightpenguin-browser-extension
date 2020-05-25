@@ -53,6 +53,16 @@ document.querySelector("#roundtrip").addEventListener("change", (e) => {
   }
 });
 
+document.querySelectorAll("input[type='radio']").forEach((el) => {
+  el.addEventListener("change", (e) => {
+    if (e.target.value === "price") {
+      document.querySelector("#sources").style.display = null;
+    } else {
+      document.querySelector("#sources").style.display = "none";
+    }
+  });
+});
+
 fromDateInput.addEventListener("change", (e) => {
   const toDate = document.querySelector("#toDateInput");
   toDate.min = e.target.value;
@@ -61,7 +71,11 @@ fromDateInput.addEventListener("change", (e) => {
 document.querySelector("form#search").addEventListener("submit", (e) => {
   e.preventDefault();
 
-  if (!e.target.southwest.checked && !e.target.skyscanner.checked) {
+  if (
+    e.target.price.checked &&
+    !e.target.southwest.checked &&
+    !e.target.skyscanner.checked
+  ) {
     const node = document.querySelector(".validation-error");
     node.textContent = "Please select a provider to continue";
     return;
@@ -79,6 +93,8 @@ document.querySelector("form#search").addEventListener("submit", (e) => {
     toDate: e.target.toDate ? e.target.toDate.value : "",
     numPax: Number(e.target.numPax.value),
     roundtrip: e.target.roundtrip.checked,
+    searchByPoints: e.target.points.checked,
+    searchByPrice: e.target.price.checked,
   };
 
   for (const [eventAction, eventLabel] of Object.entries(formData)) {
