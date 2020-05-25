@@ -64,7 +64,15 @@ function convertMinutesTo12HourClock(time, addDay) {
 }
 function convertDurationToMinutes(duration) {
   // duration looks like 10h 30m
-  let [durationHours, durationRest] = duration.split("h");
+  let durationHours;
+  let durationRest;
+  if (duration.includes("h")) {
+    [durationHours, durationRest] = duration.split("h");
+  } else {
+    // less than 1 hour
+    durationHours = 0;
+    durationRest = duration;
+  }
   let durationMinutes = durationRest.trim().split("m")[0] || 0;
   let durationTotalMinutes =
     Number(durationMinutes) + Number(durationHours) * 60;
