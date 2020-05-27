@@ -143,8 +143,9 @@ chrome.runtime.onMessage.addListener(function (message) {
       headerContainer.textContent = header;
       subheaderContainer.textContent = `${totalFlights} flights found.`;
       break;
-    case "RETURN_FLIGHTS":
-      const { returnList } = message.flights;
+    case "RETURN_FLIGHTS_FOR_CLIENT":
+      const { returnList, itins: newItins } = message.flights;
+      allItins = { ...allItins, ...newItins };
       returnsSection.style.display = "block";
       selections[0].querySelector(".fare").style.display = "none";
 
@@ -222,12 +223,13 @@ function createNodeList(
       operatingAirline: { display: operatingAirline },
       marketingAirlineText,
       id,
+      itinIds,
     } = item;
 
     let cheapestItin;
     if (isDeparture) {
       // departures
-      cheapestItin = item.itinIds
+      cheapestItin = itinIds
         .map((itinId) => allItins[itinId])
         .sort((a, b) => a.fareNumber - b.fareNumber)[0];
     } else {

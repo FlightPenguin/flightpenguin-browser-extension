@@ -70,14 +70,47 @@ chrome.runtime.onMessage.addListener(function (message, sender, reply) {
       };
       sendMessageToWebpage(nextMessage);
       break;
+    case "RETURN_FLIGHTS_RECEIVED":
+      // for providers that show returns separate from departures,
+      // and only once you select a departure.
+      const {
+        departure: expediaDeparture,
+        flights: expediaFlights,
+        provider: expediaProvider,
+      } = message;
+      const { departures: expediaReturns, itins: expediaItins } = makeItins(
+        expediaFlights,
+        expediaProvider,
+        windowIds[expediaProvider],
+        tabIds[expediaProvider],
+        true
+      );
+      allItins = { ...allItins, ...expediaItins };
+
+      chrome.tabs.sendMessage(webPageTabId, {
+        event: "RETURN_FLIGHTS_FOR_CLIENT",
+        flights: {
+          returnList: Object.values(expediaItins).map((itin) => itin.retFlight),
+          itins: expediaItins,
+        },
+      });
+      break;
     case "DEPARTURE_SELECTED":
       departureSelected = true;
       const departure = allDepartures[message.departureId];
-      const returnList = findReturnFlights(departure, allItins);
-      console.log("return", returnList);
+
+      if (formData.searchByPoints && formData.roundtrip) {
+        // expedia shows return options for roundtrip after you select a departure.
+        chrome.tabs.sendMessage(tabIds.expedia, {
+          event: "GET_RETURN_FLIGHTS",
+          departure,
+          itin: allItins[departure.id],
+        });
+        break;
+      }
       chrome.tabs.sendMessage(webPageTabId, {
-        event: "RETURN_FLIGHTS",
-        flights: { returnList },
+        event: "RETURN_FLIGHTS_FOR_CLIENT",
+        flights: { returnList: findReturnFlights(departure, allItins) },
       });
       break;
     case "HIGHLIGHT_TAB":

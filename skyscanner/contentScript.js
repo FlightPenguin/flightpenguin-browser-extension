@@ -190,7 +190,7 @@ function parseResults() {
 
       let moreItins = Array.from(
         document.querySelectorAll(
-          ".BpkTicket_bpk-ticket__Brlno:not([data-visited='true']"
+          ".BpkTicket_bpk-ticket__Brlno:not([data-visited='true'])"
         )
       );
       if (moreItins.length) {

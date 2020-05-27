@@ -72,10 +72,12 @@ select {
   height: 28px;
 }
 
-input[type="checkbox"] {
+input[type="checkbox"],
+input[type="radio"] {
   transform: scale(1.5);
 }
-#sources label.inline {
+#sources label.inline,
+#method label.inline {
   margin-bottom: 10px;
 }
 select:hover {

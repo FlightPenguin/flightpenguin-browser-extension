@@ -162,15 +162,29 @@ function diffDepartures(sentDepartures, departures) {
  * @param {number} windowId
  * @param {number} tabId
  */
-function Itin(depFlight, retFlight, fare, currency, provider, windowId, tabId) {
-  this.depFlight = new Flight(
-    depFlight.fromTime,
-    depFlight.toTime,
-    depFlight.operatingAirline,
-    depFlight.marketingAirline,
-    depFlight.duration,
-    depFlight.layovers
-  );
+function Itin(
+  depFlight,
+  retFlight,
+  fare,
+  currency,
+  provider,
+  windowId,
+  tabId,
+  makeRetFlightOnly
+) {
+  if (makeRetFlightOnly) {
+    this.depFlight = depFlight;
+  } else {
+    this.depFlight = new Flight(
+      depFlight.fromTime,
+      depFlight.toTime,
+      depFlight.operatingAirline,
+      depFlight.marketingAirline,
+      depFlight.duration,
+      depFlight.layovers
+    );
+  }
+
   if (retFlight) {
     this.retFlight = new Flight(
       retFlight.fromTime,
@@ -190,7 +204,7 @@ function Itin(depFlight, retFlight, fare, currency, provider, windowId, tabId) {
   this.tabId = tabId;
   this.fareText = fare;
   // String interpolate to make sure we're dealing with a string
-  this.fareNumber = `${fare}`.match(/\d+/g).join("");
+  this.fareNumber = Number(`${fare}`.match(/\d+/g).join(""));
   this.currency = currency;
 }
 
@@ -206,7 +220,13 @@ function findReturnFlights(depFlight, itins) {
  * @param {number} tabId
  * @returns {object} {itins, departures, returns}
  */
-function makeItins(itinCollection, provider, windowId, tabId) {
+function makeItins(
+  itinCollection,
+  provider,
+  windowId,
+  tabId,
+  makeRetFlightOnly = false
+) {
   const itins = {};
   const departures = {};
   const returns = {};
@@ -219,7 +239,8 @@ function makeItins(itinCollection, provider, windowId, tabId) {
       ic.currency,
       provider,
       windowId,
-      tabId
+      tabId,
+      makeRetFlightOnly
     );
     // the deduping flights part
     if (departures[itin.depFlight.id]) {

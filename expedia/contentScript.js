@@ -2,16 +2,16 @@
 console.clear();
 console.log("hello...");
 const errors = {};
-let allItins = [];
+let selectedDeparture;
+let selectedItin;
 
-window.addEventListener("load", loadResults);
-chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
+chrome.runtime.onMessage.addListener(function (message) {
   // parse page to get flights, then send background to process and display on new web page.
   console.info("Received message ", message.event);
   switch (message.event) {
     case "BEGIN_PARSING":
       try {
-        loadResults();
+        loadResults("FLIGHT_RESULTS_RECEIVED");
       } catch (e) {
         console.log(e);
         chrome.runtime.sendMessage({
@@ -21,11 +21,33 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
         });
       }
       break;
-    case "GET_RETURNS":
-      //   const { selectedDepartureId } = message;
+    case "GET_RETURN_FLIGHTS":
+      selectedDeparture = message.departure;
+      selectedItin = message.itin;
       // click departure
+      const departureNode = document.querySelector(
+        `[data-id='${selectedDeparture.id}']`
+      );
+      departureNode.querySelector(firstSelectButton).click();
+      const hasRestrictionTray = departureNode.querySelector(
+        ".basic-economy-tray"
+      );
+      const needsAnotherClick = hasRestrictionTray.textContent.length;
+      if (needsAnotherClick) {
+        departureNode.querySelector(finalSelectButton).click();
+      }
       // wait for returns
       // parse returns
+      try {
+        loadResults("RETURN_FLIGHTS_RECEIVED");
+      } catch (e) {
+        console.log(e);
+        chrome.runtime.sendMessage({
+          event: "FAILED_SCRAPER",
+          source: "expedia",
+          description: `${e.name} ${e.message}`,
+        });
+      }
       // send returns
       break;
     case "HIGHLIGHT_FLIGHT":
@@ -38,11 +60,12 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
   }
 });
 
-function loadResults() {
+function loadResults(event) {
+  const eventToMessage = event;
   const intervalId = setInterval(function () {
     let observerTarget = document.querySelector(loadingSelector);
     if (!observerTarget) {
-      parseResults();
+      parseResults(eventToMessage);
       clearInterval(intervalId);
     }
   }, 500);
@@ -79,6 +102,7 @@ function highlightItin(selectedDepartureId, selectedReturnId) {
   if (selectedReturnId) {
     idToSearchFor += `-${selectedReturnId}`;
   }
+
   const itinNode = findMatchingDOMNode(
     Array.from(document.querySelectorAll(flightContainer)),
     idToSearchFor
@@ -94,7 +118,7 @@ function highlightItin(selectedDepartureId, selectedReturnId) {
 /**
  *
  */
-function parseResults() {
+function parseResults(event) {
   // if (resultSummaryResultsTextContainer.textContent.match(/^0 results/)) {
   //   chrome.runtime.sendMessage({
   //     event: "FLIGHT_RESULTS_RECEIVED",
@@ -103,18 +127,17 @@ function parseResults() {
   // }
 
   let moreItins = Array.from(
-    document.querySelectorAll(`${flightContainer}:not([data-visited='true']`)
+    document.querySelectorAll(`${flightContainer}:not([data-visited='true'])`)
   );
   if (!moreItins.length) {
     return;
   }
   const flights = parser(moreItins);
   chrome.runtime.sendMessage({
-    event: "FLIGHT_RESULTS_RECEIVED",
+    event,
     flights,
     provider: "expedia",
   });
-  allItins = allItins.concat(moreItins);
 }
 
 function findMatchingDOMNode(list, target) {
@@ -125,34 +148,55 @@ function parser(itinNodes) {
   let itins = itinNodes.map((node) => {
     node.dataset.visited = "true";
 
-    if (node.textContent.includes("Sponsored")) {
+    if (node.dataset.isClickToPrice === "clickToPrice") {
+      // some mystery flight, sponsored ad
       return null;
     }
     let fare;
     try {
       fare = node.querySelector(fareSelector.fare).textContent.trim();
+      fare = Number(fare.match(/\d+/).join(""));
     } catch (e) {
       // one of those itins that say for example "See Southwest for prices"
       return null;
     }
 
-    const departureFlight = queryLeg(node, SELECTORS);
+    const flight = queryLeg(node, SELECTORS);
 
-    if (!departureFlight) {
+    if (!flight) {
       return null;
     }
 
-    node.dataset.id = [
-      departureFlight.fromTime,
-      departureFlight.toTime,
-      departureFlight.marketingAirline,
-    ].join("-"); // will use this id attribute to find the itin the user selected
+    if (selectedDeparture) {
+      // roundtrip
+      node.dataset.id = [
+        selectedDeparture.fromTime,
+        selectedDeparture.toTime,
+        selectedDeparture.marketingAirline,
+        flight.fromTime,
+        flight.toTime,
+        flight.marketingAirline,
+      ].join("-"); // will use this id attribute to find the itin the user selected
 
-    return {
-      departureFlight,
-      fare: fare.replace("$", ""),
-      currency: "$", // no currency node
-    };
+      return {
+        departureFlight: selectedDeparture,
+        returnFlight: flight,
+        fare: selectedItin.fareNumber + fare,
+      };
+    } else {
+      // either departures of roundtrip or oneway
+      node.dataset.id = [
+        flight.fromTime,
+        flight.toTime,
+        flight.marketingAirline,
+      ].join("-"); // will use this id attribute to find the itin the user selected
+
+      return {
+        departureFlight: flight,
+        returnFlight: null,
+        fare,
+      };
+    }
   });
   itins = itins.filter((itin) => itin);
 
@@ -224,7 +268,7 @@ function queryLeg(containerNode, selectors) {
   return data;
 }
 const flightContainer = ".flight-module.segment.offer-listing";
-const selectButton = "button";
+const firstSelectButton = "button";
 const finalSelectButton = "[data-test-id='select-button-1']";
 const loadingSelector = "#skeleton-listing";
 const SELECTORS = {
