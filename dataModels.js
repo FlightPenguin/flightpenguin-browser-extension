@@ -1,9 +1,6 @@
-import airlinesMap from "./airlineMap.js";
-import {
-  getTimezoneOffset,
-  getTimeDetails,
-  addTimezoneOffset,
-} from "./utilityFunctions.js";
+import airlinesMap from "./nameMaps/airlineMap.js";
+import isRegionalAirline from "./nameMaps/regionalAirlines.js";
+import { getTimezoneOffset, getTimeDetails } from "./utilityFunctions.js";
 
 /**
  * Flight {
@@ -35,28 +32,25 @@ function Flight(
   this.fromTimeDetails = getTimeDetails(fromTime);
   this.toTimeDetails = getTimeDetails(toTime);
 
+  // operating airline is what is primarily displayed
+  // marketing airline is used to create the id
   if (operatingAirline) {
-    if (operatingAirline.includes("Partially operated by ")) {
+    if (
+      isRegionalAirline(operatingAirline) ||
+      operatingAirline.includes("Partially operated by")
+    ) {
       // regional airlines don't get the primary airline spot
       // they'll be displayed where we display marketing airlines
       this.operatingAirline = marketingAirline;
-      this.marketingAirline = operatingAirline;
-      this.marketingAirlineText = operatingAirline;
+      this.marketingAirlineText = operatingAirline; // 'Partially operated by' or 'Operated by'
     } else {
-      this.operatingAirline = operatingAirline;
-      this.marketingAirline = marketingAirline;
+      this.operatingAirline = operatingAirline.replace("Operated by", "");
       this.marketingAirlineText = `Marketed by ${marketingAirline}`;
     }
   } else {
     // operating and marketing are the same airline
     this.operatingAirline = marketingAirline;
-    this.marketingAirline = marketingAirline;
   }
-
-  this.operatingAirline = airlinesMap[this.operatingAirline] || {
-    display: this.operatingAirline,
-    color: "#DFCCFB",
-  };
 
   // marketing airline is unique, not operating
   this.id = `${this.fromTime}-${this.toTime}-${marketingAirline}`;
@@ -64,6 +58,39 @@ function Flight(
   this.layovers = layovers || [];
   this.itinIds = [];
   this.timezoneOffset = this.calculateTimezoneOffset();
+  this.operatingAirline = airlinesMap.getAirlineDetails(this.operatingAirline);
+  // if (layovers) {
+  //   const displayName = this.layovers
+  //     .map(({ operatingAirline: { display } }) => display)
+  //     .join(", ");
+  //   this.operatingAirline = cleanupAirline(displayName);
+  // } else {
+  //   this.operatingAirline = cleanupAirline(this.operatingAirline);
+  // }
+}
+
+function cleanupAirline(airline) {
+  console.log("before", airline);
+  let justAirlines = [airline];
+  if (airline.includes("Partially operated by")) {
+    justAirlines = airline.split("Partially operated by ");
+  } else if (airline.includes("Operated by")) {
+    justAirlines = airline.split("Operated by");
+  }
+  const justAirline = justAirlines[justAirlines.length - 1].trim();
+  const airlines = justAirline.split(" + ");
+
+  let shortAirlineName;
+  if (airlines.length === 1) {
+    shortAirlineName = airlines[0];
+  } else {
+    shortAirlineName = airlines
+      .map((airline) => airlinesMap.getAirlineName(airline))
+      .join(", ");
+  }
+  console.log("after", shortAirlineName);
+
+  return airlinesMap.getAirlineDetails(shortAirlineName);
 }
 
 Flight.prototype.calculateTimezoneOffset = function () {
@@ -81,10 +108,7 @@ Flight.prototype.calculateTimezoneOffset = function () {
         totalTimezoneOffset += getTimezoneOffset(fromTime, toTime, duration);
         return {
           ...this.layovers[idx],
-          operatingAirline: airlinesMap[operatingAirline] || {
-            display: operatingAirline,
-            color: "#DFCCFB",
-          },
+          operatingAirline: cleanupAirline(operatingAirline),
           timezoneOffset: totalTimezoneOffset,
         };
       }

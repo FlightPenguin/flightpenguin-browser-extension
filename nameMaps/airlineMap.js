@@ -45,6 +45,7 @@ const airlinesMap = {
   "Air France": { display: "Air France", color: "#DB3832", code: "AF" },
   "Turkish Airlines": { display: "Turkish", color: "#DB3832", code: "TK" },
   "Cathay Pacific": { display: "Cathay", color: "#2A645A", code: "CX" },
+  "Cathay Dragon": { display: "Cathay", color: "#2A645A", code: "CX" },
   "EVA Airways": { display: "EVA", color: "#6F9F64", code: "BR" },
   "China Airlines": { display: "China Airlines", color: "#DAABB1", code: "CI" },
   "ANA Airlines": { display: "ANA", color: "#254897", code: "NH" },
@@ -53,5 +54,20 @@ const airlinesMap = {
   "Qantas Airways": { display: "Qantas", color: "#E34538", code: "QF" },
   "Singapore Airlines": { display: "Sinagpore", color: "#EFA952", code: "SQ" },
   "ANA (All Nippon Airways)": { display: "ANA", color: "#0f4a8d" },
+  getAirlineName: function (airlineName) {
+    if (this[airlineName.trim()]) {
+      return this[airlineName].display;
+    }
+    return airlineName;
+  },
+  getAirlineDetails: function (airlineName) {
+    return (
+      this[airlineName.trim()] || {
+        display: airlineName,
+        color: "#DFCCFB",
+      }
+    );
+  },
 };
+
 export default airlinesMap;

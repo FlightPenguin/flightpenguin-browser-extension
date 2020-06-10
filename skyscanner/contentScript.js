@@ -294,21 +294,18 @@ function getLayovers(legNode) {
     }
     const marketingAirline = airlines[i].querySelector(
       "[class^='LogoImage_container']"
-    ).textContent;
-    const operatingAirlines = airlines[i]
-      .querySelector("[class*='OperatedBy']")
-      .textContent.split("Operated by");
-
-    let operatingAirline = marketingAirline;
-    if (operatingAirlines.length > 1) {
-      operatingAirline = operatingAirlines[operatingAirlines.length - 1];
-    }
+    );
+    const operatingAirline = airlines[i].querySelector("[class*='OperatedBy']");
 
     layovers.push({
       fromTime: fromTime.textContent,
       duration: duration.textContent,
       toTime: toTime.textContent,
-      operatingAirline: operatingAirline.trim(),
+      operatingAirline: operatingAirline.textContent
+        .toLowerCase()
+        .includes("operated")
+        ? operatingAirline.textContent
+        : marketingAirline.textContent,
       ...locations,
     });
   }
@@ -446,7 +443,7 @@ function queryLeg(containerNode) {
       const node = containerNode.querySelector(selector);
       if (key === "operatingAirline") {
         if (node) {
-          data.operatingAirline = node.textContent.replace("Operated by ", "");
+          data.operatingAirline = node.textContent;
         } else {
           data.operatingAirline = null;
         }
