@@ -59,18 +59,9 @@ function Flight(
   this.itinIds = [];
   this.timezoneOffset = this.calculateTimezoneOffset();
   this.operatingAirline = airlinesMap.getAirlineDetails(this.operatingAirline);
-  // if (layovers) {
-  //   const displayName = this.layovers
-  //     .map(({ operatingAirline: { display } }) => display)
-  //     .join(", ");
-  //   this.operatingAirline = cleanupAirline(displayName);
-  // } else {
-  //   this.operatingAirline = cleanupAirline(this.operatingAirline);
-  // }
 }
 
 function cleanupAirline(airline) {
-  console.log("before", airline);
   let justAirlines = [airline];
   if (airline.includes("Partially operated by")) {
     justAirlines = airline.split("Partially operated by ");
@@ -88,7 +79,6 @@ function cleanupAirline(airline) {
       .map((airline) => airlinesMap.getAirlineName(airline))
       .join(", ");
   }
-  console.log("after", shortAirlineName);
 
   return airlinesMap.getAirlineDetails(shortAirlineName);
 }
