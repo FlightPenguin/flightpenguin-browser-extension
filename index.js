@@ -65,6 +65,11 @@ const retTimeBarHeaderContainer = document.querySelector(
   ".returns-time-bar-container-header"
 );
 
+window.addEventListener("popstate", function (event) {
+  // use browser back button to undo departure flight selection for roundtrip
+  clearSelections();
+});
+
 chrome.runtime.onMessage.addListener(function (message) {
   console.log(message.event, message);
 
@@ -284,7 +289,7 @@ function createHeader(formData) {
   const { from, to, fromDate, toDate, cabin, numPax } = formData;
   return `${from}-${to} ${fromDate} to ${toDate} ${cabin} ${numPax} adults`;
 }
-let flightsNotSelected;
+let flightsNotSelected = [];
 function handleFlightSelection(e) {
   if (e.currentTarget.dataset.selected) {
     return;
@@ -295,10 +300,17 @@ function handleFlightSelection(e) {
   selections.push(selectedNode);
 
   if (selections.length === 1 && search.roundtrip) {
+    // This page loads in a new tab so there is no history.
+    // Add blank history state so the user can click browser back button.
+    // The back button will be used to undo user actions, like flight selection.
+    history.pushState({}, null, window.location.pathname);
+
     chrome.runtime.sendMessage({
       event: "DEPARTURE_SELECTED",
       departureId: selectedNode.dataset.id,
     });
+
+    // hide departures
     flightsNotSelected = Array.from(
       departuresContainer.querySelectorAll("li:not([data-selected='true'])")
     );
@@ -320,27 +332,32 @@ function handleFlightSelection(e) {
       selectedReturnId: selectionIds[1],
     });
     document.querySelector("#loading").style.display = null;
-    // reset selections and DOM
-    selections.forEach((sel) => {
-      sel.style.border = "";
-      delete sel.dataset.selected;
-      sel.tabIndex = "0";
-    });
-    if (search.roundtrip) {
-      // update UI to show departures
-      flightsNotSelected.forEach((flight) => (flight.style.display = null));
-      selections[0].querySelector(".fare").style.display = null;
-      depTimeBarContainer.style.display = null;
-      returnsSection.style.display = "none";
-      retListNode.innerHTML = "";
-      const timeBarHeader = retTimeBarContainer.children[0];
-      timeBarHeader.innerHTML = "";
-      retTimeBarContainer.innerHTML = "";
-      retTimeBarContainer.append(timeBarHeader);
-    }
 
-    selections = [];
+    clearSelections();
   }
+}
+
+/**
+ * Clears selections state and resets UI.
+ */
+function clearSelections() {
+  selections.forEach((sel) => {
+    sel.style.border = "";
+    delete sel.dataset.selected;
+    sel.tabIndex = "0";
+  });
+
+  flightsNotSelected.forEach((flight) => (flight.style.display = null));
+  selections[0].querySelector(".fare").style.display = null;
+  depTimeBarContainer.style.display = null;
+  returnsSection.style.display = "none";
+  retListNode.innerHTML = "";
+  const timeBarHeader = retTimeBarContainer.children[0];
+  timeBarHeader.innerHTML = "";
+  retTimeBarContainer.innerHTML = "";
+  retTimeBarContainer.append(timeBarHeader);
+
+  selections = [];
 }
 
 function createTimeBarHeader(intervals, tzOffset, dayWidths) {
