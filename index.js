@@ -236,7 +236,7 @@ function createNodeList(
       // returns
       cheapestItin = allItins[`${selections[0].dataset.id}-${id}`];
     }
-    const fareText = cheapestItin.fareText;
+    const fare = cheapestItin.fareNumber;
 
     const costContainer = document.createElement("div");
     costContainer.classList.add("cost-container");
@@ -244,11 +244,11 @@ function createNodeList(
     fareContainer.classList.add("fare");
     let fareTextContent;
     if (search.searchByPoints) {
-      fareTextContent = `${Math.floor(
-        cheapestItin.fareNumber / 0.012499999
+      fareTextContent = `${Math.floor(fare / 0.012499999).toLocaleString(
+        "en"
       )} points`;
     } else {
-      fareTextContent = `$${fareText}`;
+      fareTextContent = `$${fare.toLocaleString("en")}`;
     }
     fareContainer.textContent = fareTextContent;
     costContainer.append(fareContainer);

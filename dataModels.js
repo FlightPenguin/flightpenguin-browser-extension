@@ -216,7 +216,6 @@ function Itin(
   this.provider = provider;
   this.windowId = windowId;
   this.tabId = tabId;
-  this.fareText = fare;
   // String interpolate to make sure we're dealing with a string
   this.fareNumber = Number(`${fare}`.match(/\d+/g).join(""));
   this.currency = currency;
