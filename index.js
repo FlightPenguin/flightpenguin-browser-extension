@@ -414,7 +414,12 @@ function createTimeBarHeader(intervals, tzOffset, dayWidths) {
     }
 
     const currDays = Math.floor(interval / 24);
-    if (currDays > 0 && currDays !== dayOfWeek && index > 0) {
+    if (
+      dayWidths.length &&
+      currDays > 0 &&
+      currDays !== dayOfWeek &&
+      index > 0
+    ) {
       const dateNode = document.createElement("div");
       dateNode.classList.add("time-bar-header__date");
 
@@ -651,7 +656,11 @@ function createIntervals(flights) {
   } else if (latestLandingTime - startHour <= 12) {
     increment = 1;
   } else if (latestLandingTime - startHour <= 24) {
-    increment = 2;
+    if (startHour % 4 === 0) {
+      increment = 2;
+    } else if (startHour % 3 === 0) {
+      increment = 3;
+    }
   } else if (startHour % 4 === 0) {
     increment = 4;
   } else {
