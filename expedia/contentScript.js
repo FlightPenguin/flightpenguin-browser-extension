@@ -216,6 +216,7 @@ function getLayovers(legNode) {
 
 function queryLeg(containerNode, selectors) {
   const data = {};
+  let additionalDays;
 
   Object.entries(selectors).forEach(([key, selector]) => {
     try {
@@ -249,6 +250,14 @@ function queryLeg(containerNode, selectors) {
         data.layovers = layovers;
       } else if (["from", "to"].includes(key)) {
         data[key] = node.textContent.match(/\(([A-Z]*)\)/)[1];
+      } else if (key === "toTimeAddDays") {
+        if (node) {
+          additionalDays = node.textContent.trim();
+        }
+      } else if (key === "layoverToTimeAddDays") {
+        if (node) {
+          additionalDays = "+1";
+        }
       } else {
         data[key] = node.textContent.trim();
       }
@@ -265,6 +274,9 @@ function queryLeg(containerNode, selectors) {
       errors[e.name] = true;
     }
   });
+  if (additionalDays) {
+    data.toTime += additionalDays;
+  }
   return data;
 }
 const flightContainer = ".flight-module.segment.offer-listing";
@@ -272,9 +284,10 @@ const firstSelectButton = "button";
 const finalSelectButton = "[data-test-id='select-button-1']";
 const loadingSelector = "#skeleton-listing";
 const SELECTORS = {
-  fromTime: "[data-test-id='departure-time'",
-  toTime: "[data-test-id='arrival-time'",
-  duration: "[data-test-id='duration'",
+  fromTime: "[data-test-id='departure-time']",
+  toTime: "[data-test-id='arrival-time']",
+  toTimeAddDays: "[data-test-id='arrives-next-day']",
+  duration: "[data-test-id='duration']",
   layovers: "[data-test-num-stops='0']", //nonstop
   marketingAirlines: "[data-test-id='airline-name'",
   operatingAirline: "[data-test-id='operated-by']",
@@ -290,6 +303,7 @@ const flightDetails = {
 const layoverSelectors = {
   fromTime: "[data-test-id='details-departure-time'",
   toTime: "[data-test-id='details-arrival-time'",
+  layoverToTimeAddDays: "[data-test-id='details-overnight']",
   duration: "[data-test-id='details-duration-time']",
   from: "[data-test-id='details-departure-localName']",
   to: "[data-test-id='details-arrival-localName']",
