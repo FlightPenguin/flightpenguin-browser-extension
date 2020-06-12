@@ -320,20 +320,13 @@ function handleFlightSelection(e) {
     depTimeBarContainer.style.display = "none";
   } else if (selections.length === 2 || !search.roundtrip) {
     const selectionIds = selections.map((sel) => sel.dataset.id);
-    const itin = allItins[selectionIds.join("-")];
-    ga("send", {
-      hitType: "event",
-      eventCategory: "itin selected",
-      eventAction: "itin id",
-      eventLabel: itin.id,
-    });
 
     chrome.runtime.sendMessage({
       event: "HIGHLIGHT_TAB",
       selectedDepartureId: selectionIds[0],
       selectedReturnId: selectionIds[1],
     });
-    document.querySelector("#loading").style.display = null;
+    document.getElementById("loading").style.display = null;
 
     clearSelections();
   }
@@ -343,6 +336,8 @@ function handleFlightSelection(e) {
  * Clears selections state and resets UI.
  */
 function clearSelections() {
+  document.getElementById("loading").style.display = "none";
+
   selections.forEach((sel) => {
     sel.style.border = "";
     delete sel.dataset.selected;
