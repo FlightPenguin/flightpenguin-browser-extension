@@ -64,6 +64,7 @@ const retTimeBarContainer = document.querySelector(
 const retTimeBarHeaderContainer = document.querySelector(
   ".returns-time-bar-container-header"
 );
+const loadingContainer = document.getElementById("loading");
 
 window.addEventListener("popstate", function (event) {
   // use browser back button to undo departure flight selection for roundtrip
@@ -158,6 +159,7 @@ chrome.runtime.onMessage.addListener(function (message) {
       allItins = { ...allItins, ...newItins };
       returnsSection.style.display = "block";
       selections[0].querySelector(".fare").style.display = "none";
+      loadingContainer.style.display = "none";
 
       const {
         increment,
@@ -301,6 +303,8 @@ function handleFlightSelection(e) {
   selectedNode.tabIndex = "-1";
   selections.push(selectedNode);
 
+  loadingContainer.style.display = null;
+
   if (selections.length === 1 && search.roundtrip) {
     // This page loads in a new tab so there is no history.
     // Add blank history state so the user can click browser back button.
@@ -326,8 +330,6 @@ function handleFlightSelection(e) {
       selectedDepartureId: selectionIds[0],
       selectedReturnId: selectionIds[1],
     });
-    document.getElementById("loading").style.display = null;
-
     clearSelections();
   }
 }
@@ -336,7 +338,7 @@ function handleFlightSelection(e) {
  * Clears selections state and resets UI.
  */
 function clearSelections() {
-  document.getElementById("loading").style.display = "none";
+  loadingContainer.style.display = "none";
 
   selections.forEach((sel) => {
     sel.style.border = "";
@@ -355,6 +357,7 @@ function clearSelections() {
   retTimeBarContainer.append(timeBarHeader);
 
   selections = [];
+  window.scroll(0, 0);
 }
 
 function createTimeBarHeader(intervals, tzOffset, dayWidths) {
