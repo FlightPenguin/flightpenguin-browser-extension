@@ -118,5 +118,5 @@ document.querySelector("form#search").addEventListener("submit", (e) => {
   chrome.runtime.sendMessage({ event: "FORM_DATA_RECEIVED", formData });
   // remove form so we can show loading state
   e.target.remove();
-  document.querySelector("#loading").style.display = "flex";
+  document.getElementById("search-loading").style.display = "flex";
 });

@@ -6,6 +6,10 @@ chrome.runtime.onInstalled.addListener(function () {
   console.log("Is this thing on?");
 });
 
+chrome.browserAction.onClicked.addListener(function () {
+  createNewWebPage({});
+});
+
 let tabIds = {};
 let windowIds = {};
 let formData = {};
