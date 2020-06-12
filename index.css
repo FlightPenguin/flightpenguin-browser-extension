@@ -26,11 +26,15 @@ ul {
   width: calc(
     var(--time-bar-container-width) + var(--flight-list-left-column-width) + 1px
   );
+  border-top: 2px solid #f0f4f6;
+}
+li.flight-list-item:last-child {
+  border-bottom: 2px solid #f0f4f6;
 }
 .flight-list-item:not([data-selected="true"]):hover:before {
   content: "Click to select this flight.";
   position: absolute;
-  transform: translate(539px, 30px);
+  transform: translate(539px, -25px);
   z-index: 2;
 }
 .flight-list-item:hover,
@@ -133,6 +137,7 @@ ul {
   justify-content: flex-end;
   height: 40px;
   align-items: center;
+  background-color: #fff;
 }
 .interval-time-text {
   letter-spacing: -1px;
@@ -142,7 +147,6 @@ ul {
   position: absolute;
   height: 100%;
   width: 1px;
-  top: 18px;
   box-shadow: 1px 1px 1px 0px #9e9e9e66;
 }
 .interval-line.midnight {
@@ -151,7 +155,6 @@ ul {
 
 li,
 .time-bar-row {
-  margin-bottom: 10px;
   height: var(--result-row-height);
 }
 .time-bar-row {
