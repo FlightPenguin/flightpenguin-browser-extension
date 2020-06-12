@@ -194,12 +194,12 @@ chrome.runtime.onMessage.addListener(function (message) {
         headerContainer.textContent = header;
         subheaderContainer.textContent = `${totalFlights} flights found.`;
       }
-      // ga("send", {
-      //   hitType: "event",
-      //   eventCategory: "failed scraper",
-      //   eventAction: message.source,
-      //   eventLabel: message.description,
-      // });
+      ga("send", {
+        hitType: "event",
+        eventCategory: "failed scraper",
+        eventAction: message.source,
+        eventLabel: message.description,
+      });
       break;
     default:
       break;
