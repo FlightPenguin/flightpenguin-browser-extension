@@ -55,6 +55,12 @@ chrome.runtime.onMessage.addListener(function (message) {
       highlightItin(selectedDepartureId, selectedReturnId);
       addBackToSearchButton();
       break;
+    case "CLEAR_SELECTION":
+      selectedDeparture = null;
+      selectedItin = null;
+      history.back();
+      loadResults("FLIGHT_RESULTS_RECEIVED");
+      break;
     default:
       break;
   }
@@ -170,9 +176,7 @@ function parser(itinNodes) {
     if (selectedDeparture) {
       // roundtrip
       node.dataset.id = [
-        selectedDeparture.fromTime,
-        selectedDeparture.toTime,
-        selectedDeparture.marketingAirline,
+        selectedDeparture.id,
         flight.fromTime,
         flight.toTime,
         flight.marketingAirline,

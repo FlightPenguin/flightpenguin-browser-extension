@@ -68,6 +68,11 @@ const retTimeBarHeaderContainer = document.querySelector(
 window.addEventListener("popstate", function (event) {
   // use browser back button to undo departure flight selection for roundtrip
   clearSelections();
+  // send message to bg that selections have been reset.
+  // providers that show departures and returns on separate pages need to be updated to go back to departures.
+  chrome.runtime.sendMessage({
+    event: "CLEAR_SELECTIONS",
+  });
 });
 
 chrome.runtime.onMessage.addListener(function (message) {
@@ -180,9 +185,6 @@ chrome.runtime.onMessage.addListener(function (message) {
         0,
         window.pageYOffset + returnsSection.getBoundingClientRect().top
       );
-      break;
-    case "RESET_SELECTIONS":
-      document.querySelector("#loading").style.display = "none";
       break;
     case "FAILED_SCRAPER":
       if (totalFlights === 0) {
