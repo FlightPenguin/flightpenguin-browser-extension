@@ -8,12 +8,29 @@
       <fieldset>
         <label title="Please enter your departure airport."
           >From (airport code)
-          <input type="text" placeholder="" name="from" required="required" />
+          <input
+            type="text"
+            placeholder=""
+            name="from"
+            required="required"
+            list="airports"
+            autocomplete="off"
+          />
         </label>
         <label title="Please enter your destination airport."
           >To (airport code)
-          <input type="text" placeholder="" name="to" required="required" />
+          <input
+            type="text"
+            placeholder=""
+            name="to"
+            required="required"
+            list="airports"
+            autocomplete="off"
+          />
         </label>
+        <datalist id="airports">
+          <option value="Example:">SFO</option>
+        </datalist>
       </fieldset>
       <fieldset>
         <label class="inline">
