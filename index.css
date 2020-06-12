@@ -1,6 +1,7 @@
 :root {
   --time-bar-container-width: 765px;
   --flight-list-left-column-width: 350px;
+  --result-row-height: 80px;
 }
 body {
   background-color: white;
@@ -26,6 +27,12 @@ ul {
     var(--time-bar-container-width) + var(--flight-list-left-column-width) + 1px
   );
 }
+.flight-list-item:not([data-selected="true"]):hover:before {
+  content: "Click to select this flight.";
+  position: absolute;
+  transform: translate(539px, 30px);
+  z-index: 2;
+}
 .flight-list-item:hover,
 .flight-list-item:focus {
   cursor: pointer;
@@ -34,6 +41,13 @@ ul {
 .flight-list-item:hover .time-bar-segment::after,
 .flight-list-item:focus .time-bar-segment::after {
   background: transparent;
+}
+.flight-list-item:hover .departure-time,
+.flight-list-item:hover .arrival-time,
+.flight-list-item:focus .departure-time,
+.flight-list-item:focus .arrival-time {
+  box-shadow: 3px 12px 6px 0px #ddd;
+  background-color: #eee;
 }
 
 .flight-list-item__text {
@@ -138,7 +152,7 @@ ul {
 li,
 .time-bar-row {
   margin-bottom: 10px;
-  height: 67px;
+  height: var(--result-row-height);
 }
 .time-bar-row {
   width: var(--time-bar-container-width) !important;
