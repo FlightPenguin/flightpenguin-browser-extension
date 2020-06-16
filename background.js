@@ -1,6 +1,10 @@
 // debugger and console logs can be seen by clicking background.js link for this extension under chrome://extensions,
 // it will open a developer console for this extension and in addition to logs you can see the local storage
 import { makeItins, diffDepartures, findReturnFlights } from "./dataModels.js";
+Sentry.init({
+  dsn:
+    "https://d7f3363dd3774a64ad700b4523bcb789@o407795.ingest.sentry.io/5277451",
+});
 
 chrome.runtime.onInstalled.addListener(function () {
   console.log("Is this thing on?");

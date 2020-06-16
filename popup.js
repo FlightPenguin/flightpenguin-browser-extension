@@ -1,4 +1,7 @@
-// debuggers and console logs can be found by right clicking extension button in browser toolbar, then click "Inspect popup"
+Sentry.init({
+  dsn:
+    "https://d7f3363dd3774a64ad700b4523bcb789@o407795.ingest.sentry.io/5277451",
+});
 const GA_TRACKING_ID = "164337457-1";
 
 (function (i, s, o, g, r, a, m) {

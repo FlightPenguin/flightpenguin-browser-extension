@@ -1,6 +1,8 @@
-// console.log and debugger work here, open dev tools on web page (how you normally would) to see them
-console.clear();
-console.log("hello...");
+Sentry.init({
+  dsn:
+    "https://d7f3363dd3774a64ad700b4523bcb789@o407795.ingest.sentry.io/5277451",
+});
+
 const errors = {};
 let rafID = 0;
 let allItins = [];

@@ -14,26 +14,26 @@
     {
       "matches": ["https://www.southwest.com/air/booking/select.html?*"],
       "css": ["shared/contentScript.css"],
-      "js": ["southwest/contentScript.js"]
+      "js": ["shared/sentry.js", "southwest/contentScript.js"]
     },
     {
       "matches": ["https://www.southwest.com/air/booking/index.html?*"],
-      "js": ["southwest/emptySearchContentScript.js"]
+      "js": ["shared/sentry.js", "southwest/emptySearchContentScript.js"]
     },
     {
       "matches": ["https://www.skyscanner.com/transport/flights/*"],
       "css": ["shared/contentScript.css"],
-      "js": ["skyscanner/contentScript.js"]
+      "js": ["shared/sentry.js", "skyscanner/contentScript.js"]
     },
     {
       "matches": ["https://www.expedia.com/Flights-Search?*"],
       "css": ["shared/contentScript.css"],
-      "js": ["expedia/contentScript.js"]
+      "js": ["shared/sentry.js", "expedia/contentScript.js"]
     }
   ],
   "browser_action": {
     "default_title": "Flight Penguin"
   },
   "manifest_version": 2,
-  "content_security_policy": "script-src 'self' https://www.google-analytics.com; object-src 'self'"
+  "content_security_policy": "script-src 'self' https://www.google-analytics.com https://browser.sentry-cdn.com; object-src 'self'"
 }
