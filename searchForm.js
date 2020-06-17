@@ -59,7 +59,7 @@ document.querySelector("#roundtrip").addEventListener("change", (e) => {
 document.querySelectorAll("input[type=text]").forEach((el) => {
   el.addEventListener("input", (e) => {
     if (e.target.value === "Example:") {
-      e.target.value = "SFO";
+      e.target.value = e.target.list.textContent.trim();
     }
   });
 });
