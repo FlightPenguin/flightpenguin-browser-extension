@@ -1,6 +1,10 @@
 import airlinesMap from "./nameMaps/airlineMap.js";
 import isRegionalAirline from "./nameMaps/regionalAirlines.js";
-import { getTimezoneOffset, getTimeDetails } from "./utilityFunctions.js";
+import {
+  getTimezoneOffset,
+  getTimeDetails,
+  convertDurationToMinutes,
+} from "./utilityFunctions.js";
 
 /**
  * Flight {
@@ -55,6 +59,7 @@ function Flight(
   // marketing airline is unique, not operating
   this.id = `${this.fromTime}-${this.toTime}-${marketingAirline}`;
   this.duration = duration;
+  this.durationMinutes = convertDurationToMinutes(duration);
   this.layovers = layovers || [];
   this.itinIds = [];
   this.timezoneOffset = this.calculateTimezoneOffset();
@@ -146,17 +151,30 @@ Flight.prototype.calculateTimezoneOffset = function () {
  */
 
 /**
- * @param {object} sentDepartures
- * @param {object} departures
+ * @param {object} flights
+ * @param {object} itins
  * @returns {array} list of departures
  */
-function diffDepartures(sentDepartures, departures) {
-  const idsToSend = new Set(Object.keys(departures));
-
-  Object.keys(sentDepartures).forEach((sentId) => {
-    idsToSend.delete(sentId);
-  });
-  return Array.from(idsToSend).map((id) => departures[id]);
+function sortFlights(flights, itins) {
+  for (let [k, v] of Object.entries(flights)) {
+    let airportChange = 1;
+    if (v.layovers.length) {
+      for (let i = 1; i < v.layovers.length; i++) {
+        if (v.layovers[i - 1].to !== v.layovers[i].from) {
+          airportChange = 2;
+          break;
+        }
+      }
+    }
+    const price =
+      itins[
+        v.itinIds.sort((a, b) => itins[a].fareNumber - itins[b].fareNumber)[0]
+      ].fareNumber;
+    v.pain =
+      (Math.log2(v.durationMinutes) + Math.log2(price) + v.layovers.length) *
+      airportChange;
+  }
+  return Object.values(flights);
 }
 /**
  * Itin {
@@ -285,4 +303,4 @@ function makeItins(
   return { itins, departures, returns };
 }
 
-export { makeItins, diffDepartures, findReturnFlights };
+export { makeItins, sortFlights, findReturnFlights };

@@ -1,10 +1,10 @@
-// debugger and console logs can be seen by clicking background.js link for this extension under chrome://extensions,
-// it will open a developer console for this extension and in addition to logs you can see the local storage
-import { makeItins, diffDepartures, findReturnFlights } from "./dataModels.js";
 Sentry.init({
   dsn:
     "https://d7f3363dd3774a64ad700b4523bcb789@o407795.ingest.sentry.io/5277451",
 });
+// debugger and console logs can be seen by clicking background.js link for this extension under chrome://extensions,
+// it will open a developer console for this extension and in addition to logs you can see the local storage
+import { makeItins, sortFlights, findReturnFlights } from "./dataModels.js";
 
 chrome.runtime.onInstalled.addListener(function () {
   console.log("Is this thing on?");
@@ -63,10 +63,9 @@ chrome.runtime.onMessage.addListener(function (message, sender, reply) {
         tabIds[provider]
       );
       allItins = { ...allItins, ...itins };
-
-      const departuresToSend = diffDepartures(allDepartures, departures);
-
       allDepartures = { ...allDepartures, ...departures };
+
+      const departuresToSend = sortFlights(allDepartures, itins);
       const nextMessage = {
         event: "FLIGHT_RESULTS_FOR_CLIENT",
         flights: {
@@ -94,11 +93,15 @@ chrome.runtime.onMessage.addListener(function (message, sender, reply) {
         true
       );
       allItins = { ...allItins, ...expediaItins };
+      let expediaReturnList = Object.values(expediaItins).map(
+        (itin) => itin.retFlight
+      );
+      expediaReturnList = sortFlights(expediaReturnList, allItins);
 
       chrome.tabs.sendMessage(webPageTabId, {
         event: "RETURN_FLIGHTS_FOR_CLIENT",
         flights: {
-          returnList: Object.values(expediaItins).map((itin) => itin.retFlight),
+          returnList: expediaReturnList,
           itins: expediaItins,
         },
       });
@@ -116,9 +119,12 @@ chrome.runtime.onMessage.addListener(function (message, sender, reply) {
         });
         break;
       }
+      let returnList = findReturnFlights(departure, allItins);
+      returnList = sortFlights(returnList, allItins);
+
       chrome.tabs.sendMessage(webPageTabId, {
         event: "RETURN_FLIGHTS_FOR_CLIENT",
-        flights: { returnList: findReturnFlights(departure, allItins) },
+        flights: { returnList },
       });
       break;
     case "HIGHLIGHT_TAB":

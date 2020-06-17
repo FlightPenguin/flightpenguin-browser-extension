@@ -132,7 +132,7 @@ chrome.runtime.onMessage.addListener(function (message) {
       searchLoadingContainer.style.display = "none";
 
       if (departureList.length) {
-        allDepartures = allDepartures.concat(departureList);
+        allDepartures = departureList.slice();
         departuresSection.style.display = null;
         const {
           increment,
@@ -654,12 +654,12 @@ function createTimeBar(
 }
 
 function createIntervals(flights) {
-  const earliestFlight = flights.sort(
-    (a, b) => a.fromTimeDetails.hours - b.fromTimeDetails.hours
-  )[0];
-  const latestFlight = flights.sort(
-    (a, b) => b.toTimeDetails.hours - a.toTimeDetails.hours
-  )[0];
+  const earliestFlight = flights
+    .slice()
+    .sort((a, b) => a.fromTimeDetails.hours - b.fromTimeDetails.hours)[0];
+  const latestFlight = flights
+    .slice()
+    .sort((a, b) => b.toTimeDetails.hours - a.toTimeDetails.hours)[0];
   if (earliestFlight.fromTimeDetails.hours < earliestTakeoffTime) {
     earliestTakeoffTime = Math.max(0, earliestFlight.fromTimeDetails.hours - 2);
   }
