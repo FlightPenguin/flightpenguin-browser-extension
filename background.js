@@ -12,6 +12,27 @@ chrome.runtime.onInstalled.addListener(function () {
 
 chrome.browserAction.onClicked.addListener(function () {
   createNewWebPage({});
+  // // get user access token using oauth constants in manifest.json
+  // chrome.identity.getAuthToken({ interactive: false }, (token) => {
+  //   let init = {
+  //     method: "GET",
+  //     async: true,
+  //     headers: {
+  //       Authorization: "Bearer " + token,
+  //       "Content-Type": "application/json",
+  //     },
+  //     contentType: "json",
+  //   };
+  //   fetch(
+  //     "https://www.googleapis.com/chromewebstore/v1.1/userlicenses/" +
+  //       chrome.runtime.id,
+  //     init
+  //   )
+  //     .then((response) => response.json())
+  //     .then(function (data) {
+  //       // if Chrome web store billing is in place, data will contain if user has paid or has a free trial
+  //     });
+  // });
 });
 
 let tabIds = {};
