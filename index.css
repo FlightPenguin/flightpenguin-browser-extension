@@ -163,7 +163,6 @@ li,
   position: relative;
   display: flex;
   align-items: center;
-  margin-top: 10px;
 }
 
 .time-bar-segment.layover {
