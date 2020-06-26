@@ -170,11 +170,13 @@ function sortFlights(flights, itins) {
       itins[
         v.itinIds.sort((a, b) => itins[a].fareNumber - itins[b].fareNumber)[0]
       ].fareNumber;
+
     v.pain =
       (Math.log2(v.durationMinutes) + Math.log2(price) + v.layovers.length) *
       airportChange;
   }
-  return Object.values(flights);
+
+  return Object.values(flights).sort((a, b) => a.pain - b.pain);
 }
 /**
  * Itin {
