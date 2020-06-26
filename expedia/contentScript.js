@@ -171,7 +171,7 @@ function parser(itinNodes) {
     let fare;
     try {
       fare = node.querySelector(fareSelector.fare).textContent.trim();
-      fare = Number(fare.match(/\d+/).join(""));
+      fare = Number(fare.match(/\d+/g).join(""));
     } catch (e) {
       // one of those itins that say for example "See Southwest for prices"
       return null;
@@ -305,7 +305,7 @@ const SELECTORS = {
   operatingAirline: "[data-test-id='operated-by']",
 };
 const fareSelector = {
-  fare: "[data-test-id='listing-price-dollars'",
+  fare: "[data-test-id='listing-price-dollars']",
 };
 const flightDetails = {
   clickToOpenDetails: "[data-test-id='flight-details-link'",
