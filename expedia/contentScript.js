@@ -29,13 +29,21 @@ chrome.runtime.onMessage.addListener(function (message) {
       const departureNode = document.querySelector(
         `[data-id='${selectedDeparture.id}']`
       );
-      departureNode.querySelector(firstSelectButton).click();
-      const hasRestrictionTray = departureNode.querySelector(
+      departureNode.querySelector("button").click();
+      let hasRestrictionTray = departureNode.querySelector(
         ".basic-economy-tray"
-      );
-      const needsAnotherClick = hasRestrictionTray.textContent.length;
-      if (needsAnotherClick) {
-        departureNode.querySelector(finalSelectButton).click();
+      ).textContent.length;
+
+      if (!hasRestrictionTray) {
+        hasRestrictionTray = departureNode.querySelector(
+          ".upsell-tray-contents"
+        );
+      }
+      if (hasRestrictionTray) {
+        console.log(departureNode, selectedItin);
+        departureNode
+          .querySelector(`[data-exact-price='${selectedItin.fareNumber}']`)
+          .click();
       }
       // wait for returns
       // parse returns
@@ -286,8 +294,6 @@ function queryLeg(containerNode, selectors) {
   return data;
 }
 const flightContainer = ".flight-module.segment.offer-listing";
-const firstSelectButton = "button";
-const finalSelectButton = "[data-test-id='select-button-1']";
 const loadingSelector = "#skeleton-listing";
 const SELECTORS = {
   fromTime: "[data-test-id='departure-time']",
