@@ -43,10 +43,12 @@ fromDateInput.min = todayString;
 fromDateInput.value = todayString;
 toDateInput.min = todayString;
 
-document.querySelector("#roundtrip").addEventListener("change", (e) => {
-  const toDateLabel = document.querySelector("#toDate");
-  const toDateInput = toDateLabel.children.toDate;
+const roundtripElement = document.querySelector("#roundtrip");
+roundtripElement.checked = "true";
+toDateInput.required = true;
 
+roundtripElement.addEventListener("change", (e) => {
+  const toDateLabel = document.getElementById("toDate");
   if (e.target.checked) {
     toDateLabel.style.display = null;
     toDateInput.required = true;
@@ -64,15 +66,15 @@ document.querySelectorAll("input[type=text]").forEach((el) => {
   });
 });
 
-document.querySelectorAll("input[type='radio']").forEach((el) => {
-  el.addEventListener("change", (e) => {
-    if (e.target.value === "price") {
-      document.querySelector("#sources").style.display = null;
-    } else {
-      document.querySelector("#sources").style.display = "none";
-    }
-  });
-});
+// document.querySelectorAll("input[type='radio']").forEach((el) => {
+//   el.addEventListener("change", (e) => {
+//     if (e.target.value === "price") {
+//       document.querySelector("#sources").style.display = null;
+//     } else {
+//       document.querySelector("#sources").style.display = "none";
+//     }
+//   });
+// });
 
 fromDateInput.addEventListener("change", (e) => {
   const toDate = document.querySelector("#toDateInput");
@@ -82,23 +84,23 @@ fromDateInput.addEventListener("change", (e) => {
 document.querySelector("form#search").addEventListener("submit", (e) => {
   e.preventDefault();
 
-  if (
-    e.target.price.checked &&
-    !e.target.southwest.checked &&
-    !e.target.skyscanner.checked
-  ) {
-    const node = document.querySelector(".validation-error");
-    node.textContent = "Please select a provider to continue";
-    return;
-  }
+  // if (
+  //   e.target.price.checked &&
+  //   !e.target.southwest.checked &&
+  //   !e.target.skyscanner.checked
+  // ) {
+  //   const node = document.querySelector(".validation-error");
+  //   node.textContent = "Please select a provider to continue";
+  //   return;
+  // }
 
   e.target.button.disabled = true;
 
   const formData = {
     from: e.target.from.value,
     to: e.target.to.value,
-    southwest: e.target.southwest.checked,
-    skyscanner: e.target.skyscanner.checked,
+    southwest: e.target.price.checked ? true : false,
+    skyscanner: e.target.price.checked ? true : false,
     cabin: e.target.cabin.value,
     fromDate: e.target.fromDate.value,
     toDate: e.target.toDate ? e.target.toDate.value : "",
@@ -114,12 +116,12 @@ document.querySelector("form#search").addEventListener("submit", (e) => {
       eventCategory: "search form",
       eventAction,
       eventLabel,
-      // eventValue,
-      // hitCallback: submitForm,
     });
   }
   chrome.runtime.sendMessage({ event: "FORM_DATA_RECEIVED", formData });
   // remove form so we can show loading state
-  e.target.remove();
-  document.getElementById("search-loading").style.display = "flex";
+  // e.target.remove();
+  document.querySelectorAll("fieldset").forEach((el) => (el.disabled = "true"));
+  document.getElementById("ellipsis").style.display = "flex";
+  document.getElementById("search-button-text").textContent = "Searching";
 });

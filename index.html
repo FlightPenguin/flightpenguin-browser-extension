@@ -21,7 +21,7 @@
     <form id="search">
       <fieldset>
         <label title="Please enter your departure airport."
-          >From (airport code)
+          ><span>Departure</span>
           <input
             type="text"
             placeholder=""
@@ -32,7 +32,7 @@
           />
         </label>
         <label title="Please enter your destination airport."
-          >To (airport code)
+          ><span>Destination</span>
           <input
             type="text"
             placeholder=""
@@ -51,7 +51,7 @@
       </fieldset>
       <fieldset>
         <label class="inline">
-          Roundtrip
+          <span>Roundtrip</span>
           <input
             type="checkbox"
             id="roundtrip"
@@ -62,7 +62,7 @@
       </fieldset>
       <fieldset>
         <label title="Please enter the date you wish to depart.">
-          From
+          <span>From</span>
           <input
             type="date"
             name="fromDate"
@@ -70,44 +70,44 @@
             required="required"
           />
         </label>
-        <label
-          title="Please enter the date you wish to return."
-          style="display: none;"
-          id="toDate"
-        >
-          To
+        <label title="Please enter the date you wish to return." id="toDate">
+          <span>To</span>
           <input type="date" name="toDate" id="toDateInput" />
         </label>
       </fieldset>
       <fieldset>
-        <select name="cabin" id="cabin">
-          <option value="econ">Economy</option>
-          <option value="prem_econ">Premium Economy</option>
-          <option value="business">Business</option>
-          <option value="first">First</option>
-        </select>
-      </fieldset>
-      <fieldset>
-        <label id="num-pax-label">
-          # of tickets
-          <select name="numPax">
-            <option>1</option>
-            <option>2</option>
-            <option>3</option>
-            <option>4</option>
-          </select>
-        </label>
+        <label
+          ><select name="numPax">
+            <option value="1">1 Passenger</option>
+            <option value="2">2 Passengers</option>
+            <option value="3">3 Passengers</option>
+            <option value="4">4 Passengers</option>
+          </select></label
+        ><label>
+          <select name="cabin" id="cabin">
+            <option value="econ">Economy</option>
+            <option value="prem_econ">Premium Economy</option>
+            <option value="business">Business</option>
+            <option value="first">First</option>
+          </select></label
+        >
       </fieldset>
       <fieldset id="method">
-        <b>Search by:</b>
-        <label class="inline"
-          >Price<input type="radio" name="method" id="price" value="price" />
+        <legend>Search by</legend>
+        <label
+          >Price<input
+            type="radio"
+            name="method"
+            id="price"
+            value="price"
+            checked
+          />
         </label>
-        <label class="inline"
+        <label
           >Points<input type="radio" name="method" id="points" value="points" />
         </label>
       </fieldset>
-      <fieldset id="sources" style="display: none;">
+      <!-- <fieldset id="sources" style="display: none;">
         <b>Sources:</b>
         <label class="inline">
           Skyscanner
@@ -117,40 +117,17 @@
           Southwest
           <input type="checkbox" name="southwest" value="Southwest" />
         </label>
-      </fieldset>
-      <button type="submit" name="button">Search</button>
+      </fieldset> -->
+      <button type="submit" id="search-button" name="button">
+        <div class="button-container">Search</div>
+        <span id="search-button-text">Search</span>
+        <div id="ellipsis">
+          <span class="one">.</span><span class="two">.</span
+          ><span class="three">.</span>​
+        </div>
+      </button>
       <div class="validation-error"></div>
     </form>
-    <h3 id="search-loading">
-      <svg
-        version="1.1"
-        id="L9"
-        xmlns="http://www.w3.org/2000/svg"
-        xmlns:xlink="http://www.w3.org/1999/xlink"
-        x="0px"
-        y="0px"
-        viewBox="0 0 100 100"
-        enable-background="new 0 0 0 0"
-        xml:space="preserve"
-        style="width: 99px; height: 51px;"
-      >
-        <path
-          fill="#000"
-          d="M73,50c0-12.7-10.3-23-23-23S27,37.3,27,50 M30.9,50c0-10.5,8.5-19.1,19.1-19.1S69.1,39.5,69.1,50"
-          transform="rotate(201.747 50 50)"
-        >
-          <animateTransform
-            attributeName="transform"
-            attributeType="XML"
-            type="rotate"
-            dur="1s"
-            from="0 50 50"
-            to="360 50 50"
-            repeatCount="indefinite"
-          ></animateTransform>
-        </path></svg
-      >Searching flights, you'll see them soon!
-    </h3>
     <!-- Flight results HTML below -->
     <main style="display: none;">
       <h1 class="header"></h1>

@@ -65,7 +65,6 @@ const retTimeBarHeaderContainer = document.querySelector(
   ".returns-time-bar-container-header"
 );
 const loadingContainer = document.getElementById("loading");
-const searchLoadingContainer = document.getElementById("search-loading");
 const formContainer = document.querySelector("form");
 const mainContainer = document.querySelector("main");
 
@@ -129,7 +128,6 @@ chrome.runtime.onMessage.addListener(function (message) {
 
       mainContainer.style.display = null;
       formContainer.style.display = "none";
-      searchLoadingContainer.style.display = "none";
 
       if (departureList.length) {
         allDepartures = departureList.slice();
