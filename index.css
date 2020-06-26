@@ -28,6 +28,13 @@ ul {
   );
   border-top: 2px solid #f0f4f6;
 }
+li.flight-list-item[data-selected="true"],
+.flight-list-item:only-child {
+  border: 1px solid #9e9e9e66 !important;
+}
+.flight-list-item:last-child {
+  border-bottom: 1px solid #9e9e9e66;
+}
 li.flight-list-item:nth-child(odd) {
   background: rgb(253, 253, 253, 0.5);
 }
@@ -56,7 +63,7 @@ li.flight-list-item:last-child {
 .flight-list-item:hover .time-bar-segment,
 .flight-list-item:focus .time-bar-segment {
   box-shadow: 3px 12px 6px 0px #ddd;
-  background-color: #eee3;
+  background-color: #eee;
 }
 
 .flight-list-item__left-column {
@@ -83,12 +90,15 @@ li.flight-list-item:last-child {
 }
 .departure-time,
 .arrival-time {
-  width: 85px;
+  width: 96px;
   border-radius: 0;
   padding: 4px;
   font-size: 22px;
-  letter-spacing: -0.5px;
-  background-color: #fbfbfb;
+  letter-spacing: -0.75px;
+  background-color: #eee;
+  display: table;
+  border-radius: 8px;
+  border: 1px solid #9e9e9e66;
 }
 
 .times__minute {
@@ -106,7 +116,7 @@ li.flight-list-item:last-child {
   white-space: normal;
 }
 .primary-airline {
-  font-size: 19px;
+  font-size: 22px;
 }
 .secondary-airline {
   font-size: 8px;
@@ -119,7 +129,7 @@ li.flight-list-item:last-child {
   flex-direction: column;
 }
 .fare {
-  font-size: 20px;
+  font-size: 22px;
 }
 
 .interval-time {
@@ -133,7 +143,7 @@ li.flight-list-item:last-child {
   justify-content: flex-end;
   height: 40px;
   align-items: center;
-  background-color: #eee3;
+  /* background-color: #eee3; */
 }
 .interval-time-text {
   letter-spacing: -1px;
@@ -141,7 +151,7 @@ li.flight-list-item:last-child {
 .interval-line {
   z-index: -1;
   position: absolute;
-  height: 100%;
+  height: calc(100% - 16px);
   width: 1px;
   box-shadow: 1px 1px 1px 0px #9e9e9e66;
 }
@@ -197,7 +207,9 @@ li,
 .timezone__last {
   border-right: 4px solid black;
 }
-
+.departures-section {
+  padding-bottom: 40px;
+}
 .departures-content,
 .returns-content {
   display: flex;
@@ -210,10 +222,10 @@ li,
 .time-bar-header__date-container {
   display: flex;
   margin-top: -65px;
-  background-color: #eee3;
+  /* background-color: #eee3; */
   height: 80px;
 }
-.time-bar-header__date:last-child {
+.time-bar-header__date:last-child:not(:first-child) {
   border-left-width: 0px;
 }
 .time-bar-header__airport-code-container {
@@ -239,6 +251,7 @@ li,
   justify-content: center;
   align-items: center;
   min-width: 84px;
+  background-color: #eee3;
 }
 .time-bar-container {
   position: relative;
