@@ -48,6 +48,8 @@ let departureSelected = false;
 let canHighlightSkyscannerTab = false;
 let messageQueue = [];
 let beginTime = 0;
+let providersReceived = 0;
+
 chrome.runtime.onMessage.addListener(function (message, sender, reply) {
   console.info(message.event, message);
 
@@ -71,11 +73,22 @@ chrome.runtime.onMessage.addListener(function (message, sender, reply) {
         });
       }
       break;
+    case "NO_FLIGHTS_FOUND":
+      providersReceived++;
+      if (providersReceived === Object.keys(tabIds).length) {
+        sendMessageToWebpage({ event: "NO_FLIGHTS_FOUND_CLIENT" });
+        closeWindows();
+      }
+      break;
     case "FLIGHT_RESULTS_RECEIVED":
       if (departureSelected) {
         break;
       }
       const { flights, provider } = message;
+
+      if (!flights.length) {
+        break;
+      }
 
       const { departures, itins } = makeItins(
         flights,

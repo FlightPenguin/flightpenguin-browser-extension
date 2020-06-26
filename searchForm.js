@@ -94,8 +94,6 @@ document.querySelector("form#search").addEventListener("submit", (e) => {
   //   return;
   // }
 
-  e.target.button.disabled = true;
-
   const formData = {
     from: e.target.from.value,
     to: e.target.to.value,
@@ -118,10 +116,37 @@ document.querySelector("form#search").addEventListener("submit", (e) => {
       eventLabel,
     });
   }
+  setFormLoading();
+
   chrome.runtime.sendMessage({ event: "FORM_DATA_RECEIVED", formData });
-  // remove form so we can show loading state
-  // e.target.remove();
-  document.querySelectorAll("fieldset").forEach((el) => (el.disabled = "true"));
+});
+
+function setFormLoading() {
+  document.getElementById("search-button").disabled = true;
+  document.querySelectorAll("fieldset").forEach((el) => (el.disabled = true));
   document.getElementById("ellipsis").style.display = "flex";
   document.getElementById("search-button-text").textContent = "Searching";
+  document.querySelector(".validation-error").textContent = "";
+}
+
+function setFormReady() {
+  document.getElementById("search-button").disabled = false;
+  document.querySelectorAll("fieldset").forEach((el) => (el.disabled = false));
+  document.getElementById("ellipsis").style.display = "none";
+  document.getElementById("search-button-text").textContent = "Search";
+}
+
+chrome.runtime.onMessage.addListener(function (message) {
+  console.log(message.event, message);
+  switch (message.event) {
+    case "NO_FLIGHTS_FOUND_CLIENT":
+      // update messaging on form
+      // undisable form
+      setFormReady();
+      document.querySelector(".validation-error").textContent =
+        "Sorry, no results were found for those dates and locations.";
+      break;
+    default:
+      break;
+  }
 });

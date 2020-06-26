@@ -174,11 +174,10 @@ function parseResults() {
   rafID = window.requestAnimationFrame(parseMoreFlights);
 
   function parseMoreFlights(currentTime) {
-    if (resultSummaryResultsTextContainer.textContent.match(/^0 results/)) {
+    if (resultSummaryResultsTextContainer.textContent.includes("0 results")) {
       window.cancelAnimationFrame(rafID);
       chrome.runtime.sendMessage({
-        event: "FLIGHT_RESULTS_RECEIVED",
-        flights: [],
+        event: "NO_FLIGHTS_FOUND",
         provider: "skyscanner",
       });
     }

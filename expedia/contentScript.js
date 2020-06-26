@@ -126,12 +126,13 @@ function highlightItin(selectedDepartureId, selectedReturnId) {
  *
  */
 function parseResults(event) {
-  // if (resultSummaryResultsTextContainer.textContent.match(/^0 results/)) {
-  //   chrome.runtime.sendMessage({
-  //     event: "FLIGHT_RESULTS_RECEIVED",
-  //     flights: [],
-  //   });
-  // }
+  if (document.querySelector(".no-flights-found-error")) {
+    chrome.runtime.sendMessage({
+      event: "NO_FLIGHTS_FOUND",
+      provider: "expedia",
+    });
+    return;
+  }
 
   let moreItins = Array.from(
     document.querySelectorAll(`${flightContainer}:not([data-visited='true'])`)
