@@ -601,7 +601,9 @@ function createTimeBarRow(flight, increment, startHourOffset) {
 
   timeBarRow.append(timeSegments);
   timeBarRow.style.width = width + "px";
-  timeNodes[0].style.left = leftPositionNumber - 97 + "px";
+  // how far away from time bar we want left time node to be
+  timeNodes[0].style.left = leftPositionNumber - (97 + 10) + "px";
+  // how far away from time bar we want right time node to be
   timeNodes[1].style.left = rightPositionNumber + 10 + "px";
 
   timeBarRow.append(timeNodes[0]);
