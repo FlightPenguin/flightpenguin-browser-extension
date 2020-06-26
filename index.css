@@ -28,6 +28,12 @@ ul {
   );
   border-top: 2px solid #f0f4f6;
 }
+li.flight-list-item:nth-child(odd) {
+  background: rgb(253, 253, 253, 0.5);
+}
+li.flight-list-item:nth-child(even) {
+  background: rgb(240, 248, 255, 0.5);
+}
 li.flight-list-item:last-child {
   border-bottom: 2px solid #f0f4f6;
 }
@@ -42,42 +48,30 @@ li.flight-list-item:last-child {
   cursor: pointer;
   background: linear-gradient(180deg, #fff, #e6ebf1) bottom/100% 150px repeat-x;
 }
-.flight-list-item:hover .time-bar-segment::after,
-.flight-list-item:focus .time-bar-segment::after {
-  background: transparent;
-}
+
 .flight-list-item:hover .departure-time,
 .flight-list-item:hover .arrival-time,
 .flight-list-item:focus .departure-time,
-.flight-list-item:focus .arrival-time {
+.flight-list-item:focus .arrival-time,
+.flight-list-item:hover .time-bar-segment,
+.flight-list-item:focus .time-bar-segment {
   box-shadow: 3px 12px 6px 0px #ddd;
-  background-color: #eee;
+  background-color: #eee3;
 }
 
-.flight-list-item__text {
+.flight-list-item__left-column {
   display: flex;
   box-sizing: border-box;
   white-space: nowrap;
   align-items: center;
   width: var(--flight-list-left-column-width);
   padding: 10px;
+  height: inherit;
+  background-color: #eee3;
+  border: 1px solid #9e9e9e66;
+  border-width: 1px 1px 0 1px;
 }
 
-.times__hour {
-  font-size: 22px;
-}
-.times__minute {
-  font-size: 12px;
-}
-.times__time-of-day {
-  font-size: 15px;
-}
-.day-time {
-  /* background-image: url(http://clipart-library.com/images/Biarp47MT.png); */
-}
-.night-time {
-  /* background-image: url(http://clipart-library.com/images_k/moon-transparent-png/moon-transparent-png-20.png); */
-}
 .departure-time {
   position: absolute;
   left: -65px;
@@ -92,8 +86,9 @@ li.flight-list-item:last-child {
   width: 85px;
   border-radius: 0;
   padding: 4px;
-  box-shadow: 3px 12px 6px 0px #eee;
-  background-color: white;
+  font-size: 22px;
+  letter-spacing: -0.5px;
+  background-color: #fbfbfb;
 }
 
 .times__minute {
@@ -130,6 +125,7 @@ li.flight-list-item:last-child {
 .interval-time {
   position: absolute;
   margin-left: -17px;
+  top: -1px;
   width: 48px;
   display: flex;
   flex-direction: column;
@@ -137,7 +133,7 @@ li.flight-list-item:last-child {
   justify-content: flex-end;
   height: 40px;
   align-items: center;
-  background-color: #fff;
+  background-color: #eee3;
 }
 .interval-time-text {
   letter-spacing: -1px;
@@ -151,6 +147,9 @@ li.flight-list-item:last-child {
 }
 .interval-line.midnight {
   box-shadow: 1px 1px 1px 0px #9e9e9e;
+}
+.interval-time-text.midnight {
+  font-weight: bold;
 }
 
 li,
@@ -168,10 +167,10 @@ li,
 .time-bar-segment.layover {
   background: repeating-linear-gradient(
     45deg,
-    #7d82a2,
-    #9399bf 5px,
-    #7a80a5 5px,
-    #626992 10px
+    rgba(125, 130, 162, 0.5),
+    rgba(147, 153, 191, 0.5) 5px,
+    rgba(122, 128, 165, 0.5) 5px,
+    rgba(98, 105, 146, 0.5) 10px
   );
 }
 .time-bar-segment::after {
@@ -211,18 +210,28 @@ li,
 .time-bar-header__date-container {
   display: flex;
   margin-top: -65px;
+  background-color: #eee3;
+  height: 80px;
+}
+.time-bar-header__date:last-child {
+  border-left-width: 0px;
 }
 .time-bar-header__airport-code-container {
   position: absolute;
-  left: -70px;
+  left: -110px;
   display: flex;
   flex-direction: column;
-  margin-top: -19px;
+  margin-top: -35px;
+  font-weight: bold;
+}
+.time-bar-header__airport-code-container span::before {
+  content: "Time at ";
+  font-weight: normal;
 }
 .time-bar-header__date {
   text-align: center;
-  height: 47px;
-  border-width: 0px 1px 0px 1px;
+  height: 39px;
+  border-width: 1px;
   border-color: #9e9e9e66;
   border-style: solid;
   margin-bottom: 10px;

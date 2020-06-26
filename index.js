@@ -232,7 +232,7 @@ function createNodeList(
     });
 
     const contentNode = document.createElement("div");
-    contentNode.classList.add("flight-list-item__text");
+    contentNode.classList.add("flight-list-item__left-column");
     const {
       operatingAirline: { display: operatingAirline },
       marketingAirlineText,
@@ -377,8 +377,9 @@ function createTimeBarHeader(intervals, tzOffset, dayWidths) {
   airportCodeContainer.classList.add("time-bar-header__airport-code-container");
   const departureSpan = document.createElement("span");
   const arrivalSpan = document.createElement("span");
-  airportCodeContainer.append(arrivalSpan);
   airportCodeContainer.append(departureSpan);
+  airportCodeContainer.append(arrivalSpan);
+
   container.append(airportCodeContainer);
 
   let date = search.fromDate;
@@ -397,10 +398,6 @@ function createTimeBarHeader(intervals, tzOffset, dayWidths) {
     .map((dateString) => Number(dateString));
   const departureDate = new Date(year, month - 1, day);
 
-  // function dayOfWeekAsInteger(day) {
-  //   return ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"][day % 7];
-  // }
-
   let dayOfWeek = departureDate.getDay();
   let tzDayOfWeek = dayOfWeek;
 
@@ -414,10 +411,24 @@ function createTimeBarHeader(intervals, tzOffset, dayWidths) {
     const intervalNode = document.createElement("div");
     intervalNode.classList.add("interval-time");
     const intervalLineNode = document.createElement("div");
-    intervalLineNode.classList.add("interval-line");
+    const timeNode = document.createElement("span");
+    timeNode.classList.add("interval-time-text");
+
+    if (index > 0) {
+      intervalLineNode.classList.add("interval-line");
+    }
     if (["12 AM", "12 PM"].includes(originTime)) {
       intervalLineNode.classList.add("midnight");
+      timeNode.classList.add("midnight");
     }
+
+    timeNode.innerText = originTime.replace("AM", "a").replace("PM", "p");
+    intervalNode.append(timeNode);
+    intervalNode.style.left = intervalWidth * index + "px";
+    intervalLineNode.style.left = intervalWidth * index + "px";
+
+    container.append(intervalNode);
+    container.append(intervalLineNode);
 
     if (tzOffset) {
       const tzTimeMinutes = timeMinutes - tzOffset;
@@ -456,16 +467,6 @@ function createTimeBarHeader(intervals, tzOffset, dayWidths) {
 
       dayOfWeek = (dayOfWeek + 1) % 7;
     }
-
-    const timeNode = document.createElement("span");
-    timeNode.classList.add("interval-time-text");
-    timeNode.innerText = originTime.replace("AM", "a").replace("PM", "p");
-    intervalNode.append(timeNode);
-    intervalNode.style.left = intervalWidth * index + "px";
-    intervalLineNode.style.left = intervalWidth * index + "px";
-
-    container.append(intervalNode);
-    container.append(intervalLineNode);
   }
   // if dayWidths, means the remaining width isn't for a full day
   if (dayWidths.length) {
@@ -507,31 +508,18 @@ function createTimeNodes(fromTimeDetails, toTimeDetails) {
   return [fromTimeDetails, toTimeDetails].map((timeDetails, idx) => {
     const { displayHours, minutes, timeOfDay, excessDays } = timeDetails;
     const timeContainer = document.createElement("div");
+    timeContainer.classList.add("time-container");
+
     if (idx === 0) {
       timeContainer.classList.add("departure-time");
     } else {
       timeContainer.classList.add("arrival-time");
     }
-    const minuteSup = document.createElement("sup");
-    const hourSpan = document.createElement("span");
-    const timeOfDaySpan = document.createElement("span");
-
-    minuteSup.classList.add("times__minute");
-    hourSpan.classList.add("times__hour");
-    timeOfDaySpan.classList.add("times__time-of-day");
 
     let minuteString = String(minutes);
     minuteString = minuteString.padStart(2, "0");
-    minuteSup.textContent = minuteString;
-    hourSpan.innerHTML =
-      String(displayHours).length === 1
-        ? "&nbsp;&nbsp;" + displayHours
-        : displayHours;
-    timeOfDaySpan.innerText = timeOfDay.toUpperCase();
 
-    timeContainer.append(hourSpan);
-    timeContainer.append(minuteSup);
-    timeContainer.append(timeOfDaySpan);
+    timeContainer.textContent = `${displayHours}:${minuteString} ${timeOfDay}`;
 
     if (excessDays) {
       const excessNode = document.createElement("sup");
