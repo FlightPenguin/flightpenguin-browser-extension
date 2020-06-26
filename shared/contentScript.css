@@ -7,6 +7,7 @@
   color: #3c4257;
   animation: 2s shake;
   border-radius: 4px;
+  z-index: 1000000;
 }
 @keyframes shake {
   0% {
