@@ -99,7 +99,7 @@ chrome.runtime.onMessage.addListener(function (message, sender, reply) {
       allItins = { ...allItins, ...itins };
       allDepartures = { ...allDepartures, ...departures };
 
-      const departuresToSend = sortFlights(allDepartures, itins);
+      const departuresToSend = sortFlights(allDepartures, allItins);
       const nextMessage = {
         event: "FLIGHT_RESULTS_FOR_CLIENT",
         flights: {
