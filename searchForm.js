@@ -146,6 +146,17 @@ chrome.runtime.onMessage.addListener(function (message) {
       document.querySelector(".validation-error").textContent =
         "Sorry, no results were found for those dates and locations.";
       break;
+    case "FAILED_SCRAPER":
+      setFormReady();
+      document.querySelector(".validation-error").textContent =
+        "Sorry, something happened, please try searching again.";
+      ga("send", {
+        hitType: "event",
+        eventCategory: "failed scraper",
+        eventAction: message.source,
+        eventLabel: message.description,
+      });
+      break;
     default:
       break;
   }
