@@ -30,50 +30,61 @@ chrome.runtime.onMessage.addListener(function (message) {
         `[data-id='${selectedDeparture.id}']`
       );
       departureNode.querySelector("button").click();
-      let hasRestrictionTray = departureNode.querySelector(
-        ".basic-economy-tray"
-      ).textContent.length;
 
-      if (!hasRestrictionTray) {
-        hasRestrictionTray = departureNode.querySelector(
+      setTimeout(() => {
+        const restrictionContainer = departureNode.querySelector(
           ".upsell-tray-contents"
         );
-      }
-      if (hasRestrictionTray) {
-        console.log(departureNode, selectedItin);
-        departureNode
-          .querySelector(`[data-exact-price='${selectedItin.fareNumber}']`)
-          .click();
-      }
-      // wait for returns
-      // parse returns
-      try {
-        loadResults("RETURN_FLIGHTS_RECEIVED");
-      } catch (e) {
-        console.log(e);
-        chrome.runtime.sendMessage({
-          event: "FAILED_SCRAPER",
-          source: "expedia",
-          description: `${e.name} ${e.message}`,
-        });
-      }
-      // send returns
+        const basicEconomyContainer = departureNode.querySelector(
+          ".basic-economy-footer"
+        );
+        let selected = false;
+        if (restrictionContainer) {
+          let selectButton = restrictionContainer.querySelector("button");
+          if (selectButton) {
+            selectButton.click();
+            selected = true;
+          }
+        }
+        if (basicEconomyContainer && !selected) {
+          let selectButton = basicEconomyContainer.querySelector("button");
+          if (selectButton) {
+            selectButton.click();
+          }
+        }
+        // parse returns
+        try {
+          loadResults("RETURN_FLIGHTS_RECEIVED");
+        } catch (e) {
+          console.log(e);
+          chrome.runtime.sendMessage({
+            event: "FAILED_SCRAPER",
+            source: "expedia",
+            description: `${e.name} ${e.message}`,
+          });
+        }
+      }, 500);
+
       break;
     case "HIGHLIGHT_FLIGHT":
       const { selectedDepartureId, selectedReturnId } = message;
       highlightItin(selectedDepartureId, selectedReturnId);
-      addBackToSearchButton();
+      addBackToSearchButton(selectedReturnId);
       break;
     case "CLEAR_SELECTION":
-      selectedDeparture = null;
-      selectedItin = null;
-      history.back();
-      loadResults("FLIGHT_RESULTS_RECEIVED");
+      clearSelection();
       break;
     default:
       break;
   }
 });
+
+function clearSelection() {
+  selectedDeparture = null;
+  selectedItin = null;
+  history.back();
+  loadResults("FLIGHT_RESULTS_RECEIVED");
+}
 
 function loadResults(event) {
   const eventToMessage = event;
@@ -86,7 +97,7 @@ function loadResults(event) {
   }, 500);
 }
 
-function addBackToSearchButton() {
+function addBackToSearchButton(isRoundtrip) {
   if (document.querySelector("#back-to-search")) {
     return;
   }
@@ -94,14 +105,15 @@ function addBackToSearchButton() {
   button.id = "back-to-search";
   button.innerText = "Return to FlightPenguin";
   button.title = "Click to return to FlightPenguin and keep browsing.";
-  button.addEventListener("click", handleBackToSearchButtonClick);
-  document.body.append(button);
-}
-
-function handleBackToSearchButtonClick() {
-  chrome.runtime.sendMessage({
-    event: "FOCUS_WEBPAGE",
+  button.addEventListener("click", () => {
+    chrome.runtime.sendMessage({
+      event: "FOCUS_WEBPAGE",
+    });
+    if (isRoundtrip) {
+      clearSelection();
+    }
   });
+  document.body.append(button);
 }
 
 function highlightItin(selectedDepartureId, selectedReturnId) {
