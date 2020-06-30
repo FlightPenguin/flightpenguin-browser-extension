@@ -351,7 +351,6 @@ function closeModal() {
     "[class*='DetailsPanelHeader_navigationBar'] button[label='back']"
   );
   if (button) {
-    button.style.border = "1px solid red";
     button.click();
   }
 }
@@ -373,10 +372,14 @@ function loadModalCallback(mutationList, observer) {
     observer.disconnect();
     return;
   }
+  let modalContainerNode;
 
   for (let m of mutationList) {
     // Results view
-    if (m.target.matches("[class*='Results_dayViewItems']")) {
+    let isResultListOpen =
+      m.target.matches("[class*='ProgressBar_container']") &&
+      m.removedNodes.length;
+    if (isResultListOpen) {
       // results page, find itin and click it to open modal to scrape layovers
       // UI variant #2
       setItinIds();
@@ -386,26 +389,29 @@ function loadModalCallback(mutationList, observer) {
         itinNodeId = itinIdQueue.pop();
         itinNode = document.querySelector(`[data-id='${itinNodeId}']`);
       }
-      itinNode.style.border = "1px solid red";
       itinNode.click();
+      return;
     }
-    return;
-  }
-  // Modal view
-  let modalContainerNode;
-  if (m.target.matches("[class*='DetailsPanel']")) {
-    modalContainerNode = document.getElementById("details-modal");
-    if (!modalContainerNode) {
+
+    // Modal view
+    let isModalOpen = Array.from(m.addedNodes).find((n) =>
+      n.matches("[class*='FlightsBookingPanel']")
+    );
+    if (!isModalOpen) {
+      // this mutation follows if modal takes a while to load,
+      // usually happens on first modal
+      isModalOpen =
+        m.target.matches("[class*='FlightsBookingPanel']") &&
+        Array.from(m.addedNodes).find((n) =>
+          n.matches("[class*='DetailsPanelHeader_navigationBar']")
+        );
+    }
+    if (isModalOpen) {
       modalContainerNode = document.getElementById("app-root");
+      break;
     }
-  } else if (
-    m.target.matches("[class*='FlightsBookingPanel']") &&
-    Array.from(m.addedNodes).find((n) =>
-      n.matches("[class*='DetailsPanelHeader_navigationBar']")
-    )
-  ) {
-    modalContainerNode = document.getElementById("app-root");
   }
+
   if (modalContainerNode) {
     const isLoading = modalContainerNode.querySelector(
       "[class^='DetailsPanel_loading']"
@@ -423,7 +429,13 @@ function loadModalCallback(mutationList, observer) {
     if (!fareNode) {
       fareNode = modalContainerNode.querySelector(fareSelector.fareBackup);
     }
-    const fare = fareNode.textContent.trim().split("$")[1];
+    let fare;
+    try {
+      fare = fareNode.textContent.trim().split("$")[1];
+    } catch (e) {
+      // still loading
+      return;
+    }
 
     flightsWithLayoversToSend.push({
       departureFlight,
@@ -452,14 +464,14 @@ function loadLayoverModal() {
   calledLayoverModalObserver = true;
 
   loadItinModalObserver = new MutationObserver(loadModalCallback);
-  loadItinModalObserver.observe(document.body, {
+  loadItinModalObserver.observe(document.getElementById("app-root"), {
     childList: true,
     subtree: true,
   });
 
   const itinNodeId = itinIdQueue.pop();
   const itinNode = document.querySelector(`[data-id='${itinNodeId}']`);
-  // this click will trigger observer callback
+  // this click will trigger MutationObserver callback
   itinNode.click();
 }
 
