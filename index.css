@@ -2,6 +2,10 @@
   --time-bar-container-width: 765px;
   --flight-list-left-column-width: 350px;
   --result-row-height: 80px;
+  --border-radius: 1.2rem;
+}
+html {
+  font-size: 16px;
 }
 body {
   background-color: white;
@@ -11,6 +15,47 @@ body {
 * {
   box-sizing: border-box;
 }
+#header {
+  display: flex;
+  flex-direction: column;
+}
+#header > h1,
+#header > h2,
+#header > h3 {
+  margin: 0;
+}
+
+.sort-container {
+  font-weight: 400;
+  letter-spacing: -0.16px;
+  font-size: 1.6rem;
+  line-height: 2.2rem;
+  position: relative;
+}
+.sort-container:before {
+  font-weight: 500;
+  letter-spacing: -0.08px;
+  line-height: 22px;
+  content: "Sort by:";
+  position: absolute;
+  padding: 0.85rem 1.6rem;
+  z-index: -1;
+}
+.sort-container select {
+  display: block;
+  background-color: rgba(0, 0, 0, 0);
+  box-shadow: inset 0 0 0 0.1rem #616161;
+  padding-left: 8rem;
+  border: none;
+  border-radius: var(--border-radius);
+  cursor: pointer;
+  box-sizing: border-box;
+  -webkit-appearance: none;
+  font-size: 1.5rem;
+  width: 250px;
+  height: 50px;
+}
+
 ul {
   padding: 0; /* remove browser style */
   margin: 0; /* remove browser style */
@@ -213,17 +258,26 @@ li,
 .departures-content,
 .returns-content {
   display: flex;
+  position: relative;
 }
 .departures-time-bar-container-header,
 .returns-time-bar-container-header {
   position: absolute;
   height: 100%;
 }
+.section-header-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: var(--time-bar-container-width);
+  margin-left: var(--flight-list-left-column-width);
+}
 .time-bar-header__date-container {
   display: flex;
-  margin-top: -65px;
-  /* background-color: #eee3; */
+  justify-content: flex-end;
   height: 80px;
+  width: var(--time-bar-container-width);
+  margin-left: var(--flight-list-left-column-width);
 }
 .time-bar-header__date:last-child:not(:first-child) {
   border-left-width: 0px;
@@ -233,7 +287,7 @@ li,
   left: -110px;
   display: flex;
   flex-direction: column;
-  margin-top: -35px;
+  margin-top: -22px;
   font-weight: bold;
 }
 .time-bar-header__airport-code-container span::before {

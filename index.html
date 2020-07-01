@@ -133,7 +133,21 @@
       <h1 class="header"></h1>
       <h2 class="subheader"></h2>
       <section class="departures-section" style="display: none;">
-        <h1>Departures</h1>
+        <div class="section-header-container">
+          <h1 class="section-header">Departures</h1>
+          <!--sort container here-->
+          <div data-label="Pain" class="sort-container">
+            <select aria-label="Sort by">
+              <option value="pain">Pain</option>
+              <option value="price">Price</option>
+              <option value="duration">Duration</option>
+              <option value="stops">Stops</option>
+              <option value="takeoff">Takeoff</option>
+              <option value="landing">Landing</option>
+            </select>
+          </div>
+        </div>
+        <div class="time-bar-header__date-container"></div>
         <div class="departures-content">
           <ul class="departures-list"></ul>
           <div class="departures-time-bar-container time-bar-container">
@@ -142,7 +156,20 @@
         </div>
       </section>
       <section class="returns-section" style="display: none;">
-        <h1>Returns</h1>
+        <div class="section-header-container">
+          <h1 class="section-header">Returns</h1>
+          <div data-label="Pain" class="sort-container">
+            <select aria-label="Sort by">
+              <option value="pain">Pain</option>
+              <option value="price">Price</option>
+              <option value="duration">Duration</option>
+              <option value="stops">Stops</option>
+              <option value="takeoff">Takeoff</option>
+              <option value="landing">Landing</option>
+            </select>
+          </div>
+        </div>
+        <div class="time-bar-header__date-container"></div>
         <div class="returns-content">
           <ul class="returns-list"></ul>
           <div class="returns-time-bar-container time-bar-container">

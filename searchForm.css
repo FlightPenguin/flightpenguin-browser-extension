@@ -12,7 +12,7 @@ form#search {
   padding: 15px 20px;
   box-shadow: 1px 1px 9px 4px #ddd;
   margin: 0 auto;
-  border-radius: 8px;
+  border-radius: var(--border-radius);
   background-color: var(--form-teal-color);
 }
 * {

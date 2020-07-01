@@ -5,10 +5,14 @@ import {
 
 let totalFlights = 0;
 let allItins = {};
-let allDepartures = [];
+let departureFlights = [];
+let returnFlights = [];
+let flightsById = {};
 let selections = [];
 let search = {};
 let numTicks;
+let isShowingReturns = false;
+
 let earliestTakeoffTime = Number.POSITIVE_INFINITY;
 let latestLandingTime = Number.NEGATIVE_INFINITY;
 const timeBarContainerWidth = 765; // if you update this, update CSS too
@@ -78,6 +82,63 @@ window.addEventListener("popstate", function (event) {
   });
 });
 
+const sortContainer = document.querySelectorAll(".sort-container");
+sortContainer.forEach((node) => {
+  node.addEventListener("change", (e) => {
+    let sortFunction;
+    switch (e.target.value) {
+      case "pain":
+        sortFunction = (a, b) => {
+          return a.pain - b.pain;
+        };
+        break;
+      case "price":
+        sortFunction = (a, b) => {
+          return (
+            allItins[a.itinIds[0]].fareNumber -
+            allItins[b.itinIds[0]].fareNumber
+          );
+        };
+        if (isShowingReturns) {
+          sortFunction = (a, b) => {
+            return (
+              allItins[`${selections[0].dataset.id}-${a.id}`].fareNumber -
+              allItins[`${selections[0].dataset.id}-${b.id}`].fareNumber
+            );
+          };
+        }
+        break;
+      case "duration":
+        sortFunction = (a, b) => a.durationMinutes - b.durationMinutes;
+        break;
+      case "stops":
+        sortFunction = (a, b) => a.layovers.length - b.layovers.length;
+        break;
+      case "takeoff":
+        sortFunction = (a, b) =>
+          a.fromTimeDetails.hours - b.fromTimeDetails.hours;
+        break;
+      case "landing":
+        sortFunction = (a, b) => b.toTimeDetails.hours - a.toTimeDetails.hours;
+        break;
+      default:
+        return;
+    }
+    let containerNode = depListNode;
+    let flights = departureFlights;
+    if (isShowingReturns) {
+      containerNode = retListNode;
+      flights = returnFlights;
+    }
+    // sort
+    const sortedFlights = flights.slice().sort(sortFunction);
+    // append rendered rows in new order
+    const sortedNodeList = sortedFlights.map(({ id }) => flightsById[id]);
+    containerNode.innerHTML = "";
+    containerNode.append(...sortedNodeList);
+  });
+});
+
 chrome.runtime.onMessage.addListener(function (message) {
   console.log(message.event, message);
 
@@ -86,9 +147,13 @@ chrome.runtime.onMessage.addListener(function (message) {
       // state variables
       totalFlights = 0;
       allItins = {};
+      departureFlights = [];
+      returnFlights = [];
+      flightsById = {};
       selections = [];
       search = {};
       numTicks = 0;
+      isShowingReturns = false;
       earliestTakeoffTime = Number.POSITIVE_INFINITY;
       latestLandingTime = Number.NEGATIVE_INFINITY;
       // search header
@@ -130,38 +195,40 @@ chrome.runtime.onMessage.addListener(function (message) {
       formContainer.style.display = "none";
 
       if (departureList.length) {
-        allDepartures = departureList.slice();
+        departureFlights = departureList;
         departuresSection.style.display = null;
         const {
           increment,
           startHourOffset,
           intervals,
           dayWidths,
-        } = createIntervals(allDepartures);
+        } = createIntervals(departureList);
         createNodeList(
-          allDepartures,
+          departureList,
           depListNode,
           increment,
           startHourOffset,
           true
         );
         createTimeBarContainer(
-          allDepartures[0].timezoneOffset,
+          departureList[0].timezoneOffset,
           depTimeBarContainer,
           depTimeBarHeaderContainer,
           intervals,
           dayWidths
         );
       }
-      const header = createHeader(formData);
-      totalFlights = allDepartures.length;
+      createHeader(formData);
+      totalFlights = departureList.length;
 
-      headerContainer.textContent = header;
       subheaderContainer.textContent = `${totalFlights} flights found.`;
       break;
     case "RETURN_FLIGHTS_FOR_CLIENT":
       const { returnList, itins: newItins } = message.flights;
       allItins = { ...allItins, ...newItins };
+      returnFlights = returnList;
+      isShowingReturns = true;
+
       returnsSection.style.display = "block";
       selections[0].querySelector(".fare").style.display = "none";
       loadingContainer.style.display = "none";
@@ -326,7 +393,9 @@ function handleFlightSelection(e) {
       departuresContainer.querySelectorAll("li:not([data-selected='true'])")
     );
     flightsNotSelected.forEach((flight) => (flight.style.display = "none"));
-    depTimeBarContainer.style.display = "none";
+    departuresSection.querySelector(".sort-container").style.display = "none";
+    departuresSection.querySelector(".section-header").textContent =
+      "Your selected departure";
   } else if (selections.length === 2 || !search.roundtrip) {
     const selectionIds = selections.map((sel) => sel.dataset.id);
 
@@ -353,8 +422,10 @@ function clearSelections() {
 
   flightsNotSelected.forEach((flight) => (flight.style.display = null));
   selections[0].querySelector(".fare").style.display = null;
-  depTimeBarContainer.style.display = null;
+  departuresSection.querySelector(".sort-container").style.display = null;
+  departuresSection.querySelector(".section-header").textContent = "Departures";
   returnsSection.style.display = "none";
+  isShowingReturns = false;
   retListNode.innerHTML = "";
   const timeBarHeader = retTimeBarContainer.children[0];
   timeBarHeader.innerHTML = "";
@@ -368,9 +439,14 @@ function clearSelections() {
 function createTimeBarHeader(intervals, tzOffset, dayWidths) {
   const container = document.createDocumentFragment();
 
-  const dateHeaderContainer = document.createElement("div");
-  dateHeaderContainer.classList.add("time-bar-header__date-container");
-  container.append(dateHeaderContainer);
+  const dateHeaderContainers = document.querySelectorAll(
+    ".time-bar-header__date-container"
+  );
+  let dateHeaderContainer = dateHeaderContainers[0];
+  if (isShowingReturns) {
+    dateHeaderContainer = dateHeaderContainers[1];
+  }
+  dateHeaderContainer.innerHTML = "";
 
   const intervalWidth = timeBarContainerWidth / (intervals.length - 1);
   const airportCodeContainer = document.createElement("div");
@@ -385,7 +461,7 @@ function createTimeBarHeader(intervals, tzOffset, dayWidths) {
   let date = search.fromDate;
   let depAirportCode = search.from;
   let arrAirportCode = search.to;
-  if (returnsSection.style.display !== "none") {
+  if (isShowingReturns) {
     date = search.toDate;
     depAirportCode = search.to;
     arrAirportCode = search.from;
