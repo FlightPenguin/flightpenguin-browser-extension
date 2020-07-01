@@ -195,9 +195,11 @@ chrome.runtime.onMessage.addListener(function (message, sender, reply) {
       break;
     case "CLEAR_SELECTIONS":
       // move Expedia to departures page
-      chrome.tabs.sendMessage(tabIds.expedia, {
-        event: "CLEAR_SELECTION",
-      });
+      if (tabIds.expedia) {
+        chrome.tabs.sendMessage(tabIds.expedia, {
+          event: "CLEAR_SELECTION",
+        });
+      }
       break;
     case "FAILED_SCRAPER":
       sendMessageToWebpage(message);
