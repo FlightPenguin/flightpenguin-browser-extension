@@ -157,7 +157,7 @@ chrome.runtime.onMessage.addListener(function (message) {
       earliestTakeoffTime = Number.POSITIVE_INFINITY;
       latestLandingTime = Number.NEGATIVE_INFINITY;
       // search header
-      headerContainer.textContent = createHeader(message.formData);
+      createHeader(message.formData);
 
       // number of flights header
       subheaderContainer.innerHTML = "";
@@ -265,7 +265,7 @@ chrome.runtime.onMessage.addListener(function (message) {
       break;
     case "FAILED_SCRAPER":
       if (totalFlights === 0) {
-        const header = createHeader(formData);
+        createHeader(formData);
         headerContainer.textContent = header;
         subheaderContainer.textContent = `${totalFlights} flights found.`;
       }
@@ -289,6 +289,7 @@ function createNodeList(
   isDeparture
 ) {
   containerNode.innerHTML = "";
+
   list.forEach((item) => {
     const node = document.createElement("li");
     node.classList.add("flight-list-item");
@@ -360,14 +361,31 @@ function createNodeList(
     node.append(contentNode);
     node.append(timeBarNode);
     node.dataset.id = item.id;
+    flightsById[item.id] = node;
     containerNode.append(node);
   });
 }
-
+/**
+SFO→LGA
+Sun July 12, Oneway
+Economy class, 1 Adult
+ * @param {Object} formData
+ */
 function createHeader(formData) {
-  const { from, to, fromDate, toDate, cabin, numPax } = formData;
-  return `${from}-${to} ${fromDate} to ${toDate} ${cabin} ${numPax} adults`;
+  const { from, to, fromDate, toDate, cabin, numPax, roundtrip } = formData;
+
+  const headerNode = document.getElementById("header");
+  const nodes = headerNode.children;
+
+  nodes[0].innerHTML = `${from}${roundtrip ? "&harr;" : "&rarr;"}${to}`;
+  nodes[1].textContent = roundtrip
+    ? `${fromDate} to ${toDate}, roundtrip`
+    : `${fromDate}, oneway`;
+  nodes[2].textContent = `${cabin} ${numPax} ${
+    numPax > 1 ? "adults" : "adult"
+  }`;
 }
+
 let flightsNotSelected = [];
 function handleFlightSelection(e) {
   if (e.currentTarget.dataset.selected) {
