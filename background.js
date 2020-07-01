@@ -48,7 +48,7 @@ let departureSelected = false;
 let canHighlightSkyscannerTab = false;
 let messageQueue = [];
 let beginTime = 0;
-let providersReceived = 0;
+let providersReceived = {};
 
 chrome.runtime.onMessage.addListener(function (message, sender, reply) {
   console.info(message.event, message);
@@ -65,6 +65,7 @@ chrome.runtime.onMessage.addListener(function (message, sender, reply) {
       allItins = {};
       departureSelected = false;
       messageQueue = [];
+      providersReceived = {};
       canHighlightSkyscannerTab = false;
       if (webPageTabId) {
         chrome.tabs.sendMessage(webPageTabId, {
@@ -74,8 +75,10 @@ chrome.runtime.onMessage.addListener(function (message, sender, reply) {
       }
       break;
     case "NO_FLIGHTS_FOUND":
-      providersReceived++;
-      if (providersReceived === Object.keys(tabIds).length) {
+      providersReceived[message.provider] = true;
+      if (
+        Object.keys(providersReceived).length === Object.keys(tabIds).length
+      ) {
         sendMessageToWebpage({ event: "NO_FLIGHTS_FOUND_CLIENT" });
         closeWindows();
       }
