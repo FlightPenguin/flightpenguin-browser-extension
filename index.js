@@ -398,7 +398,7 @@ function createTimeBarHeader(intervals, tzOffset, dayWidths) {
     .map((dateString) => Number(dateString));
   const departureDate = new Date(year, month - 1, day);
 
-  let dayOfWeek = departureDate.getDay();
+  let dayOfWeek = 0;
   let tzDayOfWeek = dayOfWeek;
 
   for (let index = 0; index < intervals.length; index++) {
@@ -465,7 +465,7 @@ function createTimeBarHeader(intervals, tzOffset, dayWidths) {
         .join(" ");
       dateHeaderContainer.append(dateNode);
 
-      dayOfWeek = (dayOfWeek + 1) % 7;
+      dayOfWeek++;
     }
   }
   // if dayWidths, means the remaining width isn't for a full day
