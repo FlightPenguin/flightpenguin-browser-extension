@@ -329,7 +329,7 @@ function createNodeList(
     fareContainer.classList.add("fare");
     let fareTextContent;
     if (search.searchByPoints) {
-      fareTextContent = `${Math.floor(fare / 0.012499999).toLocaleString(
+      fareTextContent = `${Math.floor(fare / search.pointsValue).toLocaleString(
         "en"
       )} points`;
     } else {

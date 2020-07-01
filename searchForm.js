@@ -66,15 +66,15 @@ document.querySelectorAll("input[type=text]").forEach((el) => {
   });
 });
 
-// document.querySelectorAll("input[type='radio']").forEach((el) => {
-//   el.addEventListener("change", (e) => {
-//     if (e.target.value === "price") {
-//       document.querySelector("#sources").style.display = null;
-//     } else {
-//       document.querySelector("#sources").style.display = "none";
-//     }
-//   });
-// });
+document.querySelectorAll("input[type='radio']").forEach((el) => {
+  el.addEventListener("change", (e) => {
+    if (e.target.value === "points") {
+      document.getElementById("chase").classList.remove("hide");
+    } else {
+      document.getElementById("chase").classList.add("hide");
+    }
+  });
+});
 
 fromDateInput.addEventListener("change", (e) => {
   const toDate = document.querySelector("#toDateInput");
@@ -93,7 +93,6 @@ document.querySelector("form#search").addEventListener("submit", (e) => {
   //   node.textContent = "Please select a provider to continue";
   //   return;
   // }
-
   const formData = {
     from: e.target.from.value,
     to: e.target.to.value,
@@ -106,6 +105,7 @@ document.querySelector("form#search").addEventListener("submit", (e) => {
     roundtrip: e.target.roundtrip.checked,
     searchByPoints: e.target.points.checked,
     searchByPrice: e.target.price.checked,
+    pointsValue: e.target.points.checked ? e.target.chase.value : null,
   };
 
   for (const [eventAction, eventLabel] of Object.entries(formData)) {
