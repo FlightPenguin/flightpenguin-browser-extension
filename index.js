@@ -260,6 +260,9 @@ chrome.runtime.onMessage.addListener(function (message) {
         window.pageYOffset + returnsSection.getBoundingClientRect().top
       );
       break;
+    case "FOCUS_WEBPAGE_CLIENT":
+      loadingContainer.style.display = "none";
+      break;
     case "FAILED_SCRAPER":
       if (totalFlights === 0) {
         const header = createHeader(formData);
@@ -404,7 +407,6 @@ function handleFlightSelection(e) {
       selectedDepartureId: selectionIds[0],
       selectedReturnId: selectionIds[1],
     });
-    clearSelections();
   }
 }
 

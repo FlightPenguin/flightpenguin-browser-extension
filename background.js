@@ -187,6 +187,7 @@ chrome.runtime.onMessage.addListener(function (message, sender, reply) {
       }
       break;
     case "FOCUS_WEBPAGE":
+      sendMessageToWebpage({ event: "FOCUS_WEBPAGE_CLIENT" });
       chrome.windows.update(webPageWindowId, { focused: true }, (win) => {
         chrome.tabs.highlight({
           tabs: [webPageTabIndex],
