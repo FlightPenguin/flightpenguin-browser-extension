@@ -205,6 +205,14 @@ chrome.runtime.onMessage.addListener(function (message, sender, reply) {
     case "FAILED_SCRAPER":
       sendMessageToWebpage(message);
       break;
+    case "CALL_BEGIN_PARSE":
+      window.setTimeout(() => {
+        // need setTimeout here or else message will be missed by new tab.
+        chrome.tabs.sendMessage(tabIds[message.provider], {
+          event: "BEGIN_PARSING",
+        });
+      }, 5000);
+      break;
     default:
       console.error(message);
       break;

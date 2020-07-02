@@ -6,27 +6,13 @@ Sentry.init({
 const errors = {};
 let rafID = 0;
 let allItins = [];
-let resultSummaryResultsTextContainer;
 
-chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
+chrome.runtime.onMessage.addListener(function (message) {
   // parse page to get flights, then send background to process and display on new web page.
   console.info("Received message ", message.event);
   switch (message.event) {
     case "BEGIN_PARSING":
-      // Wait until flights results stop loading, then parse.
-      // We can do this by observing the spinner's visibility.
-      resultSummaryResultsTextContainer = document.querySelector(
-        "[class^='ResultsSummary_summaryContainer']"
-      );
-      const results = document.querySelector(
-        "[class^='ResultsSummary_container']"
-      );
-      if (!results) {
-        clickContinueThenLoadResults();
-      } else {
-        loadResults();
-      }
-
+      loadResults();
       break;
     case "HIGHLIGHT_FLIGHT":
       const { selectedDepartureId, selectedReturnId } = message;
@@ -54,36 +40,34 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
   }
 });
 
-function clickContinueThenLoadResults() {
-  const directDaysMessage = document.querySelector("[class^='DirectDays']");
-  if (
-    directDaysMessage &&
-    directDaysMessage.textContent.includes("Want non-stop flights?")
-  ) {
-    const continueButton = document.querySelector(
-      "[type=button][class*='DirectDays']"
-    );
-    continueButton.click();
-    try {
-      loadResults();
-    } catch (e) {
-      console.log(e);
-      chrome.runtime.sendMessage({
-        event: "FAILED_SCRAPER",
-        source: "skyscanner",
-        description: `${e.name} ${e.message}`,
-      });
-    }
-  } else {
-    parseResults();
-  }
-}
-
 function loadResults() {
   const config = { childList: true, subtree: true };
+  let continueButton = document.querySelector(
+    "[type=button][class*='DirectDays']"
+  );
+  if (continueButton) {
+    continueButton.click();
+    chrome.runtime.sendMessage({
+      event: "CALL_BEGIN_PARSE",
+      provider: "skyscanner",
+    });
+    return;
+  }
 
   const callback = function (mutationlist, observer) {
     for (let m of mutationlist) {
+      continueButton = document.querySelector(
+        "[type=button][class*='DirectDays']"
+      );
+      if (continueButton) {
+        continueButton.click();
+        chrome.runtime.sendMessage({
+          event: "CALL_BEGIN_PARSE",
+          provider: "skyscanner",
+        });
+        observer.disconnect();
+        return;
+      }
       const isPriceContainer = /ProgressBar_container/.test(
         m.target.classList[0]
       );
@@ -102,6 +86,8 @@ function loadResults() {
     }
   };
   const observer = new MutationObserver(callback);
+
+  // observerTarget existence means results are loading
   let observerTarget = document.querySelector(
     "[class*='BpkTicket_bpk-ticket__stub']"
   );
@@ -193,7 +179,13 @@ function parseResults() {
   rafID = window.requestAnimationFrame(parseMoreFlights);
 
   function parseMoreFlights(currentTime) {
-    if (resultSummaryResultsTextContainer.textContent.includes("0 results")) {
+    const resultSummaryResultsTextContainer = document.querySelector(
+      "[class^='ResultsSummary_summaryContainer']"
+    );
+    if (
+      resultSummaryResultsTextContainer &&
+      resultSummaryResultsTextContainer.textContent.includes("0 results")
+    ) {
       window.cancelAnimationFrame(rafID);
       chrome.runtime.sendMessage({
         event: "NO_FLIGHTS_FOUND",
