@@ -45,6 +45,19 @@ function loadResults() {
   let continueButton = document.querySelector(
     "[type=button][class*='DirectDays']"
   );
+  if (!continueButton) {
+    getPricesButton = document.querySelector(
+      "[class*='month-view__trip-summary-cta']"
+    );
+    if (getPricesButton) {
+      chrome.runtime.sendMessage({
+        event: 'NO_FLIGHTS_FOUND',
+        provider: 'skyscanner',
+      });
+      observer.disconnect();
+      return;
+    }
+  }
   if (continueButton) {
     continueButton.click();
     chrome.runtime.sendMessage({
@@ -59,6 +72,19 @@ function loadResults() {
       continueButton = document.querySelector(
         "[type=button][class*='DirectDays']"
       );
+      if (!continueButton) {
+        getPricesButton = document.querySelector(
+          "[class*='month-view__trip-summary-cta']"
+        );
+        if (getPricesButton) {
+          chrome.runtime.sendMessage({
+            event: 'NO_FLIGHTS_FOUND',
+            provider: 'skyscanner',
+          });
+          observer.disconnect();
+          return;
+        }
+      }
       if (continueButton) {
         continueButton.click();
         chrome.runtime.sendMessage({
@@ -86,16 +112,7 @@ function loadResults() {
     }
   };
   const observer = new MutationObserver(callback);
-
-  // observerTarget existence means results are loading
-  let observerTarget = document.querySelector(
-    "[class*='BpkTicket_bpk-ticket__stub']"
-  );
-  if (observerTarget) {
-    observer.observe(document.body, config);
-  } else {
-    parseResults();
-  }
+  observer.observe(document.body, config);
 }
 
 function closePopups() {
