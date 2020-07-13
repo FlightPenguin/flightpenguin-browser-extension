@@ -629,7 +629,10 @@ function createTimeNodes(fromTimeDetails, toTimeDetails) {
 function createTimeBarRow(flight, increment, startHourOffset) {
   const { layovers, fromTimeDetails, toTimeDetails } = flight;
   const timeBarRow = document.createElement("div");
-  timeBarRow.classList.add("time-bar-row");
+  const selectRowSpan = document.createElement("span");
+  selectRowSpan.classList.add("tooltip-text");
+  timeBarRow.append(selectRowSpan);
+  timeBarRow.classList.add(...["time-bar-row", "tooltip"]);
   const timeNodes = createTimeNodes(fromTimeDetails, toTimeDetails);
 
   let startDayOffset = 0;

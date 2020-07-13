@@ -89,12 +89,7 @@ li.flight-list-item:nth-child(even) {
 li.flight-list-item:last-child {
   border-bottom: 2px solid #f0f4f6;
 }
-.flight-list-item:not([data-selected="true"]):hover:before {
-  content: "Click to select this flight.";
-  position: absolute;
-  transform: translate(539px, -25px);
-  z-index: 2;
-}
+
 .flight-list-item:hover,
 .flight-list-item:focus {
   cursor: pointer;
@@ -217,6 +212,42 @@ li,
   position: relative;
   display: flex;
   align-items: center;
+}
+/** Tooltip styles */
+.tooltip {
+  position: relative;
+}
+
+.tooltip .tooltip-text {
+  visibility: hidden;
+  background-color: #555;
+  color: #fff;
+  text-align: center;
+  border-radius: 6px;
+  padding: 5px 8px;
+  position: absolute;
+  z-index: 1;
+  bottom: 85%;
+  left: 50%;
+  margin-left: -60px; /* Use half of the width (120/2 = 60), to center the tooltip */
+}
+/** The arrow/caret */
+.tooltip-text:after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  margin-left: -5px;
+  border-width: 5px;
+  border-style: solid;
+  border-color: #555 transparent transparent transparent;
+}
+.tooltip-text:before {
+  content: "Click to select this flight";
+}
+
+.tooltip:hover .tooltip-text {
+  visibility: visible;
 }
 
 .time-bar-segment.layover {
