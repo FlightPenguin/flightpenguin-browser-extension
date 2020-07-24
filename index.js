@@ -493,9 +493,8 @@ function createTimeBarHeader(intervals, tzOffset, dayWidths) {
     .split("-")
     .map((dateString) => Number(dateString));
   const departureDate = new Date(year, month - 1, day);
-
-  let dayOfWeek = 0;
-  let tzDayOfWeek = dayOfWeek;
+  const initialDepartureDay = departureDate.getDate();
+  let days = 0;
 
   for (let index = 0; index < intervals.length; index++) {
     const interval = intervals[index];
@@ -528,32 +527,23 @@ function createTimeBarHeader(intervals, tzOffset, dayWidths) {
 
     if (tzOffset) {
       const tzTimeMinutes = timeMinutes - tzOffset;
-      if (tzTimeMinutes > 24 * 60) {
-        tzDayOfWeek = dayOfWeek + 1;
-      }
       const tzTime = convertMinutesTo12HourClock(
         Math.abs(tzTimeMinutes)
       ).replace(":00", "");
 
       const tzTimeNode = document.createElement("span");
       tzTimeNode.classList.add("interval-time-text");
-      // tzTimeNode.innerText = `${dayOfWeekAsInteger(tzDayOfWeek)} ${tzTime} `;
       tzTimeNode.innerText = tzTime.replace("AM", "a").replace("PM", "p");
       intervalNode.append(tzTimeNode);
     }
 
     const currDays = Math.floor(interval / 24);
-    if (
-      dayWidths.length &&
-      currDays > 0 &&
-      currDays !== dayOfWeek &&
-      index > 0
-    ) {
+    if (dayWidths.length && currDays > 0 && currDays !== days && index > 0) {
       const dateNode = document.createElement("div");
       dateNode.classList.add("time-bar-header__date");
 
       dateNode.style.width = `${dayWidths.shift()}px`;
-      departureDate.setDate(departureDate.getDate() + dayOfWeek);
+      departureDate.setDate(initialDepartureDay + days);
       dateNode.textContent = departureDate
         .toDateString()
         .split(" ")
@@ -561,7 +551,7 @@ function createTimeBarHeader(intervals, tzOffset, dayWidths) {
         .join(" ");
       dateHeaderContainer.append(dateNode);
 
-      dayOfWeek++;
+      days++;
     }
   }
   // if dayWidths, means the remaining width isn't for a full day
@@ -570,7 +560,7 @@ function createTimeBarHeader(intervals, tzOffset, dayWidths) {
     dateNode.classList.add("time-bar-header__date");
 
     dateNode.style.width = `${dayWidths.shift()}px`;
-    departureDate.setDate(departureDate.getDate() + dayOfWeek);
+    departureDate.setDate(initialDepartureDay + days);
     dateNode.textContent = departureDate
       .toDateString()
       .split(" ")
