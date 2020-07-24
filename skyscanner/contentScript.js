@@ -173,15 +173,28 @@ function highlightItin(selectedDepartureId, selectedReturnId) {
 }
 
 function showMoreResults() {
-  const seeMoreFlightsButton = document.querySelector(
-    "[class^='FlightsDayView_results__'] > div > button"
+  const resultsContainer = document.querySelector(
+    "[class^='FlightsDayView_results__']"
   );
+  if (!resultsContainer) {
+    console.log("tried to show more results but can't");
+    return;
+  }
+  const seeMoreFlightsButton = Array.from(
+    resultsContainer.querySelectorAll("button")
+  ).find((el) => el.textContent === "Show more results");
   if (seeMoreFlightsButton) {
     seeMoreFlightsButton.click();
-    window.scroll(0, window.innerHeight);
   }
+  const { height } = resultsContainer.getBoundingClientRect();
+  window.scroll(0, height);
 }
 
+function pause() {
+  return new Promise((resolve) => {
+    setTimeout(resolve, 2000);
+  });
+}
 /**
  * Skyscanner has a button that you need to click to see more results, then
  * the rest of the results are loaded has you scroll. So to get more results we need to scroll down the page.
@@ -195,7 +208,7 @@ function parseResults() {
 
   rafID = window.requestAnimationFrame(parseMoreFlights);
 
-  function parseMoreFlights(currentTime) {
+  async function parseMoreFlights(currentTime) {
     const resultSummaryResultsTextContainer = document.querySelector(
       "[class^='ResultsSummary_summaryContainer']"
     );
@@ -213,27 +226,40 @@ function parseResults() {
     // timeToScroll will initially resolve to 0 because currentTime
     // is the timestamp since the page's origin.
     // So subtracting a very big number from 9000 will be negative, and 0 is greater.
-    const timeToScroll = Math.max(0, 9000 - (currentTime - lastTime));
+    const timeToScroll = Math.max(0, 4000 - (currentTime - lastTime));
     if (timeToScroll === 0) {
-      window.scroll(0, window.pageYOffset + window.innerHeight);
+      showMoreResults();
+
+      await pause();
 
       let moreItins = Array.from(
-        document.querySelectorAll(
-          ".BpkTicket_bpk-ticket__Brlno:not([data-visited='true'])"
-        )
+        document.querySelectorAll(".BpkTicket_bpk-ticket__Brlno")
       );
+      setItinIds();
+      moreItins = moreItins.filter((itin) => !seenItinIds.has(itin.dataset.id));
+
       if (moreItins.length) {
         const flights = parser(moreItins);
+        // nonstop flights
+        if (flights.length) {
+          chrome.runtime.sendMessage({
+            event: "FLIGHT_RESULTS_RECEIVED",
+            flights,
+            provider: "skyscanner",
+          });
+        }
+        // if we have any flights with layovers, start parsing those
+        if (itinIdQueue.length) {
+          // set up Observer
+          loadLayoverModal();
+          window.cancelAnimationFrame(rafID);
+        }
+      } else {
         chrome.runtime.sendMessage({
-          event: "FLIGHT_RESULTS_RECEIVED",
-          flights,
-          provider: "skyscanner",
+          event: "SKYSCANNER_READY",
         });
+        window.cancelAnimationFrame(rafID);
       }
-      window.cancelAnimationFrame(rafID);
-      chrome.runtime.sendMessage({
-        event: "SKYSCANNER_READY",
-      });
 
       allItins = allItins.concat(moreItins);
       lastTime = currentTime;
@@ -247,12 +273,15 @@ function setItinIds() {
   let moreItins = Array.from(
     document.querySelectorAll(".BpkTicket_bpk-ticket__Brlno")
   );
+  const ids = [];
   for (let itin of moreItins) {
     const legNodes = Array.from(
       itin.querySelectorAll("[class^='LegDetails_container']")
     );
-    setIdDataset(itin, legNodes);
+    const id = setIdDataset(itin, legNodes);
+    ids.push(id);
   }
+  return ids;
 }
 
 function findMatchingDOMNode(list, target) {
@@ -305,11 +334,6 @@ function parser(itinNodes) {
     };
   });
   itins = itins.filter((itin) => itin);
-  // if we have any flights with layovers, start parsing those
-  if (itinIdQueue.length) {
-    // set up Observer
-    loadLayoverModal();
-  }
 
   return itins;
 }
@@ -361,10 +385,12 @@ function closeModal() {
   );
   if (button) {
     button.click();
+    console.log("closing modal");
   }
 }
-
-function loadModalCallback(mutationList, observer) {
+let loadModalObserver;
+async function loadModalCallback(mutationList, observer) {
+  loadModalObserver = observer;
   window.cancelAnimationFrame(rafID);
   closePopups();
 
@@ -376,9 +402,14 @@ function loadModalCallback(mutationList, observer) {
     });
     flightsWithLayoversToSend = [];
   }
+
   if (!itinIdQueue.length) {
     closeModal();
+    await pause();
+    calledLayoverModalObserver = false;
     observer.disconnect();
+    console.log("finished current queue");
+    parseResults();
     return;
   }
   let modalContainerNode;
@@ -392,10 +423,12 @@ function loadModalCallback(mutationList, observer) {
       // results page, find itin and click it to open modal to scrape layovers
       // UI variant #2
       setItinIds();
-      let itinNodeId = itinIdQueue.pop();
+      let itinNodeId = itinIdQueue.shift();
       let itinNode = document.querySelector(`[data-id='${itinNodeId}']`);
-      while (itinIdQueue.length && !itinNode) {
-        itinNodeId = itinIdQueue.pop();
+      while (!itinNode) {
+        showMoreResults();
+        await pause();
+        setItinIds();
         itinNode = document.querySelector(`[data-id='${itinNodeId}']`);
       }
       itinNode.click();
@@ -478,7 +511,7 @@ function loadLayoverModal() {
     subtree: true,
   });
 
-  const itinNodeId = itinIdQueue.pop();
+  const itinNodeId = itinIdQueue.shift();
   const itinNode = document.querySelector(`[data-id='${itinNodeId}']`);
   // this click will trigger MutationObserver callback
   itinNode.click();
@@ -506,20 +539,26 @@ function setIdDataset(itinNode, legNodes) {
       marketingAirline.trim(),
     ]);
   }
-
-  itinNode.dataset.id = dataForId.join("-"); // will use this id attribute to find the itin the user selected
+  const id = dataForId.join("-");
+  itinNode.dataset.id = id; // will use this id attribute to find the itin the user selected
+  return id;
 }
 const itinIdQueue = [];
+const seenItinIds = new Set();
 
 function queryDOM(itinNode) {
   const hasLayovers = /\d stop/.test(itinNode.textContent);
   const legNodes = Array.from(
     itinNode.querySelectorAll("[class^='LegDetails_container']")
   );
-  setIdDataset(itinNode, legNodes);
+  const id = setIdDataset(itinNode, legNodes);
+  if (seenItinIds.has(id)) {
+    return [];
+  }
+  seenItinIds.add(id);
 
   if (hasLayovers) {
-    itinIdQueue.push(itinNode.dataset.id);
+    itinIdQueue.push(id);
     return [];
   }
 
