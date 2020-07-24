@@ -96,14 +96,13 @@ li.flight-list-item:last-child {
   background: linear-gradient(180deg, #fff, #e6ebf1) bottom/100% 150px repeat-x;
 }
 
-.flight-list-item:hover .departure-time,
-.flight-list-item:hover .arrival-time,
-.flight-list-item:focus .departure-time,
-.flight-list-item:focus .arrival-time,
+.flight-list-item:hover .time-container,
+.flight-list-item:focus .time-container,
 .flight-list-item:hover .time-bar-segment,
 .flight-list-item:focus .time-bar-segment {
   box-shadow: 3px 12px 6px 0px #ddd;
   background-color: #eee;
+  opacity: 1;
 }
 
 .flight-list-item__left-column {
@@ -128,8 +127,8 @@ li.flight-list-item:last-child {
   position: absolute;
   right: -97px;
 }
-.departure-time,
-.arrival-time {
+.time-container {
+  opacity: 0;
   width: 96px;
   border-radius: 0;
   padding: 4px;
