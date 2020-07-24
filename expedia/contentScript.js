@@ -253,8 +253,14 @@ function queryLeg(containerNode, selectors) {
             data.operatingAirline = node.dataset.testAirlineName;
           } else {
             const airlines = node.textContent.trim().split(/\d+/);
-            if (airlines.length > 1 && airlines[1].includes("operated by")) {
-              data.operatingAirline = airlines[1].replace("operated by", "");
+            if (
+              airlines.length > 1 &&
+              airlines[airlines.length - 1].includes("operated by")
+            ) {
+              data.operatingAirline = airlines[airlines.length - 1].replace(
+                "operated by",
+                ""
+              );
             } else {
               data.operatingAirline = node.textContent;
             }
