@@ -262,6 +262,7 @@ chrome.runtime.onMessage.addListener(function (message) {
       break;
     case "FOCUS_WEBPAGE_CLIENT":
       loadingContainer.style.display = "none";
+      selections = [];
       break;
     case "FAILED_SCRAPER":
       if (totalFlights === 0) {

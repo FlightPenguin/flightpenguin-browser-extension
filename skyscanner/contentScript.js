@@ -16,16 +16,21 @@ chrome.runtime.onMessage.addListener(function (message) {
       break;
     case "HIGHLIGHT_FLIGHT":
       const { selectedDepartureId, selectedReturnId } = message;
-      if (loadItinModalObserver) {
-        loadItinModalObserver.disconnect();
-      }
       closeModal();
       closePopups();
       showMoreResults();
       addBackToSearchButton();
+      if (loadItinModalObserver) {
+        loadItinModalObserver.disconnect();
+      }
+      if (loadModalObserver) {
+        loadModalObserver.disconnect();
+      }
+      window.cancelAnimationFrame(rafID);
       // setTimeout to allow time for results to load
       const intId = setInterval(() => {
         try {
+          closeModal();
           setItinIds();
           highlightItin(selectedDepartureId, selectedReturnId);
           clearInterval(intId);
@@ -146,7 +151,6 @@ function handleBackToSearchButtonClick() {
 }
 
 function highlightItin(selectedDepartureId, selectedReturnId) {
-  window.cancelAnimationFrame(rafID);
   // reset prior selection
   const prevSelection = document.querySelector(
     ".BpkTicket_bpk-ticket__Brlno[data-selected='true']"
@@ -177,6 +181,7 @@ function showMoreResults() {
     "[class^='FlightsDayView_results__']"
   );
   if (!resultsContainer) {
+    closeModal();
     console.log("tried to show more results but can't");
     return;
   }

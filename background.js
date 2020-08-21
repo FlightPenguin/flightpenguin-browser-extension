@@ -201,12 +201,7 @@ chrome.runtime.onMessage.addListener(function (message, sender, reply) {
         key += `-${selectedReturnId}`;
       }
       const itin = allItins[key];
-
-      if (itin.provider === "skyscanner" && !canHighlightSkyscannerTab) {
-        messageQueue = [itin];
-      } else {
-        highlightTab(itin);
-      }
+      highlightTab(itin);
       break;
     case "SKYSCANNER_READY":
       canHighlightSkyscannerTab = true;
