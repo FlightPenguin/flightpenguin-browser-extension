@@ -29,6 +29,9 @@
             required="required"
             list="from-airports"
             autocomplete="off"
+            pattern="[A-z]{3}"
+            maxlength="3"
+            title="Airport must be a 3-letter code."
           />
         </label>
         <label title="Please enter your destination airport."
@@ -40,6 +43,9 @@
             required="required"
             list="to-airports"
             autocomplete="off"
+            pattern="[A-z]{3}"
+            maxlength="3"
+            title="Airport must be a 3-letter code."
           />
         </label>
         <datalist id="from-airports">

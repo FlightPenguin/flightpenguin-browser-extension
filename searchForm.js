@@ -60,7 +60,7 @@ roundtripElement.addEventListener("change", (e) => {
 
 document.querySelectorAll("input[type=text]").forEach((el) => {
   el.addEventListener("input", (e) => {
-    if (e.target.value === "Example:") {
+    if (e.target.value === "Exa") {
       e.target.value = e.target.list.textContent.trim();
     }
   });
