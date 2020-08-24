@@ -109,9 +109,6 @@ function addBackToSearchButton(isRoundtrip) {
     chrome.runtime.sendMessage({
       event: "FOCUS_WEBPAGE",
     });
-    if (isRoundtrip) {
-      clearSelection();
-    }
   });
   document.body.append(button);
 }
