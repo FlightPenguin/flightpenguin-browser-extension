@@ -6,6 +6,7 @@ Sentry.init({
 const errors = {};
 let rafID = 0;
 let allItins = [];
+let isHighlightingItin = false; // to prevent opening modals when trying to highlight a selected itin
 
 chrome.runtime.onMessage.addListener(function (message) {
   // parse page to get flights, then send background to process and display on new web page.
@@ -23,6 +24,7 @@ chrome.runtime.onMessage.addListener(function (message) {
       break;
     case "HIGHLIGHT_FLIGHT":
       const { selectedDepartureId, selectedReturnId } = message;
+      isHighlightingItin = true;
       closeModal();
       closePopups();
       showMoreResults();
@@ -34,17 +36,21 @@ chrome.runtime.onMessage.addListener(function (message) {
         loadModalObserver.disconnect();
       }
       window.cancelAnimationFrame(rafID);
-      // setTimeout to allow time for results to load
-      const intId = setInterval(() => {
-        try {
-          closeModal();
-          setItinIds();
-          highlightItin(selectedDepartureId, selectedReturnId);
-          clearInterval(intId);
-        } catch (e) {
-          // keep going
-          window.scroll(0, window.pageYOffset + window.innerHeight);
-        }
+      // setTimeout to allow time for observers to disconnect
+      setTimeout(() => {
+        const intId = setInterval(() => {
+          try {
+            closeModal();
+            setItinIds();
+            console.log("highlightItin");
+            highlightItin(selectedDepartureId, selectedReturnId);
+            clearInterval(intId);
+          } catch (e) {
+            console.log("looking for itin to highlight");
+            // keep going
+            window.scroll(0, window.pageYOffset + window.innerHeight);
+          }
+        }, 500);
       }, 500);
       break;
     default:
@@ -146,6 +152,8 @@ function addBackToSearchButton() {
 }
 
 function handleBackToSearchButtonClick() {
+  isHighlightingItin = false;
+
   chrome.runtime.sendMessage({
     event: "FOCUS_WEBPAGE",
   });
@@ -442,6 +450,11 @@ async function loadModalCallback(mutationList, observer) {
         await pause();
         setItinIds();
         itinNode = document.querySelector(`[data-id='${itinNodeId}']`);
+      }
+      if (isHighlightingItin) {
+        console.log("inside mutation but trying to highlight itin");
+        observer.disconnect();
+        return;
       }
       itinNode.click();
       return;
