@@ -53,45 +53,39 @@ chrome.runtime.onMessage.addListener(function (message) {
 });
 
 function loadResults() {
-  const config = { childList: true, subtree: true };
-  let continueButton = document.querySelector(
-    "[type=button][class*='DirectDays']"
-  );
-  if (!continueButton) {
-    getPricesButton = document.querySelector(
-      "[class*='month-view__trip-summary-cta']"
+  const callback = function (mutationlist, observer) {
+    const resultSummaryContainer = document.querySelector(
+      "[class^='ResultsSummary_summaryContainer']"
     );
-    if (getPricesButton) {
-      chrome.runtime.sendMessage({
-        event: 'NO_FLIGHTS_FOUND',
-        provider: 'skyscanner',
-      });
+    const val = resultSummaryContainer.textContent.match(/\d/);
+    if (val) {
+      console.log("results rendered without loading state");
+      // results rendered without loading state
+      if (+val[0] > 0) {
+        closePopups();
+        parseResults();
+      } else {
+        chrome.runtime.sendMessage({
+          event: "NO_FLIGHTS_FOUND",
+          provider: "skyscanner",
+        });
+      }
       observer.disconnect();
       return;
     }
-  }
-  if (continueButton) {
-    continueButton.click();
-    chrome.runtime.sendMessage({
-      event: "CALL_BEGIN_PARSE",
-      provider: "skyscanner",
-    });
-    return;
-  }
-
-  const callback = function (mutationlist, observer) {
     for (let m of mutationlist) {
-      continueButton = document.querySelector(
+      console.log(m);
+      const continueButton = document.querySelector(
         "[type=button][class*='DirectDays']"
       );
       if (!continueButton) {
-        getPricesButton = document.querySelector(
+        const getPricesButton = document.querySelector(
           "[class*='month-view__trip-summary-cta']"
         );
         if (getPricesButton) {
           chrome.runtime.sendMessage({
-            event: 'NO_FLIGHTS_FOUND',
-            provider: 'skyscanner',
+            event: "NO_FLIGHTS_FOUND",
+            provider: "skyscanner",
           });
           observer.disconnect();
           return;
@@ -124,7 +118,7 @@ function loadResults() {
     }
   };
   const observer = new MutationObserver(callback);
-  observer.observe(document.body, config);
+  observer.observe(document.body, { childList: true, subtree: true });
 }
 
 function closePopups() {
@@ -215,18 +209,23 @@ function pause() {
  */
 function parseResults() {
   let lastTime = 0;
+  console.log("parseResults");
 
   showMoreResults();
+
+  if (isHighlightingItin) {
+    return;
+  }
 
   rafID = window.requestAnimationFrame(parseMoreFlights);
 
   async function parseMoreFlights(currentTime) {
-    const resultSummaryResultsTextContainer = document.querySelector(
+    const resultSummaryContainer = document.querySelector(
       "[class^='ResultsSummary_summaryContainer']"
     );
     if (
-      resultSummaryResultsTextContainer &&
-      /^0 results/.test(resultSummaryResultsTextContainer.textContent)
+      resultSummaryContainer &&
+      /^0 results/.test(resultSummaryContainer.textContent)
     ) {
       window.cancelAnimationFrame(rafID);
       chrome.runtime.sendMessage({
