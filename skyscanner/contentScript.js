@@ -12,6 +12,13 @@ chrome.runtime.onMessage.addListener(function (message) {
   console.info("Received message ", message.event);
   switch (message.event) {
     case "BEGIN_PARSING":
+      if (document.body.textContent.includes("Page not found")) {
+        chrome.runtime.sendMessage({
+          event: "NO_FLIGHTS_FOUND",
+          provider: "skyscanner",
+        });
+        return;
+      }
       loadResults();
       break;
     case "HIGHLIGHT_FLIGHT":
@@ -219,18 +226,19 @@ function parseResults() {
     );
     if (
       resultSummaryResultsTextContainer &&
-      resultSummaryResultsTextContainer.textContent.includes("0 results")
+      /^0 results/.test(resultSummaryResultsTextContainer.textContent)
     ) {
       window.cancelAnimationFrame(rafID);
       chrome.runtime.sendMessage({
         event: "NO_FLIGHTS_FOUND",
         provider: "skyscanner",
       });
+      return;
     }
-    // every 9 seconds scroll to next viewPort
+    // every 4 seconds scroll to next viewPort
     // timeToScroll will initially resolve to 0 because currentTime
     // is the timestamp since the page's origin.
-    // So subtracting a very big number from 9000 will be negative, and 0 is greater.
+    // So subtracting a very big number from 4000 will be negative, and 0 is greater.
     const timeToScroll = Math.max(0, 4000 - (currentTime - lastTime));
     if (timeToScroll === 0) {
       showMoreResults();
