@@ -515,9 +515,15 @@ function createTimeBarHeader(intervals, tzOffset, dayWidths) {
     if (index > 0) {
       intervalLineNode.classList.add("interval-line");
     }
-    if (["12 AM", "12 PM"].includes(originTime)) {
-      intervalLineNode.classList.add("midnight");
-      timeNode.classList.add("midnight");
+    let modifierClass = "";
+    if (originTime === "12 AM") {
+      modifierClass = "midnight";
+    } else if (originTime === "12 PM") {
+      modifierClass = "midday";
+    }
+    if (modifierClass) {
+      intervalLineNode.classList.add(modifierClass);
+      timeNode.classList.add(modifierClass);
     }
 
     timeNode.innerText = originTime.replace("AM", "a").replace("PM", "p");
