@@ -263,6 +263,7 @@ chrome.runtime.onMessage.addListener(function (message) {
     case "FOCUS_WEBPAGE_CLIENT":
       loadingContainer.style.display = "none";
       const lastSelection = selections.pop();
+      lastSelection.tabIndex = "0";
       delete lastSelection.dataset.selected;
       break;
     case "FAILED_SCRAPER":
