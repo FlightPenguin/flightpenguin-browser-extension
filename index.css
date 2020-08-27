@@ -337,7 +337,6 @@ li,
   display: flex;
   justify-content: center;
   align-items: center;
-  min-width: 84px;
   background-color: #eee3;
 }
 .time-bar-container {
