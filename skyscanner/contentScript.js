@@ -111,15 +111,8 @@ function loadResults() {
       );
 
       if (isPriceContainer) {
-        const isDoneLoading = Array.from(m.removedNodes).find((n) =>
-          /BpkProgress_bpk-progress/.test(n.classList[0])
-        );
-        if (isDoneLoading) {
-          closePopups();
-          parseResults();
-          observer.disconnect();
-          return;
-        }
+        parseResults();
+        observer.disconnect();
       }
     }
   };
@@ -218,12 +211,10 @@ function pause() {
 function parseResults() {
   let lastTime = 0;
   console.log("parseResults");
-
-  showMoreResults();
-
   if (isHighlightingItin) {
     return;
   }
+  showMoreResults();
 
   rafID = window.requestAnimationFrame(parseMoreFlights);
 
@@ -255,8 +246,6 @@ function parseResults() {
       let moreItins = Array.from(
         document.querySelectorAll(".BpkTicket_bpk-ticket__Brlno")
       );
-      setItinIds();
-      moreItins = moreItins.filter((itin) => !seenItinIds.has(itin.dataset.id));
 
       if (moreItins.length) {
         const flights = parser(moreItins);
@@ -328,8 +317,6 @@ const fareSelector = {
 };
 function parser(itinNodes) {
   let itins = itinNodes.map((node) => {
-    node.dataset.visited = "true";
-
     if (node.textContent.includes("Sponsored")) {
       return null;
     }
@@ -341,7 +328,7 @@ function parser(itinNodes) {
       return null;
     }
 
-    const [departureFlight, returnFlight] = queryDOM(node);
+    const [departureFlight, returnFlight] = queryDOM(node, fare);
     if (!departureFlight) {
       return null;
     }
@@ -422,7 +409,21 @@ async function loadModalCallback(mutationList, observer) {
     });
     flightsWithLayoversToSend = [];
   }
-
+  // Check if new flights have rendered or their prices have updated,
+  let moreItins = Array.from(
+    document.querySelectorAll(".BpkTicket_bpk-ticket__Brlno")
+  );
+  if (moreItins.length) {
+    const flights = parser(moreItins);
+    // nonstop flights
+    if (flights.length) {
+      chrome.runtime.sendMessage({
+        event: "FLIGHT_RESULTS_RECEIVED",
+        flights,
+        provider: "skyscanner",
+      });
+    }
+  }
   if (!itinIdQueue.length) {
     closeModal();
     await pause();
@@ -558,29 +559,30 @@ function setIdDataset(itinNode, legNodes) {
     } else {
       marketingAirline = marketingAirlinesNode.textContent;
     }
-    dataForId = dataForId.concat([
+    dataForId.push(
       fromTime.textContent.trim(),
       toTime.textContent.trim(),
-      marketingAirline.trim(),
-    ]);
+      marketingAirline.trim()
+    );
   }
   const id = dataForId.join("-");
   itinNode.dataset.id = id; // will use this id attribute to find the itin the user selected
   return id;
 }
 const itinIdQueue = [];
-const seenItinIds = new Set();
+const seenItinIds = {};
 
-function queryDOM(itinNode) {
+function queryDOM(itinNode, fare) {
   const hasLayovers = /\d stop/.test(itinNode.textContent);
   const legNodes = Array.from(
     itinNode.querySelectorAll("[class^='LegDetails_container']")
   );
   const id = setIdDataset(itinNode, legNodes);
-  if (seenItinIds.has(id)) {
+  // check if price is lower than what was previously seen
+  if (seenItinIds[id] && seenItinIds[id] === fare) {
     return [];
   }
-  seenItinIds.add(id);
+  seenItinIds[id] = fare;
 
   if (hasLayovers) {
     itinIdQueue.push(id);
