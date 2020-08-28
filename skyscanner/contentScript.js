@@ -63,7 +63,9 @@ function loadResults() {
     const resultSummaryContainer = document.querySelector(
       "[class^='ResultsSummary_summaryContainer']"
     );
-    const val = resultSummaryContainer.textContent.match(/\d/);
+    const val = resultSummaryContainer
+      ? resultSummaryContainer.textContent.match(/\d/)
+      : null;
     if (val) {
       console.log("results rendered without loading state");
       // results rendered without loading state
