@@ -232,7 +232,15 @@ function getLayovers(legNode) {
     legNode.querySelectorAll(flightDetails.segmentContainer)
   );
   for (let segmentContainer of segmentsContainer) {
-    layovers.push(queryLeg(segmentContainer, layoverSelectors));
+    // Handle case when Expedia layover runs overnight (not marked overnight in UI)
+    const layover = queryLeg(segmentContainer, layoverSelectors);
+    if (
+      layover.fromTime.includes("am") &&
+      layovers[layovers.length - 1].toTime.includes("pm")
+    ) {
+      layover.fromTime += "+1";
+    }
+    layovers.push(layover);
   }
   return layovers;
 }
