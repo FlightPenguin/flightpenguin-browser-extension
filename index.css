@@ -155,7 +155,10 @@ li.flight-list-item:nth-child(even) {
   white-space: normal;
 }
 .primary-airline {
-  font-size: 22px;
+  width: 200px;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
 }
 .secondary-airline {
   font-size: 8px;

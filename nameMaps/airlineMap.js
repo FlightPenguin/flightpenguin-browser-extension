@@ -9,6 +9,7 @@ const airlinesMap = {
   "Air Canada": { display: "Air Canada", color: "#E53222", code: "AC" },
   "Alaska Airlines": { display: "Alaska", color: "#51172C", code: "AS" },
   jetBlue: { display: "jetBlue", color: "#5F90C8", code: "B6" },
+  "JetBlue Airways": { display: "jetBlue", color: "#5F90C8", code: "B6" },
   "Spirit Airlines": { display: "Spirit", color: "#BBB140", code: "NK" },
   WestJet: { display: "WestJet", color: "#4BA89C", code: "WS" },
   Aeromexico: { display: "Aeromexico", color: "#000000", code: "AM" },

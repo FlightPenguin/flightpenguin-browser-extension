@@ -351,6 +351,7 @@ function createNodeList(
     airlines.forEach((airline, idx) => {
       const span = document.createElement("span");
       span.textContent = airline;
+      span.title = airline;
 
       if (idx === 0) {
         span.classList.add("primary-airline");
