@@ -323,22 +323,14 @@ function openProviderSearchResults(message) {
     toDate: "2020-03-25"
     numPax: 2
      */
-  const { southwest, priceline, skyscanner, searchByPoints } = message;
+  const { searchByPoints } = message;
 
-  const providers = [];
+  let providers = [];
 
   if (searchByPoints) {
-    providers.push("expedia");
+    providers = ["expedia"];
   } else {
-    if (southwest) {
-      providers.push("southwest");
-    }
-    if (priceline) {
-      providers.push("priceline");
-    }
-    if (skyscanner) {
-      providers.push("skyscanner");
-    }
+    providers = ["southwest", "skyscanner", "expedia"];
   }
 
   providers.forEach(async (provider) => {
