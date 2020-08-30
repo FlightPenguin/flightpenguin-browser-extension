@@ -24,18 +24,21 @@ chrome.runtime.onMessage.addListener(function (message) {
       break;
     case "HIGHLIGHT_FLIGHT":
       const { selectedDepartureId, selectedReturnId } = message;
+      // isHighlightingItin is used to prevent MutationObserver and RAF callbacks from continuing their tasks (parsing results)
       isHighlightingItin = true;
-      closeModal();
-      closePopups();
-      showMoreResults();
-      addBackToSearchButton();
       if (loadItinModalObserver) {
+        console.log("loadItinModalObserver.disconnect()");
         loadItinModalObserver.disconnect();
       }
       if (loadModalObserver) {
+        console.log("loadModalObserver.disconnect()");
         loadModalObserver.disconnect();
       }
+      closeModal();
+      closePopups();
+      console.log("window.cancelAnimationFrame(rafID)");
       window.cancelAnimationFrame(rafID);
+      window.scroll(0, 0);
       // setTimeout to allow time for observers to disconnect
       setTimeout(() => {
         const intId = setInterval(() => {
@@ -45,10 +48,11 @@ chrome.runtime.onMessage.addListener(function (message) {
             console.log("highlightItin");
             highlightItin(selectedDepartureId, selectedReturnId);
             clearInterval(intId);
+            addBackToSearchButton();
           } catch (e) {
             console.log("looking for itin to highlight");
             // keep going
-            window.scroll(0, window.pageYOffset + window.innerHeight);
+            showMoreResults();
           }
         }, 500);
       }, 500);
@@ -264,12 +268,14 @@ function parseResults() {
           // set up Observer
           loadLayoverModal();
           window.cancelAnimationFrame(rafID);
+          return;
         }
       } else {
         chrome.runtime.sendMessage({
           event: "SKYSCANNER_READY",
         });
         window.cancelAnimationFrame(rafID);
+        return;
       }
 
       allItins = allItins.concat(moreItins);
@@ -403,6 +409,12 @@ async function loadModalCallback(mutationList, observer) {
   window.cancelAnimationFrame(rafID);
   closePopups();
 
+  if (isHighlightingItin) {
+    console.log("inside mutation but trying to highlight itin");
+    observer.disconnect();
+    return;
+  }
+
   if (flightsWithLayoversToSend.length) {
     chrome.runtime.sendMessage({
       event: "FLIGHT_RESULTS_RECEIVED",
@@ -438,6 +450,13 @@ async function loadModalCallback(mutationList, observer) {
   let modalContainerNode;
 
   for (let m of mutationList) {
+    if (isHighlightingItin) {
+      console.log("inside mutation but trying to highlight itin");
+      observer.disconnect();
+      return;
+    }
+    console.log("mutationList loop");
+
     // Results view
     let isResultListOpen =
       m.target.matches("[class*='ProgressBar_container']") &&
@@ -449,6 +468,11 @@ async function loadModalCallback(mutationList, observer) {
       let itinNodeId = itinIdQueue.shift();
       let itinNode = document.querySelector(`[data-id='${itinNodeId}']`);
       while (!itinNode) {
+        if (isHighlightingItin) {
+          console.log("inside mutation but trying to highlight itin");
+          observer.disconnect();
+          return;
+        }
         showMoreResults();
         await pause();
         setItinIds();
@@ -460,12 +484,13 @@ async function loadModalCallback(mutationList, observer) {
         return;
       }
       itinNode.click();
+      console.log("opening modal");
       return;
     }
 
     // Modal view
-    let isModalOpen = Array.from(m.addedNodes).find((n) =>
-      n.matches("[class*='FlightsBookingPanel']")
+    let isModalOpen = Array.from(m.addedNodes).find(
+      (n) => n.matches && n.matches("[class*='FlightsBookingPanel']")
     );
     if (!isModalOpen) {
       // this mutation follows if modal takes a while to load,
