@@ -12,58 +12,59 @@ chrome.runtime.onInstalled.addListener(function () {
 });
 
 chrome.browserAction.onClicked.addListener(function () {
-  createPaywallPage();
-  // get user access token using oauth constants in manifest.json
-  chrome.identity.getAuthToken({ interactive: true }, async (token) => {
-    /**
-    Fetch the user's info, passing in the access token in the Authorization
-    HTTP request header. Doing this instead of identity.getProfileUserInfo bc it didn't work.
-    @param {String} accessToken
-    @returns {Object} email
-                      family_name
-                      given_name
-                      id
-                      locale
-                      name
-                      picture
-                      verified_email
-    */
-    function getUserInfo(accessToken) {
-      const requestURL =
-        "https://www.googleapis.com/oauth2/v1/userinfo?alt=json";
-      const requestHeaders = new Headers();
-      requestHeaders.append("Authorization", "Bearer " + accessToken);
-      const driveRequest = new Request(requestURL, {
-        method: "GET",
-        headers: requestHeaders,
-      });
-      return fetch(driveRequest).then((response) => {
-        if (response.status === 200) {
-          return response.json();
-        } else {
-          throw response.status;
-        }
-      });
-    }
-    const { email } = await getUserInfo(token);
-    fetch(`${ORIGIN}/get-customer/${email}`)
-      .then((resp) => resp.json())
-      .then(({ customer }) => {
-        if (
-          customer &&
-          (customer.stripeSubscriptionId || customer.skipSubscription)
-        ) {
-          createNewWebPage({});
-          chrome.tabs.remove(paywallTabId);
-        } else {
-          sendMessageToPaywall({ event: "NOT_SUBSCRIBED" });
-        }
-      })
-      .catch((err) => {
-        console.error(err);
-        sendMessageToPaywall({ event: "NOT_SUBSCRIBED" });
-      });
-  });
+  // createPaywallPage();
+  // // get user access token using oauth constants in manifest.json
+  // chrome.identity.getAuthToken({ interactive: true }, async (token) => {
+  //   /**
+  //   Fetch the user's info, passing in the access token in the Authorization
+  //   HTTP request header. Doing this instead of identity.getProfileUserInfo bc it didn't work.
+  //   @param {String} accessToken
+  //   @returns {Object} email
+  //                     family_name
+  //                     given_name
+  //                     id
+  //                     locale
+  //                     name
+  //                     picture
+  //                     verified_email
+  //   */
+  //   function getUserInfo(accessToken) {
+  //     const requestURL =
+  //       "https://www.googleapis.com/oauth2/v1/userinfo?alt=json";
+  //     const requestHeaders = new Headers();
+  //     requestHeaders.append("Authorization", "Bearer " + accessToken);
+  //     const driveRequest = new Request(requestURL, {
+  //       method: "GET",
+  //       headers: requestHeaders,
+  //     });
+  //     return fetch(driveRequest).then((response) => {
+  //       if (response.status === 200) {
+  //         return response.json();
+  //       } else {
+  //         throw response.status;
+  //       }
+  //     });
+  //   }
+  //   const { email } = await getUserInfo(token);
+  //   fetch(`${ORIGIN}/get-customer/${email}`)
+  //     .then((resp) => resp.json())
+  //     .then(({ customer }) => {
+  //       if (
+  //         customer &&
+  //         (customer.stripeSubscriptionId || customer.skipSubscription)
+  //       ) {
+  //         createNewWebPage({});
+  //         chrome.tabs.remove(paywallTabId);
+  //       } else {
+  //         sendMessageToPaywall({ event: "NOT_SUBSCRIBED" });
+  //       }
+  //     })
+  //     .catch((err) => {
+  //       console.error(err);
+  //       sendMessageToPaywall({ event: "NOT_SUBSCRIBED" });
+  //     });
+  // });
+  createNewWebPage({});
 });
 
 let tabIds = {};
