@@ -617,27 +617,24 @@ function createTimeNodes(fromTimeDetails, toTimeDetails) {
 
     timeContainer.textContent = `${displayHours}:${minuteString} ${timeOfDay}`;
 
-    if (excessDays) {
-      const excessNode = document.createElement("sup");
-      excessNode.innerText = excessDays;
-      timeContainer.append(excessNode);
-    }
-
     return timeContainer;
   });
 }
 function createTimeBarRow(flight, increment, startHourOffset) {
-  const { layovers, fromTimeDetails, toTimeDetails } = flight;
+  const { layovers, fromTimeDetails, toTimeDetails, duration } = flight;
   const timeBarRow = document.createElement("div");
-  const selectRowSpan = document.createElement("span");
-  selectRowSpan.classList.add("tooltip-text");
-  timeBarRow.append(selectRowSpan);
+  const timeBarSegmentContainer = document.createElement("div");
+
+  timeBarSegmentContainer.classList.add("time-bar-segment-container");
+  timeBarSegmentContainer.dataset.content = duration;
+
+  timeBarRow.append(timeBarSegmentContainer);
   timeBarRow.classList.add(...["time-bar-row", "tooltip"]);
   const timeNodes = createTimeNodes(fromTimeDetails, toTimeDetails);
 
   let startDayOffset = 0;
   let endDayOffset = 0;
-  let width = 0;
+
   const timeSegments = document.createDocumentFragment();
   const iterator = layovers.length ? layovers : [flight];
 
@@ -696,18 +693,15 @@ function createTimeBarRow(flight, increment, startHourOffset) {
   let leftPosition = timeSegments.children[0].style.left;
   let leftPositionNumber = Number(leftPosition.replace("px", ""));
 
-  width = rightPositionNumber - leftPositionNumber;
+  timeBarSegmentContainer.style.left = timeSegments.children[0].style.left;
+  timeBarSegmentContainer.append(timeSegments);
 
-  timeBarRow.append(timeSegments);
-  timeBarRow.style.width = width + "px";
   // how far away from time bar we want left time node to be
   timeNodes[0].style.left = leftPositionNumber - (97 + 10) + "px";
   // how far away from time bar we want right time node to be
   timeNodes[1].style.left = rightPositionNumber + 10 + "px";
 
-  timeBarRow.append(timeNodes[0]);
-  timeBarRow.append(timeNodes[1]);
-  timeBarRow.style.width = width + "px";
+  timeBarRow.append(...timeNodes);
   return timeBarRow;
 }
 function createTimeBar(
@@ -732,10 +726,8 @@ function createTimeBar(
 
   timeBarSegment.title = `${airlineName} ${fromTime}-${toTime}`;
   timeBarSegment.style.width = `${timeBarWidth}px`;
-  timeBarSegment.style.height = "30px";
-  timeBarSegment.style.position = "absolute";
-  timeBarSegment.style.left = `${startPositionPx}px`;
   timeBarSegment.style.backgroundColor = airlineColor;
+  timeBarSegment.style.left = `${startPositionPx}px`;
 
   return { timeBarSegment };
 }

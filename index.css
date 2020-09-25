@@ -255,7 +255,33 @@ li,
 .tooltip:hover .tooltip-text {
   visibility: visible;
 }
-
+.time-bar-segment-container {
+  display: flex;
+  align-items: center;
+  position: absolute;
+}
+/** .time-bar-segment-container pseudo elements show duration */
+.time-bar-row:hover .time-bar-segment-container::before {
+  width: calc(100% - 2px);
+  height: 5px;
+  content: "";
+  position: absolute;
+  top: -8px;
+  text-align: center;
+  border: 1px solid #404040;
+  border-width: 1px 1px 0 1px;
+}
+.time-bar-row:hover .time-bar-segment-container::after {
+  content: attr(data-content); /** ex: 1h 10m */
+  position: absolute;
+  text-align: center;
+  width: 100%;
+  top: -25px;
+  color: #404040;
+}
+.time-bar-segment {
+  height: 30px;
+}
 .time-bar-segment.layover {
   background: repeating-linear-gradient(
     45deg,
