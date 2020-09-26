@@ -177,13 +177,14 @@ chrome.runtime.onMessage.addListener(function (message, sender, reply) {
     case "DEPARTURE_SELECTED":
       departureSelected = true;
       const departure = allDepartures[message.departureId];
+      const itin = allItins[message.departureId];
 
-      if (formData.searchByPoints && formData.roundtrip) {
+      if (formData.roundtrip && itin.provider === "expedia") {
         // expedia shows return options for roundtrip after you select a departure.
         chrome.tabs.sendMessage(tabIds.expedia, {
           event: "GET_RETURN_FLIGHTS",
           departure,
-          itin: allItins[departure.id],
+          itin,
         });
         break;
       }
@@ -201,8 +202,7 @@ chrome.runtime.onMessage.addListener(function (message, sender, reply) {
       if (selectedReturnId) {
         key += `-${selectedReturnId}`;
       }
-      const itin = allItins[key];
-      highlightTab(itin);
+      highlightTab(allItins[key]);
       break;
     case "SKYSCANNER_READY":
       canHighlightSkyscannerTab = true;

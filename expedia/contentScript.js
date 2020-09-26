@@ -68,7 +68,19 @@ chrome.runtime.onMessage.addListener(function (message) {
       break;
     case "HIGHLIGHT_FLIGHT":
       const { selectedDepartureId, selectedReturnId } = message;
-      highlightItin(selectedDepartureId, selectedReturnId);
+      try {
+        highlightItin(
+          selectedDepartureId,
+          selectedReturnId,
+          UI_ORIGINAL_SELECTORS.flightContainer
+        );
+      } catch (e) {
+        highlightItin(
+          selectedDepartureId,
+          selectedReturnId,
+          UI_REDESIGN_SELECTORS.flightContainer
+        );
+      }
       addBackToSearchButton(selectedReturnId);
       break;
     case "CLEAR_SELECTION":
@@ -87,17 +99,40 @@ function clearSelection() {
 }
 
 function loadResults(event) {
-  const eventToMessage = event;
-  const intervalId = setInterval(function () {
-    let observerTarget = document.querySelector(loadingSelector);
-    if (!observerTarget) {
-      parseResults(eventToMessage);
+  let isOriginalUI = false;
+  let isRedesignUI = false;
+  const intervalId = setInterval(async function () {
+    let originalUIloading = document.querySelector(loadingSelector);
+    let redesignUIloading = document.querySelector(".uitk-loading-bar");
+
+    if (originalUIloading) {
+      isOriginalUI = true;
+    } else if (redesignUIloading) {
+      isRedesignUI = true;
+    } else if (document.body.textContent.includes("Sorry")) {
+      chrome.runtime.sendMessage({
+        event: "NO_FLIGHTS_FOUND",
+        provider: "expedia",
+      });
+    }
+
+    if (!(originalUIloading || redesignUIloading)) {
       clearInterval(intervalId);
+      if (isRedesignUI) {
+        const flights = await scrapeRedesignUI();
+        chrome.runtime.sendMessage({
+          event,
+          flights,
+          provider: "expedia",
+        });
+      } else {
+        parseResults(event);
+      }
     }
   }, 500);
 }
 
-function addBackToSearchButton(isRoundtrip) {
+function addBackToSearchButton() {
   if (document.querySelector("#back-to-search")) {
     return;
   }
@@ -113,7 +148,7 @@ function addBackToSearchButton(isRoundtrip) {
   document.body.append(button);
 }
 
-function highlightItin(selectedDepartureId, selectedReturnId) {
+function highlightItin(selectedDepartureId, selectedReturnId, flightContainer) {
   // reset prior selection
   const prevSelection = document.querySelector(
     `${flightContainer}[data-selected='true']`
@@ -154,10 +189,9 @@ function parseResults(event) {
   let moreItins = Array.from(
     document.querySelectorAll(`${flightContainer}:not([data-visited='true'])`)
   );
-  if (!moreItins.length) {
-    return;
-  }
+
   const flights = parser(moreItins);
+
   chrome.runtime.sendMessage({
     event,
     flights,
@@ -170,60 +204,59 @@ function findMatchingDOMNode(list, target) {
 }
 
 function parser(itinNodes) {
-  let itins = itinNodes.map((node) => {
-    node.dataset.visited = "true";
+  return itinNodes
+    .map((node) => {
+      node.dataset.visited = "true";
 
-    if (node.dataset.isClickToPrice === "clickToPrice") {
-      // some mystery flight, sponsored ad
-      return null;
-    }
-    let fare;
-    try {
-      fare = node.querySelector(fareSelector.fare).textContent.trim();
-      fare = Number(fare.match(/\d+/g).join(""));
-    } catch (e) {
-      // one of those itins that say for example "See Southwest for prices"
-      return null;
-    }
+      if (node.dataset.isClickToPrice === "clickToPrice") {
+        // some mystery flight, sponsored ad
+        return null;
+      }
+      let fare;
+      try {
+        fare = node.querySelector(fareSelector.fare).textContent.trim();
+        fare = Number(fare.match(/\d+/g).join(""));
+      } catch (e) {
+        // one of those itins that say for example "See Southwest for prices"
+        return null;
+      }
 
-    const flight = queryLeg(node, SELECTORS);
+      const flight = queryLeg(node, SELECTORS);
 
-    if (!flight) {
-      return null;
-    }
+      if (!flight) {
+        return null;
+      }
 
-    if (selectedDeparture) {
-      // roundtrip
-      node.dataset.id = [
-        selectedDeparture.id,
-        flight.fromTime,
-        flight.toTime,
-        flight.marketingAirline,
-      ].join("-"); // will use this id attribute to find the itin the user selected
+      if (selectedDeparture) {
+        // roundtrip
+        node.dataset.id = [
+          selectedDeparture.id,
+          flight.fromTime,
+          flight.toTime,
+          flight.marketingAirline,
+        ].join("-"); // will use this id attribute to find the itin the user selected
 
-      return {
-        departureFlight: selectedDeparture,
-        returnFlight: flight,
-        fare: selectedItin.fareNumber + fare,
-      };
-    } else {
-      // either departures of roundtrip or oneway
-      node.dataset.id = [
-        flight.fromTime,
-        flight.toTime,
-        flight.marketingAirline,
-      ].join("-"); // will use this id attribute to find the itin the user selected
+        return {
+          departureFlight: selectedDeparture,
+          returnFlight: flight,
+          fare: selectedItin.fareNumber + fare,
+        };
+      } else {
+        // either departures of roundtrip or oneway
+        node.dataset.id = [
+          flight.fromTime,
+          flight.toTime,
+          flight.marketingAirline,
+        ].join("-"); // will use this id attribute to find the itin the user selected
 
-      return {
-        departureFlight: flight,
-        returnFlight: null,
-        fare,
-      };
-    }
-  });
-  itins = itins.filter((itin) => itin);
-
-  return itins;
+        return {
+          departureFlight: flight,
+          returnFlight: null,
+          fare,
+        };
+      }
+    })
+    .filter((itin) => itin);
 }
 
 function getLayovers(legNode) {
@@ -302,7 +335,6 @@ function queryLeg(containerNode, selectors) {
       if (errors[e.name]) {
         return;
       }
-      console.info("Error parsing ", key, e);
       chrome.runtime.sendMessage({
         event: "FAILED_SCRAPER",
         source: "expedia",
@@ -316,6 +348,148 @@ function queryLeg(containerNode, selectors) {
   }
   return data;
 }
+// so far redesign variant only for oneway flights
+const UI_REDESIGN_SELECTORS = {
+  flightContainer: "[data-test-id='offer-listing']",
+  marketingAirline: "[data-test-id='flight-operated']",
+  operatingAirline: "[data-test-id='operated-by']",
+  fare: "footer section span",
+  clickToOpenModal: "[data-test-id='select-link']",
+  modalViewContainerDesktop:
+    "[data-test-id='listing-details-and-fares']:not(:empty)",
+  modalViewContainerMobile: ".uitk-dialog-content",
+  openModalViewLegsContainer: "[data-test-id='show-details-link'] button",
+  modalViewLegsContainer: "[data-test-id='flight-details']", // then grab children
+  modalViewSummaryContainer: "[data-test-id='flight-summary']",
+  closeModalViewButton: "button[data-icon='tool-close']",
+};
+function pause() {
+  return new Promise((resolve) => {
+    setTimeout(resolve, 500);
+  });
+}
+async function scrapeRedesignUI() {
+  const flightElements = Array.from(
+    document.querySelectorAll(UI_REDESIGN_SELECTORS.flightContainer)
+  );
+  const flights = [];
+  for (let i = 0; i < flightElements.length; i++) {
+    const flightEl = flightElements[i];
+    try {
+      const flight = {};
+
+      flight.marketingAirline = flightEl.querySelector(
+        UI_REDESIGN_SELECTORS.marketingAirline
+      ).textContent;
+      const operatingAirline = flightEl.querySelector(
+        UI_REDESIGN_SELECTORS.operatingAirline
+      );
+      if (operatingAirline) {
+        [_, flight.operatingAirline] = operatingAirline.textContent.split(
+          "operated by "
+        );
+      }
+      // open modal
+      flightEl.querySelector(UI_REDESIGN_SELECTORS.clickToOpenModal).click();
+      await pause();
+      // find open modal
+      let modal = document.querySelector(
+        UI_REDESIGN_SELECTORS.modalViewContainerDesktop
+      );
+      if (!modal) {
+        modal = document.querySelector(
+          UI_REDESIGN_SELECTORS.modalViewContainerMobile
+        );
+      }
+      const summary = modal.querySelector(
+        UI_REDESIGN_SELECTORS.modalViewSummaryContainer
+      );
+      const [times, duration] = Array.from(
+        summary.querySelectorAll("span:not(.is-visually-hidden)")
+      ).map((el) => el.textContent);
+      [flight.fromTime, flight.toTime] = times.split(" - ");
+      let toTimeAddDays = summary.textContent.match(/(\+\d)/);
+      if (toTimeAddDays) {
+        flight.toTime += toTimeAddDays[0];
+      }
+
+      [flight.duration] = duration.split("(");
+      const hasStops = !duration.includes("Nonstop");
+
+      // click to show leg details
+      modal
+        .querySelector(UI_REDESIGN_SELECTORS.openModalViewLegsContainer)
+        .click();
+      // find now rendered leg container
+      const legs = modal.querySelector(
+        UI_REDESIGN_SELECTORS.modalViewLegsContainer
+      ).children;
+
+      const stops = [];
+
+      if (hasStops) {
+        for (let i = 0; i < legs.length; i++) {
+          const [departure, details, arrival] = legs[i].children;
+          let departureText = departure.textContent;
+          let fromTime = departureText.split(" - ")[0];
+          let from = departureText.slice(
+            departureText.indexOf("(") + 1,
+            departureText.indexOf(")")
+          );
+          let duration = details.children[0].textContent.replace("flight", "");
+          // for operating might have to find index of first digit, then consider string before it if extra string after flight num
+          let operatingAirline = details.children[1].textContent
+            .match(/[A-z]*/g)
+            .join(" ")
+            .trim();
+          let arrivalText = arrival.textContent;
+          let toTime = arrivalText.split(" - ")[0];
+          if (
+            fromTime.toLowerCase().includes("pm") &&
+            toTime.toLowerCase().includes("am")
+          ) {
+            toTime += "+1";
+          }
+          let to = arrivalText.slice(
+            arrivalText.indexOf("(") + 1,
+            arrivalText.indexOf(")")
+          );
+          stops.push({
+            fromTime,
+            toTime,
+            from,
+            to,
+            operatingAirline,
+            duration,
+          });
+        }
+      }
+      flight.layovers = stops;
+
+      flightEl.dataset.id = [
+        flight.fromTime,
+        flight.toTime,
+        flight.marketingAirline,
+      ].join("-"); // will use this id attribute to find the itin the user selected
+
+      flights.push({
+        departureFlight: flight,
+        returnFlight: null,
+        fare: modal.querySelector(UI_REDESIGN_SELECTORS.fare).textContent,
+      });
+      // close modal
+      modal.querySelector("[data-icon='tool-close']").click();
+    } catch (e) {
+      console.log(e);
+      // must be an ad row
+    }
+  }
+  return flights;
+}
+const UI_ORIGINAL_SELECTORS = {
+  flightContainer: ".flight-module.segment.offer-listing",
+  loadingSelector: "#skeleton-listing",
+};
 const flightContainer = ".flight-module.segment.offer-listing";
 const loadingSelector = "#skeleton-listing";
 const SELECTORS = {
