@@ -482,23 +482,24 @@ function createTimeBarHeader(intervals, tzOffset, dayWidths) {
 
   container.append(airportCodeContainer);
 
-  let date = search.fromDate;
+  let currDate = search.fromDate;
   let depAirportCode = search.from;
   let arrAirportCode = search.to;
   if (isShowingReturns) {
-    date = search.toDate;
+    currDate = search.toDate;
     depAirportCode = search.to;
     arrAirportCode = search.from;
   }
   departureSpan.innerText = depAirportCode;
   arrivalSpan.innerText = arrAirportCode;
 
-  const [year, month, day] = date
+  const [year, month, day] = currDate
     .split("-")
     .map((dateString) => Number(dateString));
   const departureDate = new Date(year, month - 1, day);
   const initialDepartureDay = departureDate.getDate();
   let days = 0;
+  let date;
 
   for (let index = 0; index < intervals.length; index++) {
     const interval = intervals[index];
@@ -553,8 +554,13 @@ function createTimeBarHeader(intervals, tzOffset, dayWidths) {
       dateNode.classList.add("time-bar-header__date");
 
       dateNode.style.width = `${dayWidths.shift()}px`;
-      departureDate.setDate(initialDepartureDay + days);
-      dateNode.textContent = departureDate
+      // Copy the initial date to a new object to make sure dates are accurate while adding days
+      // Because Sept 30 gives us an initialDepartureDay of 30.
+      // Then when days = 1. 30 + 1 = Oct 1 because we add to Sept. Fine
+      // Then when days = 2. 30 + 2 = Nov 2 because we add to Oct. Whoops.
+      date = new Date(departureDate.getTime());
+      date.setDate(initialDepartureDay + days);
+      dateNode.textContent = date
         .toDateString()
         .split(" ")
         .slice(0, 3)
@@ -570,12 +576,9 @@ function createTimeBarHeader(intervals, tzOffset, dayWidths) {
     dateNode.classList.add("time-bar-header__date");
 
     dateNode.style.width = `${dayWidths.shift()}px`;
-    departureDate.setDate(initialDepartureDay + days);
-    dateNode.textContent = departureDate
-      .toDateString()
-      .split(" ")
-      .slice(0, 3)
-      .join(" ");
+    date = new Date(departureDate.getTime());
+    date.setDate(initialDepartureDay + days);
+    dateNode.textContent = date.toDateString().split(" ").slice(0, 3).join(" ");
     dateHeaderContainer.append(dateNode);
   }
 
