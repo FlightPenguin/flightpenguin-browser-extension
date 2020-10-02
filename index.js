@@ -151,7 +151,7 @@ chrome.runtime.onMessage.addListener(function (message) {
       returnFlights = [];
       flightsById = {};
       selections = [];
-      search = {};
+      search = message.formData;
       numTicks = 0;
       isShowingReturns = false;
       earliestTakeoffTime = Number.POSITIVE_INFINITY;
@@ -218,7 +218,7 @@ chrome.runtime.onMessage.addListener(function (message) {
           dayWidths
         );
       }
-      createHeader(formData);
+      createHeader(search);
       totalFlights = departureList.length;
 
       subheaderContainer.textContent = `${totalFlights} flights found.`;
@@ -268,7 +268,7 @@ chrome.runtime.onMessage.addListener(function (message) {
       break;
     case "FAILED_SCRAPER":
       if (totalFlights === 0) {
-        createHeader(formData);
+        createHeader(search);
         headerContainer.textContent = header;
         subheaderContainer.textContent = `${totalFlights} flights found.`;
       }
