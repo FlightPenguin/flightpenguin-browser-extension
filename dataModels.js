@@ -39,14 +39,14 @@ function Flight(
   // operating airline is what is primarily displayed
   // marketing airline is used to create the id
   if (operatingAirline) {
-    if (
-      isRegionalAirline(operatingAirline) ||
-      operatingAirline.includes("Partially operated by")
-    ) {
+    if (isRegionalAirline(operatingAirline)) {
       // regional airlines don't get the primary airline spot
       // they'll be displayed where we display marketing airlines
       this.operatingAirline = marketingAirline;
-      this.marketingAirlineText = operatingAirline; // 'Partially operated by' or 'Operated by'
+      this.marketingAirlineText = `Operated by ${operatingAirline}`;
+    } else if (operatingAirline.includes("Partially operated by")) {
+      this.operatingAirline = marketingAirline;
+      this.marketingAirlineText = operatingAirline;
     } else {
       this.operatingAirline = operatingAirline.replace("Operated by", "");
       this.marketingAirlineText = `Marketed by ${marketingAirline}`;

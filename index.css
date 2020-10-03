@@ -190,6 +190,9 @@ li.flight-list-item:nth-child(even) {
 .secondary-airline {
   color: gray;
   font-weight: 300;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 .cost-container {
   display: flex;
