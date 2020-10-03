@@ -15,14 +15,32 @@ body {
 * {
   box-sizing: border-box;
 }
+
+#header > h2 {
+  margin: 0;
+}
 #header {
   display: flex;
-  flex-direction: column;
+  justify-content: center;
+  box-shadow: 0px 1px 1px 1px #ddd;
+  padding: 8px;
 }
-#header > h1,
-#header > h2,
-#header > h3 {
-  margin: 0;
+#header .label {
+  font-size: 18px;
+  color: #404040;
+  text-align: center;
+}
+#header .content {
+  display: flex;
+  flex-direction: column;
+  margin-right: 30px;
+  border-radius: 45px;
+  box-shadow: 0px 2px 4px 1px #ddd;
+  padding: 10px 15px;
+  border-radius: 37px;
+  color: navy;
+  text-align: center;
+  white-space: nowrap;
 }
 
 .sort-container {
@@ -33,33 +51,51 @@ body {
   position: relative;
 }
 .sort-container:before {
-  font-weight: 500;
+  font-weight: 700;
   letter-spacing: -0.08px;
-  line-height: 22px;
   content: "Sort by:";
   position: absolute;
-  padding: 0.85rem 1.6rem;
-  z-index: -1;
+  color: navy;
+  padding: 12px 48px;
+  font-size: 20px;
+  pointer-events: none;
 }
 .sort-container select {
   display: block;
-  background-color: rgba(0, 0, 0, 0);
-  box-shadow: inset 0 0 0 0.1rem #616161;
+  background-color: #11ffcf1c;
   padding-left: 8rem;
-  border: none;
   cursor: pointer;
   box-sizing: border-box;
   -webkit-appearance: none;
   font-size: 1.5rem;
   width: 250px;
-  height: 50px;
+  height: 60px;
   font-family: "Nunito";
+  border-radius: 8px;
+  border: 0px;
+  font-weight: 700;
+  color: navy;
 }
-
+.sort-container select:hover {
+  background-color: #11ffcfab;
+}
+.departures-header {
+  display: flex;
+  justify-content: space-between;
+  flex-direction: row;
+  height: 50px;
+  position: relative;
+  width: var(--flight-list-left-column-width);
+  align-items: flex-end;
+  box-sizing: border-box;
+  margin-top: 15px;
+}
+h4,
 ul {
   padding: 0; /* remove browser style */
   margin: 0; /* remove browser style */
-  padding-top: 15px; /* to line up flight info with time bars which have a header */
+}
+ul {
   width: var(--flight-list-left-column-width);
   padding-right: 20px;
 }
@@ -68,10 +104,6 @@ ul {
   box-sizing: border-box;
   white-space: nowrap;
   align-items: center;
-  width: calc(
-    var(--time-bar-container-width) + var(--flight-list-left-column-width) + 1px
-  );
-  border: 1px solid #9e9e9e66;
 }
 li.flight-list-item[data-selected="true"],
 .flight-list-item:only-child {

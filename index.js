@@ -45,7 +45,6 @@ ga("set", "transport", "beacon");
 ga("require", "displayfeatures");
 ga("send", "pageview", "/index.html"); // Specify the virtual path
 
-const headerContainer = document.querySelector(".header");
 const subheaderContainer = document.querySelector(".subheader");
 
 const departuresSection = document.querySelector(".departures-section");
@@ -266,19 +265,6 @@ chrome.runtime.onMessage.addListener(function (message) {
       lastSelection.tabIndex = "0";
       delete lastSelection.dataset.selected;
       break;
-    case "FAILED_SCRAPER":
-      if (totalFlights === 0) {
-        createHeader(search);
-        headerContainer.textContent = header;
-        subheaderContainer.textContent = `${totalFlights} flights found.`;
-      }
-      ga("send", {
-        hitType: "event",
-        eventCategory: "failed scraper",
-        eventAction: message.source,
-        eventLabel: message.description,
-      });
-      break;
     default:
       break;
   }
@@ -379,15 +365,41 @@ function createHeader(formData) {
   const { from, to, fromDate, toDate, cabin, numPax, roundtrip } = formData;
 
   const headerNode = document.getElementById("header");
-  const nodes = headerNode.children;
 
-  nodes[0].innerHTML = `${from}${roundtrip ? "&harr;" : "&rarr;"}${to}`;
-  nodes[1].textContent = roundtrip
-    ? `${fromDate} to ${toDate}, roundtrip`
-    : `${fromDate}, oneway`;
-  nodes[2].textContent = `${cabin} ${numPax} ${
-    numPax > 1 ? "adults" : "adult"
-  }`;
+  if (headerNode.innerHTML.length) {
+    return;
+  }
+
+  const container = document.createDocumentFragment();
+
+  const cabin_map = {
+    econ: "Economy",
+    prem_econ: "Premium Economy",
+    business: "Business",
+    first: "First",
+  };
+  const labels = {
+    Airports: `${from}${roundtrip ? "&harr;" : "&rarr;"}${to}`,
+    Depart: fromDate,
+    Return: toDate,
+    Cabin: cabin_map[cabin],
+    Passengers: numPax,
+  };
+
+  for (const [key, value] of Object.entries(labels)) {
+    if (!value) {
+      continue;
+    }
+    const header = document.createElement("h2");
+    header.classList.add("content");
+    const label = document.createElement("span");
+    label.classList.add("label");
+    label.innerText = key;
+    header.append(label);
+    header.innerHTML += value;
+    container.append(header);
+  }
+  headerNode.append(container);
 }
 
 let flightsNotSelected = [];
