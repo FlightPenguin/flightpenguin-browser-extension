@@ -144,21 +144,21 @@
     <main style="display: none">
       <header id="header"></header>
       <h2 class="subheader"></h2>
-      <section class="departures-section" style="display: none;">
-        <div class="section-header-container">
-          <h1 class="section-header">Departures</h1>
-          <!--sort container here-->
-          <div data-label="Pain" class="sort-container">
-            <select aria-label="Sort by">
-              <option value="pain">Pain</option>
-              <option value="price">Price</option>
-              <option value="duration">Duration</option>
-              <option value="stops">Stops</option>
-              <option value="takeoff">Takeoff</option>
-              <option value="landing">Landing</option>
-            </select>
-          </div>
+      <section class="table-header">
+        <h1 class="section-header">Departures</h1>
+        <!--sort container here-->
+        <div data-label="Pain" class="sort-container">
+          <select aria-label="Sort by">
+            <option value="pain">Pain</option>
+            <option value="price">Price</option>
+            <option value="duration">Duration</option>
+            <option value="stops">Stops</option>
+            <option value="takeoff">Takeoff</option>
+            <option value="landing">Landing</option>
+          </select>
         </div>
+      </section>
+      <section class="departures-section" style="display: none">
         <div class="time-bar-header__date-container"></div>
         <div class="departures-content">
           <ul class="departures-list"></ul>
@@ -167,8 +167,8 @@
           </div>
         </div>
       </section>
-      <section class="returns-section" style="display: none;">
-        <div class="section-header-container">
+      <section class="returns-section" style="display: none">
+        <div class="table-header">
           <h1 class="section-header">Returns</h1>
           <div data-label="Pain" class="sort-container">
             <select aria-label="Sort by">
@@ -190,7 +190,7 @@
         </div>
       </section>
     </main>
-    <div id="loading" style="display: none;">
+    <div id="loading" style="display: none">
       Please wait :)
       <svg
         version="1.1"
@@ -202,7 +202,7 @@
         viewBox="0 0 100 100"
         enable-background="new 0 0 0 0"
         xml:space="preserve"
-        style="width: 99px; height: 51px;"
+        style="width: 99px; height: 51px"
       >
         <path
           fill="#000"

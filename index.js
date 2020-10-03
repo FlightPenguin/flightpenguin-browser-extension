@@ -15,7 +15,9 @@ let isShowingReturns = false;
 
 let earliestTakeoffTime = Number.POSITIVE_INFINITY;
 let latestLandingTime = Number.NEGATIVE_INFINITY;
-const timeBarContainerWidth = 765; // if you update this, update CSS too
+
+const flightListItemWidth = window.innerWidth < 1418 ? window.innerWidth : 1418;
+const timeBarContainerWidth = flightListItemWidth - 350 - 1; // if you update this, update CSS too
 
 const GA_TRACKING_ID = "164337457-1";
 
@@ -46,6 +48,8 @@ ga("require", "displayfeatures");
 ga("send", "pageview", "/index.html"); // Specify the virtual path
 
 const subheaderContainer = document.querySelector(".subheader");
+const tableHeader = document.querySelector(".table-header");
+tableHeader.style.width = flightListItemWidth + "px";
 
 const departuresSection = document.querySelector(".departures-section");
 const departuresContainer = document.querySelector(".departures-content");
@@ -282,6 +286,7 @@ function createNodeList(
   list.forEach((item) => {
     const node = document.createElement("li");
     node.classList.add("flight-list-item");
+    node.style.width = flightListItemWidth + "px";
     node.tabIndex = "0";
     node.addEventListener("click", handleFlightSelection);
     node.addEventListener("keypress", (e) => {
@@ -316,16 +321,20 @@ function createNodeList(
     costContainer.classList.add("cost-container");
     const fareContainer = document.createElement("span");
     fareContainer.classList.add("fare");
-    let fareTextContent;
+    let units = "";
+
     if (search.searchByPoints) {
-      fareTextContent = `${Math.floor(fare / search.pointsValue).toLocaleString(
-        "en"
-      )} points`;
+      fareContainer.classList.add("points");
+      fareContainer.textContent = `${Math.floor(
+        fare / search.pointsValue
+      ).toLocaleString("en")}`;
+      units = "points";
     } else {
-      fareTextContent = `$${fare.toLocaleString("en")}`;
+      fareContainer.classList.add("dollar");
+      fareContainer.textContent = `$${fare.toLocaleString("en")}`;
     }
-    fareContainer.textContent = fareTextContent;
     costContainer.append(fareContainer);
+    costContainer.append(units);
     contentNode.append(costContainer);
     // Create and append airline HTML
     const airlinesContainer = document.createElement("div");
@@ -473,7 +482,7 @@ function clearSelections() {
 }
 
 function createTimeBarHeader(intervals, tzOffset, dayWidths) {
-  const container = document.createDocumentFragment();
+  const timeBarHeaderContainer = document.createDocumentFragment();
 
   const dateHeaderContainers = document.querySelectorAll(
     ".time-bar-header__date-container"
@@ -485,14 +494,6 @@ function createTimeBarHeader(intervals, tzOffset, dayWidths) {
   dateHeaderContainer.innerHTML = "";
 
   const intervalWidth = timeBarContainerWidth / (intervals.length - 1);
-  const airportCodeContainer = document.createElement("div");
-  airportCodeContainer.classList.add("time-bar-header__airport-code-container");
-  const departureSpan = document.createElement("span");
-  const arrivalSpan = document.createElement("span");
-  airportCodeContainer.append(departureSpan);
-  airportCodeContainer.append(arrivalSpan);
-
-  container.append(airportCodeContainer);
 
   let currDate = search.fromDate;
   let depAirportCode = search.from;
@@ -502,8 +503,6 @@ function createTimeBarHeader(intervals, tzOffset, dayWidths) {
     depAirportCode = search.to;
     arrAirportCode = search.from;
   }
-  departureSpan.innerText = depAirportCode;
-  arrivalSpan.innerText = arrAirportCode;
 
   const [year, month, day] = currDate
     .split("-")
@@ -516,17 +515,20 @@ function createTimeBarHeader(intervals, tzOffset, dayWidths) {
   for (let index = 0; index < intervals.length; index++) {
     const interval = intervals[index];
     const timeMinutes = interval * 60;
-    const originTime = convertMinutesTo12HourClock(
-      Math.abs(timeMinutes)
-    ).replace(":00", "");
+    const time = convertMinutesTo12HourClock(Math.abs(timeMinutes));
+    const originTime = time.replace(":00", "");
 
     const intervalNode = document.createElement("div");
     intervalNode.classList.add("interval-time");
+
     const intervalLineNode = document.createElement("div");
     const timeNode = document.createElement("span");
     timeNode.classList.add("interval-time-text");
 
-    if (index > 0) {
+    if (index === 0) {
+      timeNode.classList.add("first");
+      timeNode.dataset.content = `Time at ${depAirportCode}`;
+    } else if (index > 0) {
       intervalLineNode.classList.add("interval-line");
     }
     let modifierClass = "";
@@ -536,17 +538,50 @@ function createTimeBarHeader(intervals, tzOffset, dayWidths) {
       modifierClass = "midday";
     }
     if (modifierClass) {
-      intervalLineNode.classList.add(modifierClass);
+      intervalNode.classList.add(modifierClass);
+      intervalLineNode.classList.add(...["interval-line", modifierClass]);
       timeNode.classList.add(modifierClass);
     }
+    if (originTime === "12 AM" || index === 0) {
+      const dayOfWeek = document.createElement("span");
+      // Copy the initial date to a new object to make sure dates are accurate while adding days
+      // Because Sept 30 gives us an initialDepartureDay of 30.
+      // Then when days = 1. 30 + 1 = Oct 1 because we add to Sept. Fine
+      // Then when days = 2. 30 + 2 = Nov 2 because we add to Oct. Whoops.
+      date = new Date(departureDate.getTime());
+      date.setDate(initialDepartureDay + days);
+      dayOfWeek.innerText = date.toLocaleString("en-us", { weekday: "long" });
+      dayOfWeek.classList.add("day-of-the-week");
+      intervalNode.append(dayOfWeek);
+      days++;
+    }
 
-    timeNode.innerText = originTime.replace("AM", "a").replace("PM", "p");
+    timeNode.innerText = originTime.toLowerCase();
+    timeNode.classList.add(getTimeColorClass(time));
     intervalNode.append(timeNode);
     intervalNode.style.left = intervalWidth * index + "px";
     intervalLineNode.style.left = intervalWidth * index + "px";
 
-    container.append(intervalNode);
-    container.append(intervalLineNode);
+    const timeIntervalContainer = document.createElement("div");
+    timeIntervalContainer.append(intervalNode);
+
+    function getTimeColorClass(time) {
+      const { hours } = convertTimeTo24HourClock(time);
+      let className = "";
+      if (hours <= 5) {
+        className = "early-morning";
+      } else if (hours <= 12) {
+        className = "morning";
+      } else if (hours < 5) {
+        className = "afternoon";
+      } else if (hours < 24) {
+        className = "evening";
+      }
+      return className;
+    }
+
+    timeBarHeaderContainer.append(timeIntervalContainer);
+    timeBarHeaderContainer.append(intervalLineNode);
 
     if (tzOffset) {
       const tzTimeMinutes = timeMinutes - tzOffset;
@@ -555,46 +590,18 @@ function createTimeBarHeader(intervals, tzOffset, dayWidths) {
       ).replace(":00", "");
 
       const tzTimeNode = document.createElement("span");
-      tzTimeNode.classList.add("interval-time-text");
-      tzTimeNode.innerText = tzTime.replace("AM", "a").replace("PM", "p");
+      tzTimeNode.classList.add(...["interval-time-text", "timezone"]);
+      if (index === 0) {
+        tzTimeNode.classList.add("first");
+        tzTimeNode.dataset.content = `Time at ${arrAirportCode}`;
+      }
+      tzTimeNode.classList.add(getTimeColorClass(time));
+      tzTimeNode.innerText = tzTime.toLowerCase();
       intervalNode.append(tzTimeNode);
     }
-
-    const currDays = Math.floor(interval / 24);
-    if (dayWidths.length && currDays > 0 && currDays !== days && index > 0) {
-      const dateNode = document.createElement("div");
-      dateNode.classList.add("time-bar-header__date");
-
-      dateNode.style.width = `${dayWidths.shift()}px`;
-      // Copy the initial date to a new object to make sure dates are accurate while adding days
-      // Because Sept 30 gives us an initialDepartureDay of 30.
-      // Then when days = 1. 30 + 1 = Oct 1 because we add to Sept. Fine
-      // Then when days = 2. 30 + 2 = Nov 2 because we add to Oct. Whoops.
-      date = new Date(departureDate.getTime());
-      date.setDate(initialDepartureDay + days);
-      dateNode.textContent = date
-        .toDateString()
-        .split(" ")
-        .slice(0, 3)
-        .join(" ");
-      dateHeaderContainer.append(dateNode);
-
-      days++;
-    }
-  }
-  // if dayWidths, means the remaining width isn't for a full day
-  if (dayWidths.length) {
-    const dateNode = document.createElement("div");
-    dateNode.classList.add("time-bar-header__date");
-
-    dateNode.style.width = `${dayWidths.shift()}px`;
-    date = new Date(departureDate.getTime());
-    date.setDate(initialDepartureDay + days);
-    dateNode.textContent = date.toDateString().split(" ").slice(0, 3).join(" ");
-    dateHeaderContainer.append(dateNode);
   }
 
-  return container;
+  return timeBarHeaderContainer;
 }
 
 function createTimeBarContainer(
