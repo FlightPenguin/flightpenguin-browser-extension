@@ -22,7 +22,6 @@ body {
 #header {
   display: flex;
   justify-content: center;
-  box-shadow: 0px 1px 1px 1px #ddd;
   padding: 8px;
 }
 #header .label {
@@ -49,6 +48,7 @@ body {
   font-size: 1.6rem;
   line-height: 2.2rem;
   position: relative;
+  margin: 25px 0;
 }
 .sort-container:before {
   font-weight: 700;
@@ -59,6 +59,7 @@ body {
   padding: 12px 48px;
   font-size: 20px;
   pointer-events: none;
+  border-color: #ddd;
 }
 .sort-container select {
   display: block;
@@ -99,11 +100,16 @@ ul {
   width: var(--flight-list-left-column-width);
   padding-right: 20px;
 }
-.flight-list-item {
+li.flight-list-item {
   display: flex;
   box-sizing: border-box;
   white-space: nowrap;
   align-items: center;
+  border: 1px solid #ddd;
+  border-width: 1px 1px 0 1px;
+}
+li.flight-list-item:last-child {
+  border-width: 1px;
 }
 li.flight-list-item[data-selected="true"],
 .flight-list-item:only-child {
