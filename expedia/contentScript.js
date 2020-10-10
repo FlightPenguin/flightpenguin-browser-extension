@@ -264,10 +264,12 @@ function getLayovers(legNode) {
   const segmentsContainer = Array.from(
     legNode.querySelectorAll(flightDetails.segmentContainer)
   );
-  for (let segmentContainer of segmentsContainer) {
+  for (let i = 0; i < segmentsContainer.length; i++) {
+    const segmentContainer = segmentsContainer[i];
     // Handle case when Expedia layover runs overnight (not marked overnight in UI)
     const layover = queryLeg(segmentContainer, layoverSelectors);
     if (
+      i > 0 &&
       layover.fromTime.includes("am") &&
       layovers[layovers.length - 1].toTime.includes("pm")
     ) {
