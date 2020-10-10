@@ -34,7 +34,6 @@ body {
   flex-direction: column;
   margin-right: 30px;
   border-radius: 45px;
-  box-shadow: 0px 2px 4px 1px #ddd;
   padding: 10px 15px;
   border-radius: 37px;
   color: navy;
@@ -42,24 +41,16 @@ body {
   white-space: nowrap;
 }
 
-.sort-container {
-  font-weight: 400;
-  letter-spacing: -0.16px;
-  font-size: 1.6rem;
-  line-height: 2.2rem;
-  position: relative;
-  margin: 25px 0;
-}
 .sort-container:before {
   font-weight: 700;
   letter-spacing: -0.08px;
   content: "Sort by:";
   position: absolute;
   color: navy;
-  padding: 12px 48px;
+  padding: 16px 48px;
   font-size: 20px;
   pointer-events: none;
-  border-color: #ddd;
+  white-space: nowrap;
 }
 .sort-container select {
   display: block;
@@ -68,14 +59,14 @@ body {
   cursor: pointer;
   box-sizing: border-box;
   -webkit-appearance: none;
-  font-size: 1.5rem;
   width: 250px;
   height: 60px;
   font-family: "Nunito";
   border-radius: 8px;
-  border: 0px;
   font-weight: 700;
   color: navy;
+  border-color: #ddd;
+  font-size: 20px;
 }
 .sort-container select:hover {
   background-color: #11ffcfab;
