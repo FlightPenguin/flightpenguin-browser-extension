@@ -504,10 +504,17 @@ function createTimeBarHeader(intervals, tzOffset, dayWidths) {
 
     const intervalNode = document.createElement("div");
     intervalNode.classList.add("interval-time");
-
     const intervalLineNode = document.createElement("div");
     const timeNode = document.createElement("span");
     timeNode.classList.add("interval-time-text");
+
+    if (tzOffset) {
+      intervalNode.classList.add("tz-change");
+      timeNode.classList.add("tz-change");
+    } else {
+      intervalNode.classList.add("no-tz-change");
+      timeNode.classList.add("no-tz-change");
+    }
 
     if (index === 0) {
       timeNode.classList.add("first");
