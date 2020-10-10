@@ -398,9 +398,9 @@ function getLayovers(legNode) {
     const operatingAirline = airlines[i].querySelector("[class*='OperatedBy']");
 
     layovers.push({
-      fromTime: fromTime.textContent,
+      fromTime: Helpers.standardizeTimeString(fromTime.textContent),
       duration: duration.textContent,
-      toTime: toTime.textContent,
+      toTime: Helpers.standardizeTimeString(toTime.textContent),
       operatingAirline: operatingAirline.textContent
         .toLowerCase()
         .includes("operated")
@@ -606,8 +606,8 @@ function setIdDataset(itinNode, legNodes) {
       marketingAirline = marketingAirlinesNode.textContent;
     }
     dataForId.push(
-      fromTime.textContent.trim(),
-      toTime.textContent.trim(),
+      Helpers.standardizeTimeString(fromTime.textContent),
+      Helpers.standardizeTimeString(toTime.textContent),
       marketingAirline.trim()
     );
   }
@@ -672,6 +672,8 @@ function queryLeg(containerNode) {
         layovers = getLayovers(containerNode);
       }
       data.layovers = layovers;
+    } else if (["fromTime", "toTime"].includes(key)) {
+      data[key] = Helpers.standardizeTimeString(node.textContent);
     } else {
       data[key] = node.textContent.trim();
     }

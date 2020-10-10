@@ -217,8 +217,12 @@ function getIndividualSouthwestLegDetails(flight) {
   if (flight.stopsDetails.length > 1) {
     layovers = flight.stopsDetails.map((stop) => {
       return {
-        fromTime: formatTimeTo12HourClock(stop.departureTime),
-        toTime: formatTimeTo12HourClock(stop.arrivalTime),
+        fromTime: Helpers.standardizeTimeString(
+          formatTimeTo12HourClock(stop.departureTime)
+        ),
+        toTime: Helpers.standardizeTimeString(
+          formatTimeTo12HourClock(stop.arrivalTime)
+        ),
         operatingAirline: "Southwest",
         duration: convertDurationMinutesToString(stop.legDuration),
         from: stop.originationAirportCode,
@@ -231,8 +235,12 @@ function getIndividualSouthwestLegDetails(flight) {
     return null;
   }
   return {
-    fromTime: formatTimeTo12HourClock(flight.departureTime),
-    toTime: formatTimeTo12HourClock(flight.arrivalTime),
+    fromTime: Helpers.standardizeTimeString(
+      formatTimeTo12HourClock(flight.departureTime)
+    ),
+    toTime: Helpers.standardizeTimeString(
+      formatTimeTo12HourClock(flight.arrivalTime)
+    ),
     marketingAirline: "Southwest",
     layovers,
     fare: Math.round(Number(fare.value)),

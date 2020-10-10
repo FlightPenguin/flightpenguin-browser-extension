@@ -330,6 +330,8 @@ function queryLeg(containerNode, selectors) {
         if (node) {
           additionalDays = "+1";
         }
+      } else if (["fromTime", "toTime"].includes(key)) {
+        data[key] = Helpers.standardizeTimeString(node.textContent);
       } else {
         data[key] = node.textContent.trim();
       }
@@ -410,6 +412,9 @@ async function scrapeRedesignUI() {
         summary.querySelectorAll("span:not(.is-visually-hidden)")
       ).map((el) => el.textContent);
       [flight.fromTime, flight.toTime] = times.split(" - ");
+      flight.fromTime = Helpers.standardizeTimeString(flight.fromTime);
+      flight.toTime = Helpers.standardizeTimeString(flight.toTime);
+
       let toTimeAddDays = summary.textContent.match(/(\+\d)/);
       if (toTimeAddDays) {
         flight.toTime += toTimeAddDays[0];
@@ -463,8 +468,8 @@ async function scrapeRedesignUI() {
             arrivalText.indexOf(")")
           );
           stops.push({
-            fromTime,
-            toTime,
+            fromTime: Helpers.standardizeTimeString(fromTime),
+            toTime: Helpers.standardizeTimeString(toTime),
             from,
             to,
             operatingAirline,
