@@ -760,14 +760,15 @@ function createIntervals(flights) {
   }
 
   let startHour = earliestTakeoffTime;
-  // Want to always have midnight (12 AM) as an interval.
-  while (startHour % 4 !== 0 && startHour % 3 !== 0) {
-    startHour--;
+  if (startHour < 12) {
+    startHour = 0;
+  } else {
+    startHour = 12;
   }
+
   let increment;
 
   if (latestLandingTime - earliestTakeoffTime > 72) {
-    startHour = 0;
     increment = 6;
   } else if (latestLandingTime - startHour <= 12) {
     increment = 1;
