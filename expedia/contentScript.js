@@ -447,6 +447,12 @@ async function scrapeRedesignUI() {
           let arrivalText = arrival.textContent;
           let toTime = arrivalText.split(" - ")[0];
           if (
+            i > 0 &&
+            stops[stops.length - 1].toTime.includes("pm") &&
+            toTime.includes("am")
+          ) {
+            fromTime += "+1";
+          } else if (
             fromTime.toLowerCase().includes("pm") &&
             toTime.toLowerCase().includes("am")
           ) {
