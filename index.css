@@ -386,7 +386,7 @@ li,
   border-width: 1px 1px 0 1px;
 }
 .flight-list-item:hover .time-bar-segment-container::after,
-.flight-list-item:hover .time-bar-segment-container::after {
+.flight-list-item:focus .time-bar-segment-container::after {
   content: attr(data-content); /** ex: 1h 10m */
   position: absolute;
   text-align: center;
