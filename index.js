@@ -47,7 +47,6 @@ ga("set", "transport", "beacon");
 ga("require", "displayfeatures");
 ga("send", "pageview", "/index.html"); // Specify the virtual path
 
-const subheaderContainer = document.querySelector(".subheader");
 const tableHeader = document.querySelector(".table-header");
 tableHeader.style.width = flightListItemWidth + "px";
 
@@ -162,9 +161,6 @@ chrome.runtime.onMessage.addListener(function (message) {
       // search header
       createHeader(message.formData);
 
-      // number of flights header
-      subheaderContainer.innerHTML = "";
-
       // departure list
       departuresSection.style.display = "none";
       depListNode.innerHTML = "";
@@ -222,9 +218,6 @@ chrome.runtime.onMessage.addListener(function (message) {
         );
       }
       createHeader(search);
-      totalFlights = departureList.length;
-
-      subheaderContainer.textContent = `${totalFlights} flights found.`;
       break;
     case "RETURN_FLIGHTS_FOR_CLIENT":
       const { returnList, itins: newItins } = message.flights;
@@ -483,15 +476,6 @@ function clearSelections() {
 
 function createTimeBarHeader(intervals, tzOffset, dayWidths) {
   const timeBarHeaderContainer = document.createDocumentFragment();
-
-  const dateHeaderContainers = document.querySelectorAll(
-    ".time-bar-header__date-container"
-  );
-  let dateHeaderContainer = dateHeaderContainers[0];
-  if (isShowingReturns) {
-    dateHeaderContainer = dateHeaderContainers[1];
-  }
-  dateHeaderContainer.innerHTML = "";
 
   const intervalWidth = timeBarContainerWidth / (intervals.length - 1);
 
