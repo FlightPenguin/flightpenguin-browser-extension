@@ -114,6 +114,11 @@ chrome.runtime.onMessage.addListener(function (message, sender, reply) {
         closeWindows();
       }
       break;
+    case "DELETE_IDS":
+      for (let id of message.ids) {
+        delete allDepartures[id];
+      }
+      break;
     case "FLIGHT_RESULTS_RECEIVED":
       if (departureSelected) {
         break;

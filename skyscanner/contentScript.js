@@ -285,20 +285,39 @@ function parseResults() {
     rafID = window.requestAnimationFrame(parseMoreFlights);
   }
 }
-
+let currIds = new Set();
 function setItinIds() {
   let moreItins = Array.from(
     document.querySelectorAll(".BpkTicket_bpk-ticket__Brlno")
   );
-  const ids = [];
+  const newIds = new Set();
   for (let itin of moreItins) {
     const legNodes = Array.from(
       itin.querySelectorAll("[class^='LegDetails_container']")
     );
     const id = setIdDataset(itin, legNodes);
-    ids.push(id);
+    newIds.add(id);
   }
-  return ids;
+  // SFO to LHR, some options disappear and we still show them in our results.
+  // Need to diff old list with new to make sure we're up to date.
+  // Then send message to remove  these ids.
+  const idsToRemove = new Set();
+
+  for (let id of currIds) {
+    if (!newIds.has(id)) {
+      idsToRemove.add(id);
+    }
+  }
+  console.log(currIds, newIds, idsToRemove);
+  currIds = newIds;
+
+  if (idsToRemove.size > 0) {
+    chrome.runtime.sendMessage({
+      event: "DELETE_IDS",
+      ids: Array.from(idsToRemove),
+      provider: "skyscanner",
+    });
+  }
 }
 
 function findMatchingDOMNode(list, target) {
