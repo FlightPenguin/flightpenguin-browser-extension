@@ -182,7 +182,10 @@ chrome.runtime.onMessage.addListener(function (message, sender, reply) {
     case "DEPARTURE_SELECTED":
       departureSelected = true;
       const departure = allDepartures[message.departureId];
-      const itin = allItins[message.departureId];
+      // itin needs to be set to {} for Southwest
+      // Southwest allItins ids includes return id because we know that info
+      // but message.departureId is still just departure id.
+      const itin = allItins[message.departureId] || {};
 
       if (formData.roundtrip && itin.provider === "expedia") {
         // expedia shows return options for roundtrip after you select a departure.

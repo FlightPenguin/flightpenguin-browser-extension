@@ -165,15 +165,19 @@ function loadSouthwestResults() {
   }
 }
 
+/**
+ * Parse DOM and set id.
+ * The id will be used to find the flight to highlight.
+ */
 function southwestParser() {
   const selectors = {
     fromTime: ".air-operations-time-status[type='origination'] .time--value",
     toTime: ".air-operations-time-status[type='destination'] .time--value",
-    fare: ".fare-button_primary-yellow [aria-hidden='true'] span:last-child",
-    currency:
-      ".fare-button_primary-yellow [aria-hidden='true'] .currency--symbol",
-    duration: ".flight-stops--duration-time",
-    layovers: ".flight-stops--items",
+    // fare: ".fare-button_primary-yellow [aria-hidden='true'] span:last-child",
+    // currency:
+    //   ".fare-button_primary-yellow [aria-hidden='true'] .currency--symbol",
+    // duration: ".select-detail--flight-duration",
+    // layovers: ".flight-stops--items",
   };
   const [departures, returns] = document.querySelectorAll(
     ".transition-content.price-matrix--details-area ul"
@@ -301,7 +305,8 @@ function querySouthwestDOM(htmlCollection, selectors) {
       try {
         const node = containerNode.querySelector(selector);
         if (["fromTime", "toTime"].includes(key)) {
-          data[key] = node.textContent.split(" ")[1]; // first part contains 'Departs'/'Arrives', alternatively can filter childNodes for nodeType === Node.TEXT_NODE
+          const value = node.textContent.split(" ")[1]; // first part contains 'Departs'/'Arrives', alternatively can filter childNodes for nodeType === Node.TEXT_NODE
+          data[key] = Helpers.standardizeTimeString(value);
         } else if (key === "layovers") {
           data[key] = Array.from(
             node.querySelectorAll(".flight-stops--item")
