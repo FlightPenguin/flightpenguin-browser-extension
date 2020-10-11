@@ -40,7 +40,9 @@ body {
   text-align: center;
   white-space: nowrap;
 }
-
+.sort-container {
+  margin-bottom: 15px;
+}
 .sort-container:before {
   font-weight: 700;
   letter-spacing: -0.08px;
@@ -433,16 +435,12 @@ li,
 .departures-section {
   padding-bottom: 40px;
 }
-.departures-section,
-.returns-section {
-  display: flex;
-  justify-content: center;
-}
 
 .departures-content,
 .returns-content {
   display: flex;
   position: relative;
+  justify-content: center;
 }
 .departures-time-bar-container-header,
 .returns-time-bar-container-header {

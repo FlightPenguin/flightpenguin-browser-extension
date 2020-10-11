@@ -47,8 +47,8 @@ ga("set", "transport", "beacon");
 ga("require", "displayfeatures");
 ga("send", "pageview", "/index.html"); // Specify the virtual path
 
-const tableHeader = document.querySelector(".table-header");
-tableHeader.style.width = flightListItemWidth + "px";
+const tableHeaders = document.querySelectorAll(".table-header");
+tableHeaders.forEach((el) => (el.style.width = flightListItemWidth + "px"));
 
 const departuresSection = document.querySelector(".departures-section");
 const departuresContainer = document.querySelector(".departures-content");
@@ -225,7 +225,7 @@ chrome.runtime.onMessage.addListener(function (message) {
       returnFlights = returnList;
       isShowingReturns = true;
 
-      returnsSection.style.display = "block";
+      returnsSection.style.display = null;
       selections[0].querySelector(".fare").style.display = "none";
       loadingContainer.style.display = "none";
 
