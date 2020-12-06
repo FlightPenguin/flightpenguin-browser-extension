@@ -456,11 +456,13 @@ async function scrapeRedesignUI() {
             stops[stops.length - 1].toTime.includes("pm") &&
             toTime.includes("am")
           ) {
-            fromTime += "+1";
+            // layover went to the next day
+            toTime += "+1";
           } else if (
             fromTime.toLowerCase().includes("pm") &&
             toTime.toLowerCase().includes("am")
           ) {
+            // overnight flight
             toTime += "+1";
           }
           let to = arrivalText.slice(
