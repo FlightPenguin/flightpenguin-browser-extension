@@ -375,16 +375,25 @@ const providerURLBaseMap = {
 };
 const expedia_cabin_map = {
   econ: "economy",
-  prem_econ: "premiumeconomy",
+  prem_econ: "premium_economy",
   business: "business",
   first: "first",
 };
 function expediaTabUrl(formData) {
-  // http://www.expedia.com/Flights-Search?trip=roundtrip&leg1=from:sfo,to:lax,departure:6/14/2020TANYT&leg2=from:lax,to:sfo,departure:06/16/2020TANYT&passengers=adults:1,children:0,seniors:0,infantinlap:Y&options=cabinclass:economy&mode=search&origref=www.expedia.com
+  /** 
+   * URLs from search results page, different from a search from the homepage
+   * oneway
+   * https://www.expedia.com/Flights-Search?mode=search&trip=oneway&leg1=from:SFO,to:JFK,departure:12/20/2020TANYT&leg2=from:JFK,to:SFO,departure:12/23/2020TANYT&passengers=adults:1,children:0,infantinlap:N&options=carrier:*,cabinclass:economy,maxhops:1,nopenalty:N&pageId=0
+   * 
+   * roundtrip
+   * https://www.expedia.com/Flights-Search?mode=search&trip=roundtrip&leg1=from:SFO,to:JFK,departure:12/20/2020TANYT&leg2=from:JFK,to:SFO,departure:12/25/2020TANYT&passengers=adults:1,children:0,infantinlap:N&options=carrier:*,cabinclass:first,maxhops:1,nopenalty:N&pageId=0
+   * 
+   **/
+
   const { from, to, fromDate, toDate, numPax, cabin, roundtrip } = formData;
   const startDate = formatDate(fromDate);
   const tripType = roundtrip ? "roundtrip" : "oneway";
-  let url = `https://www.expedia.com/Flights-Search?trip=${tripType}&leg1=from:${from},to:${to},departure:${startDate}TANYT`;
+  let url = `https://www.expedia.com/Flights-Search?mode=search&trip=${tripType}&leg1=from:${from},to:${to},departure:${startDate}TANYT&leg2=from:${to},to:${from},`;
 
   function formatDate(dateStr) {
     const [year, month, day] = dateStr.split("-");
@@ -393,12 +402,13 @@ function expediaTabUrl(formData) {
 
   if (roundtrip) {
     const endDate = formatDate(toDate);
-    url += `&leg2=from:${to},to:${from},departure:${endDate}TANYT`;
+    url += `departure:${endDate}TANYT`;
+  } else {
+    url += `departure:${startDate}TANYT`;
   }
-  url += `&passengers=adults:${numPax},children:0,seniors:0,infantinlap:0`;
-  url += `&cabinclass:${cabin}`;
-  url += "&mode=search&origref=www.expedia.com";
-
+  url += `&passengers=adults:${numPax},children:0,seniors:0,infantinlap:N&options=carrier:*,`;
+  url += `cabinclass:${expedia_cabin_map[cabin]},`;
+  url += "maxhops:1,nopenalty:N&pageId=0";
   return url;
 }
 const skyscanner_cabin_map = {
