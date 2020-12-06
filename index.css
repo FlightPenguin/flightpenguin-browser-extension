@@ -139,7 +139,6 @@ li.flight-list-item:nth-child(even) {
   align-items: center;
   width: var(--flight-list-left-column-width);
   padding: 10px;
-  height: inherit;
   background-color: #eee3;
 }
 
