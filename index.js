@@ -74,14 +74,15 @@ const loadingContainer = document.getElementById("loading");
 const formContainer = document.querySelector("form");
 const mainContainer = document.querySelector("main");
 
-window.addEventListener("popstate", function (event) {
+window.addEventListener("popstate", function () {
   // use browser back button to undo departure flight selection for roundtrip
-  clearSelections();
+
   // send message to bg that selections have been reset.
   // providers that show departures and returns on separate pages need to be updated to go back to departures.
   chrome.runtime.sendMessage({
     event: "CLEAR_SELECTIONS",
   });
+  clearSelections();
 });
 
 const sortContainer = document.querySelectorAll(".sort-container");
@@ -432,9 +433,8 @@ function handleFlightSelection(e) {
       departuresContainer.querySelectorAll("li:not([data-selected='true'])")
     );
     flightsNotSelected.forEach((flight) => (flight.style.display = "none"));
-    departuresSection.querySelector(".sort-container").style.display = "none";
-    departuresSection.querySelector(".section-header").textContent =
-      "Your selected departure";
+    document.querySelector(".sort-container").style.display = "none";
+    document.querySelector(".section-header").textContent = "Your selected departure";
   } else if (selections.length === 2 || !search.roundtrip) {
     const selectionIds = selections.map((sel) => sel.dataset.id);
 
@@ -460,8 +460,8 @@ function clearSelections() {
 
   flightsNotSelected.forEach((flight) => (flight.style.display = null));
   selections[0].querySelector(".fare").style.display = null;
-  departuresSection.querySelector(".sort-container").style.display = null;
-  departuresSection.querySelector(".section-header").textContent = "Departures";
+  document.querySelector(".sort-container").style.display = null;
+  document.querySelector(".section-header").textContent = "Departures";
   returnsSection.style.display = "none";
   isShowingReturns = false;
   retListNode.innerHTML = "";
