@@ -438,7 +438,7 @@ async function scrapeRedesignUI() {
         for (let i = 0; i < legs.length; i++) {
           const [departure, details, arrival] = legs[i].children;
           let departureText = departure.textContent;
-          let fromTime = departureText.split(" - ")[0];
+          let fromTime = departureText.split(" - ")[0].toLowerCase().replace('departure', '');
           let from = departureText.slice(
             departureText.indexOf("(") + 1,
             departureText.indexOf(")")
@@ -450,7 +450,7 @@ async function scrapeRedesignUI() {
             .join(" ")
             .trim();
           let arrivalText = arrival.textContent;
-          let toTime = arrivalText.split(" - ")[0];
+          let toTime = arrivalText.split(" - ")[0].toLowerCase().replace('arrival', '');
           if (
             i > 0 &&
             stops[stops.length - 1].toTime.includes("pm") &&
