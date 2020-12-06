@@ -7,6 +7,7 @@ const errors = {};
 let rafID = 0;
 let allItins = [];
 let isHighlightingItin = false; // to prevent opening modals when trying to highlight a selected itin
+const ITIN_NODE_SELECTOR = "[class*='BpkTicket_bpk-ticket']";
 
 chrome.runtime.onMessage.addListener(function (message) {
   // parse page to get flights, then send background to process and display on new web page.
@@ -172,7 +173,7 @@ function highlightItin(selectedDepartureId, selectedReturnId) {
     idToSearchFor += `-${selectedReturnId}`;
   }
   const itinNode = findMatchingDOMNode(
-    Array.from(document.querySelectorAll(".BpkTicket_bpk-ticket__Brlno")),
+    Array.from(document.querySelectorAll(ITIN_NODE_SELECTOR)),
     idToSearchFor
   );
   itinNode.style.border = "10px solid tomato";
@@ -250,7 +251,7 @@ function parseResults() {
       await pause();
 
       let moreItins = Array.from(
-        document.querySelectorAll(".BpkTicket_bpk-ticket__Brlno")
+        document.querySelectorAll(ITIN_NODE_SELECTOR)
       );
 
       if (moreItins.length) {
@@ -288,7 +289,7 @@ function parseResults() {
 let currIds = new Set();
 function setItinIds() {
   let moreItins = Array.from(
-    document.querySelectorAll(".BpkTicket_bpk-ticket__Brlno")
+    document.querySelectorAll(ITIN_NODE_SELECTOR)
   );
   const newIds = new Set();
   for (let itin of moreItins) {
@@ -444,7 +445,7 @@ async function loadModalCallback(mutationList, observer) {
   }
   // Check if new flights have rendered or their prices have updated,
   let moreItins = Array.from(
-    document.querySelectorAll(".BpkTicket_bpk-ticket__Brlno")
+    document.querySelectorAll(ITIN_NODE_SELECTOR)
   );
   if (moreItins.length) {
     const flights = parser(moreItins);
