@@ -162,7 +162,7 @@ function handleBackToSearchButtonClick() {
 function highlightItin(selectedDepartureId, selectedReturnId) {
   // reset prior selection
   const prevSelection = document.querySelector(
-    ".BpkTicket_bpk-ticket__Brlno[data-selected='true']"
+    `${ITIN_NODE_SELECTOR}[data-selected='true']`
   );
   if (prevSelection) {
     prevSelection.dataset.selected = "false";
