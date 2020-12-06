@@ -170,15 +170,6 @@ function loadSouthwestResults() {
  * The id will be used to find the flight to highlight.
  */
 function southwestParser() {
-  const selectors = {
-    fromTime: ".air-operations-time-status[type='origination'] .time--value",
-    toTime: ".air-operations-time-status[type='destination'] .time--value",
-    // fare: ".fare-button_primary-yellow [aria-hidden='true'] span:last-child",
-    // currency:
-    //   ".fare-button_primary-yellow [aria-hidden='true'] .currency--symbol",
-    // duration: ".select-detail--flight-duration",
-    // layovers: ".flight-stops--items",
-  };
   const [departures, returns] = document.querySelectorAll(
     ".transition-content.price-matrix--details-area ul"
   );
@@ -186,14 +177,14 @@ function southwestParser() {
   let flights = [];
   if (returns) {
     const retNodes = returns.querySelectorAll("li:not([data-visited='true']");
-    flights = flights.concat(querySouthwestDOM(retNodes, selectors));
+    flights = flights.concat(querySouthwestDOM(retNodes));
   }
 
   // If we want to go down the regex path (unfinished)...
   // const pattern = /(?<dep>.{5}(PM|AM)).+(?<arr>.{5}(PM|AM)).+(?<duration>Duration\d+h\s\d+m).+(?<stops>\d+h\s\d+m).+(?<price>\$\d+)/;
   // pat = /(?<dep>.{5}(PM|AM)).+(?<arr>.{5}(PM|AM)).+(?<stops>\d+h\s\d+m).+(?<price>\$\d+)/;
 
-  flights = flights.concat(querySouthwestDOM(depNodes, selectors));
+  flights = flights.concat(querySouthwestDOM(depNodes));
   return flights;
 }
 
@@ -298,30 +289,14 @@ function createSouthwestItins(departureList, returnList) {
   return itins;
 }
 
-function querySouthwestDOM(htmlCollection, selectors) {
+function querySouthwestDOM(htmlCollection) {
   return Array.from(htmlCollection).map((containerNode) => {
     const data = {};
-    Object.entries(selectors).forEach(([key, selector]) => {
-      try {
-        const node = containerNode.querySelector(selector);
-        if (["fromTime", "toTime"].includes(key)) {
-          const value = node.textContent.split(" ")[1]; // first part contains 'Departs'/'Arrives', alternatively can filter childNodes for nodeType === Node.TEXT_NODE
-          data[key] = Helpers.standardizeTimeString(value);
-        } else if (key === "layovers") {
-          data[key] = Array.from(
-            node.querySelectorAll(".flight-stops--item")
-          ).map((n) => {
-            const airport = n.textContent.substring(0, 3);
-            const duration = n.textContent.split(".")[1];
-            return { airport, duration };
-          });
-        } else {
-          data[key] = node.textContent;
-        }
-      } catch (e) {
-        console.info("Error parsing ", key, e);
-      }
-    });
+    const [fromTimeRaw, toTimeRaw] = Array.from(containerNode.querySelectorAll(".time--value")).map(el => el.textContent);
+    const fromTime = Helpers.standardizeTimeString(fromTimeRaw).replace("departs", "");
+    const toTime = Helpers.standardizeTimeString(toTimeRaw).replace("arrives", "");
+    data.fromTime = fromTime;
+    data.toTime = toTime;
     data.airline = "Southwest";
     containerNode.dataset.id = [data.fromTime, data.toTime, data.airline].join(
       "-"
