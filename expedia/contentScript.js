@@ -31,6 +31,10 @@ chrome.runtime.onMessage.addListener(function (message) {
       );
       departureNode.querySelector("button").click();
 
+      // new UI opens a panel with upgrade options
+      // requires another click
+      document.querySelector('[data-test-id="select-button"]').click();
+
       setTimeout(() => {
         const restrictionContainer = departureNode.querySelector(
           ".upsell-tray-contents"
@@ -481,16 +485,38 @@ async function scrapeRedesignUI() {
       }
       flight.layovers = stops;
 
-      flightEl.dataset.id = [
-        flight.fromTime,
-        flight.toTime,
-        flight.marketingAirline,
-      ].join("-"); // will use this id attribute to find the itin the user selected
+      let departureFlight = null;
+      let returnFlight = null;
+      let fare = null;
+
+      if (selectedDeparture) {
+        // roundtrip
+        flightEl.dataset.id = [
+          selectedDeparture.id,
+          flight.fromTime,
+          flight.toTime,
+          flight.marketingAirline,
+        ].join("-"); // will use this id attribute to find the itin the user selected
+
+        departureFlight = selectedDeparture;
+        returnFlight = flight;
+        fare = selectedItin.fareNumber + fare;
+      } else {
+        // departure selection on roundtrip or oneway
+        flightEl.dataset.id = [
+          flight.fromTime,
+          flight.toTime,
+          flight.marketingAirline,
+        ].join("-"); // will use this id attribute to find the itin the user selected
+
+        departureFlight = flight;
+        fare = modal.querySelector(UI_REDESIGN_SELECTORS.fare).textContent;
+      }
 
       flights.push({
-        departureFlight: flight,
-        returnFlight: null,
-        fare: modal.querySelector(UI_REDESIGN_SELECTORS.fare).textContent,
+        departureFlight,
+        returnFlight,
+        fare,
       });
       // close modal
       modal.querySelector("[data-icon='tool-close']").click();
