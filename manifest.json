@@ -8,10 +8,6 @@
   },
   "content_scripts": [
     {
-      "matches": ["https://www.priceline.com/m/fly/search/*"],
-      "js": ["priceline/contentScript.js"]
-    },
-    {
       "matches": ["https://www.southwest.com/air/booking/select.html?*"],
       "css": ["shared/contentScript.css"],
       "js": [
