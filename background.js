@@ -12,7 +12,6 @@ chrome.runtime.onInstalled.addListener(function () {
 });
 
 chrome.browserAction.onClicked.addListener(function () {
-  createPaywallPage();
   // get user access token using oauth constants in manifest.json
   chrome.identity.getAuthToken({ interactive: true }, async (token) => {
     /**
@@ -54,14 +53,17 @@ chrome.browserAction.onClicked.addListener(function () {
           (customer.stripeSubscriptionId || customer.skipSubscription)
         ) {
           createNewWebPage({});
-          chrome.tabs.remove(paywallTabId);
         } else {
-          sendMessageToPaywall({ event: "NOT_SUBSCRIBED" });
+          chrome.tabs.create(
+            { url: ORIGIN },
+          );
         }
       })
       .catch((err) => {
         console.error(err);
-        sendMessageToPaywall({ event: "NOT_SUBSCRIBED" });
+        chrome.tabs.create(
+          { url: ORIGIN },
+        );
       });
   });
 });
@@ -292,15 +294,6 @@ function closeWindows() {
   });
 }
 
-function createPaywallPage() {
-  chrome.tabs.create(
-    { url: chrome.extension.getURL("./subscription.html") },
-    (tab) => (paywallTabId = tab.id)
-  );
-}
-function sendMessageToPaywall(message) {
-  chrome.tabs.sendMessage(paywallTabId, message);
-}
 function createNewWebPage(message) {
   chrome.tabs.create(
     { url: chrome.extension.getURL("./index.html") },

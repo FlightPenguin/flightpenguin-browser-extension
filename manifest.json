@@ -65,5 +65,6 @@
     "default_title": "Flight Penguin"
   },
   "manifest_version": 2,
-  "content_security_policy": "script-src 'self' https://www.google-analytics.com https://browser.sentry-cdn.com https://www.gstatic.com; object-src 'self'"
+  "content_security_policy": "script-src 'self' https://www.google-analytics.com https://browser.sentry-cdn.com https://www.gstatic.com; object-src 'self'",
+  "web_accessible_resources": ["index.html"]
 }
