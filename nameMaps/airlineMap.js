@@ -3,6 +3,7 @@
 // Set default when no key is found #DFCCFB
 const airlinesMap = {
   "American Airlines": { display: "American", color: "#C5423E", code: "AA" },
+  "American": { display: "American", color: "#C5423E", code: "AA" },
   Delta: { display: "Delta", color: "#EE722E", code: "DL" },
   Southwest: { display: "Southwest", color: "#F6C04D", code: "WN" },
   United: { display: "United", color: "#235EA6", code: "UA" },

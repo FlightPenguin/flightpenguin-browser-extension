@@ -81,11 +81,11 @@ function cleanupAirline(airline) {
     shortAirlineName = airlines[0];
   } else {
     shortAirlineName = airlines
-      .map((airline) => airlinesMap.getAirlineName(airline))
+      .map((airline) => airlinesMap.getAirlineName(airline.replace("  ", " ")))
       .join(", ");
   }
 
-  return airlinesMap.getAirlineDetails(shortAirlineName);
+  return airlinesMap.getAirlineDetails(shortAirlineName.replace("  ", " "));
 }
 
 Flight.prototype.calculateTimezoneOffset = function () {
