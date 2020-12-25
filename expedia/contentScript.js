@@ -123,12 +123,28 @@ function loadResults(event) {
     if (!(originalUIloading || redesignUIloading)) {
       clearInterval(intervalId);
       if (isRedesignUI) {
-        const flights = await scrapeRedesignUI();
+        let flights = await scrapeRedesignUI(true);
         chrome.runtime.sendMessage({
           event,
           flights,
           provider: "expedia",
         });
+        const showMoreButton = document.querySelector("[name='showMoreButton']");
+        if (showMoreButton) {
+          showMoreButton.click();
+          await pauseLonger();
+          flights = await scrapeRedesignUI(false);
+          if (!flights.length) {
+            // try one more time
+            await pauseLonger();
+            flights = await scrapeRedesignUI(false);
+          }
+          chrome.runtime.sendMessage({
+            event,
+            flights,
+            provider: "expedia",
+          });
+        }
       } else {
         parseResults(event);
       }
@@ -360,6 +376,7 @@ function queryLeg(containerNode, selectors) {
 // so far redesign variant only for oneway flights
 const UI_REDESIGN_SELECTORS = {
   flightContainer: "[data-test-id='offer-listing']",
+  flightContainerSecondPass: "[data-test-id='offer-listing']:not([data-id])",
   marketingAirline: "[data-test-id='flight-operated']",
   operatingAirline: "[data-test-id='operated-by']",
   fare: "footer section span",
@@ -377,9 +394,17 @@ function pause() {
     setTimeout(resolve, 500);
   });
 }
-async function scrapeRedesignUI() {
+function pauseLonger() {
+  return new Promise((resolve) => {
+    setTimeout(resolve, 2000);
+  });
+}
+async function scrapeRedesignUI(isInitialCall) {
+  const selector = isInitialCall ? UI_REDESIGN_SELECTORS.flightContainer :
+    UI_REDESIGN_SELECTORS.flightContainerSecondPass
+
   const flightElements = Array.from(
-    document.querySelectorAll(UI_REDESIGN_SELECTORS.flightContainer)
+    document.querySelectorAll(selector)
   );
   const flights = [];
   for (let i = 0; i < flightElements.length; i++) {
