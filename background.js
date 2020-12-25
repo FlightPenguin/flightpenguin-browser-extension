@@ -75,6 +75,7 @@ let webPageTabId;
 let webPageWindowId;
 let webPageTabIndex;
 let paywallTabId;
+let returnList = [];
 
 let allDepartures = {};
 let allItins = {};
@@ -101,6 +102,7 @@ chrome.runtime.onMessage.addListener(function (message, sender, reply) {
       messageQueue = [];
       providersReceived = new Set();
       canHighlightSkyscannerTab = false;
+      returnList = [];
       if (webPageTabId) {
         chrome.tabs.sendMessage(webPageTabId, {
           event: "RESET_SEARCH",
@@ -154,7 +156,7 @@ chrome.runtime.onMessage.addListener(function (message, sender, reply) {
         flights: expediaFlights,
         provider: expediaProvider,
       } = message;
-      const { departures: expediaReturns, itins: expediaItins } = makeItins(
+      const { itins: expediaItins, returns: expediaReturns } = makeItins(
         expediaFlights,
         expediaProvider,
         windowIds[expediaProvider],
@@ -162,15 +164,15 @@ chrome.runtime.onMessage.addListener(function (message, sender, reply) {
         true
       );
       allItins = { ...allItins, ...expediaItins };
-      let expediaReturnList = Object.values(expediaItins).map(
-        (itin) => itin.retFlight
-      );
+      let expediaReturnList = Object.values(expediaReturns);
+      // TODO dedup returns
       expediaReturnList = sortFlights(expediaReturnList, allItins);
+      returnList = returnList.concat(expediaReturnList);
 
       chrome.tabs.sendMessage(webPageTabId, {
         event: "RETURN_FLIGHTS_FOR_CLIENT",
         flights: {
-          returnList: expediaReturnList,
+          returnList,
           itins: expediaItins,
         },
       });
@@ -225,6 +227,7 @@ chrome.runtime.onMessage.addListener(function (message, sender, reply) {
       });
       break;
     case "CLEAR_SELECTIONS":
+      returnList = [];
       // move Expedia to departures page
       if (tabIds.expedia) {
         chrome.tabs.sendMessage(tabIds.expedia, {
