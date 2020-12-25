@@ -503,7 +503,7 @@ async function scrapeRedesignUI() {
 
         departureFlight = selectedDeparture;
         returnFlight = flight;
-        fare = selectedItin.fareNumber + fare;
+        fare = flightEl.querySelector('.uitk-price-subtext').textContent;
       } else {
         // departure selection on roundtrip or oneway
         flightEl.dataset.id = [
