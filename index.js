@@ -1,6 +1,7 @@
 import {
   convertTimeTo24HourClock,
   convertMinutesTo12HourClock,
+  convert12HourTimeToMinutes,
 } from "./utilityFunctions.js";
 
 let totalFlights = 0;
@@ -119,10 +120,11 @@ sortContainer.forEach((node) => {
         break;
       case "takeoff":
         sortFunction = (a, b) =>
-          a.fromTimeDetails.hours - b.fromTimeDetails.hours;
+          convert12HourTimeToMinutes(a.fromTime) - convert12HourTimeToMinutes(b.fromTime);
         break;
       case "landing":
-        sortFunction = (a, b) => b.toTimeDetails.hours - a.toTimeDetails.hours;
+        sortFunction = (a, b) =>
+          convert12HourTimeToMinutes(a.toTime) - convert12HourTimeToMinutes(b.toTime);
         break;
       default:
         return;
