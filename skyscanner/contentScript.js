@@ -7,7 +7,7 @@ const errors = {};
 let rafID = 0;
 let allItins = [];
 let isHighlightingItin = false; // to prevent opening modals when trying to highlight a selected itin
-const ITIN_NODE_SELECTOR = "[class*='BpkTicket_bpk-ticket']";
+const ITIN_NODE_SELECTOR = "[class*='FlightsTicket_container'] [role='button']";
 
 chrome.runtime.onMessage.addListener(function (message) {
   // parse page to get flights, then send background to process and display on new web page.
@@ -47,6 +47,7 @@ chrome.runtime.onMessage.addListener(function (message) {
             closeModal();
             setItinIds();
             console.log("highlightItin");
+            loadModalObserver.disconnect();
             highlightItin(selectedDepartureId, selectedReturnId);
             clearInterval(intId);
             addBackToSearchButton();
@@ -87,7 +88,6 @@ function loadResults() {
       return;
     }
     for (let m of mutationlist) {
-      console.log(m);
       const continueButton = document.querySelector(
         "[type=button][class*='DirectDays']"
       );
@@ -330,7 +330,7 @@ const SELECTORS = {
   toTime: "[class^='LegInfo_routePartialArrive'] *:first-child",
   duration: "[class^='LegInfo_stopsContainer'] *:first-child",
   layovers: "[class^='LegInfo_stopsLabelContainer'] *:first-child",
-  marketingAirlines: "[class^='LogoImage_container']",
+  marketingAirline: "[class^='LogoImage_container']",
   operatingAirline: "[class*='Operators_operator']",
   from: "[class*='LegInfo_routePartialDepart'] *:nth-child(2)",
   to: "[class*='LegInfo_routePartialArrive'] *:nth-child(2)",
@@ -340,23 +340,41 @@ const layoverFromToSelectors = {
   to: "[class*='Routes_routes'] *:nth-child(2)",
 };
 const fareSelector = {
-  fare: "[class^='Price_mainPriceContainer']",
-  fareBackup: "[class*='Pricebox_prices']",
+  detailView: "[class^='TotalPrice_totalPriceContainer']", // fare.match(/\d+/g).join("") * 1
+  resultsView: "[class^='Price_mainPriceContainer']",
+  // fareBackup: "[class*='Pricebox_prices']",
+  fareBackup: "[class*='CardPrice_totalPrice']", // when there are upgrades
 };
 function parser(itinNodes) {
-  let itins = itinNodes.map((node) => {
-    if (node.textContent.includes("Sponsored")) {
+  let itins = itinNodes.map((itinNode) => {
+    if (itinNode.textContent.includes("Sponsored")) {
       return null;
     }
     let fare;
     try {
-      fare = node.querySelector(fareSelector.fare).textContent.trim();
+      fare = itinNode.querySelector(fareSelector.resultsView).textContent.trim();
     } catch (e) {
+      console.log("can't find fare")
       // one of those itins that say for example "See Southwest for prices"
       return null;
     }
+    const hasLayovers = /\d stop/.test(itinNode.textContent);
+    const legNodes = Array.from(
+      itinNode.querySelectorAll("[class^='LegDetails_container']")
+    );
+    const id = setIdDataset(itinNode, legNodes);
+    // check if price is lower than what was previously seen
+    if (seenItinIds[id] && seenItinIds[id] === fare) {
+      return [];
+    }
+    seenItinIds[id] = fare;
 
-    const [departureFlight, returnFlight] = queryDOM(node, fare);
+    if (hasLayovers) {
+      itinIdQueue.push(id);
+      return [];
+    }
+
+    const [departureFlight, returnFlight] = parseLegs(legNodes);
     if (!departureFlight) {
       return null;
     }
@@ -412,7 +430,6 @@ function getLayovers(legNode) {
   }
   return layovers;
 }
-let flightsWithLayoversToSend = [];
 
 function closeModal() {
   const button = document.querySelector(
@@ -422,34 +439,16 @@ function closeModal() {
     button.click();
     console.log("closing modal");
   }
+  loadItinModalObserver.takeRecords();
 }
-let loadModalObserver;
-async function loadModalCallback(mutationList, observer) {
-  loadModalObserver = observer;
-  window.cancelAnimationFrame(rafID);
-  closePopups();
 
-  if (isHighlightingItin) {
-    console.log("inside mutation but trying to highlight itin");
-    observer.disconnect();
-    return;
-  }
-
-  if (flightsWithLayoversToSend.length) {
-    chrome.runtime.sendMessage({
-      event: "FLIGHT_RESULTS_RECEIVED",
-      flights: flightsWithLayoversToSend,
-      provider: "skyscanner",
-    });
-    flightsWithLayoversToSend = [];
-  }
-  // Check if new flights have rendered or their prices have updated,
+function findMoreItins() {
   let moreItins = Array.from(
     document.querySelectorAll(ITIN_NODE_SELECTOR)
   );
   if (moreItins.length) {
     const flights = parser(moreItins);
-    // nonstop flights
+    // nonstop flights, parser will add flights with stops to itinIdQueue
     if (flights.length) {
       chrome.runtime.sendMessage({
         event: "FLIGHT_RESULTS_RECEIVED",
@@ -458,115 +457,158 @@ async function loadModalCallback(mutationList, observer) {
       });
     }
   }
+}
+
+let loadModalObserver;
+let isClosingModal;
+
+async function loadModalCallback(mutationList, observer) {
+  closePopups();
+  loadModalObserver = observer;
+
+  if (isHighlightingItin) {
+    console.log("inside mutation but trying to highlight itin");
+    observer.disconnect();
+    return;
+  }
+  console.dir(mutationList);
+  // Check if new flights have rendered or their prices have updated,
+  // findMoreItins();
+
   if (!itinIdQueue.length) {
+    // all finished
     closeModal();
     await pause();
-    calledLayoverModalObserver = false;
     observer.disconnect();
     console.log("finished current queue");
     parseResults();
+    calledLayoverModalObserver = false;
     return;
   }
-  let modalContainerNode;
+  let isModalOpen = false;
+  let isResultListOpen = false;
+  const RESULTS_VIEW_SELECTOR = "[class*='FlightsDayView_row']";
+  const MODAL_VIEW_SELECTOR = "[class*='FlightsBookingPanel_content']";
+  const MODAL_LOADING_SELECTOR = "[class^='DetailsPanel_loading']";
+  const modalContainerNode = document.querySelector(MODAL_VIEW_SELECTOR);
 
-  for (let m of mutationList) {
-    if (isHighlightingItin) {
-      console.log("inside mutation but trying to highlight itin");
-      observer.disconnect();
+  for (let mutation of mutationList) {
+    isResultListOpen = Array.from(mutation.addedNodes).find(n => n.matches(RESULTS_VIEW_SELECTOR));
+    isModalOpen = Array.from(mutation.addedNodes).find(n => n.matches(MODAL_VIEW_SELECTOR));
+    isModalOpen = isModalOpen || Array.from(mutation.removedNodes).find(n => n.matches(MODAL_LOADING_SELECTOR));
+    if (isResultListOpen || isModalOpen) {
+      break;
+    }
+  }
+  if (isResultListOpen === undefined && isModalOpen === undefined) {
+    console.log('not inside resultlist or modal');
+    return;
+  }
+  if (isClosingModal) {
+    console.log('trying to close modal')
+    if (isResultListOpen) {
+      console.log('successfully closed modal')
+      isClosingModal = false; 
+    } else {
+      // stop infinite loop from simultaneously trying to close modal and read modal
       return;
     }
-    console.log("mutationList loop");
+  }
 
-    // Results view
-    let isResultListOpen =
-      m.target.matches("[class*='ProgressBar_container']") &&
-      m.removedNodes.length;
-    if (isResultListOpen) {
-      // results page, find itin and click it to open modal to scrape layovers
-      // UI variant #2
-      setItinIds();
-      let itinNodeId = itinIdQueue.shift();
+  if (isResultListOpen) {
+    console.log("result list open")
+    // results page, find itin and click it to open modal to scrape layovers
+    // TODO: await setItinIds()
+    setItinIds();
+
+    async function findItinById(itinNodeId) {
       let itinNode = document.querySelector(`[data-id='${itinNodeId}']`);
+      let tries = 5;
+  
       while (!itinNode) {
+        console.log('looking for itin to open modal')
         if (isHighlightingItin) {
-          console.log("inside mutation but trying to highlight itin");
           observer.disconnect();
+          return;
+        }
+        if (tries === 0) {
           return;
         }
         showMoreResults();
         await pause();
         setItinIds();
         itinNode = document.querySelector(`[data-id='${itinNodeId}']`);
+        tries--;
       }
-      if (isHighlightingItin) {
-        console.log("inside mutation but trying to highlight itin");
-        observer.disconnect();
-        return;
-      }
-      itinNode.click();
-      console.log("opening modal");
-      return;
+      return itinNode;
     }
-
-    // Modal view
-    let isModalOpen = Array.from(m.addedNodes).find(
-      (n) => n.matches && n.matches("[class*='FlightsBookingPanel']")
-    );
-    if (!isModalOpen) {
-      // this mutation follows if modal takes a while to load,
-      // usually happens on first modal
-      isModalOpen =
-        m.target.matches("[class*='FlightsBookingPanel']") &&
-        Array.from(m.addedNodes).find((n) =>
-          n.matches("[class*='DetailsPanelHeader_navigationBar']")
-        );
-    }
-    if (isModalOpen) {
-      modalContainerNode = document.getElementById("app-root");
-      break;
-    }
+    
+    // if (isHighlightingItin) {
+    //   console.log("inside mutation but trying to highlight itin");
+    //   observer.disconnect();
+    //   return;
+    // }
+    const itinId = itinIdQueue.shift();
+    const foundItinNode = await findItinById(itinId);
+    foundItinNode.click();
+    console.log("opening modal");
+    return;
   }
 
   if (modalContainerNode) {
     const isLoading = modalContainerNode.querySelector(
-      "[class^='DetailsPanel_loading']"
+      MODAL_LOADING_SELECTOR
     );
     if (isLoading) {
+      console.log('modal content is loading')
       return;
     }
 
-    const legNodes = Array.from(
-      modalContainerNode.querySelectorAll("[class^='Itinerary_leg']")
-    );
-    const [departureFlight, returnFlight] = parseLegs(legNodes);
-
-    let fareNode = modalContainerNode.querySelector(fareSelector.fare);
-    if (!fareNode) {
-      fareNode = modalContainerNode.querySelector(fareSelector.fareBackup);
-    }
-    let fare;
-    try {
-      fare = fareNode.textContent.trim().split("$")[1];
-    } catch (e) {
+    const itin = parseItin(modalContainerNode);
+    if (!itin) {
       // still loading
       return;
     }
-
-    flightsWithLayoversToSend.push({
-      departureFlight,
-      returnFlight,
-      fare,
-      currency: "$",
-    });
     chrome.runtime.sendMessage({
       event: "FLIGHT_RESULTS_RECEIVED",
-      flights: flightsWithLayoversToSend,
+      flights: [itin],
       provider: "skyscanner",
     });
-
     closeModal();
+    isClosingModal = true;
+    console.log("pausing");
+    await pause();
+    console.log("pause over");
+  }
+}
+
+function parseItin(containerNode) {
+  const legNodes = Array.from(
+    containerNode.querySelectorAll("[class^='Itinerary_leg']")
+  );
+  console.log('parsing legs')
+  const [departureFlight, returnFlight] = parseLegs(legNodes);
+
+  let fareNode = containerNode.querySelector(fareSelector.detailView);
+  if (!fareNode) {
+    fareNode = containerNode.querySelector(fareSelector.fareBackup);
+  }
+  let fare;
+  try {
+    fare = fareNode.textContent.trim().split("$")[1];
+  } catch (e) {
+    console.log('no fare, modal must be still loading')
+    // still loading, report to sentry
     return;
   }
+
+  const itin = {
+    departureFlight,
+    returnFlight,
+    fare,
+    currency: "$",
+  };
+  return itin;
 }
 
 let loadItinModalObserver;
@@ -597,7 +639,7 @@ function setIdDataset(itinNode, legNodes) {
       "[class*='LegInfo_routePartialTime']"
     );
     const marketingAirlinesNode = legNode.querySelector(
-      SELECTORS.marketingAirlines
+      SELECTORS.marketingAirline
     );
     const logo = legNode.getElementsByTagName("img")[0];
     let marketingAirline = "";
@@ -606,6 +648,7 @@ function setIdDataset(itinNode, legNodes) {
     } else {
       marketingAirline = marketingAirlinesNode.textContent;
     }
+    marketingAirline = AirlineMap.getAirlineName(marketingAirline);
     dataForId.push(
       Helpers.standardizeTimeString(fromTime.textContent),
       Helpers.standardizeTimeString(toTime.textContent),
@@ -618,26 +661,6 @@ function setIdDataset(itinNode, legNodes) {
 }
 const itinIdQueue = [];
 const seenItinIds = {};
-
-function queryDOM(itinNode, fare) {
-  const hasLayovers = /\d stop/.test(itinNode.textContent);
-  const legNodes = Array.from(
-    itinNode.querySelectorAll("[class^='LegDetails_container']")
-  );
-  const id = setIdDataset(itinNode, legNodes);
-  // check if price is lower than what was previously seen
-  if (seenItinIds[id] && seenItinIds[id] === fare) {
-    return [];
-  }
-  seenItinIds[id] = fare;
-
-  if (hasLayovers) {
-    itinIdQueue.push(id);
-    return [];
-  }
-
-  return parseLegs(legNodes);
-}
 
 function parseLegs(legNodes) {
   const flights = [];
@@ -659,7 +682,7 @@ function queryLeg(containerNode) {
       } else {
         data.operatingAirline = null;
       }
-    } else if (key === "marketingAirlines") {
+    } else if (key === "marketingAirline") {
       const logo = node.querySelector("img");
       if (logo) {
         data.marketingAirline = logo.alt;

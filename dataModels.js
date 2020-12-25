@@ -1,5 +1,5 @@
-import airlinesMap from "./nameMaps/airlineMap.js";
-import isRegionalAirline from "./nameMaps/regionalAirlines.js";
+import AirlineMap from "./shared/nameMaps/airlineMap.js";
+import isRegionalAirline from "./shared/nameMaps/regionalAirlines.js";
 import {
   getTimezoneOffset,
   getTimeDetails,
@@ -36,34 +36,37 @@ function Flight(
   this.fromTimeDetails = getTimeDetails(fromTime);
   this.toTimeDetails = getTimeDetails(toTime);
 
+  const opAirline = AirlineMap.getAirlineName(operatingAirline);
+  const markAirline = AirlineMap.getAirlineName(marketingAirline);
+
   // operating airline is what is primarily displayed
   // marketing airline is used to create the id
-  if (operatingAirline) {
-    if (isRegionalAirline(operatingAirline)) {
+  if (opAirline) {
+    if (isRegionalAirline(opAirline)) {
       // regional airlines don't get the primary airline spot
       // they'll be displayed where we display marketing airlines
-      this.operatingAirline = marketingAirline;
-      this.marketingAirlineText = `Operated by ${operatingAirline}`;
+      this.operatingAirline = markAirline;
+      this.marketingAirlineText = `Operated by ${opAirline}`;
     } else if (operatingAirline.includes("Partially operated by")) {
-      this.operatingAirline = marketingAirline;
-      this.marketingAirlineText = operatingAirline;
+      this.operatingAirline = markAirline;
+      this.marketingAirlineText = opAirline;
     } else {
-      this.operatingAirline = operatingAirline.replace("Operated by", "");
-      this.marketingAirlineText = `Marketed by ${marketingAirline}`;
+      this.operatingAirline = opAirline.replace("Operated by", "");
+      this.marketingAirlineText = `Marketed by ${markAirline}`;
     }
   } else {
     // operating and marketing are the same airline
-    this.operatingAirline = marketingAirline;
+    this.operatingAirline = markAirline;
   }
 
   // marketing airline is unique, not operating
-  this.id = `${this.fromTime}-${this.toTime}-${marketingAirline}`;
+  this.id = `${this.fromTime}-${this.toTime}-${markAirline}`;
   this.duration = duration;
   this.durationMinutes = convertDurationToMinutes(duration);
   this.layovers = layovers || [];
   this.itinIds = [];
   this.timezoneOffset = this.calculateTimezoneOffset();
-  this.operatingAirline = airlinesMap.getAirlineDetails(this.operatingAirline);
+  this.operatingAirline = AirlineMap.getAirlineDetails(this.operatingAirline);
 }
 
 function cleanupAirline(airline) {
@@ -81,11 +84,11 @@ function cleanupAirline(airline) {
     shortAirlineName = airlines[0];
   } else {
     shortAirlineName = airlines
-      .map((airline) => airlinesMap.getAirlineName(airline.replace("  ", " ")))
+      .map((airline) => AirlineMap.getAirlineName(airline.replace("  ", " ")))
       .join(", ");
   }
 
-  return airlinesMap.getAirlineDetails(shortAirlineName.replace("  ", " "));
+  return AirlineMap.getAirlineDetails(shortAirlineName.replace("  ", " "));
 }
 
 Flight.prototype.calculateTimezoneOffset = function () {

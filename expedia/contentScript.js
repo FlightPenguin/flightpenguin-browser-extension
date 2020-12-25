@@ -312,8 +312,9 @@ function queryLeg(containerNode, selectors) {
         } else {
           data.operatingAirline = null;
         }
-      } else if (key === "marketingAirlines") {
-        data.marketingAirline = node.textContent.trim();
+      } else if (key === "marketingAirline") {
+        const marketingAirline = node.textContent.trim();
+        data[key] = AirlineMap.getAirlineName(marketingAirline);
       } else if (key === "layovers") {
         let layovers = [];
         if (!node) {
@@ -386,9 +387,11 @@ async function scrapeRedesignUI() {
     try {
       const flight = {};
 
-      flight.marketingAirline = flightEl.querySelector(
+      const marketingAirline = flightEl.querySelector(
         UI_REDESIGN_SELECTORS.marketingAirline
       ).textContent;
+      flight.marketingAirline = AirlineMap.getAirlineName(marketingAirline);
+
       const operatingAirline = flightEl.querySelector(
         UI_REDESIGN_SELECTORS.operatingAirline
       );
@@ -539,7 +542,7 @@ const SELECTORS = {
   toTimeAddDays: "[data-test-id='arrives-next-day']",
   duration: "[data-test-id='duration']",
   layovers: "[data-test-num-stops='0']", //nonstop
-  marketingAirlines: "[data-test-id='airline-name'",
+  marketingAirline: "[data-test-id='airline-name'",
   operatingAirline: "[data-test-id='operated-by']",
 };
 const fareSelector = {

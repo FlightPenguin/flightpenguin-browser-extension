@@ -27,6 +27,7 @@
       "matches": ["https://www.skyscanner.com/transport/flights/*"],
       "css": ["shared/contentScript.css"],
       "js": [
+        "shared/nameMaps/airlineMapGlobalScope.js",
         "shared/sentry.js",
         "shared/helpers.js",
         "skyscanner/contentScript.js"
@@ -45,6 +46,7 @@
       "matches": ["https://www.expedia.com/Flights-Search?*"],
       "css": ["shared/contentScript.css"],
       "js": [
+        "shared/nameMaps/airlineMapGlobalScope.js",
         "shared/sentry.js",
         "shared/helpers.js",
         "expedia/contentScript.js"
