@@ -84,6 +84,8 @@ let canHighlightSkyscannerTab = false;
 let messageQueue = [];
 let beginTime = 0;
 let providersReceived = new Set();
+let failedProviders = new Set();
+let providersTimeoutIds = {};
 
 chrome.runtime.onMessage.addListener(function (message, sender, reply) {
   console.info(message.event, message);
@@ -101,8 +103,10 @@ chrome.runtime.onMessage.addListener(function (message, sender, reply) {
       departureSelected = false;
       messageQueue = [];
       providersReceived = new Set();
+      failedProviders = new Set();
       canHighlightSkyscannerTab = false;
       returnList = [];
+      providersTimeoutIds = {};
       if (webPageTabId) {
         chrome.tabs.sendMessage(webPageTabId, {
           event: "RESET_SEARCH",
@@ -111,8 +115,12 @@ chrome.runtime.onMessage.addListener(function (message, sender, reply) {
       }
       break;
     case "NO_FLIGHTS_FOUND":
-      providersReceived.add(message.provider);
-      if (providersReceived.size === Object.keys(tabIds).length) {
+      failedProviders.add(message.provider);
+      clearTimeout(providersTimeoutIds[message.provider]);
+      Sentry.captureException(new Error(`No flights found ${message.provider}`, {
+        extra: formData,
+      }));
+      if (failedProviders.size === Object.keys(tabIds).length) {
         sendMessageToWebpage({ event: "NO_FLIGHTS_FOUND_CLIENT" });
         closeWindows();
       }
@@ -122,9 +130,14 @@ chrome.runtime.onMessage.addListener(function (message, sender, reply) {
         break;
       }
       const { flights, provider } = message;
+      clearTimeout(providersTimeoutIds[provider]);
 
       if (!flights.length) {
         break;
+      }
+      if (!providersReceived.has(provider)) {
+        Sentry.captureMessage(`${provider} flight results took ${performance.now() - beginTime}`);
+        providersReceived.add(provider);
       }
 
       const { departures, itins } = makeItins(
@@ -340,7 +353,12 @@ function openProviderSearchResults(message) {
       beginTime = performance.now();
       console.log("begin", beginTime);
     }
-    chrome.tabs.sendMessage(tabIds[provider], { event: "BEGIN_PARSING" });
+    chrome.tabs.sendMessage(tabIds[provider], { event: "BEGIN_PARSING", formData: message });
+    providersTimeoutIds[provider] = setTimeout(() => {
+      Sentry.captureException(new Error(`Scraper failed for ${provider}`), {
+        extra: formData
+      });
+    }, 15000);
   });
 }
 function createWindow(url, provider) {
