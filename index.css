@@ -225,6 +225,7 @@ li.flight-list-item:nth-child(even) {
 .interval-time.midday.no-tz-change {
   top: -11px;
 }
+.interval-time.first,
 .interval-time.midnight {
   top: -63px !important;
 }
@@ -232,11 +233,7 @@ li.flight-list-item:nth-child(even) {
   right: 53px;
   bottom: 0px;
 }
-.interval-time-text.midnight.tz-change::before {
-  right: 53px;
-  bottom: 22px;
-}
-.interval-time-text.midnight.first::before {
+.interval-time-text.tz-change.first::before {
   content: attr(data-content);
   border-radius: 8px;
   position: absolute;
@@ -244,6 +241,8 @@ li.flight-list-item:nth-child(even) {
   padding: 4px;
   white-space: nowrap;
   letter-spacing: 0;
+  right: 53px;
+  bottom: 22px;
 }
 .interval-time-text.timezone.first::before {
   content: attr(data-content);

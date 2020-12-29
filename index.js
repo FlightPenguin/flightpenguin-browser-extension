@@ -519,6 +519,7 @@ function createTimeBarHeader(intervals, tzOffset, dayWidths) {
     }
 
     if (index === 0) {
+      intervalNode.classList.add("first");
       timeNode.classList.add("first");
       timeNode.dataset.content = `Time at ${depAirportCode}`;
     } else if (index > 0) {
