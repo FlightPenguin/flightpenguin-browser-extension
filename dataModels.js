@@ -258,13 +258,13 @@ function findReturnFlights(depFlight, itins) {
  */
 function makeItins(
   itinCollection,
+  departures,
+  itins,
   provider,
   windowId,
   tabId,
   makeRetFlightOnly = false
 ) {
-  const itins = {};
-  const departures = {};
   const returns = {};
 
   itinCollection.forEach((ic) => {
@@ -278,9 +278,11 @@ function makeItins(
       tabId,
       makeRetFlightOnly
     );
+
     // the deduping flights part
     if (departures[itin.depFlight.id]) {
       // set flight to existing instance
+      // depFlight is just a Flight, not an itin, so this is okay
       itin.depFlight = departures[itin.depFlight.id];
     } else {
       // add new flight
@@ -300,9 +302,13 @@ function makeItins(
 
     itin.depFlight.itinIds.push(itin.id);
 
+    // if (itins[itin.id]) {
+    //   // this can happen if the same itin exists across different providers
+    //   itins[itin.id].push(itin);
+    // } else {
+    //   itins[itin.id] = [itin];
+    // }
     itins[itin.id] = itin;
-
-    return itin;
   });
 
   return { itins, departures, returns };

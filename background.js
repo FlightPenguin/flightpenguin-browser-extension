@@ -81,6 +81,8 @@ let allDepartures = {};
 let allItins = {};
 let departureSelected = false;
 let canHighlightSkyscannerTab = false;
+let isExpediaReady = true;
+let expediaMessage;
 let messageQueue = [];
 let beginTime = 0;
 let providersReceived = new Set();
@@ -107,6 +109,9 @@ chrome.runtime.onMessage.addListener(function (message, sender, reply) {
       canHighlightSkyscannerTab = false;
       returnList = [];
       providersTimeoutIds = {};
+      isExpediaReady = true;
+      expediaMessage = null;
+
       if (webPageTabId) {
         chrome.tabs.sendMessage(webPageTabId, {
           event: "RESET_SEARCH",
@@ -142,12 +147,14 @@ chrome.runtime.onMessage.addListener(function (message, sender, reply) {
 
       const { departures, itins } = makeItins(
         flights,
+        allDepartures,
+        allItins,
         provider,
         windowIds[provider],
         tabIds[provider]
       );
-      allItins = { ...allItins, ...itins };
-      allDepartures = { ...allDepartures, ...departures };
+      allItins = { ...itins };
+      allDepartures = { ...departures };
 
       const departuresToSend = sortFlights(allDepartures, allItins);
       const nextMessage = {
@@ -165,12 +172,17 @@ chrome.runtime.onMessage.addListener(function (message, sender, reply) {
       // for providers that show returns separate from departures,
       // and only once you select a departure.
       const {
-        departure: expediaDeparture,
         flights: expediaFlights,
         provider: expediaProvider,
       } = message;
+      if (expediaFlights.length === 0) {
+        return;
+      }
+      clearTimeout(providersTimeoutIds.expedia);
       const { itins: expediaItins, returns: expediaReturns } = makeItins(
         expediaFlights,
+        allDepartures,
+        allItins,
         expediaProvider,
         windowIds[expediaProvider],
         tabIds[expediaProvider],
@@ -191,29 +203,46 @@ chrome.runtime.onMessage.addListener(function (message, sender, reply) {
       });
       break;
     case "DEPARTURE_SELECTED":
+      if (!formData.roundtrip) {
+        return;
+      }
       departureSelected = true;
       const departure = allDepartures[message.departureId];
       // itin needs to be set to {} for Southwest
       // Southwest allItins ids includes return id because we know that info
       // but message.departureId is still just departure id.
-      const itin = allItins[message.departureId] || {};
+      const itinsForDeparture = departure.itinIds.flatMap(itinId => allItins[itinId]);
+      const itinProviders = itinsForDeparture.map(i => i.provider);
+    
+      if (itinProviders.includes("expedia")) {
+        const getExpediaReturns = () => {
+          // expedia shows return options for roundtrip after you select a departure.
+          chrome.tabs.sendMessage(tabIds.expedia, {
+            event: "GET_RETURN_FLIGHTS",
+            departure,
+            itin: itinsForDeparture[itinProviders.indexOf("expedia")],
+          });
 
-      if (formData.roundtrip && itin.provider === "expedia") {
-        // expedia shows return options for roundtrip after you select a departure.
-        chrome.tabs.sendMessage(tabIds.expedia, {
-          event: "GET_RETURN_FLIGHTS",
-          departure,
-          itin,
+          providersTimeoutIds.expedia = setTimeout(() => {
+            Sentry.captureException(new Error(`Scraper failed for expedia`), {
+              extra: formData
+            });
+          }, 10000);
+        }
+        if (isExpediaReady) {
+          getExpediaReturns();
+        } else {
+          expediaMessage = getExpediaReturns;
+        }
+      } else if (itinProviders.includes("skyscanner") || itinProviders.includes("southwest")) {
+        returnList = findReturnFlights(departure, allItins);
+        returnList = sortFlights(returnList, allItins);
+
+        chrome.tabs.sendMessage(webPageTabId, {
+          event: "RETURN_FLIGHTS_FOR_CLIENT",
+          flights: { returnList },
         });
-        break;
       }
-      let returnList = findReturnFlights(departure, allItins);
-      returnList = sortFlights(returnList, allItins);
-
-      chrome.tabs.sendMessage(webPageTabId, {
-        event: "RETURN_FLIGHTS_FOR_CLIENT",
-        flights: { returnList },
-      });
       break;
     case "HIGHLIGHT_TAB":
       const { selectedDepartureId, selectedReturnId } = message;
@@ -231,6 +260,13 @@ chrome.runtime.onMessage.addListener(function (message, sender, reply) {
         });
       }
       break;
+    case "EXPEDIA_READY":
+      isExpediaReady = true;
+      if (expediaMessage) {
+        expediaMessage();
+        expediaMessage = null;
+      }
+      break;
     case "FOCUS_WEBPAGE":
       sendMessageToWebpage({ event: "FOCUS_WEBPAGE_CLIENT" });
       chrome.windows.update(webPageWindowId, { focused: true }, (win) => {
@@ -243,6 +279,7 @@ chrome.runtime.onMessage.addListener(function (message, sender, reply) {
       returnList = [];
       // move Expedia to departures page
       if (tabIds.expedia) {
+        isExpediaReady = false;
         chrome.tabs.sendMessage(tabIds.expedia, {
           event: "CLEAR_SELECTION",
         });
@@ -256,6 +293,7 @@ chrome.runtime.onMessage.addListener(function (message, sender, reply) {
         // need setTimeout here or else message will be missed by new tab.
         chrome.tabs.sendMessage(tabIds[message.provider], {
           event: "BEGIN_PARSING",
+          formData,
         });
       }, 5000);
       break;
@@ -267,13 +305,11 @@ chrome.runtime.onMessage.addListener(function (message, sender, reply) {
 
 function sendMessageToWebpage(message) {
   if (!webPageTabId) {
-    console.log("first results", performance.now() - beginTime);
     createNewWebPage(message);
   } else {
     // make sure webpage still exists
     chrome.tabs.get(webPageTabId, (tab) => {
       if (!tab) {
-        console.log("first results", performance.now() - beginTime);
         createNewWebPage(message);
       } else {
         chrome.tabs.sendMessage(tab.id, message);
@@ -351,7 +387,6 @@ function openProviderSearchResults(message) {
     await createWindow(url, provider);
     if (!beginTime) {
       beginTime = performance.now();
-      console.log("begin", beginTime);
     }
     chrome.tabs.sendMessage(tabIds[provider], { event: "BEGIN_PARSING", formData: message });
     providersTimeoutIds[provider] = setTimeout(() => {
@@ -361,6 +396,7 @@ function openProviderSearchResults(message) {
     }, 15000);
   });
 }
+
 function createWindow(url, provider) {
   return new Promise((resolve) => {
     chrome.windows.create({ url, focused: false }, async (win) => {
