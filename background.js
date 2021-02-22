@@ -95,7 +95,7 @@ chrome.runtime.onMessage.addListener(function (message, sender, reply) {
   switch (message.event) {
     case "FORM_DATA_RECEIVED":
       formData = message.formData;
-      openProviderSearchResults(message.formData);
+      openProviderSearchResults(message.formData, message.windowConfig);
       // clean up incase user is doing a different search
       closeWindows();
       tabIds = {};
@@ -356,7 +356,7 @@ function createNewWebPage(message) {
   );
 }
 
-function openProviderSearchResults(message) {
+function openProviderSearchResults(message, windowConfig) {
   /**
    * Open tabs to provider search results pages.
    * Keep track of opened tab ids to send messages to them.
@@ -384,7 +384,7 @@ function openProviderSearchResults(message) {
   providers.forEach(async (provider) => {
     const url = providerURLBaseMap[provider](message);
     // Open url in a new window. Not a new tab because we can't read results from inactive tabs (browser powers down inactive tabs).
-    await createWindow(url, provider);
+    await createWindow(url, provider, windowConfig);
     if (!beginTime) {
       beginTime = performance.now();
     }
@@ -397,9 +397,10 @@ function openProviderSearchResults(message) {
   });
 }
 
-function createWindow(url, provider) {
+function createWindow(url, provider, windowConfig) {
+  const { height, width, left, top } = windowConfig;
   return new Promise((resolve) => {
-    chrome.windows.create({ url, focused: false }, async (win) => {
+    chrome.windows.create({ url, focused: false, height, width, left, top }, async (win) => {
       tabIds[provider] = win.tabs[0].id;
       windowIds[provider] = win.id;
       chrome.tabs.onUpdated.addListener(function listener(tabId, info) {

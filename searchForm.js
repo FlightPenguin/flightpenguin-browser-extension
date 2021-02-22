@@ -117,8 +117,13 @@ document.querySelector("form#search").addEventListener("submit", (e) => {
     });
   }
   setFormLoading();
-
-  chrome.runtime.sendMessage({ event: "FORM_DATA_RECEIVED", formData });
+  const windowConfig = {
+    height: window.outerHeight,
+    width: window.outerWidth,
+    left: window.screenX,
+    top: window.screenY,
+  };
+  chrome.runtime.sendMessage({ event: "FORM_DATA_RECEIVED", formData, windowConfig });
 });
 
 function setFormLoading() {
