@@ -122,13 +122,14 @@ chrome.runtime.onMessage.addListener(function (message, sender, reply) {
     case "NO_FLIGHTS_FOUND":
       failedProviders.add(message.provider);
       clearTimeout(providersTimeoutIds[message.provider]);
-      Sentry.captureException(new Error(`No flights found ${message.provider}`, {
-        extra: formData,
-      }));
-      if (failedProviders.size === Object.keys(tabIds).length) {
+
+      if (failedProviders.size >= Object.keys(tabIds).length) {
         sendMessageToWebpage({ event: "NO_FLIGHTS_FOUND_CLIENT" });
         closeWindows();
       }
+      Sentry.captureException(new Error(`No flights found ${message.provider}`, {
+        extra: formData,
+      }));
       break;
     case "FLIGHT_RESULTS_RECEIVED":
       if (departureSelected) {
