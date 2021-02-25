@@ -404,6 +404,7 @@ function createWindow(url, provider, windowConfig) {
     chrome.windows.create({ url, focused: false, height, width, left, top }, async (win) => {
       tabIds[provider] = win.tabs[0].id;
       windowIds[provider] = win.id;
+      chrome.windows.update(win.id, {focused: false});
       chrome.tabs.onUpdated.addListener(function listener(tabId, info) {
         if (info.status === "complete" && tabId === tabIds[provider]) {
           chrome.tabs.onUpdated.removeListener(listener);
