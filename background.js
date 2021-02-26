@@ -11,7 +11,13 @@ chrome.runtime.onInstalled.addListener(function () {
   console.log("Is this thing on?");
 });
 
+let browserActionClicked = false;
 chrome.browserAction.onClicked.addListener(function () {
+  if (browserActionClicked) {
+    // blocks rapid successive clicks
+    return;
+  }
+  browserActionClicked = true;
   // get user access token using oauth constants in manifest.json
   chrome.identity.getAuthToken({ interactive: true }, async (token) => {
     /**
@@ -64,7 +70,8 @@ chrome.browserAction.onClicked.addListener(function () {
         chrome.tabs.create(
           { url: ORIGIN },
         );
-      });
+      })
+      .finally(() => browserActionClicked = false);
   });
 });
 
