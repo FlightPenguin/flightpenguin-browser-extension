@@ -3,10 +3,8 @@ Sentry.init({
     "https://d7f3363dd3774a64ad700b4523bcb789@o407795.ingest.sentry.io/5277451",
 });
 
-const errors = {};
 let searchParams;
 let rafID = 0;
-let allItins = [];
 let isHighlightingItin = false; // to prevent opening modals when trying to highlight a selected itin
 const ITIN_NODE_SELECTOR = "[class*='FlightsTicket_container'] [role='button']";
 
@@ -29,12 +27,6 @@ chrome.runtime.onMessage.addListener(async function (message) {
       const { selectedDepartureId, selectedReturnId } = message;
       // isHighlightingItin is used to prevent MutationObserver and RAF callbacks from continuing their tasks (parsing results)
       isHighlightingItin = true;
-      if (loadItinModalObserver) {
-        loadItinModalObserver.disconnect();
-      }
-      if (loadModalObserver) {
-        loadModalObserver.disconnect();
-      }
       closeModal();
       closePopups();
       window.cancelAnimationFrame(rafID);
@@ -46,9 +38,6 @@ chrome.runtime.onMessage.addListener(async function (message) {
           try {
             closeModal();
             setItinIds();
-            if (loadModalObserver) {
-              loadModalObserver.disconnect();
-            }
             highlightItin(selectedDepartureId, selectedReturnId);
             clearInterval(intId);
             addBackToSearchButton();
@@ -74,64 +63,17 @@ chrome.runtime.onMessage.addListener(async function (message) {
 });
 
 function loadResults() {
-  const callback = async function (mutationlist, observer) {
-    const resultSummaryContainer = document.querySelector(
-      "[class^='ResultsSummary_summaryContainer']"
-    );
-    const val = resultSummaryContainer
-      ? resultSummaryContainer.textContent.match(/\d/)
-      : null;
-    if (val) {
-      // results rendered without loading state
-      if (+val[0] > 0) {
-        closePopups();
-        await parseResults();
-      } else {
-        chrome.runtime.sendMessage({
-          event: "NO_FLIGHTS_FOUND",
-          provider: "skyscanner",
-        });
-      }
+  let timeoutId;
+  const observer = new MutationObserver(function (mutationlist, observer) {
+    // should observe results container after added to DOM
+    // and disconnect this observer
+    clearTimeout(timeoutId);
+    timeoutId = setTimeout(() => {
+      parseResults();
       observer.disconnect();
-      return;
-    }
-    for (let m of mutationlist) {
-      const continueButton = document.querySelector(
-        "[type=button][class*='DirectDays']"
-      );
-      if (!continueButton) {
-        const getPricesButton = document.querySelector(
-          "[class*='month-view__trip-summary-cta']"
-        );
-        if (getPricesButton) {
-          chrome.runtime.sendMessage({
-            event: "NO_FLIGHTS_FOUND",
-            provider: "skyscanner",
-          });
-          observer.disconnect();
-          return;
-        }
-      }
-      if (continueButton) {
-        continueButton.click();
-        chrome.runtime.sendMessage({
-          event: "CALL_BEGIN_PARSE",
-          provider: "skyscanner",
-        });
-        observer.disconnect();
-        return;
-      }
-      const isPriceContainer = /ProgressBar_container/.test(
-        m.target.classList[0]
-      );
-
-      if (isPriceContainer) {
-        await parseResults();
-        observer.disconnect();
-      }
-    }
-  };
-  const observer = new MutationObserver(callback);
+    }, 5000);
+    return;
+  });
   observer.observe(document.body, { childList: true, subtree: true });
 }
 
@@ -207,8 +149,9 @@ async function showMoreResults() {
     seeMoreFlightsButton.click();
     await pause();
   }
-  const rect = resultsContainer.getBoundingClientRect();
-  window.scroll(0, rect.height);
+  // we do not want to scroll directly to the bottom of the page
+  // the results load when scroll position is within the viewport
+  window.scroll(0, window.pageYOffset + 500);
 }
 
 function pause() {
@@ -218,109 +161,89 @@ function pause() {
 }
 /**
  * Skyscanner has a button that you need to click to see more results, then
- * the rest of the results are loaded has you scroll. So to get more results we need to scroll down the page.
- * Every time Skyscanner needs to fetch more results, our background picks up the API request and
- * calls this function again.
+ * the rest of the results are loaded as you scroll.
+ * So to get more results we need to scroll down the page.
  */
 async function parseResults() {
-  let lastTime = 0;
   if (isHighlightingItin) {
     return;
   }
-  await showMoreResults();
 
-  rafID = window.requestAnimationFrame(parseMoreFlights);
+  let lastTime = 0;
+  let rafID;
 
-  async function parseMoreFlights(currentTime) {
-    const resultSummaryContainer = document.querySelector(
-      "[class^='ResultsSummary_summaryContainer']"
-    );
-    if (
-      resultSummaryContainer &&
-      /^0 results/.test(resultSummaryContainer.textContent)
-    ) {
+  window.addEventListener('scroll', function handleScroll() {
+    if (isHighlightingItin) {
       window.cancelAnimationFrame(rafID);
-      chrome.runtime.sendMessage({
-        event: "NO_FLIGHTS_FOUND",
-        provider: "skyscanner",
-      });
+      window.removeEventListener('scroll', handleScroll);
       return;
     }
-    // every 4 seconds scroll to next viewPort
-    // timeToScroll will initially resolve to 0 because currentTime
-    // is the timestamp since the page's origin.
-    // So subtracting a very big number from 4000 will be negative, and 0 is greater.
-    const timeToScroll = Math.max(0, 4000 - (currentTime - lastTime));
-    if (timeToScroll === 0) {
-      await showMoreResults();
-
-      let moreItins = Array.from(
-        document.querySelectorAll(ITIN_NODE_SELECTOR)
-      );
-      if (moreItins.length) {
-        const flights = parser(moreItins);
-        // nonstop flights
-        if (flights.length) {
-          chrome.runtime.sendMessage({
-            event: "FLIGHT_RESULTS_RECEIVED",
-            flights,
-            provider: "skyscanner",
-          });
-        }
-        // if we have any flights with layovers, start parsing those
-        if (itinIdQueue.length) {
-          // set up Observer
-          await loadLayoverModal();
-          window.cancelAnimationFrame(rafID);
-          return;
-        }
-      } else {
+    let moreItins = Array.from(
+      document.querySelectorAll(ITIN_NODE_SELECTOR + ':not([data-visited="true"])')
+    );
+    if (moreItins.length) {
+      const flights = parser(moreItins);
+      // nonstop flights
+      if (flights.length) {
         chrome.runtime.sendMessage({
-          event: "SKYSCANNER_READY",
+          event: "FLIGHT_RESULTS_RECEIVED",
+          flights,
+          provider: "skyscanner",
         });
-        window.cancelAnimationFrame(rafID);
-        return;
       }
-
-      allItins = allItins.concat(moreItins);
-      lastTime = currentTime;
     }
 
-    rafID = window.requestAnimationFrame(parseMoreFlights);
+    if (isAtBottomOfPage()) {
+      window.cancelAnimationFrame(rafID);
+      window.removeEventListener('scroll', handleScroll);
+
+      // finally parse flights with stops
+      if (itinIdQueue.length) {
+        window.addEventListener('scroll', function parseItinWithStops() {
+          if (window.pageYOffset === 0) {
+            openItinWithLayoversModal();
+            window.removeEventListener('scroll', parseItinWithStops);
+          }
+        });
+        window.scroll(0,0);
+      }
+    }
+  });
+
+  rafID = window.requestAnimationFrame(showMoreFlights);
+
+  async function showMoreFlights(now) {
+    const shouldScroll = now - lastTime >= 1000;
+
+    if (!lastTime || shouldScroll) {
+      await showMoreResults();
+      lastTime = now;
+    }
+
+    rafID = window.requestAnimationFrame(showMoreFlights);
   }
 }
-let currIds = new Set();
-function setItinIds() {
+
+function isAtBottomOfPage() {
+  return (window.innerHeight + window.pageYOffset) >= document.body.offsetHeight - 2;
+}
+
+function setItinIds(notSeenSelector = "") {
   let moreItins = Array.from(
-    document.querySelectorAll(ITIN_NODE_SELECTOR)
+    document.querySelectorAll(ITIN_NODE_SELECTOR + notSeenSelector)
   );
-  const newIds = new Set();
-  for (let itin of moreItins) {
+
+  for (let i = 0; i < moreItins.length; i++) {
+    const itin = moreItins[i];
     const legNodes = Array.from(
       itin.querySelectorAll("[class^='LegDetails_container']")
     );
-    const id = setIdDataset(itin, legNodes);
-    newIds.add(id);
+    setIdDataset(itin, legNodes);
+    itin.dataset.visited = 'true';
   }
-  // SFO to LHR, some options disappear and we still show them in our results.
-  // Need to diff old list with new to make sure we're up to date.
-  // Then send message to remove  these ids.
-  const idsToRemove = new Set();
-
-  for (let id of currIds) {
-    if (!newIds.has(id)) {
-      idsToRemove.add(id);
-    }
+  if (!moreItins.length) {
+    console.log('did not set itin ids')
   }
-  currIds = newIds;
-
-  // if (idsToRemove.size > 0) {
-  //   chrome.runtime.sendMessage({
-  //     event: "DELETE_IDS",
-  //     ids: Array.from(idsToRemove),
-  //     provider: "skyscanner",
-  //   });
-  // }
 }
 
 const SELECTORS = {
@@ -338,13 +261,13 @@ const layoverFromToSelectors = {
   to: "[class*='Routes_routes'] *:nth-child(2)",
 };
 const fareSelector = {
-  detailView: "[class^='TotalPrice_totalPriceContainer']", // fare.match(/\d+/g).join("") * 1
+  detailView: "[class^='TotalPrice_totalPriceContainer']",
   resultsView: "[class^='Price_mainPriceContainer']",
-  // fareBackup: "[class*='Pricebox_prices']",
   fareBackup: "[class*='CardPrice_totalPrice']", // when there are upgrades
 };
-function parser(itinNodes) {
+function parser(itinNodes = []) {
   let itins = itinNodes.map((itinNode) => {
+    itinNode.dataset.visited = true;
     if (itinNode.textContent.includes("Sponsored")) {
       return null;
     }
@@ -401,9 +324,12 @@ function getLayovers(legNode) {
   );
   const layovers = [];
   for (let i = 0; i < segments.length; i++) {
-    const [fromTime, duration, toTime] = segments[i].querySelector(
+    let [fromTime, duration, toTime] = segments[i].querySelector(
       "[class^='Times_segmentTimes']"
     ).children;
+    fromTime = Helpers.standardizeTimeString(fromTime.textContent);
+    toTime = Helpers.standardizeTimeString(toTime.textContent);
+
     const locations = {};
     for (let [key, selector] of Object.entries(layoverFromToSelectors)) {
       const locationNode = segments[i].querySelector(selector);
@@ -414,10 +340,27 @@ function getLayovers(legNode) {
     );
     const operatingAirline = airlines[i].querySelector("[class*='OperatedBy']");
 
+    if (!toTime.match(/(\+\d)/)) {
+      if (
+        i > 0 &&
+        layovers[layovers.length - 1].toTime.includes("pm") &&
+        toTime.includes("am")
+      ) {
+        // layover went to the next day
+        toTime += "+1";
+      } else if (
+        fromTime.toLowerCase().includes("pm") &&
+        toTime.toLowerCase().includes("am")
+      ) {
+        // overnight flight
+        toTime += "+1";
+      }
+    }
+
     layovers.push({
-      fromTime: Helpers.standardizeTimeString(fromTime.textContent),
+      fromTime,
       duration: duration.textContent,
-      toTime: Helpers.standardizeTimeString(toTime.textContent),
+      toTime,
       operatingAirline: operatingAirline.textContent
         .toLowerCase()
         .includes("operated")
@@ -436,110 +379,6 @@ function closeModal() {
   if (button) {
     button.click();
   }
-  if (loadItinModalObserver) {
-    loadItinModalObserver.takeRecords();
-  }
-}
-
-function findMoreItins() {
-  let moreItins = Array.from(
-    document.querySelectorAll(ITIN_NODE_SELECTOR)
-  );
-  if (moreItins.length) {
-    const flights = parser(moreItins);
-    // nonstop flights, parser will add flights with stops to itinIdQueue
-    if (flights.length) {
-      chrome.runtime.sendMessage({
-        event: "FLIGHT_RESULTS_RECEIVED",
-        flights,
-        provider: "skyscanner",
-      });
-    }
-  }
-}
-
-let loadModalObserver;
-let isClosingModal;
-
-async function loadModalCallback(mutationList, observer) {
-  closePopups();
-  loadModalObserver = observer;
-
-  if (isHighlightingItin) {
-    observer.disconnect();
-    return;
-  }
-
-  if (!itinIdQueue.length) {
-    // all finished
-    closeModal();
-    await pause();
-    observer.disconnect();
-    // look for more flights
-    await parseResults();
-    calledLayoverModalObserver = false;
-    return;
-  }
-  let isModalOpen = false;
-  let isResultListOpen = false;
-  const RESULTS_VIEW_SELECTOR = "[class*='FlightsDayView_row']";
-  const RESULTS_VIEW_SELECTOR_2 = "[class*='FlightsResults_dayViewItems']";
-  const MODAL_VIEW_SELECTOR = "[class*='FlightsBookingPanel_content']";
-  const MODAL_LOADING_SELECTOR = "[class^='DetailsPanel_loading']";
-  const modalContainerNode = document.querySelector(MODAL_VIEW_SELECTOR);
-
-  for (let mutation of mutationList) {
-    isResultListOpen = Array.from(mutation.addedNodes).find(n => n.matches && n.matches(RESULTS_VIEW_SELECTOR));
-    isResultListOpen = isResultListOpen || mutation.target.matches(RESULTS_VIEW_SELECTOR_2);
-    isModalOpen = Array.from(mutation.addedNodes).find(n => n.matches(MODAL_VIEW_SELECTOR));
-    isModalOpen = isModalOpen || Array.from(mutation.removedNodes).find(n => n.matches(MODAL_LOADING_SELECTOR));
-    if (isResultListOpen || isModalOpen) {
-      // something minor happened, 
-      // only care about when a modal opens, its contents are loading, and it closes
-      break;
-    }
-  }
-  if (isResultListOpen === undefined && isModalOpen === undefined) {
-    return;
-  }
-  if (isClosingModal) {
-    if (isResultListOpen) {
-      isClosingModal = false; 
-    } else {
-      // stop infinite loop from simultaneously trying to close modal and read modal
-      return;
-    }
-  }
-
-  if (isResultListOpen) {
-    // results page, find itin and click it to open modal to scrape layovers
-    setItinIds();
-    await openItinWithLayoversModal();
-    return;
-  }
-
-  if (modalContainerNode) {
-    const isLoading = modalContainerNode.querySelector(
-      MODAL_LOADING_SELECTOR
-    );
-    if (isLoading) {
-      return;
-    }
-
-    const itin = parseItin(modalContainerNode);
-    if (!itin) {
-      // still loading
-      return;
-    }
-    chrome.runtime.sendMessage({
-      event: "FLIGHT_RESULTS_RECEIVED",
-      flights: [itin],
-      provider: "skyscanner",
-    });
-    closeModal();
-    isClosingModal = true;
-    await pause();
-  }
 }
 
 function parseItin(containerNode) {
@@ -556,7 +395,7 @@ function parseItin(containerNode) {
   try {
     fare = fareNode.textContent.trim().split("$")[1];
   } catch (e) {
-    // still loading, report to sentry
+    // still loading
     return;
   }
 
@@ -569,54 +408,74 @@ function parseItin(containerNode) {
   return itin;
 }
 
-let loadItinModalObserver;
-let calledLayoverModalObserver = false;
-
-async function loadLayoverModal() {
-  if (calledLayoverModalObserver) {
+const MODAL_VIEW_SELECTOR = "[class*='FlightsBookingPanel_content']";
+async function openItinWithLayoversModal() {
+  // Flow:
+  // make sure to scroll top before first itin id in queue
+  // then scroll every second (passive?), query for id
+  // if reached bottom, scroll top
+  // else if found itin, break out of scroll, try to scrape detail pane
+  // after modal closes, set itin ids
+  // pop off next itin id
+  if (!itinIdQueue.length) {
+    closeModal();
     return;
   }
-  calledLayoverModalObserver = true;
-
-  loadItinModalObserver = new MutationObserver(loadModalCallback);
-  loadItinModalObserver.observe(document.getElementById("app-root"), {
-    childList: true,
-    subtree: true,
+  window.scroll(0,0);
+  const itinId = itinIdQueue.shift();
+  window.addEventListener('scroll', async function handleScroll() {
+    if (isHighlightingItin) {
+      window.removeEventListener('scroll', handleScroll);
+      return;
+    }
+    // if at bottom or found itin
+    // remove scroll listener
+    const foundItinNode = await findItinById(itinId);
+    if (foundItinNode) {
+      scrapeItinDetailPane(foundItinNode);
+      window.removeEventListener('scroll', handleScroll);
+    } else if (isAtBottomOfPage()) {
+      openItinWithLayoversModal();
+      window.removeEventListener('scroll', handleScroll);
+    }
   });
 
-  await openItinWithLayoversModal();
+  findItinById(itinId);
 }
 
-async function openItinWithLayoversModal() {
+function scrapeItinDetailPane(foundItinNode) {
+  foundItinNode.click();
+  let intId = setInterval(async () => {
+    const modalContainerNode = document.querySelector(MODAL_VIEW_SELECTOR);
+    if (!modalContainerNode) {
+      return;
+    }
+    const itin = parseItin(modalContainerNode);
+    if (!itin) {
+      // modal may still be loading
+      // create new observer on MODAL_VIEW_SELECTOR target for loading modal?
+      // if parser errors this is an infinite loop so need retry limit
+      return;
+    }
+    chrome.runtime.sendMessage({
+      event: "FLIGHT_RESULTS_RECEIVED",
+      flights: [itin],
+      provider: "skyscanner",
+    });
 
-  const itinId = itinIdQueue.shift();
-  const foundItinNode = await findItinById(itinId);
-  try {
-    foundItinNode.click();
-  } catch (e) {
-    itinIdQueue.push(itinId);
-  }
+    clearInterval(intId);
+    closeModal();
+    await pause();
+    setItinIds();
+    openItinWithLayoversModal();
+  }, 2000);
 }
 
 async function findItinById(itinNodeId) {
-  let itinNode = document.querySelector(`[data-id='${itinNodeId}']`);
-  let tries = 5;
-
-  while (!itinNode) {
-    if (isHighlightingItin) {
-      observer.disconnect();
-      return;
-    }
-    if (tries === 0) {
-      return;
-    }
-    await showMoreResults();
-
-    setItinIds();
-    itinNode = document.querySelector(`[data-id='${itinNodeId}']`);
-    tries--;
-  }
-  return itinNode;
+  await showMoreResults();
+  // pass param to only query for not visited
+  setItinIds(':not([data-visited="true"])');
+  return document.querySelector(`[data-id='${itinNodeId}']`);
 }
 
 function setIdDataset(itinNode, legNodes) {
