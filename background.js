@@ -221,7 +221,7 @@ chrome.runtime.onMessage.addListener(function (message, sender, reply) {
       // but message.departureId is still just departure id.
       const itinsForDeparture = departure.itinIds.flatMap(itinId => allItins[itinId]);
       const itinProviders = itinsForDeparture.map(i => i.provider);
-    
+
       if (itinProviders.includes("expedia")) {
         const getExpediaReturns = () => {
           // expedia shows return options for roundtrip after you select a departure.
@@ -435,14 +435,14 @@ const expedia_cabin_map = {
   first: "first",
 };
 function expediaTabUrl(formData) {
-  /** 
+  /**
    * URLs from search results page, different from a search from the homepage
    * oneway
    * https://www.expedia.com/Flights-Search?mode=search&trip=oneway&leg1=from:SFO,to:JFK,departure:12/20/2020TANYT&leg2=from:JFK,to:SFO,departure:12/23/2020TANYT&passengers=adults:1,children:0,infantinlap:N&options=carrier:*,cabinclass:economy,maxhops:1,nopenalty:N&pageId=0
-   * 
+   *
    * roundtrip
    * https://www.expedia.com/Flights-Search?mode=search&trip=roundtrip&leg1=from:SFO,to:JFK,departure:12/20/2020TANYT&leg2=from:JFK,to:SFO,departure:12/25/2020TANYT&passengers=adults:1,children:0,infantinlap:N&options=carrier:*,cabinclass:first,maxhops:1,nopenalty:N&pageId=0
-   * 
+   *
    **/
 
   const { from, to, fromDate, toDate, numPax, cabin, roundtrip } = formData;
@@ -493,7 +493,11 @@ const priceline_cabin_map = {
 };
 function southwestTabURL(formData) {
   const { from, to, fromDate, toDate, numPax, roundtrip } = formData;
-  let url = `https://www.southwest.com/air/booking/select.html?adultPassengersCount=${numPax}&departureDate=${fromDate}&departureTimeOfDay=ALL_DAY&destinationAirportCode=${to}&fareType=USD&int=HOMEQBOMAIR&originationAirportCode=${from}&passengerType=ADULT&reset=true&seniorPassengersCount=0`;
+
+  const fromCaps = from.toUpperCase();
+  const toCaps = to.toUpperCase();
+
+  let url = `https://www.southwest.com/air/booking/select.html?adultPassengersCount=${numPax}&departureDate=${fromDate}&departureTimeOfDay=ALL_DAY&destinationAirportCode=${toCaps}&fareType=USD&int=HOMEQBOMAIR&originationAirportCode=${fromCaps}&passengerType=ADULT&reset=true&seniorPassengersCount=0`;
   if (roundtrip) {
     url += `&returnDate=${toDate}&returnTimeOfDay=ALL_DAY&tripType=roundtrip`;
   } else {
