@@ -3,20 +3,14 @@ Sentry.init({
     "https://d7f3363dd3774a64ad700b4523bcb789@o407795.ingest.sentry.io/5277451",
 });
 
-let rafID = 0;
-let allItins = [];
-let southwestFlights;
-
 chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
   // parse page to get flights, then send background to process and display on new web page.
-  console.info("Received message ", message.event);
   switch (message.event) {
     case "STOP_PARSING":
-      window.cancelAnimationFrame(rafID);
       break;
     case "BEGIN_PARSING":
       const id = window.setInterval(() => {
-        southwestFlights = JSON.parse(
+        const southwestFlights = JSON.parse(
           window.sessionStorage.getItem(
             "AirBookingSearchResultsSearchStore-searchResults-v1"
           )
@@ -49,8 +43,7 @@ function sendFlightsToBackground(southwestFlights) {
   ) {
     // no complete itins
     chrome.runtime.sendMessage({
-      event: "FLIGHT_RESULTS_RECEIVED",
-      flights: [],
+      event: "NO_FLIGHTS_FOUND",
       provider: "southwest",
     });
     return;
@@ -84,7 +77,6 @@ function handleBackToSearchButtonClick() {
 }
 
 function highlightSouthwestItin(selectedDepartureId, selectedReturnId) {
-  window.cancelAnimationFrame(rafID);
   const [departureList, returnList] = document.querySelectorAll(
     ".transition-content.price-matrix--details-area ul"
   );
@@ -127,42 +119,6 @@ function highlightSouthwestItin(selectedDepartureId, selectedReturnId) {
 
 function findMatchingDOMNode(list, target) {
   return list.find((item) => item.dataset.id === target);
-}
-
-function loadSouthwestResults() {
-  let newY = window.innerHeight;
-  let lastTime = 0;
-
-  rafID = window.requestAnimationFrame(parseMoreSouthwest);
-
-  function parseMoreSouthwest(currentTime) {
-    if (allItins.length >= 20) {
-      // arbitrary number
-      window.cancelAnimationFrame(rafID);
-      return;
-    }
-    // every 5 seconds scroll to next viewPort
-    const timeToScroll = Math.max(0, 5000 - (currentTime - lastTime));
-    if (timeToScroll === 0) {
-      window.scroll(0, newY);
-
-      const flights = southwestParser();
-      if (flights.length) {
-        // just running this function to make and set dataset.id
-        // chrome.runtime.sendMessage({
-        //   event: "FLIGHT_RESULTS_RECEIVED",
-        //   flights,
-        // });
-      } else {
-        window.cancelAnimationFrame(rafID);
-      }
-      allItins = allItins.concat(flights);
-      newY = window.scrollY + window.innerHeight;
-      lastTime = currentTime;
-    }
-
-    rafID = window.requestAnimationFrame(parseMoreSouthwest);
-  }
 }
 
 /**
