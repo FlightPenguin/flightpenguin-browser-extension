@@ -144,6 +144,9 @@ chrome.runtime.onMessage.addListener(function (message, sender, reply) {
         extra: formData,
       }));
       break;
+    case "FAILED_SCRAPER":
+      addFailedScraper(message.provider);
+      break;
     case "FLIGHT_RESULTS_RECEIVED":
       if (departureSelected) {
         break;
@@ -299,9 +302,6 @@ chrome.runtime.onMessage.addListener(function (message, sender, reply) {
         });
       }
       break;
-    case "FAILED_SCRAPER":
-      sendMessageToWebpage(message);
-      break;
     case "CALL_BEGIN_PARSE":
       window.setTimeout(() => {
         // need setTimeout here or else message will be missed by new tab.
@@ -316,6 +316,18 @@ chrome.runtime.onMessage.addListener(function (message, sender, reply) {
       break;
   }
 });
+
+function addFailedScraper(provider) {
+  failedProviders.add(provider);
+
+  if (failedProviders.size >= Object.keys(tabIds).length) {
+    sendMessageToWebpage({ event: "FAILED_SCRAPER_CLIENT" });
+    closeWindows();
+  }
+  Sentry.captureException(new Error(`Scraper failed for ${provider}`), {
+    extra: formData
+  });
+}
 
 function sendMessageToWebpage(message) {
   if (!webPageTabId) {
@@ -404,9 +416,7 @@ function openProviderSearchResults(message, windowConfig) {
     }
     chrome.tabs.sendMessage(tabIds[provider], { event: "BEGIN_PARSING", formData: message });
     providersTimeoutIds[provider] = setTimeout(() => {
-      Sentry.captureException(new Error(`Scraper failed for ${provider}`), {
-        extra: formData
-      });
+      addFailedScraper(provider);
     }, 15000);
   });
 }

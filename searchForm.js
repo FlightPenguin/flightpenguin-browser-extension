@@ -151,7 +151,7 @@ chrome.runtime.onMessage.addListener(function (message) {
       document.querySelector(".validation-error").textContent =
         "Sorry, no results were found for those dates and locations.";
       break;
-    case "FAILED_SCRAPER":
+    case "FAILED_SCRAPER_CLIENT":
       setFormReady();
       document.querySelector(".validation-error").textContent =
         "Sorry, something happened, please try searching again.";
