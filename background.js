@@ -7,6 +7,12 @@ Sentry.init({
 import { makeItins, sortFlights, findReturnFlights } from "./dataModels.js";
 import ORIGIN from "./config.js";
 
+
+chrome.runtime.setUninstallURL('https://forms.gle/s1BfyyBQb5qtXr7H6', function () {
+  Sentry.captureMessage('uninstall');
+});
+
+
 chrome.runtime.onInstalled.addListener(function () {
   console.log("Is this thing on?");
 });
