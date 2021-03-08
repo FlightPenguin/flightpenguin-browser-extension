@@ -321,14 +321,20 @@ async function scrapeRedesignUI() {
     try {
       const flight = {};
 
-      const marketingAirline = flightEl.querySelector(
+      let marketingAirline = flightEl.querySelector(
         UI_REDESIGN_SELECTORS.marketingAirline
-      ).textContent;
-      flight.marketingAirline = AirlineMap.getAirlineName(marketingAirline);
-
-      const operatingAirline = flightEl.querySelector(
+      );
+      let operatingAirline = flightEl.querySelector(
         UI_REDESIGN_SELECTORS.operatingAirline
       );
+
+      if (marketingAirline.childNodes.length > 1) {
+        // "Delta"
+        // "• Delta 4164 operated by Skywest DBA Delta Connection"
+        [marketingAirline, operatingAirline] = marketingAirline.childNodes;
+      }
+      flight.marketingAirline = AirlineMap.getAirlineName(marketingAirline.textContent);
+
       if (operatingAirline) {
         [_, flight.operatingAirline] = operatingAirline.textContent.split(
           "operated by "
