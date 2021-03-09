@@ -483,3 +483,15 @@ li,
   width: 108px;
   height: 93px;
 }
+
+.logo-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+.search-form-logo-container {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 10px;
+  margin-right: 270px;
+}

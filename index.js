@@ -74,6 +74,8 @@ const retTimeBarHeaderContainer = document.querySelector(
 const loadingContainer = document.getElementById("loading");
 const formContainer = document.querySelector("form");
 const mainContainer = document.querySelector("main");
+const searchPageLogo = document.getElementById("search-form-logo");
+const resultsPageLogo = document.getElementById("results-logo");
 
 window.addEventListener("popstate", function () {
   // use browser back button to undo departure flight selection for roundtrip
@@ -195,6 +197,8 @@ chrome.runtime.onMessage.addListener(function (message) {
 
       mainContainer.style.display = null;
       formContainer.style.display = "none";
+      searchPageLogo.style.display = "none";
+      resultsPageLogo.style.display = null;
 
       if (departureList.length) {
         departureFlights = departureList;
@@ -371,7 +375,7 @@ function createHeader(formData) {
 
   const headerNode = document.getElementById("header");
 
-  if (headerNode.innerHTML.length) {
+  if (headerNode.children.length > 1) {
     return;
   }
 

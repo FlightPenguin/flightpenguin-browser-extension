@@ -17,6 +17,9 @@
     ></script>
   </head>
   <body>
+    <div class="search-form-logo-container">
+      <img id="search-form-logo" src="./icons/logo.png" height="75" width="227">
+    </div>
     <!-- Form HTML below -->
     <form id="search">
       <fieldset>
@@ -142,7 +145,11 @@
     </form>
     <!-- Flight results HTML below -->
     <main style="display: none">
-      <header id="header"></header>
+      <header id="header">
+        <div class="logo-container">
+          <img id="results-logo" style="display:none;" src="./icons/icon128.png">
+        </div>
+      </header>
       <section class="table-header">
         <h1 class="section-header">Departures</h1>
         <!--sort container here-->

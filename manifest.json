@@ -1,7 +1,7 @@
 {
   "name": "FlightPenguin Browser Extension",
   "version": "1.0",
-  "description": "Best one in town!",
+  "description": "Search flights",
   "background": {
     "page": "background.html",
     "persistent": false
@@ -63,8 +63,8 @@
     "default_title": "FlightPenguin"
   },
   "icons": {
-    "16": "icons/icon16.png",
-    "48": "icons/icon48.png",
+    "16": "icons/icon.png",
+    "48": "icons/icon.png",
    "128": "icons/icon128.png"
   },
   "manifest_version": 2,
