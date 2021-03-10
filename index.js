@@ -17,7 +17,7 @@ let isShowingReturns = false;
 let earliestTakeoffTime = Number.POSITIVE_INFINITY;
 let latestLandingTime = Number.NEGATIVE_INFINITY;
 
-const flightListItemWidth = window.innerWidth < 1418 ? window.innerWidth : 1418;
+const flightListItemWidth = 1418;
 const timeBarContainerWidth = flightListItemWidth - 350 - 1; // if you update this, update CSS too
 
 const GA_TRACKING_ID = "164337457-1";
