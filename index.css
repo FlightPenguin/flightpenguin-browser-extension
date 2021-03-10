@@ -3,6 +3,7 @@
   --flight-list-left-column-width: 350px;
   --result-row-height: 80px;
   --border-radius: 1.2rem;
+  --flightListItemWidth: 1418px;
 }
 html {
   font-size: 16px;
@@ -23,6 +24,9 @@ body {
   display: flex;
   justify-content: center;
   padding: 8px;
+  margin: 0 auto;
+  position: relative;
+  width: var(--flightListItemWidth);
 }
 #header .label {
   font-size: 18px;
