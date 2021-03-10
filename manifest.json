@@ -1,6 +1,6 @@
 {
-  "name": "FlightPenguin Browser Extension",
-  "version": "1.0",
+  "name": "FlightPenguin",
+  "version": "1.0.2",
   "description": "Search flights",
   "background": {
     "page": "background.html",
