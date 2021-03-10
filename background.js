@@ -415,9 +415,6 @@ function openProviderSearchResults(message, windowConfig) {
       beginTime = performance.now();
     }
     chrome.tabs.sendMessage(tabIds[provider], { event: "BEGIN_PARSING", formData: message });
-    providersTimeoutIds[provider] = setTimeout(() => {
-      addFailedScraper(provider);
-    }, 15000);
   });
 }
 

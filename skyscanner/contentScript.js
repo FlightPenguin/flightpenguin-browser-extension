@@ -7,6 +7,7 @@ let searchParams;
 let rafID = 0;
 let isHighlightingItin = false; // to prevent opening modals when trying to highlight a selected itin
 const ITIN_NODE_SELECTOR = "[class*='FlightsTicket_container'] [role='button']";
+let totalNonStop = 0;
 
 chrome.runtime.onMessage.addListener(async function (message) {
   // parse page to get flights, then send background to process and display on new web page.
@@ -182,6 +183,7 @@ async function parseResults() {
       document.querySelectorAll(ITIN_NODE_SELECTOR + ':not([data-visited="true"])')
     );
     if (moreItins.length) {
+      totalNonStop += moreItins.length;
       const flights = parser(moreItins);
       // nonstop flights
       if (flights.length) {
@@ -196,6 +198,11 @@ async function parseResults() {
     if (isAtBottomOfPage()) {
       window.cancelAnimationFrame(rafID);
       window.removeEventListener('scroll', handleScroll);
+
+      if (!totalNonStop && !itinIdQueue.length) {
+        chrome.runtime.sendMessage({event: "NO_FLIGHTS_FOUND", provider: "skyscanner"});
+        return;
+      }
 
       // finally parse flights with stops
       if (itinIdQueue.length) {

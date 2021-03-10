@@ -11,16 +11,7 @@ chrome.runtime.onMessage.addListener(async function (message) {
   console.log("Received message ", message);
   switch (message.event) {
     case "BEGIN_PARSING":
-      try {
-        await loadResults(scrapeRedesignUI, sendDepartures);
-      } catch (e) {
-        console.log(e);
-        chrome.runtime.sendMessage({
-          event: "FAILED_SCRAPER",
-          source: "expedia",
-          description: `${e.name} ${e.message}`,
-        });
-      }
+      loadResults(scrapeRedesignUI, sendDepartures);
       break;
     case "GET_RETURN_FLIGHTS":
       selectedDeparture = message.departure;
@@ -93,7 +84,6 @@ async function loadResults(callback, sendEvent = null, tries = 10) {
       }
     }
   } catch (e) {
-    console.error(e);
     errors.lastError = e;
     await pauseLonger();
     await loadResults(callback, sendEvent, --tries);
@@ -299,7 +289,11 @@ function pauseLonger() {
   });
 }
 function getFlightElements() {
-  let isInitialCall = !document.querySelector(UI_REDESIGN_SELECTORS.flightContainer).dataset.id;
+  const flightElements = document.querySelector(UI_REDESIGN_SELECTORS.flightContainer);
+  if (!flightElements) {
+    return;
+  }
+  let isInitialCall = !flightElements.dataset.id;
   const selector = isInitialCall ? UI_REDESIGN_SELECTORS.flightContainer :
     UI_REDESIGN_SELECTORS.flightContainerSecondPass;
   return Array.from(
@@ -309,6 +303,9 @@ function getFlightElements() {
 async function scrapeRedesignUI() {
   const flightElements = getFlightElements();
 
+  if (!flightElements) {
+    return Promise.reject();
+  }
   if (flightElements.length === 0) {
     throw new Error("Empty results");
   }
