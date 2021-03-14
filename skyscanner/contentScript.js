@@ -524,7 +524,7 @@ function queryLeg(containerNode) {
     const node = containerNode.querySelector(selector);
     if (key === "operatingAirline") {
       if (node) {
-        data.operatingAirline = node.textContent;
+        data.operatingAirline = node.textContent.replace("Operated by", "");
       } else {
         data.operatingAirline = null;
       }

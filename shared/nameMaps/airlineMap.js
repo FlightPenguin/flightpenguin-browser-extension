@@ -59,16 +59,19 @@ const AirlineMap = {
         if (!airlineName || typeof airlineName !== "string") {
             return;
         }
-        const airlineDetails = this.airlineDetailsMap[airlineName.trim()];
+        let formattedAirlineName = airlineName.trim();
+        const airlineDetails = this.airlineDetailsMap[formattedAirlineName];
         if (airlineDetails) {
-            return airlineDetails.display;
+            formattedAirlineName = airlineDetails.display;
         }
-        return airlineName;
+        return formattedAirlineName;
     },
     getAirlineDetails: function (airlineName) {
+        let formattedAirlineName = airlineName.trim();
+
         return (
-            this.airlineDetailsMap[airlineName.trim()] || {
-                display: airlineName,
+            this.airlineDetailsMap[formattedAirlineName] || {
+                display: formattedAirlineName,
                 color: "#DFCCFB",
             }
         );

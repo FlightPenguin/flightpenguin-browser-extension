@@ -36,28 +36,32 @@ function Flight(
   this.fromTimeDetails = getTimeDetails(fromTime);
   this.toTimeDetails = getTimeDetails(toTime);
 
-  const opAirline = AirlineMap.getAirlineName(operatingAirline);
+  let opAirline = operatingAirline ? operatingAirline.replace("Operated by", "").replace("Partially operated by", "") : operatingAirline;
+  opAirline = AirlineMap.getAirlineName(opAirline);
   const markAirline = AirlineMap.getAirlineName(marketingAirline);
 
   // operating airline is what is primarily displayed
   // marketing airline is used to create the id
   if (opAirline) {
-    if (isRegionalAirline(opAirline)) {
+    const isPartiallyOperated = operatingAirline.includes("Partially operated by");
+    if (isRegionalAirline(opAirline) || isPartiallyOperated) {
       // regional airlines don't get the primary airline spot
       // they'll be displayed where we display marketing airlines
       this.operatingAirline = markAirline;
-      this.marketingAirlineText = `Operated by ${opAirline}`;
-    } else if (operatingAirline.includes("Partially operated by")) {
-      this.operatingAirline = markAirline;
-      this.marketingAirlineText = opAirline;
+      if (isPartiallyOperated) {
+        this.marketingAirlineText = operatingAirline;
+      } else {
+        this.marketingAirlineText = `Operated by ${opAirline}`;
+      }
     } else {
-      this.operatingAirline = opAirline.replace("Operated by", "");
+      this.operatingAirline = opAirline;
       this.marketingAirlineText = `Marketed by ${markAirline}`;
     }
   } else {
     // operating and marketing are the same airline
     this.operatingAirline = markAirline;
   }
+  this.operatingAirline = cleanupAirline(this.operatingAirline);
 
   // marketing airline is unique, not operating
   this.id = `${this.fromTime}-${this.toTime}-${markAirline}`;
@@ -66,7 +70,6 @@ function Flight(
   this.layovers = layovers || [];
   this.itinIds = [];
   this.timezoneOffset = this.calculateTimezoneOffset();
-  this.operatingAirline = AirlineMap.getAirlineDetails(this.operatingAirline);
 }
 
 function cleanupAirline(airline) {
