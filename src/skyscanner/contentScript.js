@@ -137,6 +137,9 @@ function highlightItin(selectedDepartureId, selectedReturnId) {
 }
 
 async function showMoreResults() {
+  if (isHighlightingItin) {
+    return;
+  }
   const resultsContainer = document.querySelector(
     "[class^='FlightsDayView_results__']"
   );
@@ -146,12 +149,18 @@ async function showMoreResults() {
     await pause();
     return;
   }
+  if (isHighlightingItin) {
+    return;
+  }
   const seeMoreFlightsButton = Array.from(
     resultsContainer.querySelectorAll("button")
   ).find((el) => el.textContent === "Show more results");
   if (seeMoreFlightsButton) {
     seeMoreFlightsButton.click();
     await pause();
+  }
+  if (isHighlightingItin) {
+    return;
   }
   // we do not want to scroll directly to the bottom of the page
   // the results load when scroll position is within the viewport
@@ -207,6 +216,9 @@ async function parseResults() {
         return;
       }
 
+      if (isHighlightingItin) {
+        return;
+      }
       // finally parse flights with stops
       if (itinIdQueue.length) {
         window.addEventListener('scroll', function parseItinWithStops() {
@@ -427,7 +439,7 @@ async function openItinWithLayoversModal() {
   // else if found itin, break out of scroll, try to scrape detail pane
   // after modal closes, set itin ids
   // pop off next itin id
-  if (!itinIdQueue.length) {
+  if (!itinIdQueue.length || isHighlightingItin) {
     closeModal();
     return;
   }
