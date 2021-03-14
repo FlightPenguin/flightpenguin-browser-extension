@@ -2,6 +2,7 @@ Sentry.init({
   dsn:
     "https://d7f3363dd3774a64ad700b4523bcb789@o407795.ingest.sentry.io/5277451",
 });
+import {standardizeTimeString} from "../shared/helpers.js";
 
 chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
   // parse page to get flights, then send background to process and display on new web page.
@@ -168,10 +169,10 @@ function getIndividualSouthwestLegDetails(flight) {
   if (flight.stopsDetails.length > 1) {
     layovers = flight.stopsDetails.map((stop) => {
       return {
-        fromTime: Helpers.standardizeTimeString(
+        fromTime: standardizeTimeString(
           formatTimeTo12HourClock(stop.departureTime)
         ),
-        toTime: Helpers.standardizeTimeString(
+        toTime: standardizeTimeString(
           formatTimeTo12HourClock(stop.arrivalTime)
         ),
         operatingAirline: "Southwest",
@@ -186,10 +187,10 @@ function getIndividualSouthwestLegDetails(flight) {
     return null;
   }
   return {
-    fromTime: Helpers.standardizeTimeString(
+    fromTime: standardizeTimeString(
       formatTimeTo12HourClock(flight.departureTime)
     ),
-    toTime: Helpers.standardizeTimeString(
+    toTime: standardizeTimeString(
       formatTimeTo12HourClock(flight.arrivalTime)
     ),
     marketingAirline: "Southwest",
@@ -249,8 +250,8 @@ function querySouthwestDOM(htmlCollection) {
   return Array.from(htmlCollection).map((containerNode) => {
     const data = {};
     const [fromTimeRaw, toTimeRaw] = Array.from(containerNode.querySelectorAll(".time--value")).map(el => el.textContent);
-    const fromTime = Helpers.standardizeTimeString(fromTimeRaw).replace("departs", "");
-    const toTime = Helpers.standardizeTimeString(toTimeRaw).replace("arrives", "");
+    const fromTime = standardizeTimeString(fromTimeRaw).replace("departs", "");
+    const toTime = standardizeTimeString(toTimeRaw).replace("arrives", "");
     data.fromTime = fromTime;
     data.toTime = toTime;
     data.airline = "Southwest";

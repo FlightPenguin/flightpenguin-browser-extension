@@ -8,8 +8,8 @@
       href="https://fonts.googleapis.com/css2?family=Nunito:wght@200;300;400;700&display=swap"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="./searchForm.css" />
-    <link rel="stylesheet" href="./index.css" />
+    <link rel="stylesheet" href="src/css/searchForm.css" />
+    <link rel="stylesheet" href="src/css/index.css" />
     <script
       src="https://browser.sentry-cdn.com/5.17.0/bundle.min.js"
       integrity="sha384-lowBFC6YTkvMIWPORr7+TERnCkZdo5ab00oH5NkFLeQUAmBTLGwJpFjF6djuxJ/5"
@@ -18,7 +18,7 @@
   </head>
   <body>
     <div class="search-form-logo-container">
-      <img id="search-form-logo" src="./icons/logo.png" height="75" width="227">
+      <img id="search-form-logo" src="src/icons/logo.png" height="75" width="227">
     </div>
     <!-- Form HTML below -->
     <form id="search">
@@ -141,7 +141,7 @@
     <main style="display: none">
       <header id="header">
         <div class="logo-container">
-          <img id="results-logo" style="display:none;" src="./icons/icon128.png">
+          <img id="results-logo" style="display:none;" src="./src/icons/icon128.png">
         </div>
       </header>
       <section class="table-header">
@@ -219,7 +219,7 @@
         </path>
       </svg>
     </div>
-    <script type="module" src="./searchForm.js"></script>
-    <script type="module" src="./index.js"></script>
+    <script src="./dist/searchForm.bundle.js"></script>
+    <script src="./dist/index.bundle.js"></script>
   </body>
 </html>

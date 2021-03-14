@@ -2,6 +2,9 @@ Sentry.init({
   dsn:
     "https://d7f3363dd3774a64ad700b4523bcb789@o407795.ingest.sentry.io/5277451",
 });
+import AirlineMap from "../shared/nameMaps/airlineMap.js";
+import {standardizeTimeString} from "../shared/helpers.js";
+
 const errors = {};
 let selectedDeparture;
 let isHighlightingItin;
@@ -257,7 +260,7 @@ function queryLeg(containerNode, selectors) {
           additionalDays = "+1";
         }
       } else if (["fromTime", "toTime"].includes(key)) {
-        data[key] = Helpers.standardizeTimeString(node.textContent);
+        data[key] = standardizeTimeString(node.textContent);
       } else {
         data[key] = node.textContent.trim();
       }
@@ -357,8 +360,8 @@ async function scrapeRedesignUI() {
         summary.querySelectorAll("span:not(.is-visually-hidden)")
       ).map((el) => el.textContent);
       [flight.fromTime, flight.toTime] = times.split(" - ");
-      flight.fromTime = Helpers.standardizeTimeString(flight.fromTime);
-      flight.toTime = Helpers.standardizeTimeString(flight.toTime);
+      flight.fromTime = standardizeTimeString(flight.fromTime);
+      flight.toTime = standardizeTimeString(flight.toTime);
 
       let toTimeAddDays = summary.textContent.match(/(\+\d)/);
       if (toTimeAddDays) {
@@ -415,8 +418,8 @@ async function scrapeRedesignUI() {
             arrivalText.indexOf(")")
           );
           stops.push({
-            fromTime: Helpers.standardizeTimeString(fromTime),
-            toTime: Helpers.standardizeTimeString(toTime),
+            fromTime: standardizeTimeString(fromTime),
+            toTime: standardizeTimeString(toTime),
             from,
             to,
             operatingAirline,
@@ -490,8 +493,8 @@ function setIdDataset(selectedDepartureId = "") {
       idValues.push(selectedDepartureId);
     }
     idValues.push(
-      Helpers.standardizeTimeString(fromTime),
-      Helpers.standardizeTimeString(toTime),
+      standardizeTimeString(fromTime),
+      standardizeTimeString(toTime),
       marketingAirline.trim()
     )
     const id = idValues.join("-");

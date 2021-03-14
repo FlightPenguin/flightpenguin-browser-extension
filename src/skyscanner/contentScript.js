@@ -3,6 +3,9 @@ Sentry.init({
     "https://d7f3363dd3774a64ad700b4523bcb789@o407795.ingest.sentry.io/5277451",
 });
 
+import AirlineMap from "../shared/nameMaps/airlineMap.js";
+import {standardizeTimeString} from "../shared/helpers.js";
+
 let searchParams;
 let rafID = 0;
 let isHighlightingItin = false; // to prevent opening modals when trying to highlight a selected itin
@@ -334,8 +337,8 @@ function getLayovers(legNode) {
     let [fromTime, duration, toTime] = segments[i].querySelector(
       "[class^='Times_segmentTimes']"
     ).children;
-    fromTime = Helpers.standardizeTimeString(fromTime.textContent);
-    toTime = Helpers.standardizeTimeString(toTime.textContent);
+    fromTime = standardizeTimeString(fromTime.textContent);
+    toTime = standardizeTimeString(toTime.textContent);
 
     const locations = {};
     for (let [key, selector] of Object.entries(layoverFromToSelectors)) {
@@ -503,8 +506,8 @@ function setIdDataset(itinNode, legNodes) {
     }
     marketingAirline = AirlineMap.getAirlineName(marketingAirline);
     dataForId.push(
-      Helpers.standardizeTimeString(fromTime.textContent),
-      Helpers.standardizeTimeString(toTime.textContent),
+      standardizeTimeString(fromTime.textContent),
+      standardizeTimeString(toTime.textContent),
       marketingAirline.trim()
     );
   }
@@ -550,7 +553,7 @@ function queryLeg(containerNode) {
       }
       data.layovers = layovers;
     } else if (["fromTime", "toTime"].includes(key)) {
-      data[key] = Helpers.standardizeTimeString(node.textContent);
+      data[key] = standardizeTimeString(node.textContent);
     } else {
       data[key] = node.textContent.trim();
     }

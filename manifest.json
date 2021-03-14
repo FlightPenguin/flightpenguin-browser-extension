@@ -3,53 +3,47 @@
   "version": "1.0.2",
   "description": "Search flights",
   "background": {
-    "page": "background.html",
+    "page": "src/background.html",
     "persistent": false
   },
   "content_scripts": [
     {
       "matches": ["https://www.southwest.com/air/booking/select.html?*"],
-      "css": ["shared/contentScript.css"],
+      "css": ["src/shared/contentScript.css"],
       "js": [
-        "shared/sentry.js",
-        "shared/helpers.js",
-        "southwest/contentScript.js"
+        "src/shared/sentry.js",
+        "dist/southwest.bundle.js"
       ]
     },
     {
       "matches": ["https://www.southwest.com/air/booking/index.html?*"],
       "js": [
-        "shared/sentry.js",
-        "southwest/emptySearchContentScript.js"
+        "src/shared/sentry.js",
+        "src/southwest/emptySearchContentScript.js"
       ]
     },
     {
       "matches": ["https://www.skyscanner.com/transport/flights/*"],
-      "css": ["shared/contentScript.css"],
+      "css": ["src/shared/contentScript.css"],
       "js": [
-        "shared/nameMaps/airlineMapGlobalScope.js",
-        "shared/sentry.js",
-        "shared/helpers.js",
-        "skyscanner/contentScript.js"
+        "src/shared/sentry.js",
+        "dist/skyscanner.bundle.js"
       ]
     },
     {
       "matches": ["https://www.skyscanner.com/transport/flights-from/*"],
-      "css": ["shared/contentScript.css"],
+      "css": ["src/shared/contentScript.css"],
       "js": [
-        "shared/sentry.js",
-        "shared/helpers.js",
-        "skyscanner/emptySearchContentScript.js"
+        "src/shared/sentry.js",
+        "src/skyscanner/emptySearchContentScript.js"
       ]
     },
     {
       "matches": ["https://www.expedia.com/Flights-Search?*"],
-      "css": ["shared/contentScript.css"],
+      "css": ["src/shared/contentScript.css"],
       "js": [
-        "shared/nameMaps/airlineMapGlobalScope.js",
-        "shared/sentry.js",
-        "shared/helpers.js",
-        "expedia/contentScript.js"
+        "src/shared/sentry.js",
+        "dist/expedia.bundle.js"
       ]
     }
   ],
@@ -63,9 +57,9 @@
     "default_title": "FlightPenguin"
   },
   "icons": {
-    "16": "icons/icon.png",
-    "48": "icons/icon.png",
-   "128": "icons/icon128.png"
+    "16": "src/icons/icon.png",
+    "48": "src/icons/icon.png",
+   "128": "src/icons/icon128.png"
   },
   "manifest_version": 2,
   "content_security_policy": "script-src 'self' https://www.google-analytics.com https://browser.sentry-cdn.com https://www.gstatic.com; object-src 'self'",
