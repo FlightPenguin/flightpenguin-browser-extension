@@ -362,23 +362,6 @@ function getLayovers(legNode) {
     );
     const operatingAirline = airlines[i].querySelector("[class*='OperatedBy']");
 
-    if (!toTime.match(/(\+\d)/)) {
-      if (
-        i > 0 &&
-        layovers[layovers.length - 1].toTime.includes("pm") &&
-        toTime.includes("am")
-      ) {
-        // layover went to the next day
-        toTime += "+1";
-      } else if (
-        fromTime.toLowerCase().includes("pm") &&
-        toTime.toLowerCase().includes("am")
-      ) {
-        // overnight flight
-        toTime += "+1";
-      }
-    }
-
     layovers.push({
       fromTime,
       duration: duration.textContent,

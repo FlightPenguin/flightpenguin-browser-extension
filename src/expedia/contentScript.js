@@ -4,6 +4,7 @@ Sentry.init({
 });
 import AirlineMap from "../shared/nameMaps/airlineMap.js";
 import {standardizeTimeString} from "../shared/helpers.js";
+import { isOvernight } from "../utilityFunctions.js";
 
 const errors = {};
 let selectedDeparture;
@@ -187,100 +188,6 @@ function findMatchingDOMNode(list, target) {
   return list.find((item) => item.dataset.id === target);
 }
 
-function getLayovers(legNode) {
-  const layovers = [];
-  const segmentsContainer = Array.from(
-    legNode.querySelectorAll(flightDetails.segmentContainer)
-  );
-  for (let i = 0; i < segmentsContainer.length; i++) {
-    const segmentContainer = segmentsContainer[i];
-    // Handle case when Expedia layover runs overnight (not marked overnight in UI)
-    const layover = queryLeg(segmentContainer, layoverSelectors);
-    if (
-      i > 0 &&
-      layover.fromTime.includes("am") &&
-      layovers[layovers.length - 1].toTime.includes("pm")
-    ) {
-      layover.fromTime += "+1";
-    }
-    layovers.push(layover);
-  }
-  return layovers;
-}
-
-function queryLeg(containerNode, selectors) {
-  const data = {};
-  let additionalDays;
-
-  Object.entries(selectors).forEach(([key, selector]) => {
-    try {
-      const node = containerNode.querySelector(selector);
-      if (key === "operatingAirline") {
-        if (node) {
-          if (node.dataset.testAirlineName) {
-            data.operatingAirline = node.dataset.testAirlineName;
-          } else {
-            const airlines = node.textContent.trim().split(/\d+/);
-            if (
-              airlines.length > 1 &&
-              airlines[airlines.length - 1].includes("operated by")
-            ) {
-              data.operatingAirline = airlines[airlines.length - 1].replace(
-                "operated by",
-                ""
-              );
-            } else {
-              data.operatingAirline = node.textContent;
-            }
-          }
-        } else {
-          data.operatingAirline = null;
-        }
-      } else if (key === "marketingAirline") {
-        const marketingAirline = node.textContent.trim();
-        data[key] = AirlineMap.getAirlineName(marketingAirline);
-      } else if (key === "layovers") {
-        let layovers = [];
-        if (!node) {
-          const layoverButton = containerNode.querySelector(
-            flightDetails.clickToOpenDetails
-          );
-          layoverButton.click();
-          layovers = getLayovers(containerNode);
-        }
-        data.layovers = layovers;
-      } else if (["from", "to"].includes(key)) {
-        data[key] = node.textContent.match(/\(([A-Z]*)\)/)[1];
-      } else if (key === "toTimeAddDays") {
-        if (node) {
-          additionalDays = node.textContent.trim();
-        }
-      } else if (key === "layoverToTimeAddDays") {
-        if (node) {
-          additionalDays = "+1";
-        }
-      } else if (["fromTime", "toTime"].includes(key)) {
-        data[key] = standardizeTimeString(node.textContent);
-      } else {
-        data[key] = node.textContent.trim();
-      }
-    } catch (e) {
-      if (errors[e.name]) {
-        return;
-      }
-      chrome.runtime.sendMessage({
-        event: "FAILED_SCRAPER",
-        source: "expedia",
-        description: `${e.name} ${e.message}`,
-      });
-      errors[e.name] = true;
-    }
-  });
-  if (additionalDays) {
-    data.toTime += additionalDays;
-  }
-  return data;
-}
 function pause() {
   return new Promise((resolve) => {
     setTimeout(resolve, 500);
@@ -391,6 +298,10 @@ async function scrapeRedesignUI() {
             departureText.indexOf("(") + 1,
             departureText.indexOf(")")
           );
+          if (from.length !== 3) {
+            // no airport, just listing the city
+            from = departureText.split("-")[1];
+          }
           let duration = details.children[0].textContent.replace("flight", "");
           // for operating might have to find index of first digit, then consider string before it if extra string after flight num
           let operatingAirline = details.children[1].textContent
@@ -400,15 +311,12 @@ async function scrapeRedesignUI() {
           let arrivalText = arrival.textContent;
           let toTime = arrivalText.split(" - ")[0].toLowerCase().replace('arrival', '');
           if (
-            i > 0 &&
-            stops[stops.length - 1].toTime.includes("pm") &&
-            toTime.includes("am")
+            i > 0 && isOvernight(stops[stops.length - 1].toTime, fromTime)
           ) {
             // layover went to the next day
-            toTime += "+1";
+            fromTime += "+1";
           } else if (
-            fromTime.toLowerCase().includes("pm") &&
-            toTime.toLowerCase().includes("am")
+            isOvernight(fromTime, toTime)
           ) {
             // overnight flight
             toTime += "+1";
@@ -417,6 +325,10 @@ async function scrapeRedesignUI() {
             arrivalText.indexOf("(") + 1,
             arrivalText.indexOf(")")
           );
+          if (to.length !== 3) {
+            // no airport, just listing the city
+            to = arrivalText.split("-")[1];
+          }
           stops.push({
             fromTime: standardizeTimeString(fromTime),
             toTime: standardizeTimeString(toTime),

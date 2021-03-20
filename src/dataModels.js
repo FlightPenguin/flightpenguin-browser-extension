@@ -118,8 +118,13 @@ Flight.prototype.calculateTimezoneOffset = function () {
     for (let i = 0; i < layovers.length - 1; i++) {
       const previousFlight = layovers[i];
       const nextFlight = layovers[i + 1];
-      const { toTime: fromTime, to: from } = previousFlight;
-      const { fromTime: toTime, from: to } = nextFlight;
+      let { toTime: fromTime, to: from } = previousFlight;
+      let { fromTime: toTime, from: to } = nextFlight;
+
+      // could do this check here
+      // if (isOvernight(fromTime, toTime)) {
+      //   toTime += "+1";
+      // }
 
       layoversWithStops.push(previousFlight);
       layoversWithStops.push({

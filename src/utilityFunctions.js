@@ -122,6 +122,13 @@ function getTimeDetails(time) {
   };
 }
 
+function isOvernight(fromTime, toTime) {
+  const MINUTES_PER_DAY = 24 * 60;
+  // return convert12HourTimeToMinutes(fromTime) + convertDurationToMinutes(duration) > MINUTES_PER_DAY;
+  // if fromTime + duration > 24 hour
+  return fromTime.toLowerCase().includes('pm') && toTime.toLowerCase().includes('am');
+}
+
 export {
   convertTimeTo24HourClock,
   convertMinutesTo12HourClock,
@@ -130,4 +137,5 @@ export {
   convertDurationToMinutes,
   getTimeDetails,
   addTimezoneOffset,
+  isOvernight,
 };

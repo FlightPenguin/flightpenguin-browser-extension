@@ -671,10 +671,11 @@ function createTimeBarRow(flight, increment, startHourOffset) {
     if (!isLayoverStop) {
       if (startsNextDay) {
         const [_, startDays] = startsNextDay[0].split("+");
+        // 24 hours in a day but we need to lay out the time bar on the correct day
         startDayOffset += Number(startDays);
+        // the rightmost position of the time bar aka when the flight arrives, will be relative to when the flight departed
         endDayOffset = startDayOffset;
       }
-
       if (endsNextDay) {
         const [_, endDays] = endsNextDay[0].split("+");
         endDayOffset += Number(endDays);
