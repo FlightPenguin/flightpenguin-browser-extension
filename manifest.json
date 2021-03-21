@@ -1,6 +1,6 @@
 {
   "name": "FlightPenguin",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Search flights",
   "background": {
     "page": "src/background.html",
