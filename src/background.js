@@ -107,8 +107,12 @@ chrome.runtime.onMessage.addListener(function (message, sender, reply) {
 
   switch (message.event) {
     case "FORM_DATA_RECEIVED":
-      formData = message.formData;
-      openProviderSearchResults(message.formData, message.windowConfig);
+      formData = {
+        ...message.formData,
+        from: message.formData.from.toUpperCase(),
+        to: message.formData.to.toUpperCase(),
+      };
+      openProviderSearchResults(formData, message.windowConfig);
       // clean up incase user is doing a different search
       closeWindows();
       tabIds = {};
