@@ -1,4 +1,6 @@
 const path = require('path');
+const TerserPlugin = require("terser-webpack-plugin");
+
 // const HtmlWebpackPlugin = require("html-webpack-plugin");
 // const CopyPlugin = require("copy-webpack-plugin");
 // const baseManifest = require("./chrome/manifest.json");
@@ -18,8 +20,21 @@ module.exports = {
       path: path.resolve(__dirname, 'dist'),
     },
     resolve: {
-        extensions: ["*", ".js"]
-      },
+      extensions: ["*", ".js"]
+    },
+    optimization: {
+      minimize: true,
+      minimizer: [new TerserPlugin({
+        terserOptions: {
+          compress: {
+            drop_console: true,
+          },
+          format: {
+            comments: false,
+          },
+        },
+      })],
+    },
     //   plugins: [
     //     new HtmlWebpackPlugin({
     //       title: "FlightPenguin",
@@ -45,21 +60,21 @@ module.exports = {
     //       }
     //     })
     //   ],
-      module: {
-        rules: [
-          {
-            test: /\.js$/,
-            exclude: /node_modules/,
-            use: ["babel-loader"]
-          },
-          {
-            test: /\.css$/,
-            use: ["style-loader", "css-loader"]
-          },
-          {
-            test: /\.(png|svg|jpg|gif)$/,
-            use: ["file-loader"]
-          }
-        ]
-      }
+    module: {
+      rules: [
+        {
+          test: /\.js$/,
+          exclude: /node_modules/,
+          use: ["babel-loader"]
+        },
+        {
+          test: /\.css$/,
+          use: ["style-loader", "css-loader"]
+        },
+        {
+          test: /\.(png|svg|jpg|gif)$/,
+          use: ["file-loader"]
+        }
+      ]
+    }
   };
