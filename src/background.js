@@ -386,14 +386,14 @@ function createNewWebPage(message) {
   );
 }
 
-function openProviderSearchResults(message, windowConfig) {
+async function openProviderSearchResults(formData, windowConfig) {
   /**
    * Open tabs to provider search results pages.
    * Keep track of opened tab ids to send messages to them.
    *
-   * message schema:
-    from: "sfo"
-    to: "lax"
+   * formData schema:
+    from: "SFO"
+    to: "LAX"
     southwest: false
     priceline: true
     cabin: "Economy"
@@ -401,7 +401,7 @@ function openProviderSearchResults(message, windowConfig) {
     toDate: "2020-03-25"
     numPax: 2
      */
-  const { searchByPoints } = message;
+  const { searchByPoints } = formData;
 
   let providers = [];
 
@@ -411,27 +411,31 @@ function openProviderSearchResults(message, windowConfig) {
     providers = ["southwest", "skyscanner", "expedia"];
   }
 
-  providers.forEach(async (provider) => {
-    const url = providerURLBaseMap[provider](message);
+  const promises = providers.map((provider) => {
+    const url = providerURLBaseMap[provider](formData);
     // Open url in a new window. Not a new tab because we can't read results from inactive tabs (browser powers down inactive tabs).
-    await createWindow(url, provider, windowConfig);
-    if (!beginTime) {
-      beginTime = performance.now();
-    }
-    chrome.tabs.sendMessage(tabIds[provider], { event: "BEGIN_PARSING", formData: message });
+    return createWindow(url, provider, windowConfig, formData);
   });
+
+  await Promise.all(promises);
+  // update again for chrome on windows, to move results window to foreground
+  chrome.windows.update(webPageWindowId, {focused: true});
 }
 
-function createWindow(url, provider, windowConfig) {
+function createWindow(url, provider, windowConfig, formData) {
   const { height, width, left, top } = windowConfig;
   return new Promise((resolve) => {
     chrome.windows.create({ url, focused: false, height, width, left, top }, async (win) => {
       tabIds[provider] = win.tabs[0].id;
       windowIds[provider] = win.id;
-      chrome.windows.update(win.id, {focused: false});
+
       chrome.tabs.onUpdated.addListener(function listener(tabId, info) {
         if (info.status === "complete" && tabId === tabIds[provider]) {
           chrome.tabs.onUpdated.removeListener(listener);
+          chrome.tabs.sendMessage(tabIds[provider], { event: "BEGIN_PARSING", formData });
+          if (!beginTime) {
+            beginTime = performance.now();
+          }
           resolve();
         }
       });
