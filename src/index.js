@@ -421,9 +421,9 @@ function handleFlightSelection(e) {
   selectedNode.tabIndex = "-1";
   selections.push(selectedNode);
 
-  loadingContainer.style.display = null;
-
   if (selections.length === 1 && search.roundtrip) {
+    loadingContainer.style.display = null;
+
     // This page loads in a new tab so there is no history.
     // Add blank history state so the user can click browser back button.
     // The back button will be used to undo user actions, like flight selection.

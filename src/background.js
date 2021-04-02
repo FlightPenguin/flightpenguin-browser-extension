@@ -349,6 +349,10 @@ function sendMessageToWebpage(message) {
 }
 
 function highlightTab(itin) {
+  if (formData.searchByPoints) {
+    chrome.tabs.create({ url: 'https://flightpenguin.com/flight-penguin-points' });
+    return;
+  }
   chrome.windows.update(windowIds[itin.provider], { focused: true }, (win) => {
     chrome.tabs.sendMessage(itin.tabId, {
       event: "HIGHLIGHT_FLIGHT",
