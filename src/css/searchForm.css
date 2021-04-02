@@ -1,5 +1,6 @@
 :root {
-  --form-teal-color: #11ffcf;
+  --form-color: #DDD;
+  --search-button-color: #EA973E;
 }
 
 form#search {
@@ -11,8 +12,9 @@ form#search {
   padding: 15px 20px;
   box-shadow: 1px 1px 9px 4px #ddd;
   margin: 0 auto;
+  border: solid 2px;
   border-radius: var(--border-radius);
-  background-color: var(--form-teal-color);
+  background-color: var(--form-color);
 }
 
 fieldset {
@@ -43,7 +45,7 @@ form button {
   font-weight: bold;
   position: relative;
   cursor: pointer;
-
+  background-color: var(--form-color);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -57,7 +59,7 @@ form .button-container {
   opacity: 0;
   border-radius: 8px;
   transform: scale(0.9);
-  background-color: var(--form-teal-color);
+  background-color: var(--search-button-color);
   transition-property: transform, opacity;
   transition-duration: 150ms;
   transition-timing-function: ease-in-out;
