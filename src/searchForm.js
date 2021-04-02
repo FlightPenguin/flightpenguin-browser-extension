@@ -83,21 +83,9 @@ fromDateInput.addEventListener("change", (e) => {
 
 document.querySelector("form#search").addEventListener("submit", (e) => {
   e.preventDefault();
-
-  // if (
-  //   e.target.price.checked &&
-  //   !e.target.southwest.checked &&
-  //   !e.target.skyscanner.checked
-  // ) {
-  //   const node = document.querySelector(".validation-error");
-  //   node.textContent = "Please select a provider to continue";
-  //   return;
-  // }
   const formData = {
     from: e.target.from.value,
     to: e.target.to.value,
-    southwest: e.target.price.checked ? true : false,
-    skyscanner: e.target.price.checked ? true : false,
     cabin: e.target.cabin.value,
     fromDate: e.target.fromDate.value,
     toDate: e.target.toDate ? e.target.toDate.value : "",
