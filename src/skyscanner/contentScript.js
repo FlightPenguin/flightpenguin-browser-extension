@@ -66,16 +66,35 @@ chrome.runtime.onMessage.addListener(async function (message) {
   }
 });
 
+/**
+ * This is if Skyscanner shows the non-stop calendar view to help
+ * you pick dates which will return non-stop flights.
+ */
+function clickThroughCalendarNonStopView() {
+  const buttons = Array.from(document.getElementsByTagName('button'));
+  const dateButtons = Array.from(document.querySelectorAll('[role="button"]'));
+
+  [formData.fromDate, formData.toDate].forEach((da) => {
+    let d = new Date(`${da}T00:00:00`).toDateString().split(' ');
+    let ds = d[0] + d[2] + d[1];
+    console.log(ds);
+    dateButtons.find(b => b.textContent.includes(ds)).click();
+  });
+  buttons.find(b => b.textContent === "Continue").click();
+  chrome.runtime.sendMessage({ event: "SEND_BEGIN_EVENT", provider: "skyscanner" });
+}
+
 function loadResults() {
-  let timeoutId;
+  let mutationTimeoutId;
+
   const observer = new MutationObserver(function (mutationlist, observer) {
     // should observe results container after added to DOM
     // and disconnect this observer
-    clearTimeout(timeoutId);
-    timeoutId = setTimeout(() => {
+    mutationTimeoutId = setTimeout(() => {
+      clearTimeout(mutationTimeoutId);
       parseResults();
-      observer.disconnect();
-    }, 5000);
+    }, 3000);
+    observer.disconnect();
     return;
   });
   observer.observe(document.body, { childList: true, subtree: true });
