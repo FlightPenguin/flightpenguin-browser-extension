@@ -422,7 +422,7 @@ const UI_REDESIGN_SELECTORS = {
   flightContainerSecondPass: "[data-test-id='offer-listing']:not([data-id])",
   marketingAirline: "[data-test-id='flight-operated']",
   operatingAirline: "[data-test-id='operated-by']",
-  modalFare: "footer section span",
+  modalFare: "[data-test-id='fare-types-carousel'] .uitk-lockup-price",
   listFare: ".uitk-price-subtext",
   clickToOpenModal: "[data-test-id='select-link']",
   modalViewContainerDesktop:
