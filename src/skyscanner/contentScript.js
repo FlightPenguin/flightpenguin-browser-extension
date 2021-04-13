@@ -6,7 +6,7 @@ Sentry.init({
 import AirlineMap from "../shared/nameMaps/airlineMap.js";
 import {standardizeTimeString} from "../shared/helpers.js";
 
-let searchParams;
+let formData;
 let rafID = 0;
 let isHighlightingItin = false; // to prevent opening modals when trying to highlight a selected itin
 const ITIN_NODE_SELECTOR = "[class*='FlightsTicket_container'] [role='button']";
@@ -17,7 +17,7 @@ chrome.runtime.onMessage.addListener(async function (message) {
   console.info("Received message ", message.event);
   switch (message.event) {
     case "BEGIN_PARSING":
-      searchParams = message.formData;
+      formData = message.formData;
       if (document.body.textContent.includes("Page not found")) {
         chrome.runtime.sendMessage({
           event: "NO_FLIGHTS_FOUND",
@@ -49,7 +49,7 @@ chrome.runtime.onMessage.addListener(async function (message) {
             if (tries < 1) {
               Sentry.captureException(e, {
                 tags: {component: 'highlightSkyscannerItin'},
-                extra: searchParams
+                extra: formData
               });
               clearInterval(intId);
               return;
@@ -178,6 +178,10 @@ function pause() {
  * So to get more results we need to scroll down the page.
  */
 async function parseResults() {
+  if (!document.querySelector(ITIN_NODE_SELECTOR)) {
+    clickThroughCalendarNonStopView();
+    return;
+  }
   if (isHighlightingItin) {
     return;
   }
