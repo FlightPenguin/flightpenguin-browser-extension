@@ -166,23 +166,29 @@ function convertDurationMinutesToString(duration) {
 
 function getIndividualSouthwestLegDetails(flight) {
   let layovers = [];
-  if (flight.stopsDetails.length > 1) {
-    layovers = flight.stopsDetails.map((stop) => {
-      return {
-        fromTime: standardizeTimeString(
-          formatTimeTo12HourClock(stop.departureTime)
-        ),
-        toTime: standardizeTimeString(
-          formatTimeTo12HourClock(stop.arrivalTime)
-        ),
-        operatingAirline: "Southwest",
-        duration: convertDurationMinutesToString(stop.legDuration),
-        from: stop.originationAirportCode,
-        to: stop.destinationAirportCode,
-      };
+  if (flight.segments.length > 1) {
+    layovers = flight.segments.map(({stopsDetails}) => {
+      return stopsDetails.map((stop) => {
+        return {
+          fromTime: standardizeTimeString(
+            formatTimeTo12HourClock(stop.departureTime)
+          ),
+          toTime: standardizeTimeString(
+            formatTimeTo12HourClock(stop.arrivalTime)
+          ),
+          operatingAirline: "Southwest",
+          duration: convertDurationMinutesToString(stop.legDuration),
+          from: stop.originationAirportCode,
+          to: stop.destinationAirportCode,
+        };
+      });
     });
+    layovers = layovers.flat();
   }
-  const fare = flight.fareProducts.ADULT.WGA.fare.totalFare;
+  let fare = flight.fareProducts?.ADULT?.WGA?.fare?.totalFare?.value;
+  fare = fare || flight.fareProducts?.ADULT?.ANY?.fare?.totalFare?.value;
+  fare = fare || flight.fareProducts?.ADULT?.BUS?.fare?.totalFare?.value;
+
   if (!fare) {
     return null;
   }
@@ -195,7 +201,7 @@ function getIndividualSouthwestLegDetails(flight) {
     ),
     marketingAirline: "Southwest",
     layovers,
-    fare: Math.round(Number(fare.value)),
+    fare: Math.round(Number(fare)),
     currency: "$",
     duration: convertDurationMinutesToString(flight.totalDuration),
     from: flight.originationAirportCode,
