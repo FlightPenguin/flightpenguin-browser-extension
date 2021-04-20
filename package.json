@@ -4,7 +4,7 @@
   "description": "flight search",
   "private": true,
   "scripts": {
-    "build": "webpack"
+    "build": "webpack --mode=production"
   },
   "repository": {
     "type": "git",

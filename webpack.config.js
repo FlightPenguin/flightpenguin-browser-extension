@@ -7,6 +7,7 @@ const TerserPlugin = require("terser-webpack-plugin");
 // const WebpackExtensionManifestPlugin = require("webpack-extension-manifest-plugin");
 
 module.exports = {
+    mode: 'production',
     entry: {
         background: './src/background.js',
         index: './src/index.js',
