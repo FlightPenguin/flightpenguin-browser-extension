@@ -1,0 +1,31 @@
+{
+  "parserOptions": {
+    "ecmaVersion": 2020,
+    "sourceType": "module"
+  },
+  "env": {
+    "browser": true,
+    "node": true,
+    "es6": true
+  },
+  "plugins": ["simple-import-sort"],
+  "settings": {
+    "react": {
+      "version": "detect"
+    }
+  },
+  "extends": [
+    "eslint:recommended",
+    "plugin:prettier/recommended",
+    "plugin:sonarjs/recommended",
+    "plugin:unicorn/recommended",
+    "plugin:security/recommended"
+  ],
+  "rules": {
+    "no-console": "error",
+    "simple-import-sort/imports": "error",
+    "unicorn/filename-case": "off",
+    "unicorn/no-null": "off",
+    "unicorn/prefer-node-protocol": "off"
+  }
+}
