@@ -1,8 +1,7 @@
 Sentry.init({
-  dsn:
-    "https://d7f3363dd3774a64ad700b4523bcb789@o407795.ingest.sentry.io/5277451",
+  dsn: "https://d7f3363dd3774a64ad700b4523bcb789@o407795.ingest.sentry.io/5277451",
 });
-import {standardizeTimeString} from "../shared/helpers.js";
+import { standardizeTimeString } from "../shared/helpers.js";
 
 chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
   // parse page to get flights, then send background to process and display on new web page.
@@ -12,9 +11,7 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
     case "BEGIN_PARSING":
       const id = window.setInterval(() => {
         const southwestFlights = JSON.parse(
-          window.sessionStorage.getItem(
-            "AirBookingSearchResultsSearchStore-searchResults-v1"
-          )
+          window.sessionStorage.getItem("AirBookingSearchResultsSearchStore-searchResults-v1"),
         );
         if (southwestFlights && southwestFlights.searchResults) {
           sendFlightsToBackground(southwestFlights);
@@ -38,10 +35,7 @@ function sendFlightsToBackground(southwestFlights) {
     return;
   }
   let [departures, returns] = southwestFlights.searchResults.airProducts;
-  if (
-    (departures && !departures.details.length) ||
-    (returns && !returns.details.length)
-  ) {
+  if ((departures && departures.details.length === 0) || (returns && returns.details.length === 0)) {
     // no complete itins
     chrome.runtime.sendMessage({
       event: "NO_FLIGHTS_FOUND",
@@ -65,7 +59,7 @@ function addBackToSearchButton() {
   }
   const button = document.createElement("button");
   button.id = "back-to-search";
-  button.innerText = "Return to FlightPenguin";
+  button.textContent = "Return to FlightPenguin";
   button.title = "Click to return to FlightPenguin and keep browsing.";
   button.addEventListener("click", handleBackToSearchButtonClick);
   document.body.append(button);
@@ -78,43 +72,36 @@ function handleBackToSearchButtonClick() {
 }
 
 function highlightSouthwestItin(selectedDepartureId, selectedReturnId) {
-  const [departureList, returnList] = document.querySelectorAll(
-    ".transition-content.price-matrix--details-area ul"
-  );
+  const [departureList, returnList] = document.querySelectorAll(".transition-content.price-matrix--details-area ul");
   // reset prior selections
-  const prevDepSelection = departureList.querySelector(
-    "[data-selected='true']"
-  );
-  if (prevDepSelection) {
-    prevDepSelection.dataset.selected = "false";
-    prevDepSelection.style.border = "";
+  const previousDepSelection = departureList.querySelector("[data-selected='true']");
+  if (previousDepSelection) {
+    previousDepSelection.dataset.selected = "false";
+    previousDepSelection.style.border = "";
   }
   // highlight selections
-  const dep = findMatchingDOMNode(
-    Array.from(departureList.children),
-    selectedDepartureId
-  );
-  dep.style.border = "10px solid tomato";
+  const dep = findMatchingDOMNode([...departureList.children], selectedDepartureId);
+  dep.style.border = "10px solid #f2554b";
+  dep.style.borderRadius = "6px";
+  dep.style.paddingTop = "25px";
+  dep.style.paddingBottom = "25px";
   dep.dataset.selected = "true";
 
   if (selectedReturnId) {
-    const prevRetSelection = returnList.querySelector("[data-selected='true']");
-    if (prevRetSelection) {
-      prevRetSelection.dataset.selected = "false";
-      prevRetSelection.style.border = "";
+    const previousReturnValueSelection = returnList.querySelector("[data-selected='true']");
+    if (previousReturnValueSelection) {
+      previousReturnValueSelection.dataset.selected = "false";
+      previousReturnValueSelection.style.border = "";
     }
-    const ret = findMatchingDOMNode(
-      Array.from(returnList.children),
-      selectedReturnId
-    );
-    ret.style.border = "10px solid tomato";
-    ret.dataset.selected = "true";
+    const returnValue = findMatchingDOMNode([...returnList.children], selectedReturnId);
+    returnValue.style.border = "10px solid #f2554b";
+    returnValue.style.borderRadius = "6px";
+    returnValue.style.paddingTop = "25px";
+    returnValue.style.paddingBottom = "25px";
+    returnValue.dataset.selected = "true";
   }
 
-  const yPosition =
-    window.pageYOffset +
-    dep.getBoundingClientRect().top -
-    window.innerHeight / 2;
+  const yPosition = window.pageYOffset + dep.getBoundingClientRect().top - window.innerHeight / 2;
   window.scroll(0, yPosition);
 }
 
@@ -127,14 +114,12 @@ function findMatchingDOMNode(list, target) {
  * The id will be used to find the flight to highlight.
  */
 function southwestParser() {
-  const [departures, returns] = document.querySelectorAll(
-    ".transition-content.price-matrix--details-area ul"
-  );
+  const [departures, returns] = document.querySelectorAll(".transition-content.price-matrix--details-area ul");
   const depNodes = departures.querySelectorAll("li:not([data-visited='true']");
   let flights = [];
   if (returns) {
-    const retNodes = returns.querySelectorAll("li:not([data-visited='true']");
-    flights = flights.concat(querySouthwestDOM(retNodes));
+    const returnValueNodes = returns.querySelectorAll("li:not([data-visited='true']");
+    flights = flights.concat(querySouthwestDOM(returnValueNodes));
   }
 
   // If we want to go down the regex path (unfinished)...
@@ -167,15 +152,11 @@ function convertDurationMinutesToString(duration) {
 function getIndividualSouthwestLegDetails(flight) {
   let layovers = [];
   if (flight.segments.length > 1) {
-    layovers = flight.segments.map(({stopsDetails}) => {
+    layovers = flight.segments.map(({ stopsDetails }) => {
       return stopsDetails.map((stop) => {
         return {
-          fromTime: standardizeTimeString(
-            formatTimeTo12HourClock(stop.departureTime)
-          ),
-          toTime: standardizeTimeString(
-            formatTimeTo12HourClock(stop.arrivalTime)
-          ),
+          fromTime: standardizeTimeString(formatTimeTo12HourClock(stop.departureTime)),
+          toTime: standardizeTimeString(formatTimeTo12HourClock(stop.arrivalTime)),
           operatingAirline: "Southwest",
           duration: convertDurationMinutesToString(stop.legDuration),
           from: stop.originationAirportCode,
@@ -193,12 +174,8 @@ function getIndividualSouthwestLegDetails(flight) {
     return null;
   }
   return {
-    fromTime: standardizeTimeString(
-      formatTimeTo12HourClock(flight.departureTime)
-    ),
-    toTime: standardizeTimeString(
-      formatTimeTo12HourClock(flight.arrivalTime)
-    ),
+    fromTime: standardizeTimeString(formatTimeTo12HourClock(flight.departureTime)),
+    toTime: standardizeTimeString(formatTimeTo12HourClock(flight.arrivalTime)),
     marketingAirline: "Southwest",
     layovers,
     fare: Math.round(Number(fare)),
@@ -211,7 +188,7 @@ function getIndividualSouthwestLegDetails(flight) {
 
 function createSouthwestItins(departureList, returnList) {
   const itins = [];
-  if (returnList.length) {
+  if (returnList.length > 0) {
     // roundtrip
     for (let departureItem of departureList) {
       const departureFlight = getIndividualSouthwestLegDetails(departureItem);
@@ -253,17 +230,17 @@ function createSouthwestItins(departureList, returnList) {
 }
 
 function querySouthwestDOM(htmlCollection) {
-  return Array.from(htmlCollection).map((containerNode) => {
+  return [...htmlCollection].map((containerNode) => {
     const data = {};
-    const [fromTimeRaw, toTimeRaw] = Array.from(containerNode.querySelectorAll(".time--value")).map(el => el.textContent);
+    const [fromTimeRaw, toTimeRaw] = [...containerNode.querySelectorAll(".time--value")].map(
+      (element) => element.textContent,
+    );
     const fromTime = standardizeTimeString(fromTimeRaw).replace("departs", "");
     const toTime = standardizeTimeString(toTimeRaw).replace("arrives", "");
     data.fromTime = fromTime;
     data.toTime = toTime;
     data.airline = "Southwest";
-    containerNode.dataset.id = [data.fromTime, data.toTime, data.airline].join(
-      "-"
-    );
+    containerNode.dataset.id = [data.fromTime, data.toTime, data.airline].join("-");
     return data;
   });
 }

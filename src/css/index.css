@@ -39,20 +39,20 @@ body {
   margin-right: 30px;
   border-radius: 45px;
   padding: 10px 15px;
-  border-radius: 37px;
-  color: navy;
+  color: var(--gray-1);
   text-align: center;
   white-space: nowrap;
 }
 .sort-container {
   margin-bottom: 15px;
+  border-radius: var(--rounding);
 }
 .sort-container:before {
   font-weight: 700;
   letter-spacing: -0.08px;
   content: "Sort by:";
   position: absolute;
-  color: navy;
+  color: var(--gray-1);
   padding: 16px 48px;
   font-size: 20px;
   pointer-events: none;
@@ -60,7 +60,7 @@ body {
 }
 .sort-container select {
   display: block;
-  background-color: #11ffcf1c;
+  background-color: var(--gray-6);
   padding-left: 8rem;
   cursor: pointer;
   box-sizing: border-box;
@@ -70,12 +70,12 @@ body {
   font-family: "Nunito";
   border-radius: 8px;
   font-weight: 700;
-  color: navy;
-  border-color: #ddd;
+  color: var(--gray-1);
+  border-color: var(--secondary);
   font-size: 20px;
 }
 .sort-container select:hover {
-  background-color: #11ffcfab;
+  border-color: var(--secondary-dark);
 }
 .departures-header {
   display: flex;
@@ -182,7 +182,7 @@ li.flight-list-item:nth-child(even) {
   padding-left: 10px;
   white-space: normal;
 }
-.primary-airline {
+.secondary-airline {
   font-size: 22px;
   width: 200px;
   text-overflow: ellipsis;

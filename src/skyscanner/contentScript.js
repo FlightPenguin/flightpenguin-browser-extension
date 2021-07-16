@@ -1,10 +1,9 @@
 Sentry.init({
-  dsn:
-    "https://d7f3363dd3774a64ad700b4523bcb789@o407795.ingest.sentry.io/5277451",
+  dsn: "https://d7f3363dd3774a64ad700b4523bcb789@o407795.ingest.sentry.io/5277451",
 });
 
+import { standardizeTimeString } from "../shared/helpers.js";
 import AirlineMap from "../shared/nameMaps/airlineMap.js";
-import {standardizeTimeString} from "../shared/helpers.js";
 
 let formData;
 let rafID = 0;
@@ -14,7 +13,7 @@ let totalNonStop = 0;
 
 chrome.runtime.onMessage.addListener(async function (message) {
   // parse page to get flights, then send background to process and display on new web page.
-  console.info("Received message ", message.event);
+  console.info("Received message", message.event);
   switch (message.event) {
     case "BEGIN_PARSING":
       formData = message.formData;
@@ -45,11 +44,11 @@ chrome.runtime.onMessage.addListener(async function (message) {
             highlightItin(selectedDepartureId, selectedReturnId);
             clearInterval(intId);
             addBackToSearchButton();
-          } catch (e) {
+          } catch (error) {
             if (tries < 1) {
-              Sentry.captureException(e, {
-                tags: {component: 'highlightSkyscannerItin'},
-                extra: formData
+              Sentry.captureException(error, {
+                tags: { component: "highlightSkyscannerItin" },
+                extra: formData,
               });
               clearInterval(intId);
               return;
@@ -71,16 +70,16 @@ chrome.runtime.onMessage.addListener(async function (message) {
  * you pick dates which will return non-stop flights.
  */
 function clickThroughCalendarNonStopView() {
-  const buttons = Array.from(document.getElementsByTagName('button'));
-  const dateButtons = Array.from(document.querySelectorAll('[role="button"]'));
+  const buttons = [...document.querySelectorAll("button")];
+  const dateButtons = [...document.querySelectorAll('[role="button"]')];
 
-  [formData.fromDate, formData.toDate].forEach((da) => {
-    let d = new Date(`${da}T00:00:00`).toDateString().split(' ');
+  for (const da of [formData.fromDate, formData.toDate]) {
+    let d = new Date(`${da}T00:00:00`).toDateString().split(" ");
     let ds = d[0] + d[2] + d[1];
     console.log(ds);
-    dateButtons.find(b => b.textContent.includes(ds)).click();
-  });
-  buttons.find(b => b.textContent === "Continue").click();
+    dateButtons.find((b) => b.textContent.includes(ds)).click();
+  }
+  buttons.find((b) => b.textContent === "Continue").click();
   chrome.runtime.sendMessage({ event: "SEND_BEGIN_EVENT", provider: "skyscanner" });
 }
 
@@ -101,7 +100,7 @@ function loadResults() {
 }
 
 function closePopups() {
-  let closeButton = document.getElementById("close");
+  let closeButton = document.querySelector("#close");
   // sometimes a campaign modal shows, close it so we can highlight
   if (closeButton) {
     closeButton.click();
@@ -118,7 +117,7 @@ function addBackToSearchButton() {
   }
   const button = document.createElement("button");
   button.id = "back-to-search";
-  button.innerText = "Return to FlightPenguin";
+  button.textContent = "Return to FlightPenguin";
   button.title = "Click to return to FlightPenguin and keep browsing.";
   button.addEventListener("click", handleBackToSearchButtonClick);
   document.body.append(button);
@@ -134,24 +133,22 @@ function handleBackToSearchButtonClick() {
 
 function highlightItin(selectedDepartureId, selectedReturnId) {
   // reset prior selection
-  const prevSelection = document.querySelector(
-    `${ITIN_NODE_SELECTOR}[data-selected='true']`
-  );
-  if (prevSelection) {
-    prevSelection.dataset.selected = "false";
-    prevSelection.style.border = "";
+  const previousSelection = document.querySelector(`${ITIN_NODE_SELECTOR}[data-selected='true']`);
+  if (previousSelection) {
+    previousSelection.dataset.selected = "false";
+    previousSelection.style.border = "";
   }
   let idToSearchFor = selectedDepartureId;
   if (selectedReturnId) {
     idToSearchFor += `-${selectedReturnId}`;
   }
   const itinNode = document.querySelector(`[data-id="${idToSearchFor}"]`);
-  itinNode.style.border = "10px solid tomato";
+  itinNode.style.border = "10px solid #f2554b";
+  itinNode.style.borderRadius = "6px";
+  itinNode.style.paddingTop = "25px";
+  itinNode.style.paddingBottom = "25px";
   itinNode.dataset.selected = "true";
-  const yPosition =
-    window.pageYOffset +
-    itinNode.getBoundingClientRect().top -
-    window.innerHeight / 2;
+  const yPosition = window.pageYOffset + itinNode.getBoundingClientRect().top - window.innerHeight / 2;
   window.scroll(0, yPosition);
 }
 
@@ -159,9 +156,7 @@ async function showMoreResults() {
   if (isHighlightingItin) {
     return;
   }
-  const resultsContainer = document.querySelector(
-    "[class^='FlightsDayView_results__']"
-  );
+  const resultsContainer = document.querySelector("[class^='FlightsDayView_results__']");
 
   if (!resultsContainer) {
     closeModal();
@@ -171,9 +166,9 @@ async function showMoreResults() {
   if (isHighlightingItin) {
     return;
   }
-  const seeMoreFlightsButton = Array.from(
-    resultsContainer.querySelectorAll("button")
-  ).find((el) => el.textContent === "Show more results");
+  const seeMoreFlightsButton = [...resultsContainer.querySelectorAll("button")].find(
+    (element) => element.textContent === "Show more results",
+  );
   if (seeMoreFlightsButton) {
     seeMoreFlightsButton.click();
     await pause();
@@ -208,20 +203,18 @@ async function parseResults() {
   let lastTime = 0;
   let rafID;
 
-  window.addEventListener('scroll', function handleScroll() {
+  window.addEventListener("scroll", function handleScroll() {
     if (isHighlightingItin) {
       window.cancelAnimationFrame(rafID);
-      window.removeEventListener('scroll', handleScroll);
+      window.removeEventListener("scroll", handleScroll);
       return;
     }
-    let moreItins = Array.from(
-      document.querySelectorAll(ITIN_NODE_SELECTOR + ':not([data-visited="true"])')
-    );
-    if (moreItins.length) {
+    let moreItins = [...document.querySelectorAll(ITIN_NODE_SELECTOR + ':not([data-visited="true"])')];
+    if (moreItins.length > 0) {
       totalNonStop += moreItins.length;
       const flights = parser(moreItins);
       // nonstop flights
-      if (flights.length) {
+      if (flights.length > 0) {
         chrome.runtime.sendMessage({
           event: "FLIGHT_RESULTS_RECEIVED",
           flights,
@@ -232,10 +225,10 @@ async function parseResults() {
 
     if (isAtBottomOfPage()) {
       window.cancelAnimationFrame(rafID);
-      window.removeEventListener('scroll', handleScroll);
+      window.removeEventListener("scroll", handleScroll);
 
-      if (!totalNonStop && !itinIdQueue.length) {
-        chrome.runtime.sendMessage({event: "NO_FLIGHTS_FOUND", provider: "skyscanner"});
+      if (!totalNonStop && itinIdQueue.length === 0) {
+        chrome.runtime.sendMessage({ event: "NO_FLIGHTS_FOUND", provider: "skyscanner" });
         return;
       }
 
@@ -243,14 +236,14 @@ async function parseResults() {
         return;
       }
       // finally parse flights with stops
-      if (itinIdQueue.length) {
-        window.addEventListener('scroll', function parseItinWithStops() {
+      if (itinIdQueue.length > 0) {
+        window.addEventListener("scroll", function parseItinWithStops() {
           if (window.pageYOffset === 0) {
             openItinWithLayoversModal();
-            window.removeEventListener('scroll', parseItinWithStops);
+            window.removeEventListener("scroll", parseItinWithStops);
           }
         });
-        window.scroll(0,0);
+        window.scroll(0, 0);
       }
     }
   });
@@ -270,24 +263,19 @@ async function parseResults() {
 }
 
 function isAtBottomOfPage() {
-  return (window.innerHeight + window.pageYOffset) >= document.body.offsetHeight - 2;
+  return window.innerHeight + window.pageYOffset >= document.body.offsetHeight - 2;
 }
 
 function setItinIds(notSeenSelector = "") {
-  let moreItins = Array.from(
-    document.querySelectorAll(ITIN_NODE_SELECTOR + notSeenSelector)
-  );
+  let moreItins = [...document.querySelectorAll(ITIN_NODE_SELECTOR + notSeenSelector)];
 
-  for (let i = 0; i < moreItins.length; i++) {
-    const itin = moreItins[i];
-    const legNodes = Array.from(
-      itin.querySelectorAll("[class^='LegDetails_container']")
-    );
+  for (const itin of moreItins) {
+    const legNodes = [...itin.querySelectorAll("[class^='LegDetails_container']")];
     setIdDataset(itin, legNodes);
-    itin.dataset.visited = 'true';
+    itin.dataset.visited = "true";
   }
-  if (!moreItins.length) {
-    console.log('did not set itin ids')
+  if (moreItins.length === 0) {
+    console.log("did not set itin ids");
   }
 }
 
@@ -319,14 +307,12 @@ function parser(itinNodes = []) {
     let fare;
     try {
       fare = itinNode.querySelector(fareSelector.resultsView).textContent.trim();
-    } catch (e) {
+    } catch {
       // one of those itins that say for example "See Southwest for prices"
       return null;
     }
     const hasLayovers = /\d stop/.test(itinNode.textContent);
-    const legNodes = Array.from(
-      itinNode.querySelectorAll("[class^='LegDetails_container']")
-    );
+    const legNodes = [...itinNode.querySelectorAll("[class^='LegDetails_container']")];
     const id = setIdDataset(itinNode, legNodes);
     // check if price is lower than what was previously seen
     if (seenItinIds[id] && seenItinIds[id] === fare) {
@@ -358,40 +344,28 @@ function parser(itinNodes = []) {
 }
 
 function getLayovers(legNode) {
-  const layoversNode = legNode.querySelector(
-    "[class^='LegSegmentSummary_container']"
-  );
-  const airlines = Array.from(
-    layoversNode.querySelectorAll("[class^='AirlineLogoTitle_container']")
-  );
-  const segments = Array.from(
-    layoversNode.querySelectorAll("[class^='LegSegmentDetails_container']")
-  );
+  const layoversNode = legNode.querySelector("[class^='LegSegmentSummary_container']");
+  const airlines = [...layoversNode.querySelectorAll("[class^='AirlineLogoTitle_container']")];
+  const segments = [...layoversNode.querySelectorAll("[class^='LegSegmentDetails_container']")];
   const layovers = [];
-  for (let i = 0; i < segments.length; i++) {
-    let [fromTime, duration, toTime] = segments[i].querySelector(
-      "[class^='Times_segmentTimes']"
-    ).children;
+  for (const [index, segment] of segments.entries()) {
+    let [fromTime, duration, toTime] = segment.querySelector("[class^='Times_segmentTimes']").children;
     fromTime = standardizeTimeString(fromTime.textContent);
     toTime = standardizeTimeString(toTime.textContent);
 
     const locations = {};
     for (let [key, selector] of Object.entries(layoverFromToSelectors)) {
-      const locationNode = segments[i].querySelector(selector);
+      const locationNode = segment.querySelector(selector);
       locations[key] = locationNode.textContent.split(/\s/)[0];
     }
-    const marketingAirline = airlines[i].querySelector(
-      "[class^='LogoImage_container']"
-    );
-    const operatingAirline = airlines[i].querySelector("[class*='OperatedBy']");
+    const marketingAirline = airlines[index].querySelector("[class^='LogoImage_container']");
+    const operatingAirline = airlines[index].querySelector("[class*='OperatedBy']");
 
     layovers.push({
       fromTime,
       duration: duration.textContent,
       toTime,
-      operatingAirline: operatingAirline.textContent
-        .toLowerCase()
-        .includes("operated")
+      operatingAirline: operatingAirline.textContent.toLowerCase().includes("operated")
         ? operatingAirline.textContent
         : marketingAirline.textContent,
       ...locations,
@@ -401,18 +375,14 @@ function getLayovers(legNode) {
 }
 
 function closeModal() {
-  const button = document.querySelector(
-    "[class*='DetailsPanelHeader_navigationBar'] button[label='back']"
-  );
+  const button = document.querySelector("[class*='DetailsPanelHeader_navigationBar'] button[label='back']");
   if (button) {
     button.click();
   }
 }
 
 function parseItin(containerNode) {
-  const legNodes = Array.from(
-    containerNode.querySelectorAll("[class^='Itinerary_leg']")
-  );
+  const legNodes = [...containerNode.querySelectorAll("[class^='Itinerary_leg']")];
   const [departureFlight, returnFlight] = parseLegs(legNodes);
 
   let fareNode = containerNode.querySelector(fareSelector.detailView);
@@ -422,18 +392,17 @@ function parseItin(containerNode) {
   let fare;
   try {
     fare = fareNode.textContent.trim().split("$")[1];
-  } catch (e) {
+  } catch {
     // still loading
     return;
   }
 
-  const itin = {
+  return {
     departureFlight,
     returnFlight,
     fare,
     currency: "$",
   };
-  return itin;
 }
 
 const MODAL_VIEW_SELECTOR = "[class*='FlightsBookingPanel_content']";
@@ -445,15 +414,15 @@ async function openItinWithLayoversModal() {
   // else if found itin, break out of scroll, try to scrape detail pane
   // after modal closes, set itin ids
   // pop off next itin id
-  if (!itinIdQueue.length || isHighlightingItin) {
+  if (itinIdQueue.length === 0 || isHighlightingItin) {
     closeModal();
     return;
   }
-  window.scroll(0,0);
+  window.scroll(0, 0);
   const itinId = itinIdQueue.shift();
-  window.addEventListener('scroll', async function handleScroll() {
+  window.addEventListener("scroll", async function handleScroll() {
     if (isHighlightingItin) {
-      window.removeEventListener('scroll', handleScroll);
+      window.removeEventListener("scroll", handleScroll);
       return;
     }
     // if at bottom or found itin
@@ -461,10 +430,10 @@ async function openItinWithLayoversModal() {
     const foundItinNode = await findItinById(itinId);
     if (foundItinNode) {
       scrapeItinDetailPane(foundItinNode);
-      window.removeEventListener('scroll', handleScroll);
+      window.removeEventListener("scroll", handleScroll);
     } else if (isAtBottomOfPage()) {
       openItinWithLayoversModal();
-      window.removeEventListener('scroll', handleScroll);
+      window.removeEventListener("scroll", handleScroll);
     }
   });
 
@@ -509,24 +478,16 @@ async function findItinById(itinNodeId) {
 function setIdDataset(itinNode, legNodes) {
   let dataForId = [];
   for (let legNode of legNodes) {
-    const [fromTime, toTime] = legNode.querySelectorAll(
-      "[class*='LegInfo_routePartialTime']"
-    );
-    const marketingAirlinesNode = legNode.querySelector(
-      SELECTORS.marketingAirline
-    );
-    const logo = legNode.getElementsByTagName("img")[0];
+    const [fromTime, toTime] = legNode.querySelectorAll("[class*='LegInfo_routePartialTime']");
+    const marketingAirlinesNode = legNode.querySelector(SELECTORS.marketingAirline);
+    const logo = legNode.querySelectorAll("img")[0];
     let marketingAirline = "";
-    if (logo) {
-      marketingAirline = logo.alt;
-    } else {
-      marketingAirline = marketingAirlinesNode.textContent;
-    }
+    marketingAirline = logo ? logo.alt : marketingAirlinesNode.textContent;
     marketingAirline = AirlineMap.getAirlineName(marketingAirline);
     dataForId.push(
       standardizeTimeString(fromTime.textContent),
       standardizeTimeString(toTime.textContent),
-      marketingAirline.trim()
+      marketingAirline.trim(),
     );
   }
   const id = dataForId.join("-");
@@ -547,34 +508,38 @@ function parseLegs(legNodes) {
 function queryLeg(containerNode) {
   const data = {};
 
-  Object.entries(SELECTORS).forEach(([key, selector]) => {
+  for (const [key, selector] of Object.entries(SELECTORS)) {
     // try {
     const node = containerNode.querySelector(selector);
-    if (key === "operatingAirline") {
-      if (node) {
-        data.operatingAirline = node.textContent.replace("Operated by", "");
-      } else {
-        data.operatingAirline = null;
+    switch (key) {
+      case "operatingAirline": {
+        data.operatingAirline = node ? node.textContent.replace("Operated by", "") : null;
+
+        break;
       }
-    } else if (key === "marketingAirline") {
-      const logo = node.querySelector("img");
-      if (logo) {
-        data.marketingAirline = logo.alt;
-      } else {
-        data.marketingAirline = node.textContent.trim();
+      case "marketingAirline": {
+        const logo = node.querySelector("img");
+        data.marketingAirline = logo ? logo.alt : node.textContent.trim();
+
+        break;
       }
-    } else if (key === "layovers") {
-      let layovers = [];
-      if (!node.textContent.toLowerCase().includes("non")) {
-        node.click();
-        layovers = getLayovers(containerNode);
+      case "layovers": {
+        let layovers = [];
+        if (!node.textContent.toLowerCase().includes("non")) {
+          node.click();
+          layovers = getLayovers(containerNode);
+        }
+        data.layovers = layovers;
+
+        break;
       }
-      data.layovers = layovers;
-    } else if (["fromTime", "toTime"].includes(key)) {
-      data[key] = standardizeTimeString(node.textContent);
-    } else {
-      data[key] = node.textContent.trim();
+      default:
+        if (["fromTime", "toTime"].includes(key)) {
+          data[key] = standardizeTimeString(node.textContent);
+        } else {
+          data[key] = node.textContent.trim();
+        }
     }
-  });
+  }
   return data;
 }
