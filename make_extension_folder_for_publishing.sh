@@ -49,7 +49,7 @@ if [[ ! ${VERSION} =~ ^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$ ]]; then
   exit 3
 fi
 
-VERSION_COUNT=$(grep -c '"version": "1.0.5",' manifest.json)
+VERSION_COUNT=$(grep -c "\"version\": \"${VERSION}\"," manifest.json)
 if [ ${VERSION_COUNT} -ne 1 ]; then
   echo "ERROR: Update manifest file to match version ${VERSION}"
   exit 4
