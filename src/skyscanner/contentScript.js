@@ -251,7 +251,7 @@ async function parseResults() {
   rafID = window.requestAnimationFrame(showMoreFlights);
 
   async function showMoreFlights(now) {
-    const shouldScroll = now - lastTime >= 1000;
+    const shouldScroll = now - lastTime >= 350;
 
     if (!lastTime || shouldScroll) {
       await showMoreResults();
