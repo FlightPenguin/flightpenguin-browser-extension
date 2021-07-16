@@ -1,0 +1,58 @@
+:root {
+  --font-family-display: "PT Serif", sans-serif;
+  --font-family-body: "PT Sans", sans-serif;
+
+  --font-size-S: 16px;
+  --font-size-M: 19px;
+  --font-size-L: 23px;
+  --font-size-XL: 28px;
+  --font-size-XXL: 34px;
+  --font-size-XXXL: 38px;
+
+  --rounding: 6px;
+
+  --sunken: inset 0 0 4px 0 rgba(0, 0, 0, 0.25);
+  --raised-1: 0px 1px 2px rgba(0, 0, 0, 0.25);
+  --raised-2: 0px 1px 4px rgba(0, 0, 0, 0.35);
+
+  --transition: 0.05s ease-out;
+
+  --primary: #F7941D;
+  --primary-rgb: rgb(247,148,29);
+  --primary-dark: #D37E18;
+  --primary-dark-rgb: rgb(211,126,24);
+  --primary-light: #FBCF9B;
+  --primary-light-rgb: rgb(251,207,155);
+  --secondary: #705BF8;
+  --secondary-rgb: rgb(112,91,248);
+  --secondary-dark: #705BF8;
+  --secondary-dark-rgb: rgb(112,91,248);
+  --secondary-light: #A79AFA;
+  --secondary-light-rgb: rgb(167,154,250);
+  --tertiary: #01053f;
+  --tertiary-rgb: rgb(1,5,63);
+  --red: #cc2828;
+  --red-rgb: rgb(204,40,40);
+  --red-light: #f2554b;
+  --red-light-rgb: rgb(242,85,75);
+  --red-bg: #ffdedc;
+  --red-bg-rgb: rgb(255,222,220);
+  --green: #4d8f0b;
+  --green-rgb: rgb(77,143,11);
+  --green-light: #79c765;
+  --green-light-rgb: rgb(121,199,101);
+  --green-bg: #e6fcd0;
+  --green-bg-rgb: rgb(230,252,208);
+  --gray-1: #222222;
+  --gray-1-rgb: rgb(34,34,34);
+  --gray-2: #575757;
+  --gray-2-rgb: rgb(87,87,87);
+  --gray-3: #828282;
+  --gray-3-rgb: rgb(130,130,130);
+  --gray-4: #bdbdbd;
+  --gray-4-rgb: rgb(189,189,189);
+  --gray-5: #ebebeb;
+  --gray-5-rgb: rgb(235,235,235);
+  --gray-6: #fbfbfb;
+  --gray-6-rgb: rgb(251,251,251);
+}

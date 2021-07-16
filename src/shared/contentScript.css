@@ -1,19 +1,41 @@
 #back-to-search {
+  --background: #705BF8;
+  --hover: #A79AFA;
+  --shadow-color: #705BF8;
+  --color: #fbfbfb;
+  border-radius: 6px; !important
   cursor: pointer;
+  font-family: inherit;
+  font-size: inherit;
+  font-weight: bold;
+  padding: 13px 17px;
+  text-decoration: none !important;
   position: fixed;
   top: 0px;
   right: 0px;
-  padding: 15px 10px;
-  background: white;
-  color: #3c4257;
-  background-color: #11ffcf;
-  border: 2px solid #3c4257;
-  font-weight: bold;
-  font-size: 20px;
+  color: var(--color) !important;
+  background-color: var(--background) !important;
   animation: 2s shake;
-  border-radius: 4px;
   z-index: 1000000;
+  text-align: center;
+  box-shadow: 0 1px 2px rgba(var(--shadow-color), 0.3);
+  transition: background 0.05s ease-out, color 0.05s ease-out;
 }
+#back-to-search:hover,
+#back-to-search:focus {
+  background-color: var(--hover) !important;
+}
+#back-to-search:hover::after,
+#back-to-search:focus::after {
+  opacity: 0.4;
+}
+#back-to-search:active {
+  box-shadow: none;
+}
+#back-to-search:active::after {
+  opacity: 0;
+}
+
 @keyframes shake {
   0% {
     transform: translate(1px, 1px) rotate(0deg);

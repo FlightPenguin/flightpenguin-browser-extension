@@ -1,9 +1,8 @@
 Sentry.init({
-  dsn:
-    "https://d7f3363dd3774a64ad700b4523bcb789@o407795.ingest.sentry.io/5277451",
+  dsn: "https://d7f3363dd3774a64ad700b4523bcb789@o407795.ingest.sentry.io/5277451",
 });
+import { standardizeTimeString } from "../shared/helpers.js";
 import AirlineMap from "../shared/nameMaps/airlineMap.js";
-import {standardizeTimeString} from "../shared/helpers.js";
 import { isOvernight } from "../utilityFunctions.js";
 
 const errors = {};
@@ -27,17 +26,9 @@ chrome.runtime.onMessage.addListener(async function (message) {
       const { selectedDepartureId, selectedReturnId } = message;
 
       try {
-        highlightItin(
-          selectedDepartureId,
-          selectedReturnId,
-          UI_REDESIGN_SELECTORS.flightContainer
-        );
+        highlightItin(selectedDepartureId, selectedReturnId, UI_REDESIGN_SELECTORS.flightContainer);
       } catch (e) {
-        highlightItin(
-          selectedDepartureId,
-          selectedReturnId,
-          UI_ORIGINAL_SELECTORS.flightContainer
-        );
+        highlightItin(selectedDepartureId, selectedReturnId, UI_ORIGINAL_SELECTORS.flightContainer);
       }
       addBackToSearchButton(selectedReturnId);
       break;
@@ -47,7 +38,7 @@ chrome.runtime.onMessage.addListener(async function (message) {
       history.back();
       await pauseLonger();
       await loadResults(setIdDataset);
-      chrome.runtime.sendMessage({event: "EXPEDIA_READY"})
+      chrome.runtime.sendMessage({ event: "EXPEDIA_READY" });
       break;
     default:
       break;
@@ -60,7 +51,7 @@ async function loadResults(callback, sendEvent = null, tries = 10) {
       if (document.querySelector("[data-test-id='loading-animation']")) {
         await loadResults(callback, sendEvent);
       }
-      Sentry.captureException(errors.lastError, {extra: {callback, sendEvent}});
+      Sentry.captureException(errors.lastError, { extra: { callback, sendEvent } });
 
       chrome.runtime.sendMessage({
         event: "NO_FLIGHTS_FOUND",
@@ -112,16 +103,12 @@ function sendReturns(flights) {
 
 async function getReturnFlights(selectedDepartureId) {
   // click departure
-  let departureNode = document.querySelector(
-    `[data-id='${selectedDepartureId}']`
-  );
+  let departureNode = document.querySelector(`[data-id='${selectedDepartureId}']`);
   if (!departureNode) {
     // may have re-rendered because we are changing departure selection after viewing returns
     // re-render wipes dataset.id
     await loadResults(() => setIdDataset(selectedDepartureId));
-    departureNode = document.querySelector(
-      `[data-id='${selectedDepartureId}']`
-    );
+    departureNode = document.querySelector(`[data-id='${selectedDepartureId}']`);
   }
   departureNode.querySelector("button").click();
 
@@ -160,9 +147,7 @@ function addBackToSearchButton() {
 
 function highlightItin(selectedDepartureId, selectedReturnId, flightContainer) {
   // reset prior selection
-  const prevSelection = document.querySelector(
-    `${flightContainer}[data-selected='true']`
-  );
+  const prevSelection = document.querySelector(`${flightContainer}[data-selected='true']`);
   if (prevSelection) {
     prevSelection.dataset.selected = "false";
     prevSelection.style.border = "";
@@ -171,16 +156,13 @@ function highlightItin(selectedDepartureId, selectedReturnId, flightContainer) {
   if (selectedReturnId) {
     idToSearchFor += `-${selectedReturnId}`;
   }
-  const itinNode = findMatchingDOMNode(
-    Array.from(document.querySelectorAll(flightContainer)),
-    idToSearchFor
-  );
-  itinNode.style.border = "10px solid tomato";
+  const itinNode = findMatchingDOMNode(Array.from(document.querySelectorAll(flightContainer)), idToSearchFor);
+  itinNode.style.border = "10px solid #f2554b";
+  itinNode.style.borderRadius = "6px";
+  itinNode.style.paddingTop = "20px";
+  itinNode.style.paddingBottom = "20px";
   itinNode.dataset.selected = "true";
-  const yPosition =
-    window.pageYOffset +
-    itinNode.getBoundingClientRect().top -
-    window.innerHeight / 2;
+  const yPosition = window.pageYOffset + itinNode.getBoundingClientRect().top - window.innerHeight / 2;
   window.scroll(0, yPosition);
 }
 
@@ -204,11 +186,10 @@ function getFlightElements() {
     return;
   }
   let isInitialCall = !flightElements.dataset.id;
-  const selector = isInitialCall ? UI_REDESIGN_SELECTORS.flightContainer :
-    UI_REDESIGN_SELECTORS.flightContainerSecondPass;
-  return Array.from(
-      document.querySelectorAll(selector)
-  );
+  const selector = isInitialCall
+    ? UI_REDESIGN_SELECTORS.flightContainer
+    : UI_REDESIGN_SELECTORS.flightContainerSecondPass;
+  return Array.from(document.querySelectorAll(selector));
 }
 async function scrapeRedesignUI() {
   const flightElements = getFlightElements();
@@ -228,12 +209,8 @@ async function scrapeRedesignUI() {
     try {
       const flight = {};
 
-      let marketingAirline = flightEl.querySelector(
-        UI_REDESIGN_SELECTORS.marketingAirline
-      );
-      let operatingAirline = flightEl.querySelector(
-        UI_REDESIGN_SELECTORS.operatingAirline
-      );
+      let marketingAirline = flightEl.querySelector(UI_REDESIGN_SELECTORS.marketingAirline);
+      let operatingAirline = flightEl.querySelector(UI_REDESIGN_SELECTORS.operatingAirline);
 
       if (marketingAirline.childNodes.length > 1) {
         // "Delta"
@@ -243,29 +220,21 @@ async function scrapeRedesignUI() {
       flight.marketingAirline = AirlineMap.getAirlineName(marketingAirline.textContent);
 
       if (operatingAirline) {
-        [_, flight.operatingAirline] = operatingAirline.textContent.split(
-          "operated by "
-        );
+        [_, flight.operatingAirline] = operatingAirline.textContent.split("operated by ");
       }
       // open modal
       flightEl.querySelector(UI_REDESIGN_SELECTORS.clickToOpenModal).click();
       await pause();
       // find open modal
-      let modal = document.querySelector(
-        UI_REDESIGN_SELECTORS.modalViewContainerDesktop
-      );
+      let modal = document.querySelector(UI_REDESIGN_SELECTORS.modalViewContainerDesktop);
       if (!modal) {
-        modal = document.querySelector(
-          UI_REDESIGN_SELECTORS.modalViewContainerMobile
-        );
+        modal = document.querySelector(UI_REDESIGN_SELECTORS.modalViewContainerMobile);
       }
-      const summary = modal.querySelector(
-        UI_REDESIGN_SELECTORS.modalViewSummaryContainer
-      );
+      const summary = modal.querySelector(UI_REDESIGN_SELECTORS.modalViewSummaryContainer);
 
-      const [times, duration] = Array.from(
-        summary.querySelectorAll("span:not(.is-visually-hidden)")
-      ).map((el) => el.textContent);
+      const [times, duration] = Array.from(summary.querySelectorAll("span:not(.is-visually-hidden)")).map(
+        (el) => el.textContent,
+      );
       [flight.fromTime, flight.toTime] = times.split(" - ");
       flight.fromTime = standardizeTimeString(flight.fromTime);
       flight.toTime = standardizeTimeString(flight.toTime);
@@ -279,13 +248,9 @@ async function scrapeRedesignUI() {
       const hasStops = !duration.includes("Nonstop");
 
       // click to show leg details
-      modal
-        .querySelector(UI_REDESIGN_SELECTORS.openModalViewLegsContainer)
-        .click();
+      modal.querySelector(UI_REDESIGN_SELECTORS.openModalViewLegsContainer).click();
       // find now rendered leg container
-      const legs = modal.querySelector(
-        UI_REDESIGN_SELECTORS.modalViewLegsContainer
-      ).children;
+      const legs = modal.querySelector(UI_REDESIGN_SELECTORS.modalViewLegsContainer).children;
 
       const stops = [];
 
@@ -293,11 +258,8 @@ async function scrapeRedesignUI() {
         for (let i = 0; i < legs.length; i++) {
           const [departure, details, arrival] = legs[i].children;
           let departureText = departure.textContent;
-          let fromTime = departureText.split(" - ")[0].toLowerCase().replace('departure', '');
-          let from = departureText.slice(
-            departureText.indexOf("(") + 1,
-            departureText.indexOf(")")
-          );
+          let fromTime = departureText.split(" - ")[0].toLowerCase().replace("departure", "");
+          let from = departureText.slice(departureText.indexOf("(") + 1, departureText.indexOf(")"));
           if (from.length !== 3) {
             // no airport, just listing the city
             from = departureText.split("-")[1];
@@ -309,22 +271,15 @@ async function scrapeRedesignUI() {
             .join(" ")
             .trim();
           let arrivalText = arrival.textContent;
-          let toTime = arrivalText.split(" - ")[0].toLowerCase().replace('arrival', '');
-          if (
-            i > 0 && isOvernight(stops[stops.length - 1].toTime, fromTime)
-          ) {
+          let toTime = arrivalText.split(" - ")[0].toLowerCase().replace("arrival", "");
+          if (i > 0 && isOvernight(stops[stops.length - 1].toTime, fromTime)) {
             // layover went to the next day
             fromTime += "+1";
-          } else if (
-            isOvernight(fromTime, toTime)
-          ) {
+          } else if (isOvernight(fromTime, toTime)) {
             // overnight flight
             toTime += "+1";
           }
-          let to = arrivalText.slice(
-            arrivalText.indexOf("(") + 1,
-            arrivalText.indexOf(")")
-          );
+          let to = arrivalText.slice(arrivalText.indexOf("(") + 1, arrivalText.indexOf(")"));
           if (to.length !== 3) {
             // no airport, just listing the city
             to = arrivalText.split("-")[1];
@@ -347,23 +302,14 @@ async function scrapeRedesignUI() {
 
       if (selectedDeparture) {
         // roundtrip
-        flightEl.dataset.id = [
-          selectedDeparture.id,
-          flight.fromTime,
-          flight.toTime,
-          flight.marketingAirline,
-        ].join("-"); // will use this id attribute to find the itin the user selected
+        flightEl.dataset.id = [selectedDeparture.id, flight.fromTime, flight.toTime, flight.marketingAirline].join("-"); // will use this id attribute to find the itin the user selected
 
         departureFlight = selectedDeparture;
         returnFlight = flight;
         fare = flightEl.querySelector(UI_REDESIGN_SELECTORS.listFare).textContent;
       } else {
         // departure selection on roundtrip or oneway
-        flightEl.dataset.id = [
-          flight.fromTime,
-          flight.toTime,
-          flight.marketingAirline,
-        ].join("-"); // will use this id attribute to find the itin the user selected
+        flightEl.dataset.id = [flight.fromTime, flight.toTime, flight.marketingAirline].join("-"); // will use this id attribute to find the itin the user selected
 
         departureFlight = flight;
         fare = modal.querySelector(UI_REDESIGN_SELECTORS.modalFare).textContent;
@@ -387,28 +333,20 @@ function setIdDataset(selectedDepartureId = "") {
   const legNodes = getFlightElements();
 
   for (let legNode of legNodes) {
-    let [fromTime, toTime] = legNode.querySelector(
-      "[data-test-id='departure-time']"
-    ).textContent.split(" - ");
+    let [fromTime, toTime] = legNode.querySelector("[data-test-id='departure-time']").textContent.split(" - ");
     const arrivesNextDay = legNode.querySelector("[data-test-id='arrives-next-day']");
     if (arrivesNextDay) {
       toTime = toTime + arrivesNextDay.textContent.trim();
     }
 
-    let marketingAirline = legNode.querySelector(
-      UI_REDESIGN_SELECTORS.marketingAirline
-    ).textContent;
+    let marketingAirline = legNode.querySelector(UI_REDESIGN_SELECTORS.marketingAirline).textContent;
     marketingAirline = AirlineMap.getAirlineName(marketingAirline);
 
     const idValues = [];
     if (selectedDepartureId) {
       idValues.push(selectedDepartureId);
     }
-    idValues.push(
-      standardizeTimeString(fromTime),
-      standardizeTimeString(toTime),
-      marketingAirline.trim()
-    )
+    idValues.push(standardizeTimeString(fromTime), standardizeTimeString(toTime), marketingAirline.trim());
     const id = idValues.join("-");
     legNode.dataset.id = id;
     if (selectedDepartureId === id) {
@@ -425,8 +363,7 @@ const UI_REDESIGN_SELECTORS = {
   modalFare: "[data-test-id='fare-types-carousel'] .uitk-lockup-price",
   listFare: ".uitk-price-subtext",
   clickToOpenModal: "[data-test-id='select-link']",
-  modalViewContainerDesktop:
-    "[data-test-id='listing-details-and-fares']:not(:empty)",
+  modalViewContainerDesktop: "[data-test-id='listing-details-and-fares']:not(:empty)",
   modalViewContainerMobile: ".uitk-dialog-content",
   openModalViewLegsContainer: "[data-test-id='show-details-link'] button",
   modalViewLegsContainer: "[data-test-id='flight-details']", // then grab children
