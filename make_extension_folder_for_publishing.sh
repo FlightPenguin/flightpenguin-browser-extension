@@ -66,6 +66,7 @@ make_directory "${TARGET_DIR}/src/southwest"
 
 copy_file "./manifest.json" "${TARGET_DIR}"
 copy_file "./index.html" "${TARGET_DIR}"
+copy_file "./src/background.html" "${TARGET_DIR}/src/"
 copy_file "./src/shared/contentScript.css" "${TARGET_DIR}/src/shared"
 copy_file "./src/shared/sentry.js" "${TARGET_DIR}/src/shared"
 copy_file "./src/skyscanner/emptySearchContentScript.js" "${TARGET_DIR}/src/skyscanner/"
