@@ -62,7 +62,7 @@ chrome.browserAction.onClicked.addListener(function () {
     fetch(`${ORIGIN}/api/subscription/status`, {
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${accessToken}`,
+        Authorization: `Bearer ${token}`,
       },
     })
       .then((resp) => resp.json())
