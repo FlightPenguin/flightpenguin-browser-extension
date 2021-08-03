@@ -53,13 +53,13 @@ chrome.browserAction.onClicked.addListener(function () {
         if (response.status === 200) {
           return response.json();
         } else {
-          // TODO: Test what happens here
           throw response.status;
         }
       });
     }
+    const parsedToken = await getUserInfo(token);
 
-    fetch(`${ORIGIN}/api/subscription/status`)
+    fetch(`${ORIGIN}/api/subscription/status`, {credentials: "same-origin"})
       .then((resp) => resp.json())
       .then(({ status }) => {
         if ( status ) {
