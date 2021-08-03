@@ -57,9 +57,14 @@ chrome.browserAction.onClicked.addListener(function () {
         }
       });
     }
-    const parsedToken = await getUserInfo(token);
+    const userInfo = await getUserInfo(token);
 
-    fetch(`${ORIGIN}/api/subscription/status`, {credentials: "same-origin"})
+    fetch(`${ORIGIN}/api/subscription/status`, {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${accessToken}`,
+      },
+    })
       .then((resp) => resp.json())
       .then(({ status }) => {
         if ( status ) {
