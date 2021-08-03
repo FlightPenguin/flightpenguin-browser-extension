@@ -19,6 +19,7 @@ chrome.runtime.onInstalled.addListener(function () {
 
 let browserActionClicked = false;
 chrome.browserAction.onClicked.addListener(function () {
+  // Listener for when the extension icon is clicked.
   if (browserActionClicked) {
     // blocks rapid successive clicks
     return;
@@ -52,20 +53,19 @@ chrome.browserAction.onClicked.addListener(function () {
         if (response.status === 200) {
           return response.json();
         } else {
+          // TODO: Test what happens here
           throw response.status;
         }
       });
     }
-    const { email } = await getUserInfo(token);
-    fetch(`${ORIGIN}/get-customer/${email}`)
+
+    fetch(`${ORIGIN}/api/subscription/status`)
       .then((resp) => resp.json())
-      .then(({ customer }) => {
-        if (
-          customer &&
-          (customer.stripeSubscriptionId || customer.skipSubscription)
-        ) {
+      .then(({ status }) => {
+        if ( status ) {
           createNewWebPage({});
         } else {
+          // Invalid user
           chrome.tabs.create(
             { url: ORIGIN },
           );
@@ -427,6 +427,7 @@ async function openProviderSearchResults(formData, windowConfig) {
 
 function createWindow(url, provider, windowConfig, formData) {
   const { height, width, left, top } = windowConfig;
+  console.log(url);
   return new Promise((resolve) => {
     chrome.windows.create({ url, focused: false, height, width, left, top }, async (win) => {
       tabIds[provider] = win.tabs[0].id;
