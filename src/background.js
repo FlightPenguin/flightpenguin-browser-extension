@@ -29,11 +29,11 @@ chrome.browserAction.onClicked.addListener(function () {
   chrome.identity.getAuthToken({ interactive: true }, async (token) => {
     fetch(`${ORIGIN}/api/subscription/status`, {
       credentials: "include",
-      mode: 'cors',
-      headers: {
+      mode: "cors",
+      headers: new Headers({
         "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
-      },
+      }),
     })
       .then((resp) => resp.json())
       .then(({ status }) => {
