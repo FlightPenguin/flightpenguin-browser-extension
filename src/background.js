@@ -1,17 +1,16 @@
 Sentry.init({
-  dsn:
-    "https://d7f3363dd3774a64ad700b4523bcb789@o407795.ingest.sentry.io/5277451",
+  dsn: "https://d7f3363dd3774a64ad700b4523bcb789@o407795.ingest.sentry.io/5277451",
 });
 // debugger and console logs can be seen by clicking background.js link for this extension under chrome://extensions,
 // it will open a developer console for this extension and in addition to logs you can see the local storage
-import { makeItins, sortFlights, findReturnFlights } from "./dataModels.js";
+
 import ORIGIN from "./config.js";
+import { findReturnFlights, makeItins, sortFlights } from "./dataModels.js";
+import { getUserInfo, getSubscriptionValidity } from "./auth";
 
-
-chrome.runtime.setUninstallURL('https://forms.gle/s1BfyyBQb5qtXr7H6', function () {
-  Sentry.captureMessage('uninstall');
+chrome.runtime.setUninstallURL("https://forms.gle/s1BfyyBQb5qtXr7H6", function () {
+  Sentry.captureMessage("uninstall");
 });
-
 
 chrome.runtime.onInstalled.addListener(function () {
   console.log("Is this thing on?");
@@ -27,28 +26,16 @@ chrome.browserAction.onClicked.addListener(function () {
   browserActionClicked = true;
   // get user access token using oauth constants in manifest.json
   chrome.identity.getAuthToken({ interactive: true }, async (token) => {
-    fetch(`${ORIGIN}/api/subscription/status`, {
-      credentials: "include",
-      mode: "cors",
-      headers: new Headers({
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      }),
-    })
-      .then((resp) => resp.json())
-      .then(({ status }) => {
-        if (status) {
-          createNewWebPage({});
-        } else {
-          // Invalid user
-          chrome.tabs.create({ url: ORIGIN });
-        }
-      })
-      .catch((err) => {
-        console.error(err);
-        chrome.tabs.create({ url: ORIGIN });
-      })
-      .finally(() => (browserActionClicked = false));
+    const userInfo = await getUserInfo(token);
+    console.error(userInfo);
+    try {
+      const { status } = await getSubscriptionValidity(token);
+      status ? createNewWebPage({}) : chrome.tabs.create({ url: ORIGIN });
+    } catch {
+      chrome.tabs.create({ url: ORIGIN });
+    } finally {
+      browserActionClicked = false;
+    }
   });
 });
 
@@ -115,9 +102,11 @@ chrome.runtime.onMessage.addListener(function (message, sender, reply) {
         sendMessageToWebpage({ event: "NO_FLIGHTS_FOUND_CLIENT" });
         closeWindows();
       }
-      Sentry.captureException(new Error(`No flights found ${message.provider}`, {
-        extra: formData,
-      }));
+      Sentry.captureException(
+        new Error(`No flights found ${message.provider}`, {
+          extra: formData,
+        }),
+      );
       break;
     case "FAILED_SCRAPER":
       addFailedScraper(message.provider);
@@ -129,7 +118,7 @@ chrome.runtime.onMessage.addListener(function (message, sender, reply) {
       const { flights, provider } = message;
       clearTimeout(providersTimeoutIds[provider]);
 
-      if (!flights.length) {
+      if (flights.length === 0) {
         break;
       }
       if (!providersReceived.has(provider)) {
@@ -143,7 +132,7 @@ chrome.runtime.onMessage.addListener(function (message, sender, reply) {
         allItins,
         provider,
         windowIds[provider],
-        tabIds[provider]
+        tabIds[provider],
       );
       allItins = { ...itins };
       allDepartures = { ...departures };
@@ -163,10 +152,7 @@ chrome.runtime.onMessage.addListener(function (message, sender, reply) {
     case "RETURN_FLIGHTS_RECEIVED":
       // for providers that show returns separate from departures,
       // and only once you select a departure.
-      const {
-        flights: expediaFlights,
-        provider: expediaProvider,
-      } = message;
+      const { flights: expediaFlights, provider: expediaProvider } = message;
       if (expediaFlights.length === 0) {
         return;
       }
@@ -178,7 +164,7 @@ chrome.runtime.onMessage.addListener(function (message, sender, reply) {
         expediaProvider,
         windowIds[expediaProvider],
         tabIds[expediaProvider],
-        true
+        true,
       );
       allItins = { ...allItins, ...expediaItins };
       let expediaReturnList = Object.values(expediaReturns);
@@ -203,8 +189,8 @@ chrome.runtime.onMessage.addListener(function (message, sender, reply) {
       // itin needs to be set to {} for Southwest
       // Southwest allItins ids includes return id because we know that info
       // but message.departureId is still just departure id.
-      const itinsForDeparture = departure.itinIds.flatMap(itinId => allItins[itinId]);
-      const itinProviders = itinsForDeparture.map(i => i.provider);
+      const itinsForDeparture = departure.itinIds.flatMap((itinId) => allItins[itinId]);
+      const itinProviders = itinsForDeparture.map((i) => i.provider);
 
       if (itinProviders.includes("expedia")) {
         const getExpediaReturns = () => {
@@ -217,10 +203,10 @@ chrome.runtime.onMessage.addListener(function (message, sender, reply) {
 
           providersTimeoutIds.expedia = setTimeout(() => {
             Sentry.captureException(new Error(`Scraper failed for expedia`), {
-              extra: formData
+              extra: formData,
             });
-          }, 10000);
-        }
+          }, 10_000);
+        };
         if (isExpediaReady) {
           getExpediaReturns();
         } else {
@@ -246,10 +232,10 @@ chrome.runtime.onMessage.addListener(function (message, sender, reply) {
       break;
     case "SKYSCANNER_READY":
       canHighlightSkyscannerTab = true;
-      if (messageQueue.length) {
-        messageQueue.forEach((msg) => {
+      if (messageQueue.length > 0) {
+        for (const msg of messageQueue) {
           highlightTab(msg);
-        });
+        }
       }
       break;
     case "SEND_BEGIN_EVENT":
@@ -299,7 +285,7 @@ function addFailedScraper(provider) {
     closeWindows();
   }
   Sentry.captureException(new Error(`Scraper failed for ${provider}`), {
-    extra: formData
+    extra: formData,
   });
 }
 
@@ -320,7 +306,7 @@ function sendMessageToWebpage(message) {
 
 function highlightTab(itin) {
   if (formData.searchByPoints) {
-    chrome.tabs.create({ url: 'https://flightpenguin.com/flight-penguin-points' });
+    chrome.tabs.create({ url: "https://flightpenguin.com/flight-penguin-points" });
     return;
   }
   chrome.windows.update(windowIds[itin.provider], { focused: true }, (win) => {
@@ -340,24 +326,21 @@ chrome.tabs.onRemoved.addListener(function (tabId) {
 });
 
 function closeWindows() {
-  Object.values(windowIds).forEach((windowId) => {
+  for (const windowId of Object.values(windowIds)) {
     chrome.windows.remove(windowId);
-  });
+  }
 }
 
 function createNewWebPage(message) {
-  chrome.tabs.create(
-    { url: chrome.extension.getURL("./index.html") },
-    (tab) => {
-      window.setTimeout(() => {
-        // need setTimeout here or else message will be missed by new tab.
-        chrome.tabs.sendMessage(tab.id, message);
-      }, 1000);
-      webPageWindowId = tab.windowId;
-      webPageTabId = tab.id;
-      webPageTabIndex = tab.index;
-    }
-  );
+  chrome.tabs.create({ url: chrome.extension.getURL("./index.html") }, (tab) => {
+    window.setTimeout(() => {
+      // need setTimeout here or else message will be missed by new tab.
+      chrome.tabs.sendMessage(tab.id, message);
+    }, 1000);
+    webPageWindowId = tab.windowId;
+    webPageTabId = tab.id;
+    webPageTabIndex = tab.index;
+  });
 }
 
 async function openProviderSearchResults(formData, windowConfig) {
@@ -379,11 +362,7 @@ async function openProviderSearchResults(formData, windowConfig) {
 
   let providers = [];
 
-  if (searchByPoints) {
-    providers = ["expedia"];
-  } else {
-    providers = ["southwest", "skyscanner", "expedia"];
-  }
+  providers = searchByPoints ? ["expedia"] : ["southwest", "skyscanner", "expedia"];
 
   const promises = providers.map((provider) => {
     const url = providerURLBaseMap[provider](formData);
@@ -393,7 +372,7 @@ async function openProviderSearchResults(formData, windowConfig) {
 
   await Promise.all(promises);
   // update again for chrome on windows, to move results window to foreground
-  chrome.windows.update(webPageWindowId, {focused: true});
+  chrome.windows.update(webPageWindowId, { focused: true });
 }
 
 function createWindow(url, provider, windowConfig, formData) {
@@ -446,8 +425,8 @@ function expediaTabUrl(formData) {
   const tripType = roundtrip ? "roundtrip" : "oneway";
   let url = `https://www.expedia.com/Flights-Search?mode=search&trip=${tripType}&leg1=from:${from},to:${to},departure:${startDate}TANYT&leg2=from:${to},to:${from},`;
 
-  function formatDate(dateStr) {
-    const [year, month, day] = dateStr.split("-");
+  function formatDate(dateString) {
+    const [year, month, day] = dateString.split("-");
     return [month, day, year].join("/");
   }
 
@@ -470,11 +449,11 @@ const skyscanner_cabin_map = {
 };
 function skyscannerTabURL(formData) {
   const { from, to, fromDate, toDate, numPax, cabin, roundtrip } = formData;
-  const startDate = fromDate.replace(/-/g, "").substring(2);
+  const startDate = fromDate.replace(/-/g, "").slice(2);
   let url = `https://www.skyscanner.com/transport/flights/${from}/${to}/${startDate}/`;
 
   if (roundtrip) {
-    const endDate = toDate.replace(/-/g, "").substring(2);
+    const endDate = toDate.replace(/-/g, "").slice(2);
     url += `${endDate}/`;
   }
 
@@ -494,11 +473,9 @@ function southwestTabURL(formData) {
   const toCaps = to.toUpperCase();
 
   let url = `https://www.southwest.com/air/booking/select.html?adultPassengersCount=${numPax}&departureDate=${fromDate}&departureTimeOfDay=ALL_DAY&destinationAirportCode=${toCaps}&fareType=USD&int=HOMEQBOMAIR&originationAirportCode=${fromCaps}&passengerType=ADULT&reset=true&seniorPassengersCount=0`;
-  if (roundtrip) {
-    url += `&returnDate=${toDate}&returnTimeOfDay=ALL_DAY&tripType=roundtrip`;
-  } else {
-    url += `&returnDate=&returnTimeOfDay=ALL_DAY&tripType=oneway`;
-  }
+  url += roundtrip
+    ? `&returnDate=${toDate}&returnTimeOfDay=ALL_DAY&tripType=roundtrip`
+    : `&returnDate=&returnTimeOfDay=ALL_DAY&tripType=oneway`;
   //www.southwest.com/air/booking/select.html?adultPassengersCount=1&departureDate=2020-04-28&departureTimeOfDay=ALL_DAY&destinationAirportCode=LGA&fareType=USD&int=HOMEQBOMAIR&originationAirportCode=SFO&passengerType=ADULT&reset=true&returnDate=&returnTimeOfDay=ALL_DAY&seniorPassengersCount=0&tripType=oneway
 
   return url;
@@ -507,8 +484,6 @@ function pricelineTabURL(formData) {
   const { from, to, fromDate, toDate, numPax, cabin } = formData;
   return `https://www.priceline.com/m/fly/search/${from}-${to}-${fromDate.replace(
     /-/g,
-    ""
-  )}/${to}-${from}-${toDate.replace(/-/g, "")}/?cabin-class=${
-    priceline_cabin_map[cabin]
-  }&num-adults=${numPax}`;
+    "",
+  )}/${to}-${from}-${toDate.replace(/-/g, "")}/?cabin-class=${priceline_cabin_map[cabin]}&num-adults=${numPax}`;
 }
