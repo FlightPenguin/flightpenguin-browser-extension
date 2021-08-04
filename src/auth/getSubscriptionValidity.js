@@ -1,5 +1,7 @@
+import ORIGIN from "../config";
+
 export function getSubscriptionValidity(accessToken) {
-  return fetch("https://www.googleapis.com/oauth2/v1/userinfo?alt=json", {
+  return fetch(`${ORIGIN}/api/subscription/status`, {
     method: "GET",
     credentials: "include",
     mode: "cors",
