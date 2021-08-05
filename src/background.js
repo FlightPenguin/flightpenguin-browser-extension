@@ -380,6 +380,9 @@ function createWindow(url, provider, windowConfig, formData) {
   console.log(url);
   return new Promise((resolve) => {
     chrome.windows.create({ url, focused: false, height, width, left, top }, async (win) => {
+      // https://stackoverflow.com/questions/21225477/chrome-extension-create-window-focused-property-not-working
+      chrome.windows.update(win.id, { focused: false });
+
       tabIds[provider] = win.tabs[0].id;
       windowIds[provider] = win.id;
 
