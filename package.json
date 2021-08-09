@@ -20,10 +20,12 @@
   "devDependencies": {
     "@babel/core": "^7.13.10",
     "@babel/preset-env": "^7.13.10",
+    "@babel/preset-typescript": "^7.15.0",
     "@types/chrome": "0.0.147",
     "@typescript-eslint/eslint-plugin": "^4.29.1",
     "@typescript-eslint/parser": "^4.29.1",
     "babel-loader": "^8.2.2",
+    "babel-plugin-module-resolver": "^4.1.0",
     "css-loader": "^5.1.1",
     "eslint": "^7.32.0",
     "eslint-config-prettier": "^8.3.0",

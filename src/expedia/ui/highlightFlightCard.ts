@@ -5,7 +5,7 @@ import { getFlights } from "../parser/getFlights";
 
 const FLIGHT_CARD_SELECTOR = "[data-test-id='offer-listing']";
 
-export const highlightFlightCard = async (selectedDepartureId: string, selectedReturnId: string) => {
+export const highlightFlightCard = async (selectedDepartureId: string, selectedReturnId: string): Promise<void> => {
   await getFlights(); // fix missing IDs as needed.
   clearExistingSelections();
   const flightCard = getFlightCard(selectedReturnId);

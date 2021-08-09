@@ -1,11 +1,12 @@
 import { waitForTheElement } from "wait-for-the-element";
 
 import { MissingElementLookupError, ParserError } from "../../shared/errors";
+import { FlightLeg } from "../../shared/types/FlightLeg";
 import { getLegDetails } from "./getLegDetails";
 
 const LEG_SELECTOR = "[data-test-id^='journey-section']";
 
-export const getLayovers = async (modal: Element, timeout = 3000) => {
+export const getLayovers = async (modal: Element, timeout = 3000): Promise<FlightLeg[]> => {
   const firstLeg = await waitForTheElement(LEG_SELECTOR, { timeout });
   if (!firstLeg) {
     throw new MissingElementLookupError(`Could not find ${LEG_SELECTOR} in modal after ${timeout} ms`);

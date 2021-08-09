@@ -1,6 +1,7 @@
 import { MissingElementLookupError, MissingFieldParserError } from "../../shared/errors";
 import { standardizeTimeString } from "../../shared/helpers";
 import AirlineMap from "../../shared/nameMaps/airlineMap";
+import { FlightDetails } from "../../shared/types/FlightDetails";
 import { openFlightDetailsModal } from "../ui/openFlightDetailsModal";
 import { openLayoverDetailsCollapsible } from "../ui/openLayoverDetailsCollapsible";
 import { getFlightDetailsModal } from "./getFlightDetailsModal";
@@ -10,7 +11,7 @@ const AIRLINE_SELECTOR = "[data-test-id='flight-operated']";
 const ARRIVAL_TIME_SELECTOR = "[data-test-id='arrival-time']";
 const DURATION_SELECTOR = "[data-test-id='journey-duration']";
 
-export const getFlight = async (element: Element) => {
+export const getFlight = async (element: Element): Promise<FlightDetails> => {
   const { marketingAirline, operatingAirline } = getAirlines(element);
   const { departureTime, arrivalTime } = getFlightTimes(element);
   const { duration, hasStops } = getDurationDetails(element);

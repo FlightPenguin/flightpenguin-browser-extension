@@ -1,6 +1,8 @@
 import { waitForTheElementToDisappear } from "wait-for-the-element";
 
 import { LoadingTimeoutParserError, MissingElementLookupError } from "../../shared/errors";
+import { Flight } from "../../shared/types/Flight";
+import { FlightDetails } from "../../shared/types/FlightDetails";
 import { closeFlightDetailsModal } from "../ui/closeFlightDetailsModal";
 import { getFlight } from "./getFlight";
 import { getFlightDetailsModal } from "./getFlightDetailsModal";
@@ -13,7 +15,7 @@ const FLIGHT_CARD_SELECTOR = "[data-test-id='offer-listing']";
 const MODAL_FARE_SELECTOR = "[data-test-id='fare-types-carousel'] .uitk-lockup-price";
 const LIST_CARD_FARE_SELECTOR = ".uitk-price-subtext";
 
-export const getFlights = async (selectedFlight = null, loadingTimeout = 30_000) => {
+export const getFlights = async (selectedFlight = null, loadingTimeout = 30_000): Promise<Flight[]> => {
   await waitForLoadingIndicator(loadingTimeout, INITIAL_LOADING_ANIMATION_SELECTOR);
   await waitForLoadingIndicator(loadingTimeout, SECOND_LOADING_ANIMATION_SELECTOR);
 
@@ -109,6 +111,6 @@ const shouldSkipCard = (flightCard: HTMLElement) => {
   return denyListTerms.some((term) => flightCard.textContent?.includes(term));
 };
 
-const getFlightDatasetId = (flight: any) => {
+const getFlightDatasetId = (flight: FlightDetails) => {
   return [flight.fromTime, flight.toTime, flight.marketingAirline].join("-");
 };

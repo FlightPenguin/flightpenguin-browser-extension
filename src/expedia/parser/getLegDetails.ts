@@ -1,17 +1,9 @@
 import { MissingFieldParserError } from "../../shared/errors";
 import { standardizeTimeString } from "../../shared/helpers";
+import { FlightLeg } from "../../shared/types/FlightLeg";
 import { isOvernight } from "../../utilityFunctions";
 
-interface LegDetailsInformation {
-  fromTime: string;
-  toTime: string;
-  from: string;
-  to: string;
-  operatingAirline: string;
-  duration: string;
-}
-
-export const getLegDetails = (leg: Element, legIndex: number, previousLegDetails?: LegDetailsInformation) => {
+export const getLegDetails = (leg: Element, legIndex: number, previousLegDetails?: FlightLeg): FlightLeg => {
   const [departure, details, arrival] = leg.children;
 
   let departureTime = getDepartureTime(departure);
@@ -51,7 +43,7 @@ const getDepartureTime = (departure: Element) => {
   return standardizeTimeString(time);
 };
 
-function getArrivalAirport(arrival: Element) {
+const getArrivalAirport = (arrival: Element) => {
   let airportCode = arrival.textContent?.slice(
     arrival.textContent?.indexOf("(") + 1,
     arrival.textContent?.indexOf(")"),
@@ -64,9 +56,9 @@ function getArrivalAirport(arrival: Element) {
     throw new MissingFieldParserError("Unable to determine departure airport for layover");
   }
   return airportCode;
-}
+};
 
-function getDepartureAirport(departure: Element) {
+const getDepartureAirport = (departure: Element) => {
   let airportCode = departure.textContent?.slice(
     departure.textContent?.indexOf("(") + 1,
     departure.textContent?.indexOf(")"),
@@ -79,18 +71,18 @@ function getDepartureAirport(departure: Element) {
     throw new MissingFieldParserError("Unable to determine departure airport for layover");
   }
   return airportCode;
-}
+};
 
-function getDuration(element: Element) {
+const getDuration = (element: Element) => {
   const duration = element?.textContent?.replace("flight", "");
 
   if (!duration) {
     throw new MissingFieldParserError("Unable to determine duration time for layover");
   }
   return duration;
-}
+};
 
-function getOperatingAirline(element: Element) {
+const getOperatingAirline = (element: Element) => {
   // for operating might have to find index of first digit, then consider string before it if extra string after flight num
   const airline = element?.textContent
     ?.match(/[A-z]*/g)
@@ -101,4 +93,4 @@ function getOperatingAirline(element: Element) {
     throw new MissingFieldParserError("Unable to determine operating airline for layover");
   }
   return airline;
-}
+};
