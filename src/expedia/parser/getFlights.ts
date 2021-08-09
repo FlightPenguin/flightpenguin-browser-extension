@@ -1,4 +1,4 @@
-import { waitForTheElementToDisappear } from "wait-for-the-element";
+import { waitForTheElement, waitForTheElementToDisappear } from "wait-for-the-element";
 
 import { LoadingTimeoutParserError, MissingElementLookupError } from "../../shared/errors";
 import { Flight } from "../../shared/types/Flight";
@@ -7,6 +7,9 @@ import { closeFlightDetailsModal } from "../ui/closeFlightDetailsModal";
 import { getFlight } from "./getFlight";
 import { getFlightDetailsModal } from "./getFlightDetailsModal";
 
+const CONTAINER_SHELL_SELECTOR = "[data-test-id='search-results']";
+const LOADING_BAR_SELECTOR = ".uitk-loading-bar-current";
+const RETURN_FLIGHT_LINK_SELECTOR = ".uitk-progress-indicator-step-details-wrapper > a";
 const INITIAL_LOADING_ANIMATION_SELECTOR = "[data-test-id='loading-animation']";
 const SECOND_LOADING_ANIMATION_SELECTOR = "[data-test-id='loading-more-flights']";
 const NO_RESULTS_SELECTOR = ".uitk-empty-state";
@@ -16,6 +19,14 @@ const MODAL_FARE_SELECTOR = "[data-test-id='fare-types-carousel'] .uitk-lockup-p
 const LIST_CARD_FARE_SELECTOR = ".uitk-price-subtext";
 
 export const getFlights = async (selectedFlight = null, loadingTimeout = 30_000): Promise<Flight[]> => {
+  // beware - make sure you're on the right page before waiting for elements to go away...
+  await waitForIndicator(3000, CONTAINER_SHELL_SELECTOR);
+  if (selectedFlight) {
+    await waitForIndicator(3000, RETURN_FLIGHT_LINK_SELECTOR);
+  }
+
+  // to all our horror, expedia has a very large number of loading components that fire sequentially...
+  await waitForLoadingIndicator(loadingTimeout, LOADING_BAR_SELECTOR);
   await waitForLoadingIndicator(loadingTimeout, INITIAL_LOADING_ANIMATION_SELECTOR);
   await waitForLoadingIndicator(loadingTimeout, SECOND_LOADING_ANIMATION_SELECTOR);
 
@@ -102,6 +113,15 @@ const waitForLoadingIndicator = async (loadingTimeout: number, selector: string)
       throw new LoadingTimeoutParserError(
         `Took longer than ${loadingTimeout} ms to make the loading indicator (${selector}) disappear`,
       );
+    }
+  }
+};
+
+const waitForIndicator = async (loadingTimeout = 3000, selector: string) => {
+  if (!document.querySelector(selector)) {
+    const container = await waitForTheElement(selector, { timeout: loadingTimeout });
+    if (!container) {
+      throw new LoadingTimeoutParserError(`Render of ${selector} failed to complete in ${loadingTimeout}`);
     }
   }
 };

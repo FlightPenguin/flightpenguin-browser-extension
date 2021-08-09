@@ -5,7 +5,6 @@ window.Sentry.init({
 });
 
 import { sendFailedScraper, sendFlightsEvent, sendReturnFlightsEvent } from "../shared/events";
-import { pause } from "../shared/pause";
 import { getFlights } from "./parser/getFlights";
 import { highlightFlightCard } from "./ui/highlightFlightCard";
 import { selectReturnFlight } from "./ui/selectReturnFlight";
@@ -43,7 +42,6 @@ const scrapeDepartureFlights = async () => {
 
 const scrapeReturnFlights = async (departure) => {
   await selectReturnFlight(departure);
-  await pause();
   try {
     const flights = await getFlights(departure);
     sendReturnFlightsEvent("expedia", flights);
