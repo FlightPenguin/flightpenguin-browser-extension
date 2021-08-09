@@ -54,10 +54,10 @@ export const getFlights = async (selectedFlight = null, loadingTimeout = 30_000)
       returnFlight = flight;
       fare = await getListFare(flightCard);
     } else {
-      flightCard.dataset.fpid = getFlightDatasetId(flight);
       departureFlight = flight;
       fare = await getModalFare();
     }
+    flightCard.dataset.fpid = getFlightDatasetId(flight);
 
     flights.push({
       departureFlight,

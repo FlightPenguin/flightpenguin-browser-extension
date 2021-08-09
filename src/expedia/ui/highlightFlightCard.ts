@@ -1,12 +1,10 @@
 import { MissingElementLookupError, ParserError } from "../../shared/errors";
 import { clearHighlightFromElement, highlightSelectedElement } from "../../shared/ui/manageSelectionHighlights";
 import { findMatchingDOMNode } from "../../shared/utilities/findMatchingDOMNode";
-import { getFlights } from "../parser/getFlights";
 
 const FLIGHT_CARD_SELECTOR = "[data-test-id='offer-listing']";
 
 export const highlightFlightCard = async (selectedDepartureId: string, selectedReturnId: string): Promise<void> => {
-  await getFlights(); // fix missing IDs as needed.
   clearExistingSelections();
   const flightCard = getFlightCard(selectedReturnId);
   highlightSelectedElement(flightCard);
