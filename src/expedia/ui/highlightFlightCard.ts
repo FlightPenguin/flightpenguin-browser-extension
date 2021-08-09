@@ -6,7 +6,7 @@ const FLIGHT_CARD_SELECTOR = "[data-test-id='offer-listing']";
 
 export const highlightFlightCard = async (selectedDepartureId: string, selectedReturnId: string): Promise<void> => {
   clearExistingSelections();
-  const flightCard = getFlightCard(selectedReturnId);
+  const flightCard = selectedReturnId ? getFlightCard(selectedReturnId) : getFlightCard(selectedDepartureId);
   highlightSelectedElement(flightCard);
   scrollToFlightCard(flightCard);
 };
