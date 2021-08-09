@@ -1,31 +1,35 @@
-const path = require('path');
+const path = require("path");
 const TerserPlugin = require("terser-webpack-plugin");
-
-// const HtmlWebpackPlugin = require("html-webpack-plugin");
-// const CopyPlugin = require("copy-webpack-plugin");
-// const baseManifest = require("./chrome/manifest.json");
-// const WebpackExtensionManifestPlugin = require("webpack-extension-manifest-plugin");
+const webpack = require("webpack");
 
 module.exports = {
-    mode: 'production',
-    entry: {
-        background: './src/background.js',
-        index: './src/index.js',
-        searchForm: './src/searchForm.js',
-        skyscanner: './src/skyscanner/contentScript.js',
-        southwest: './src/southwest/contentScript.js',
-        expedia: './src/expedia/contentScript.js',
-    },
-    output: {
-      filename: '[name].bundle.js',
-      path: path.resolve(__dirname, 'dist'),
-    },
-    resolve: {
-      extensions: ["*", ".js"]
-    },
-    optimization: {
-      minimize: true,
-      minimizer: [new TerserPlugin({
+  mode: "production",
+  entry: {
+    background: "./src/background.js",
+    index: "./src/index.js",
+    searchForm: "./src/searchForm.js",
+    skyscanner: "./src/skyscanner/contentScript.js",
+    southwest: "./src/southwest/contentScript.js",
+    expedia: "./src/expedia/contentScript.js",
+  },
+  output: {
+    filename: "[name].bundle.js",
+    path: path.resolve(__dirname, "dist"),
+  },
+  plugins: [
+    // fix "process is not defined" error:
+    // (do "npm install process" before running the build)
+    new webpack.DefinePlugin({
+      "process.env.BUMBAG_ENV": JSON.stringify("not test"),
+    }),
+  ],
+  resolve: {
+    extensions: ["*", ".js", ".jsx", ".tsx", ".ts"],
+  },
+  optimization: {
+    minimize: true,
+    minimizer: [
+      new TerserPlugin({
         terserOptions: {
           compress: {
             drop_console: true,
@@ -34,48 +38,24 @@ module.exports = {
             comments: false,
           },
         },
-      })],
-    },
-    //   plugins: [
-    //     new HtmlWebpackPlugin({
-    //       title: "FlightPenguin",
-    //       meta: {
-    //         charset: "utf-8",
-    //         viewport: "width=device-width, initial-scale=1, shrink-to-fit=no",
-    //         "theme-color": "#000000"
-    //       },
-    //       manifest: "manifest.json",
-    //       filename: "index.html",
-    //       template: "./src/index.html",
-    //       hash: true
-    //     }),
-    //     new CopyPlugin([
-    //       {
-    //         from: "src/icons",
-    //         to: "icons"
-    //       }
-    //     ]),
-    //     new WebpackExtensionManifestPlugin({
-    //       config: {
-    //         base: baseManifest
-    //       }
-    //     })
-    //   ],
-    module: {
-      rules: [
-        {
-          test: /\.js$/,
-          exclude: /node_modules/,
-          use: ["babel-loader"]
-        },
-        {
-          test: /\.css$/,
-          use: ["style-loader", "css-loader"]
-        },
-        {
-          test: /\.(png|svg|jpg|gif)$/,
-          use: ["file-loader"]
-        }
-      ]
-    }
-  };
+      }),
+    ],
+  },
+  module: {
+    rules: [
+      {
+        test: /\.(js|jsx|ts|tsx)$/,
+        exclude: /node_modules/,
+        use: ["babel-loader"],
+      },
+      {
+        test: /\.css$/,
+        use: ["style-loader", "css-loader"],
+      },
+      {
+        test: /\.(png|svg|jpg|gif)$/,
+        use: ["file-loader"],
+      },
+    ],
+  },
+};

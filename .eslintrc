@@ -1,4 +1,5 @@
 {
+  "parser": "@typescript-eslint/parser",
   "parserOptions": {
     "ecmaVersion": 2020,
     "sourceType": "module"
@@ -9,7 +10,7 @@
     "es6": true,
     "webextensions": true
   },
-  "plugins": ["simple-import-sort"],
+  "plugins": ["simple-import-sort", "@typescript-eslint"],
   "settings": {
     "react": {
       "version": "detect"
@@ -20,7 +21,8 @@
     "plugin:prettier/recommended",
     "plugin:sonarjs/recommended",
     "plugin:unicorn/recommended",
-    "plugin:security/recommended"
+    "plugin:security/recommended",
+    "plugin:@typescript-eslint/recommended"
   ],
   "rules": {
     "no-console": "error",
@@ -28,5 +30,6 @@
     "unicorn/filename-case": "off",
     "unicorn/no-null": "off",
     "unicorn/prefer-node-protocol": "off"
-  }
+  },
+  "ignorePatterns": ["**/dist/*.js"]
 }

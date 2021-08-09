@@ -1,3 +1,5 @@
+import { getExpectedProviders } from "./shared/utilities/getExpectedProviders";
+
 Sentry.init({
   dsn: "https://d7f3363dd3774a64ad700b4523bcb789@o407795.ingest.sentry.io/5277451",
 });
@@ -109,7 +111,7 @@ chrome.runtime.onMessage.addListener(function (message, sender, reply) {
       );
       break;
     case "FAILED_SCRAPER":
-      addFailedScraper(message.provider);
+      addFailedScraper(message.provider, message?.description);
       break;
     case "FLIGHT_RESULTS_RECEIVED":
       if (departureSelected) {
@@ -152,6 +154,8 @@ chrome.runtime.onMessage.addListener(function (message, sender, reply) {
     case "RETURN_FLIGHTS_RECEIVED":
       // for providers that show returns separate from departures,
       // and only once you select a departure.
+
+      // TODO: Handle no return flights
       const { flights: expediaFlights, provider: expediaProvider } = message;
       if (expediaFlights.length === 0) {
         return;
@@ -277,7 +281,7 @@ chrome.runtime.onMessage.addListener(function (message, sender, reply) {
   }
 });
 
-function addFailedScraper(provider) {
+function addFailedScraper(provider, description = null) {
   failedProviders.add(provider);
 
   if (failedProviders.size >= Object.keys(tabIds).length) {
@@ -286,6 +290,7 @@ function addFailedScraper(provider) {
   }
   Sentry.captureException(new Error(`Scraper failed for ${provider}`), {
     extra: formData,
+    details: description,
   });
 }
 
@@ -358,11 +363,8 @@ async function openProviderSearchResults(formData, windowConfig) {
     toDate: "2020-03-25"
     numPax: 2
      */
-  const { searchByPoints } = formData;
 
-  let providers = [];
-
-  providers = searchByPoints ? ["expedia"] : ["southwest", "skyscanner", "expedia"];
+  const providers = getExpectedProviders(formData.searchByPoints);
 
   const promises = providers.map((provider) => {
     const url = providerURLBaseMap[provider](formData);

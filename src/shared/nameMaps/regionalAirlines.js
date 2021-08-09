@@ -29,9 +29,9 @@ const regionalAirlines = [
 
 function isRegionalAirline(airline) {
   const airlineTarget = airline.toLowerCase();
-  const found = regionalAirlines.find((regional) =>
-    airlineTarget.includes(regional.toLowerCase())
-  );
+  const found = regionalAirlines.find((regional) => {
+    return airlineTarget.includes(regional.toLowerCase());
+  });
   return Boolean(found);
 }
 export default isRegionalAirline;
