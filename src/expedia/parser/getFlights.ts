@@ -1,8 +1,9 @@
-import { waitForTheElement, waitForTheElementToDisappear } from "wait-for-the-element";
+import { waitForTheElementToDisappear } from "wait-for-the-element";
 
 import { LoadingTimeoutParserError, MissingElementLookupError } from "../../shared/errors";
 import { Flight } from "../../shared/types/Flight";
 import { FlightDetails } from "../../shared/types/FlightDetails";
+import { waitForAppearance, waitForDisappearance } from "../../shared/utilities/waitFor";
 import { closeFlightDetailsModal } from "../ui/closeFlightDetailsModal";
 import { getFlight } from "./getFlight";
 import { getFlightDetailsModal } from "./getFlightDetailsModal";
@@ -20,15 +21,15 @@ const LIST_CARD_FARE_SELECTOR = ".uitk-price-subtext";
 
 export const getFlights = async (selectedFlight = null, loadingTimeout = 30_000): Promise<Flight[]> => {
   // beware - make sure you're on the right page before waiting for elements to go away...
-  await waitForIndicator(3000, CONTAINER_SHELL_SELECTOR);
+  await waitForAppearance(3000, CONTAINER_SHELL_SELECTOR);
   if (selectedFlight) {
-    await waitForIndicator(3000, RETURN_FLIGHT_LINK_SELECTOR);
+    await waitForAppearance(3000, RETURN_FLIGHT_LINK_SELECTOR);
   }
 
   // to all our horror, expedia has a very large number of loading components that fire sequentially...
-  await waitForLoadingIndicator(loadingTimeout, LOADING_BAR_SELECTOR);
-  await waitForLoadingIndicator(loadingTimeout, INITIAL_LOADING_ANIMATION_SELECTOR);
-  await waitForLoadingIndicator(loadingTimeout, SECOND_LOADING_ANIMATION_SELECTOR);
+  await waitForDisappearance(loadingTimeout, LOADING_BAR_SELECTOR);
+  await waitForDisappearance(loadingTimeout, INITIAL_LOADING_ANIMATION_SELECTOR);
+  await waitForDisappearance(loadingTimeout, SECOND_LOADING_ANIMATION_SELECTOR);
 
   if (isNoResults()) {
     return [];
@@ -102,28 +103,6 @@ const getListFare = async (flightCard: HTMLElement) => {
   }
 
   return fare.textContent;
-};
-
-const waitForLoadingIndicator = async (loadingTimeout: number, selector: string) => {
-  if (document.querySelector(selector)) {
-    const loadingIndicator = await waitForTheElementToDisappear(selector, {
-      timeout: loadingTimeout,
-    });
-    if (!loadingIndicator) {
-      throw new LoadingTimeoutParserError(
-        `Took longer than ${loadingTimeout} ms to make the loading indicator (${selector}) disappear`,
-      );
-    }
-  }
-};
-
-const waitForIndicator = async (loadingTimeout = 3000, selector: string) => {
-  if (!document.querySelector(selector)) {
-    const container = await waitForTheElement(selector, { timeout: loadingTimeout });
-    if (!container) {
-      throw new LoadingTimeoutParserError(`Render of ${selector} failed to complete in ${loadingTimeout}`);
-    }
-  }
 };
 
 const shouldSkipCard = (flightCard: HTMLElement) => {
