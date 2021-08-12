@@ -3,8 +3,8 @@ export const getExpectedProviders = (searchByPoints: boolean) => {
     ? ["expedia"]
     : [
         // Comment out as appropriate when debugging
-        "southwest",
+        // "southwest",
         "skyscanner",
-        "expedia",
+        // "expedia",
       ];
 };
