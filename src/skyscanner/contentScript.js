@@ -32,7 +32,7 @@ const scrapeFlights = async () => {
   let totalFlightCount = 0;
   let hasMoreFlights = true;
   try {
-    while (totalFlightCount < 200 && hasMoreFlights && continueScraping) {
+    while (totalFlightCount < 60 && hasMoreFlights && continueScraping) {
       closePopupModal();
       const unsentFlights = await getUnsentFlights();
       if (unsentFlights) {
