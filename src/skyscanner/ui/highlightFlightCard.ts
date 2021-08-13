@@ -3,6 +3,7 @@ import { clearHighlightFromElement, highlightSelectedElement } from "../../share
 import { findMatchingDOMNode } from "../../shared/utilities/findMatchingDOMNode";
 
 const FLIGHT_CARD_SELECTOR = "[class*='FlightsTicket_container'] [role='button']";
+const SELECTED_SELECTOR = "[data-selected='true']";
 
 export const highlightFlightCard = async (selectedDepartureId: string, selectedReturnId: string): Promise<void> => {
   clearExistingSelections();
@@ -12,7 +13,7 @@ export const highlightFlightCard = async (selectedDepartureId: string, selectedR
 };
 
 const clearExistingSelections = () => {
-  const previousDepSelection = document.querySelector("[data-selected='true']") as HTMLElement;
+  const previousDepSelection = document.querySelector(SELECTED_SELECTOR) as HTMLElement;
   if (previousDepSelection) {
     clearHighlightFromElement(previousDepSelection);
   }
@@ -33,7 +34,11 @@ const getFlightCard = (selectedFlightId: string, selectedReturnId: string) => {
   return flightCard;
 };
 
-const scrollToFlightCard = (flightCard: HTMLElement) => {
+export const scrollToFlightCard = (flightCard: HTMLElement) => {
   const yPosition = window.pageYOffset + flightCard.getBoundingClientRect().top - window.innerHeight / 2;
   window.scroll(0, yPosition);
+};
+
+export const isHighlightActive = (): boolean => {
+  return !!document.querySelector(SELECTED_SELECTOR);
 };

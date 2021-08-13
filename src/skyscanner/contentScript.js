@@ -6,8 +6,11 @@ window.Sentry.init({
 
 import { sendFailedScraper, sendFlightsEvent, sendNoFlightsEvent } from "../shared/events";
 import { getUnsentFlights } from "./parser/getUnsentFlights";
+import { closePopupModal } from "./ui/closePopupModal";
 import { getMoreResults } from "./ui/getMoreResults";
 import { highlightFlightCard } from "./ui/highlightFlightCard";
+
+let continueScraping = true;
 
 chrome.runtime.onMessage.addListener(async function (message) {
   switch (message.event) {
@@ -15,6 +18,8 @@ chrome.runtime.onMessage.addListener(async function (message) {
       await scrapeFlights();
       break;
     case "HIGHLIGHT_FLIGHT":
+      continueScraping = false;
+      closePopupModal();
       await highlightFlightCard(message.selectedDepartureId, message.selectedReturnId);
       addBackToSearchButton();
       break;
@@ -27,7 +32,8 @@ const scrapeFlights = async () => {
   let totalFlightCount = 0;
   let hasMoreFlights = true;
   try {
-    while (totalFlightCount < 60 && hasMoreFlights) {
+    while (totalFlightCount < 200 && hasMoreFlights && continueScraping) {
+      closePopupModal();
       const unsentFlights = await getUnsentFlights();
       if (unsentFlights) {
         sendFlightsEvent("skyscanner", unsentFlights);
@@ -35,12 +41,15 @@ const scrapeFlights = async () => {
         await getMoreResults();
       } else if (totalFlightCount === 0) {
         sendNoFlightsEvent("skyscanner");
+        hasMoreFlights = false;
       } else {
         hasMoreFlights = false;
       }
     }
   } catch (error) {
     window.Sentry.captureException(error);
-    sendFailedScraper("skyscanner", error);
+    if (!totalFlightCount) {
+      sendFailedScraper("skyscanner", error);
+    }
   }
 };
