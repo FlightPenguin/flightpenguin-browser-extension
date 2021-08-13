@@ -2,10 +2,15 @@ import { waitForTheElement, waitForTheElementToDisappear } from "wait-for-the-el
 
 import { LoadingTimeoutParserError } from "../errors";
 
-export const waitForDisappearance = async (loadingTimeout: number, selector: string) => {
-  if (document.querySelector(selector)) {
+export const waitForDisappearance = async (
+  loadingTimeout: number,
+  selector: string,
+  doc = window.document as HTMLDocument | Element | HTMLElement,
+) => {
+  if (doc.querySelector(selector)) {
     const loadingIndicator = await waitForTheElementToDisappear(selector, {
       timeout: loadingTimeout,
+      scope: doc,
     });
     if (!loadingIndicator) {
       throw new LoadingTimeoutParserError(
@@ -15,11 +20,17 @@ export const waitForDisappearance = async (loadingTimeout: number, selector: str
   }
 };
 
-export const waitForAppearance = async (loadingTimeout = 3000, selector: string) => {
-  if (!document.querySelector(selector)) {
-    const container = await waitForTheElement(selector, { timeout: loadingTimeout });
+export const waitForAppearance = async (
+  loadingTimeout = 3000,
+  selector: string,
+  doc = window.document as HTMLDocument | Element | HTMLElement,
+) => {
+  let container = doc.querySelector(selector);
+  if (!container) {
+    container = await waitForTheElement(selector, { timeout: loadingTimeout, scope: doc });
     if (!container) {
       throw new LoadingTimeoutParserError(`Render of ${selector} failed to complete in ${loadingTimeout}`);
     }
   }
+  return container;
 };
