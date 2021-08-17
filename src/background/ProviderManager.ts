@@ -270,7 +270,7 @@ export class ProviderManager {
     const that = this;
     return new Promise<void>((resolve) => {
       chrome.windows.create({ url, focused: false, height, width, left, top }, async (window) => {
-        if (window && window.tabs && that.primaryTab?.windowId) {
+        if (window && window.tabs && that.primaryTab?.windowId !== null && that.primaryTab?.windowId !== undefined) {
           // update again for chrome on windows, to move results window to foreground
           chrome.windows.update(that.primaryTab.windowId, { focused: true });
 
@@ -293,7 +293,7 @@ export class ProviderManager {
 
   closeWindow(providerName: string) {
     const windowId = this.getWindowId(providerName);
-    if (windowId) {
+    if (windowId !== null && windowId !== undefined) {
       chrome.windows.remove(windowId);
     }
   }
@@ -307,7 +307,7 @@ export class ProviderManager {
   searchForResults(formData: FlightSearchFormData, windowConfig: WindowConfig) {
     this.setFormData(formData);
     const primaryTabId = this?.primaryTab?.id;
-    if (primaryTabId) {
+    if (primaryTabId !== undefined && primaryTabId !== null) {
       const promises = this.knownProviders.map((provider) => {
         const url = providerURLBaseMap[provider](formData);
         // Open url in a new window.
@@ -334,8 +334,9 @@ export class ProviderManager {
   }
 
   sendMessageToIndexPage(message: any) {
-    if (this.primaryTab?.id) {
-      chrome.tabs.sendMessage(this.primaryTab.id, message);
+    const primaryTabId = this.getPrimaryTabId();
+    if (primaryTabId !== null && primaryTabId !== undefined) {
+      chrome.tabs.sendMessage(primaryTabId, message);
     }
   }
 }

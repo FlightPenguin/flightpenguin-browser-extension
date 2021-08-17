@@ -13,24 +13,4 @@ export const handleFormDataReceived = (
     to: formData.to.toUpperCase(),
   };
   providerManager.searchForResults(formData, windowConfig);
-  // clean up incase user is doing a different search
-  // closeWindows();
-  // allDepartures = {};
-  // allItins = {};
-  // departureSelected = false;
-  // messageQueue = [];
-  // providersReceived = new Set();
-  // failedProviders = new Set();
-  // canHighlightSkyscannerTab = false;
-  // returnList = [];
-  // providersTimeoutIds = {};
-  // isExpediaReady = true;
-  // expediaMessage = null;
-  //
-  // if (webPageTabId) {
-  //   chrome.tabs.sendMessage(webPageTabId, {
-  //     event: "RESET_SEARCH",
-  //     formData,
-  //   });
-  // }
 };

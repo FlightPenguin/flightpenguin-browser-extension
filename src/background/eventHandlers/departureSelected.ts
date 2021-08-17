@@ -36,7 +36,7 @@ const requestNoRoundtripProviderReturns = (
 ) => {
   for (const providerName of departureProviders) {
     const tabId = providerManager.getTabId(providerName);
-    if (tabId) {
+    if (tabId !== null && tabId !== undefined) {
       const getReturns = () => {
         chrome.tabs.sendMessage(tabId, {
           event: "GET_RETURN_FLIGHTS",

@@ -15,7 +15,7 @@ export const handleFlightReturnResultsReceived = (
 
   const windowId = providerManager.getWindowId(providerName);
   const tabId = providerManager.getTabId(providerName);
-  if (!windowId || !tabId) {
+  if (windowId === null || windowId === undefined || tabId === null || tabId === undefined) {
     // TODO: Better handle
     return;
   }
