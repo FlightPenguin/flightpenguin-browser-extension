@@ -50,11 +50,11 @@ export class ProviderManager {
   }
 
   setupClosePrimaryTabListener() {
-    const primaryTabId = this.getPrimaryTabId();
     // eslint-disable-next-line @typescript-eslint/no-this-alias
     const that = this;
-    chrome.tabs.onRemoved.addListener(function (tabId) {
-      if (tabId === primaryTabId) {
+
+    chrome.tabs.onRemoved.addListener(function (tabId: number) {
+      if (tabId === that.getPrimaryTabId()) {
         that.closeWindows();
       }
     });
@@ -293,16 +293,13 @@ export class ProviderManager {
 
   closeWindow(providerName: string) {
     const windowId = this.getWindowId(providerName);
-    console.log(windowId);
     if (windowId) {
       chrome.windows.remove(windowId);
     }
   }
 
   closeWindows() {
-    console.log("closeWindows");
     this.knownProviders.forEach((providerName) => {
-      console.log(providerName);
       this.closeWindow(providerName);
     });
   }

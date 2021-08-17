@@ -611,7 +611,6 @@ function handleFlightSelection(e) {
   var selectedNode = e.currentTarget;
   selectedNode.dataset.selected = true;
   selectedNode.tabIndex = "-1";
-  console.log(selections);
   selections.push(selectedNode);
 
   if (selections.length === 1 && search.roundtrip) {

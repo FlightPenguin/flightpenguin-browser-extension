@@ -1289,11 +1289,10 @@ var ProviderManager = /*#__PURE__*/function () {
   _createClass(ProviderManager, [{
     key: "setupClosePrimaryTabListener",
     value: function setupClosePrimaryTabListener() {
-      var primaryTabId = this.getPrimaryTabId(); // eslint-disable-next-line @typescript-eslint/no-this-alias
-
+      // eslint-disable-next-line @typescript-eslint/no-this-alias
       var that = this;
       chrome.tabs.onRemoved.addListener(function (tabId) {
-        if (tabId === primaryTabId) {
+        if (tabId === that.getPrimaryTabId()) {
           that.closeWindows();
         }
       });
@@ -1633,7 +1632,6 @@ var ProviderManager = /*#__PURE__*/function () {
     key: "closeWindow",
     value: function closeWindow(providerName) {
       var windowId = this.getWindowId(providerName);
-      console.log(windowId);
 
       if (windowId) {
         chrome.windows.remove(windowId);
@@ -1644,10 +1642,7 @@ var ProviderManager = /*#__PURE__*/function () {
     value: function closeWindows() {
       var _this8 = this;
 
-      console.log("closeWindows");
       this.knownProviders.forEach(function (providerName) {
-        console.log(providerName);
-
         _this8.closeWindow(providerName);
       });
     }
