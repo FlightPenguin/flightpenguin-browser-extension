@@ -1,7 +1,7 @@
 import {
-  convertTimeTo24HourClock,
-  convertMinutesTo12HourClock,
   convert12HourTimeToMinutes,
+  convertMinutesTo12HourClock,
+  convertTimeTo24HourClock,
 } from "./utilityFunctions.js";
 
 let totalFlights = 0;
@@ -34,13 +34,7 @@ const GA_TRACKING_ID = "164337457-1";
   a.async = 1;
   a.src = g;
   m.parentNode.insertBefore(a, m);
-})(
-  window,
-  document,
-  "script",
-  "https://www.google-analytics.com/analytics.js",
-  "ga"
-); // Note: https protocol here
+})(window, document, "script", "https://www.google-analytics.com/analytics.js", "ga"); // Note: https protocol here
 
 ga("create", "UA-" + GA_TRACKING_ID, "auto"); // Enter your GA identifier
 ga("set", "checkProtocolTask", function () {}); // Removes failing protocol check. @see: http://stackoverflow.com/a/22152353/1958200
@@ -59,18 +53,10 @@ const returnsSection = document.querySelector(".returns-section");
 const returnsContainer = document.querySelector(".returns-content");
 const retListNode = document.querySelector(".returns-list");
 
-const depTimeBarContainer = document.querySelector(
-  ".departures-time-bar-container"
-);
-const depTimeBarHeaderContainer = document.querySelector(
-  ".departures-time-bar-container-header"
-);
-const retTimeBarContainer = document.querySelector(
-  ".returns-time-bar-container"
-);
-const retTimeBarHeaderContainer = document.querySelector(
-  ".returns-time-bar-container-header"
-);
+const depTimeBarContainer = document.querySelector(".departures-time-bar-container");
+const depTimeBarHeaderContainer = document.querySelector(".departures-time-bar-container-header");
+const retTimeBarContainer = document.querySelector(".returns-time-bar-container");
+const retTimeBarHeaderContainer = document.querySelector(".returns-time-bar-container-header");
 const loadingContainer = document.getElementById("loading");
 const formContainer = document.querySelector("form");
 const mainContainer = document.querySelector("main");
@@ -100,10 +86,7 @@ sortContainer.forEach((node) => {
         break;
       case "price":
         sortFunction = (a, b) => {
-          return (
-            allItins[a.itinIds[0]].fareNumber -
-            allItins[b.itinIds[0]].fareNumber
-          );
+          return allItins[a.itinIds[0]].fareNumber - allItins[b.itinIds[0]].fareNumber;
         };
         if (isShowingReturns) {
           sortFunction = (a, b) => {
@@ -121,12 +104,10 @@ sortContainer.forEach((node) => {
         sortFunction = (a, b) => a.layovers.length - b.layovers.length;
         break;
       case "takeoff":
-        sortFunction = (a, b) =>
-          convert12HourTimeToMinutes(a.fromTime) - convert12HourTimeToMinutes(b.fromTime);
+        sortFunction = (a, b) => convert12HourTimeToMinutes(a.fromTime) - convert12HourTimeToMinutes(b.fromTime);
         break;
       case "landing":
-        sortFunction = (a, b) =>
-          convert12HourTimeToMinutes(a.toTime) - convert12HourTimeToMinutes(b.toTime);
+        sortFunction = (a, b) => convert12HourTimeToMinutes(a.toTime) - convert12HourTimeToMinutes(b.toTime);
         break;
       default:
         return;
@@ -203,25 +184,14 @@ chrome.runtime.onMessage.addListener(function (message) {
       if (departureList.length) {
         departureFlights = departureList;
         departuresSection.style.display = null;
-        const {
-          increment,
-          startHourOffset,
-          intervals,
-          dayWidths,
-        } = createIntervals(departureList);
-        createNodeList(
-          departureList,
-          depListNode,
-          increment,
-          startHourOffset,
-          true
-        );
+        const { increment, startHourOffset, intervals, dayWidths } = createIntervals(departureList);
+        createNodeList(departureList, depListNode, increment, startHourOffset, true);
         createTimeBarContainer(
           departureList[0].timezoneOffset,
           depTimeBarContainer,
           depTimeBarHeaderContainer,
           intervals,
-          dayWidths
+          dayWidths,
         );
       }
       createHeader(search);
@@ -236,32 +206,18 @@ chrome.runtime.onMessage.addListener(function (message) {
       selections[0].querySelector(".fare").style.display = "none";
       loadingContainer.style.display = "none";
 
-      const {
-        increment,
-        startHourOffset,
-        intervals,
-        dayWidths,
-      } = createIntervals(returnList);
-      createNodeList(
-        returnList,
-        retListNode,
-        increment,
-        startHourOffset,
-        false
-      );
+      const { increment, startHourOffset, intervals, dayWidths } = createIntervals(returnList);
+      createNodeList(returnList, retListNode, increment, startHourOffset, false);
       createTimeBarContainer(
         returnList[0].timezoneOffset,
         retTimeBarContainer,
         retTimeBarHeaderContainer,
         intervals,
-        dayWidths
+        dayWidths,
       );
 
       // scroll to Returns section
-      window.scroll(
-        0,
-        window.pageYOffset + returnsSection.getBoundingClientRect().top
-      );
+      window.scroll(0, window.pageYOffset + returnsSection.getBoundingClientRect().top);
       break;
     case "FOCUS_WEBPAGE_CLIENT":
       loadingContainer.style.display = "none";
@@ -274,13 +230,7 @@ chrome.runtime.onMessage.addListener(function (message) {
   }
 });
 
-function createNodeList(
-  list,
-  containerNode,
-  increment,
-  startHourOffset,
-  isDeparture
-) {
+function createNodeList(list, containerNode, increment, startHourOffset, isDeparture) {
   containerNode.innerHTML = "";
 
   list.forEach((item) => {
@@ -308,9 +258,7 @@ function createNodeList(
     let cheapestItin;
     if (isDeparture) {
       // departures
-      cheapestItin = itinIds
-        .map((itinId) => allItins[itinId])
-        .sort((a, b) => a.fareNumber - b.fareNumber)[0];
+      cheapestItin = itinIds.map((itinId) => allItins[itinId]).sort((a, b) => a.fareNumber - b.fareNumber)[0];
     } else {
       // returns
       cheapestItin = allItins[`${selections[0].dataset.id}-${id}`];
@@ -325,9 +273,7 @@ function createNodeList(
 
     if (search.searchByPoints) {
       fareContainer.classList.add("points");
-      fareContainer.textContent = `${Math.floor(
-        fare / search.pointsValue
-      ).toLocaleString("en")}`;
+      fareContainer.textContent = `${Math.floor(fare / search.pointsValue).toLocaleString("en")}`;
       units = "points";
     } else {
       fareContainer.classList.add("dollar");
@@ -435,9 +381,7 @@ function handleFlightSelection(e) {
     });
 
     // hide departures
-    flightsNotSelected = Array.from(
-      departuresContainer.querySelectorAll("li:not([data-selected='true'])")
-    );
+    flightsNotSelected = Array.from(departuresContainer.querySelectorAll("li:not([data-selected='true'])"));
     flightsNotSelected.forEach((flight) => (flight.style.display = "none"));
     document.querySelector(".sort-container").style.display = "none";
     document.querySelector(".section-header").textContent = "Your selected departure";
@@ -494,9 +438,7 @@ function createTimeBarHeader(intervals, tzOffset, dayWidths) {
     arrAirportCode = search.from;
   }
 
-  const [year, month, day] = currDate
-    .split("-")
-    .map((dateString) => Number(dateString));
+  const [year, month, day] = currDate.split("-").map((dateString) => Number(dateString));
   const departureDate = new Date(year, month - 1, day);
   const initialDepartureDay = departureDate.getDate();
   let days = 0;
@@ -583,9 +525,7 @@ function createTimeBarHeader(intervals, tzOffset, dayWidths) {
 
     if (tzOffset) {
       const tzTimeMinutes = timeMinutes - tzOffset;
-      const tzTime = convertMinutesTo12HourClock(
-        Math.abs(tzTimeMinutes)
-      ).replace(":00", "");
+      const tzTime = convertMinutesTo12HourClock(Math.abs(tzTimeMinutes)).replace(":00", "");
 
       const tzTimeNode = document.createElement("span");
       tzTimeNode.classList.add(...["interval-time-text", "timezone"]);
@@ -602,20 +542,10 @@ function createTimeBarHeader(intervals, tzOffset, dayWidths) {
   return timeBarHeaderContainer;
 }
 
-function createTimeBarContainer(
-  timezoneOffset,
-  timeBarContainer,
-  timeBarHeaderContainer,
-  intervals,
-  dayWidths
-) {
+function createTimeBarContainer(timezoneOffset, timeBarContainer, timeBarHeaderContainer, intervals, dayWidths) {
   timeBarContainer.style.width = timeBarContainerWidth + "px";
 
-  const timeBarHeader = createTimeBarHeader(
-    intervals,
-    timezoneOffset,
-    dayWidths
-  );
+  const timeBarHeader = createTimeBarHeader(intervals, timezoneOffset, dayWidths);
   timeBarHeaderContainer.innerHTML = "";
   timeBarHeaderContainer.append(timeBarHeader);
 }
@@ -689,7 +619,7 @@ function createTimeBarRow(flight, increment, startHourOffset) {
       startDayOffset,
       endDayOffset,
       increment,
-      startHourOffset
+      startHourOffset,
     );
     if (!isLayoverStop) {
       if (endsNextDay) {
@@ -701,16 +631,13 @@ function createTimeBarRow(flight, increment, startHourOffset) {
       timeBarSegment.classList.add("layover");
       timeBarSegment.dataset.content = from;
       // Some segments have a gap even when the calculated positions and width should line up!
-      timeBarSegment.style.width =
-        timeBarSegment.style.width.replace("px", "") * 1 + 1 + "px";
+      timeBarSegment.style.width = timeBarSegment.style.width.replace("px", "") * 1 + 1 + "px";
     }
     timeSegments.append(timeBarSegment);
   }
-  let lastTimeSegment =
-    timeSegments.children[timeSegments.childElementCount - 1];
+  let lastTimeSegment = timeSegments.children[timeSegments.childElementCount - 1];
   let rightPositionNumber =
-    Number(lastTimeSegment.style.left.replace("px", "")) +
-    Number(lastTimeSegment.style.width.replace("px", ""));
+    Number(lastTimeSegment.style.left.replace("px", "")) + Number(lastTimeSegment.style.width.replace("px", ""));
   let leftPosition = timeSegments.children[0].style.left;
   let leftPositionNumber = Number(leftPosition.replace("px", ""));
 
@@ -733,7 +660,7 @@ function createTimeBar(
   startDayOffset,
   endDayOffset,
   increment,
-  startHourOffset
+  startHourOffset,
 ) {
   const timeBarSegment = document.createElement("div");
   const { timeBarWidth, startPositionPx } = createIndividualTimeBarPosition(
@@ -742,7 +669,7 @@ function createTimeBar(
     startDayOffset,
     endDayOffset,
     increment,
-    startHourOffset
+    startHourOffset,
   );
 
   timeBarSegment.title = `${airlineName} ${fromTime}-${toTime}`;
@@ -754,12 +681,8 @@ function createTimeBar(
 }
 
 function createIntervals(flights) {
-  const earliestFlight = flights
-    .slice()
-    .sort((a, b) => a.fromTimeDetails.hours - b.fromTimeDetails.hours)[0];
-  const latestFlight = flights
-    .slice()
-    .sort((a, b) => b.toTimeDetails.hours - a.toTimeDetails.hours)[0];
+  const earliestFlight = flights.slice().sort((a, b) => a.fromTimeDetails.hours - b.fromTimeDetails.hours)[0];
+  const latestFlight = flights.slice().sort((a, b) => b.toTimeDetails.hours - a.toTimeDetails.hours)[0];
   if (earliestFlight.fromTimeDetails.hours < earliestTakeoffTime) {
     earliestTakeoffTime = Math.max(0, earliestFlight.fromTimeDetails.hours - 2);
   }
@@ -816,14 +739,7 @@ function createIntervals(flights) {
   return { intervals, increment, startHourOffset: startHour, dayWidths };
 }
 
-function createIndividualTimeBarPosition(
-  fromTime,
-  toTime,
-  startDayOffset,
-  endDayOffset,
-  increment,
-  startHourOffset
-) {
+function createIndividualTimeBarPosition(fromTime, toTime, startDayOffset, endDayOffset, increment, startHourOffset) {
   /**
    * Basically this is what's happening here:
    * Intervals for 24 hours
@@ -840,20 +756,14 @@ function createIndividualTimeBarPosition(
   const minutesPerDay = minutesPerHour * 24;
   const positionAtMidnight = pxPerMinute * minutesPerDay;
 
-  const startMinutesOffset =
-    startDayOffset * minutesPerDay - startHourOffset * minutesPerHour; // if flight starts on a following day, happens with layovers
-  const endMinutesOffset =
-    endDayOffset * minutesPerDay - startHourOffset * minutesPerHour; // if flight ends on a following day, happens with long distance flights and layovers
+  const startMinutesOffset = startDayOffset * minutesPerDay - startHourOffset * minutesPerHour; // if flight starts on a following day, happens with layovers
+  const endMinutesOffset = endDayOffset * minutesPerDay - startHourOffset * minutesPerHour; // if flight ends on a following day, happens with long distance flights and layovers
 
   const fromTimeAttrs = convertTimeTo24HourClock(fromTime);
-  const startTimeInMinutes =
-    startMinutesOffset +
-    fromTimeAttrs.minutes +
-    fromTimeAttrs.hours * minutesPerHour;
+  const startTimeInMinutes = startMinutesOffset + fromTimeAttrs.minutes + fromTimeAttrs.hours * minutesPerHour;
 
   const toTimeAttrs = convertTimeTo24HourClock(toTime);
-  const endTimeInMinutes =
-    endMinutesOffset + toTimeAttrs.minutes + toTimeAttrs.hours * minutesPerHour;
+  const endTimeInMinutes = endMinutesOffset + toTimeAttrs.minutes + toTimeAttrs.hours * minutesPerHour;
 
   const startPositionPx = startTimeInMinutes * pxPerMinute;
   let endPositionPx = endTimeInMinutes * pxPerMinute;
