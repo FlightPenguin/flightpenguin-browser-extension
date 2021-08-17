@@ -5,7 +5,8 @@ export const handleHighlightTab = (providerManager: ProviderManager, departureId
   if (returnId) {
     key += `-${returnId}`;
   }
-  const itinerary = providerManager.getItineraries()[key];
+  const { itineraries } = providerManager.getItineraries();
+  const itinerary = itineraries[key];
   highlightTab(providerManager, itinerary);
 };
 

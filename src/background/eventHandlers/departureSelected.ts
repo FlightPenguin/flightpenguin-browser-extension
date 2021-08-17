@@ -13,7 +13,7 @@ export const handleDepartureSelected = (providerManager: ProviderManager, depart
      Southwest allItins ids includes return id because we know that info
      but message.departureId is still just departure id.
   */
-  const itineraries = providerManager.getItineraries();
+  const { itineraries } = providerManager.getItineraries();
   const departureItineraries = departure.itinIds.flatMap((itinId: string) => itineraries[itinId]);
   const departureProviders = departureItineraries.map((itinerary: any) => itinerary.provider);
 
@@ -62,7 +62,7 @@ const requestNoRoundtripProviderReturns = (
 };
 
 const getRoundtripProviderReturns = (departure: any, providerManager: ProviderManager) => {
-  const itineraries = providerManager.getItineraries();
+  const { itineraries } = providerManager.getItineraries();
   const returnList = sortFlights(findReturnFlights(departure, itineraries), itineraries);
   const message = {
     event: "RETURN_FLIGHTS_FOR_CLIENT",

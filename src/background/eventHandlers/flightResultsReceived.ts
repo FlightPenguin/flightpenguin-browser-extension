@@ -1,16 +1,13 @@
 import { makeItins, sortFlights } from "../../dataModels";
+import { pause } from "../../shared/pause";
 import { Flight } from "../../shared/types/Flight";
-import { FlightSearchFormData } from "../../shared/types/FlightSearchFormData";
 import { ProviderManager } from "../ProviderManager";
 
 export const handleFlightResultsReceived = (
   providerManager: ProviderManager,
   flights: Flight[],
   providerName: string,
-) => {
-  // if (departureSelected) {
-  //   break;
-  // } // WHY?!?
+): any => {
   if (flights.length === 0) {
     return; // TODO: Enhance
   }
@@ -22,32 +19,40 @@ export const handleFlightResultsReceived = (
     return;
   }
 
+  const { itineraries: existingItineraries, version: existingItinerariesVersion } = providerManager.getItineraries();
+  const existingDepartures = providerManager.getDepartures();
+
   // @ts-ignore
   const { departures, itins: itineraries } = makeItins(
     flights,
-    providerManager.getDepartures(),
-    providerManager.getItineraries(),
+    existingDepartures,
+    existingItineraries,
     providerName,
     windowId,
     tabId,
   );
 
-  providerManager.setItineraries({ ...itineraries });
-  providerManager.setDepartures({ ...departures });
+  const setSuccessful = providerManager.setItineraries({ ...itineraries }, existingItinerariesVersion);
+  if (setSuccessful) {
+    providerManager.setDepartures({ ...departures });
 
-  const allDepartures = providerManager.getDepartures();
-  const allItineraries = providerManager.getItineraries();
+    const updatedDepartures = providerManager.getDepartures();
+    const { itineraries: updatedItineraries } = providerManager.getItineraries();
 
-  const departuresToSend = sortFlights(allDepartures, allItineraries);
+    const departuresToSend = sortFlights(updatedDepartures, updatedItineraries);
 
-  const nextMessage = {
-    event: "FLIGHT_RESULTS_FOR_CLIENT",
-    flights: {
-      departureList: departuresToSend,
-      itins: allItineraries,
-    },
-    tabId: tabId,
-    formData: providerManager.getFormData(),
-  };
-  providerManager.sendMessageToIndexPage(nextMessage);
+    const nextMessage = {
+      event: "FLIGHT_RESULTS_FOR_CLIENT",
+      flights: {
+        departureList: departuresToSend,
+        itins: updatedItineraries,
+      },
+      tabId: tabId,
+      formData: providerManager.getFormData(),
+    };
+    providerManager.sendMessageToIndexPage(nextMessage);
+  } else {
+    pause(100, 10, 50);
+    return handleFlightResultsReceived(providerManager, flights, providerName);
+  }
 };
