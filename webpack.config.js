@@ -27,12 +27,12 @@ module.exports = {
     extensions: ["*", ".js", ".jsx", ".tsx", ".ts"],
   },
   optimization: {
-    minimize: false,
+    minimize: true,
     minimizer: [
       new TerserPlugin({
         terserOptions: {
           compress: {
-            drop_console: false,
+            drop_console: true,
           },
           format: {
             comments: false,
