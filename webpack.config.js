@@ -11,6 +11,7 @@ module.exports = {
     skyscanner: "./src/skyscanner/contentScript.js",
     southwest: "./src/southwest/contentScript.js",
     expedia: "./src/expedia/contentScript.js",
+    skiplagged: "./src/skiplagged/contentScript.ts",
   },
   output: {
     filename: "[name].bundle.js",
