@@ -54,6 +54,7 @@ const AirlineMap = {
     "Qantas Airways": { display: "Qantas", color: "#E34538", code: "QF" },
     "Singapore Airlines": { display: "Sinagpore", color: "#EFA952", code: "SQ" },
     "ANA (All Nippon Airways)": { display: "ANA", color: "#0f4a8d" },
+    "Multiple airlines": { display: "Multiple", color: "#000000" },
   },
   getAirlineName: function (airlineName) {
     if (!airlineName || typeof airlineName !== "string") {
