@@ -4,7 +4,7 @@ window.Sentry.init({
   dsn: "https://d7f3363dd3774a64ad700b4523bcb789@o407795.ingest.sentry.io/5277451",
 });
 
-import { sendFailedScraper, sendFlightsEvent, sendReturnFlightsEvent } from "../shared/events/index";
+import { sendFailedScraper } from "../shared/events/index";
 import { getFlights } from "./parser/getFlights";
 import { highlightFlightCard } from "./ui/highlightFlightCard";
 import { selectReturnFlight } from "./ui/selectReturnFlight";
@@ -32,21 +32,19 @@ chrome.runtime.onMessage.addListener(async function (message) {
 
 const scrapeDepartureFlights = async () => {
   try {
-    const flights = await getFlights(null);
-    sendFlightsEvent("expedia", flights);
+    await getFlights(null);
   } catch (error) {
     window.Sentry.captureException(error);
-    sendFailedScraper("expedia", error);
+    sendFailedScraper("skiplagged", error);
   }
 };
 
 const scrapeReturnFlights = async (departure) => {
   await selectReturnFlight(departure);
   try {
-    const flights = await getFlights(departure);
-    sendReturnFlightsEvent("expedia", flights);
+    await getFlights(departure);
   } catch (error) {
     window.Sentry.captureException(error);
-    sendFailedScraper("expedia", error);
+    sendFailedScraper("skiplagged", error);
   }
 };
