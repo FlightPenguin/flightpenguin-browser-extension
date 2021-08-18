@@ -1,11 +1,7 @@
-import { MissingElementLookupError } from "../../shared/errors";
 import { sendNoFlightsEvent } from "../../shared/events";
-import { Flight } from "../../shared/types/Flight";
-import { FlightDetails } from "../../shared/types/FlightDetails";
 import { waitForAppearance } from "../../shared/utilities/waitFor";
 import { disableHiddenCitySearches } from "../ui/disableHiddenCitySearches";
 import { scrollToFlightCard } from "../ui/scrollToFlightCard";
-import { getFlightDetails } from "./getFlightDetails";
 import { getUnsentFlights } from "./getUnsentFlights";
 
 const CONTAINER_SHELL_SELECTOR = "section #trip-list-wrapper";
@@ -13,7 +9,7 @@ const SORT_BUTTON_SELECTOR = "[data-sort='cost']";
 const NO_RESULTS_SELECTOR = ".trip-list-empty";
 const FLIGHT_CARD_SELECTOR = "div[class='trip']:not([data-visited='true'])";
 
-export const getFlights = async (selectedFlight = null) => {
+export const getFlights = async (selectedFlight = null): Promise<void> => {
   /*
   skiplagged maintains an infinite scroll trip list.
   It does not contain all elements at run, despite them being pulled from a GQL endpoint.
