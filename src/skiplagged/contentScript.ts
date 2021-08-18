@@ -22,8 +22,8 @@ chrome.runtime.onMessage.addListener(async function (message) {
       addBackToSearchButton();
       break;
     case "CLEAR_SELECTION":
-      history.back();
-      chrome.runtime.sendMessage({ event: "EXPEDIA_READY" });
+      debugger;
+      chrome.runtime.sendMessage({ event: "PROVIDER_READY", provider: "skiplagged" });
       break;
     default:
       break;
