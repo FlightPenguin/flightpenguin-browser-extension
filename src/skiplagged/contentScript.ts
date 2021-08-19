@@ -14,6 +14,7 @@ const flightMaps = {
   departureFlightMap: {} as { [key: string]: string },
   returnFlightMap: {} as { [key: string]: string },
 };
+// todo: track and protect by disconnecting observer!
 
 chrome.runtime.onMessage.addListener(async function (message) {
   switch (message.event) {

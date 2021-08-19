@@ -6,14 +6,15 @@ import { waitForAppearance, waitForDisappearance } from "../../shared/utilities/
 import { disableHiddenCitySearches } from "../ui/disableHiddenCitySearches";
 import { scrollToFlightCard } from "../ui/scrollToFlightCard";
 import { FlightMap } from "./constants";
-import { getUnsentFlights } from "./getUnsentFlights";
+import { sendFlights } from "./sendFlights";
 
 const CONTAINER_SHELL_SELECTOR = "section #trip-list-wrapper";
 const SORT_BUTTON_SELECTOR = "[data-sort='cost']";
 const NO_RESULTS_SELECTOR = ".trip-list-empty";
-const FLIGHT_CARD_SELECTOR = "div[class='trip']:not([data-visited='true'])";
+const FLIGHT_CARD_SELECTOR = "div[class='trip']";
 const PROGRESS_SELECTOR = ".ui-mprogress";
 const FLIGHT_CARDS_CONTAINER_SELECTOR = ".trip-list";
+const INFINITE_SCROLL_CONTAINER_SELECTOR = ".infinite-trip-list";
 const RETURN_HEADER_SELECTOR = ".trip-return-header";
 
 export const getFlights = async (selectedFlight = null): Promise<FlightMap> => {
@@ -25,13 +26,12 @@ export const getFlights = async (selectedFlight = null): Promise<FlightMap> => {
    */
 
   await waitForAppearance(3000, CONTAINER_SHELL_SELECTOR);
-  await waitForAppearance(10_000, SORT_BUTTON_SELECTOR);
+  await waitForAppearance(3000, FLIGHT_CARDS_CONTAINER_SELECTOR);
+  await waitForAppearance(10000, SORT_BUTTON_SELECTOR);
   if (selectedFlight) {
     await waitForAppearance(3000, RETURN_HEADER_SELECTOR);
   }
-  await waitForAppearance(10_000, FLIGHT_CARD_SELECTOR);
-  // prices change as providers stream in.  wait for final price at the moment.
-  await waitForDisappearance(45000, PROGRESS_SELECTOR);
+  await waitForAppearance(15000, FLIGHT_CARD_SELECTOR);
 
   disableHiddenCitySearches();
 
@@ -39,42 +39,46 @@ export const getFlights = async (selectedFlight = null): Promise<FlightMap> => {
     sendNoFlightsEvent("skiplagged");
   }
 
-  let visitedFlightCardMap = {};
   const flightContainer = getFlightContainer(selectedFlight ? "RETURN" : "DEPARTURE");
-  visitedFlightCardMap = getFlightsFromContainer(flightContainer, visitedFlightCardMap, selectedFlight);
-  // Sometimes, skiplagged enjoys re-rendering flights after the progress bar has finished.  Research once.
-  getFlightsFromContainer(flightContainer, visitedFlightCardMap, selectedFlight);
-  return visitedFlightCardMap;
-};
+  const visitedFlights = {} as FlightMap;
 
-const getFlightsFromContainer = async (
-  flightContainer: HTMLElement,
-  visitedFlightCardMap: FlightMap,
-  selectedFlight: any,
-) => {
-  window.scrollTo(0, flightContainer.scrollTop);
-  await pause(300); // scrolling from the bottom interferes with the waitFor...
-
-  let hasMoreFlights = true;
-  while (hasMoreFlights) {
-    const flightCards = flightContainer.querySelectorAll(FLIGHT_CARD_SELECTOR) as NodeListOf<HTMLElement>;
-    const newlyVisitedCardsMap = await getUnsentFlights(
-      Array.from(flightCards),
-      Object.values(visitedFlightCardMap),
-      selectedFlight,
-    );
-    Object.entries(newlyVisitedCardsMap).forEach(([key, value]) => {
-      visitedFlightCardMap[key] = value;
+  const mutationObserver = new MutationObserver(function (mutations) {
+    mutations.forEach(async function (mutation) {
+      if (mutation.addedNodes) {
+        const sentFlightMaps = await sendFlights(
+          Array.from(mutation.addedNodes),
+          Object.values(visitedFlights),
+          selectedFlight,
+        );
+        for (const [fpId, skipId] of Object.entries(sentFlightMaps)) {
+          visitedFlights[fpId] = skipId;
+        }
+      }
     });
-    scrollToFlightCard(Array.from(flightCards).slice(-1)[0]);
-    try {
-      await waitForAppearance(3000, FLIGHT_CARD_SELECTOR);
-    } catch {
-      hasMoreFlights = false;
+  });
+
+  mutationObserver.observe(flightContainer, {
+    childList: true,
+  });
+
+  await waitForDisappearance(45000, PROGRESS_SELECTOR);
+
+  let unChangedCounter = 0;
+  let totalFlights = Object.keys(visitedFlights).length;
+  while (unChangedCounter <= 3) {
+    await progressiveScrolling(flightContainer);
+    const newFlightTotal = Object.keys(visitedFlights).length;
+    if (newFlightTotal > totalFlights) {
+      unChangedCounter = 0;
+      totalFlights = newFlightTotal;
+    } else {
+      unChangedCounter += 1;
     }
   }
 
-  return visitedFlightCardMap;
+  mutationObserver.disconnect();
+
+  return visitedFlights;
 };
 
 const isNoResults = () => {
@@ -92,5 +96,29 @@ const getFlightContainer = (type: "DEPARTURE" | "RETURN") => {
   if (!container) {
     throw new MissingElementLookupError(`Unable to locate ${type.toLowerCase()} container`);
   }
-  return container as HTMLElement;
+
+  const tripListElement = document.querySelector(INFINITE_SCROLL_CONTAINER_SELECTOR);
+  if (!tripListElement) {
+    throw new MissingElementLookupError(`Unable to locate infinite scroll container for ${type.toLowerCase()}`);
+  }
+
+  const tripListContainer = tripListElement.children[0];
+  if (!tripListContainer) {
+    throw new MissingElementLookupError(`Unable to locate infinite scroll container child for ${type.toLowerCase()}`);
+  }
+  return tripListContainer as HTMLElement;
+};
+
+const progressiveScrolling = async (flightContainer: HTMLElement) => {
+  window.scrollTo(0, 0);
+
+  let lastFlightCard = null;
+  let batchLastFlightCard = null;
+  while (lastFlightCard === null || lastFlightCard !== batchLastFlightCard) {
+    lastFlightCard = batchLastFlightCard;
+    const flightCards = flightContainer.querySelectorAll(FLIGHT_CARD_SELECTOR) as NodeListOf<HTMLElement>;
+    batchLastFlightCard = Array.from(flightCards).slice(-1)[0];
+    scrollToFlightCard(batchLastFlightCard);
+    await pause(500);
+  }
 };

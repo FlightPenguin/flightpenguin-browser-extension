@@ -2,19 +2,21 @@ import { MissingElementLookupError } from "../../shared/errors";
 import { sendFlightsEvent, sendReturnFlightsEvent } from "../../shared/events";
 import { Flight } from "../../shared/types/Flight";
 import { FlightDetails } from "../../shared/types/FlightDetails";
+import { FlightMap } from "./constants";
 import { getFlightDetails } from "./getFlightDetails";
 
 const FARE_PARENT_CONTAINER_SELECTOR = "div.trip-cost";
 
-export const getUnsentFlights = async (
-  flightCards: HTMLElement[],
+export const sendFlights = async (
+  flightCards: Node[],
   visitedFlightCardIds: string[],
   selectedFlight = null,
-): Promise<{ [key: string]: string }> => {
+): Promise<FlightMap> => {
   const flights = [] as Flight[];
   const newlyVisitedIds: { [key: string]: string } = {};
 
-  for (const flightCard of flightCards) {
+  for (const node of flightCards) {
+    const flightCard = node as HTMLElement;
     if (shouldSkipCard(flightCard, visitedFlightCardIds)) {
       continue;
     }
@@ -32,7 +34,7 @@ export const getUnsentFlights = async (
       returnFlight,
       fare,
     });
-    newlyVisitedIds[flightPenguinId] = flightCard.id.split("|")[0].trim();
+    newlyVisitedIds[flightPenguinId] = flightCard.id.split("|")[0].trim(); // todo: use trip name from ua1234
     if (selectedFlight) {
       sendReturnFlightsEvent("skiplagged", flights);
     } else {
