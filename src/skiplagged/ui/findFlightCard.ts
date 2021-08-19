@@ -6,6 +6,8 @@ const FLIGHT_CARD_SELECTOR = "div[class='trip']";
 
 export const findFlightCard = async (flightId: string) => {
   window.scrollTo(0, 0);
+  await waitForAppearance(5000, `${FLIGHT_CARD_SELECTOR}:not([data-visited='true'])`);
+
   let foundFlight = null;
   let endOfSearch = false;
   const flightSelector = `[id^='${flightId}|']`;
