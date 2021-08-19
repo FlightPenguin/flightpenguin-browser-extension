@@ -1,9 +1,11 @@
 import { MissingElementLookupError } from "../../shared/errors";
 import { sendNoFlightsEvent } from "../../shared/events";
+import { pause } from "../../shared/pause";
 import { isVisible } from "../../shared/utilities/isVisible";
 import { waitForAppearance, waitForDisappearance } from "../../shared/utilities/waitFor";
 import { disableHiddenCitySearches } from "../ui/disableHiddenCitySearches";
 import { scrollToFlightCard } from "../ui/scrollToFlightCard";
+import { FlightMap } from "./constants";
 import { getUnsentFlights } from "./getUnsentFlights";
 
 const CONTAINER_SHELL_SELECTOR = "section #trip-list-wrapper";
@@ -14,7 +16,7 @@ const PROGRESS_SELECTOR = ".ui-mprogress";
 const FLIGHT_CARDS_CONTAINER_SELECTOR = ".trip-list";
 const RETURN_HEADER_SELECTOR = ".trip-return-header";
 
-export const getFlights = async (selectedFlight = null): Promise<{ [key: string]: string }> => {
+export const getFlights = async (selectedFlight = null): Promise<FlightMap> => {
   /*
   skiplagged maintains an infinite scroll trip list.
   It does not contain all elements at run, despite them being pulled from a GQL endpoint.
@@ -37,8 +39,22 @@ export const getFlights = async (selectedFlight = null): Promise<{ [key: string]
     sendNoFlightsEvent("skiplagged");
   }
 
+  let visitedFlightCardMap = {};
   const flightContainer = getFlightContainer(selectedFlight ? "RETURN" : "DEPARTURE");
-  const visitedFlightCardMap: { [key: string]: string } = {};
+  visitedFlightCardMap = getFlightsFromContainer(flightContainer, visitedFlightCardMap, selectedFlight);
+  // Sometimes, skiplagged enjoys re-rendering flights after the progress bar has finished.  Research once.
+  getFlightsFromContainer(flightContainer, visitedFlightCardMap, selectedFlight);
+  return visitedFlightCardMap;
+};
+
+const getFlightsFromContainer = async (
+  flightContainer: HTMLElement,
+  visitedFlightCardMap: FlightMap,
+  selectedFlight: any,
+) => {
+  window.scrollTo(0, flightContainer.scrollTop);
+  await pause(300); // scrolling from the bottom interferes with the waitFor...
+
   let hasMoreFlights = true;
   while (hasMoreFlights) {
     const flightCards = flightContainer.querySelectorAll(FLIGHT_CARD_SELECTOR) as NodeListOf<HTMLElement>;
@@ -76,5 +92,5 @@ const getFlightContainer = (type: "DEPARTURE" | "RETURN") => {
   if (!container) {
     throw new MissingElementLookupError(`Unable to locate ${type.toLowerCase()} container`);
   }
-  return container;
+  return container as HTMLElement;
 };

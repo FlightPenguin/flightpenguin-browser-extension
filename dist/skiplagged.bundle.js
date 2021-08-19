@@ -135,6 +135,27 @@ function sendNoFlightsEvent(providerName) {
     provider: providerName
   });
 }
+;// CONCATENATED MODULE: ./src/shared/pause.ts
+function pause() {
+  var timeout = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 10000;
+  var jitterMin = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 0;
+  var jitterMax = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 0;
+  var jitter = 0;
+
+  if (jitterMin && jitterMax) {
+    jitter += getRandomInt(jitterMin, jitterMax);
+  }
+
+  return new Promise(function (resolve) {
+    setTimeout(resolve, timeout + jitter);
+  });
+}
+
+function getRandomInt(min, max) {
+  min = Math.ceil(min);
+  max = Math.floor(max);
+  return Math.floor(Math.random() * (max - min + 1)) + min;
+}
 ;// CONCATENATED MODULE: ./src/shared/utilities/isVisible.ts
 var isVisible = function isVisible(element) {
   return element.offsetWidth > 0 && element.offsetHeight > 0;
@@ -987,6 +1008,7 @@ function getFlights_asyncToGenerator(fn) { return function () { var self = this,
 
 
 
+
 var getFlights_CONTAINER_SHELL_SELECTOR = "section #trip-list-wrapper";
 var getFlights_SORT_BUTTON_SELECTOR = "[data-sort='cost']";
 var NO_RESULTS_SELECTOR = ".trip-list-empty";
@@ -1020,17 +1042,33 @@ var getFlights = /*#__PURE__*/function () {
       sendNoFlightsEvent("skiplagged");
     }
 
-    var flightContainer = getFlightContainer(selectedFlight ? "RETURN" : "DEPARTURE");
     var visitedFlightCardMap = {};
+    var flightContainer = getFlightContainer(selectedFlight ? "RETURN" : "DEPARTURE");
+    visitedFlightCardMap = getFlightsFromContainer(flightContainer, visitedFlightCardMap, selectedFlight); // Sometimes, skiplagged enjoys re-rendering flights after the progress bar has finished.  Research once.
+
+    getFlightsFromContainer(flightContainer, visitedFlightCardMap, selectedFlight);
+    return visitedFlightCardMap;
+  });
+
+  return function getFlights() {
+    return _ref.apply(this, arguments);
+  };
+}();
+
+var getFlightsFromContainer = /*#__PURE__*/function () {
+  var _ref2 = getFlights_asyncToGenerator(function* (flightContainer, visitedFlightCardMap, selectedFlight) {
+    window.scrollTo(0, flightContainer.scrollTop);
+    yield pause(300); // scrolling from the bottom interferes with the waitFor...
+
     var hasMoreFlights = true;
 
     while (hasMoreFlights) {
       var flightCards = flightContainer.querySelectorAll(FLIGHT_CARD_SELECTOR);
       var newlyVisitedCardsMap = yield getUnsentFlights(Array.from(flightCards), Object.values(visitedFlightCardMap), selectedFlight);
-      Object.entries(newlyVisitedCardsMap).forEach(function (_ref2) {
-        var _ref3 = getFlights_slicedToArray(_ref2, 2),
-            key = _ref3[0],
-            value = _ref3[1];
+      Object.entries(newlyVisitedCardsMap).forEach(function (_ref3) {
+        var _ref4 = getFlights_slicedToArray(_ref3, 2),
+            key = _ref4[0],
+            value = _ref4[1];
 
         visitedFlightCardMap[key] = value;
       });
@@ -1046,8 +1084,8 @@ var getFlights = /*#__PURE__*/function () {
     return visitedFlightCardMap;
   });
 
-  return function getFlights() {
-    return _ref.apply(this, arguments);
+  return function getFlightsFromContainer(_x, _x2, _x3) {
+    return _ref2.apply(this, arguments);
   };
 }();
 
@@ -1102,6 +1140,7 @@ var findFlightCard_FLIGHT_CARD_SELECTOR = "div[class='trip']";
 var findFlightCard = /*#__PURE__*/function () {
   var _ref = findFlightCard_asyncToGenerator(function* (flightId) {
     window.scrollTo(0, 0);
+    yield waitForAppearance(5000, "".concat(findFlightCard_FLIGHT_CARD_SELECTOR, ":not([data-visited='true'])"));
     var foundFlight = null;
     var endOfSearch = false;
     var flightSelector = "[id^='".concat(flightId, "|']");
@@ -1111,15 +1150,11 @@ var findFlightCard = /*#__PURE__*/function () {
       foundFlight = document.querySelector(flightSelector);
 
       if (!foundFlight) {
-        try {
-          var flightCards = Array.from(document.querySelectorAll(searchFlightSelector));
-          flightCards.forEach(function (flightCard) {
-            flightCard.dataset["searched_".concat(flightId)] = "true";
-          });
-          endOfSearch = yield scrollToBottomCard(flightCards.slice(-1)[0], searchFlightSelector);
-        } catch (error) {
-          debugger;
-        }
+        var flightCards = Array.from(document.querySelectorAll(searchFlightSelector));
+        flightCards.forEach(function (flightCard) {
+          flightCard.dataset["searched_".concat(flightId)] = "true";
+        });
+        endOfSearch = yield scrollToBottomCard(flightCards.slice(-1)[0], searchFlightSelector);
       }
     }
 
@@ -1141,7 +1176,6 @@ var scrollToBottomCard = /*#__PURE__*/function () {
     scrollToFlightCard(flightCard);
 
     try {
-      debugger;
       yield waitForAppearance(5000, unsearchedSelector);
     } catch (_unused) {
       hasMoreFlights = false;
