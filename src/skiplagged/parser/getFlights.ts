@@ -1,7 +1,7 @@
 import { MissingElementLookupError } from "../../shared/errors";
 import { sendNoFlightsEvent } from "../../shared/events";
 import { isVisible } from "../../shared/utilities/isVisible";
-import { waitForAppearance } from "../../shared/utilities/waitFor";
+import { waitForAppearance, waitForDisappearance } from "../../shared/utilities/waitFor";
 import { disableHiddenCitySearches } from "../ui/disableHiddenCitySearches";
 import { scrollToFlightCard } from "../ui/scrollToFlightCard";
 import { getUnsentFlights } from "./getUnsentFlights";
@@ -10,6 +10,7 @@ const CONTAINER_SHELL_SELECTOR = "section #trip-list-wrapper";
 const SORT_BUTTON_SELECTOR = "[data-sort='cost']";
 const NO_RESULTS_SELECTOR = ".trip-list-empty";
 const FLIGHT_CARD_SELECTOR = "div[class='trip']:not([data-visited='true'])";
+const PROGRESS_SELECTOR = ".ui-mprogress";
 
 export const getFlights = async (selectedFlight = null): Promise<void> => {
   /*
@@ -21,6 +22,8 @@ export const getFlights = async (selectedFlight = null): Promise<void> => {
   await waitForAppearance(3000, CONTAINER_SHELL_SELECTOR);
   await waitForAppearance(10_000, SORT_BUTTON_SELECTOR);
   await waitForAppearance(10_000, FLIGHT_CARD_SELECTOR);
+  // prices change as providers stream in.  wait for final price at the moment.
+  await waitForDisappearance(45000, PROGRESS_SELECTOR);
 
   disableHiddenCitySearches();
 
@@ -28,7 +31,7 @@ export const getFlights = async (selectedFlight = null): Promise<void> => {
     sendNoFlightsEvent("skiplagged");
   }
 
-  const visitedFlightCardIds: string[] = [];
+  const visitedFlightCardIds: string[] = {};
   let hasMoreFlights = true;
   while (hasMoreFlights) {
     const flightCards = document.querySelectorAll(FLIGHT_CARD_SELECTOR) as NodeListOf<HTMLElement>;

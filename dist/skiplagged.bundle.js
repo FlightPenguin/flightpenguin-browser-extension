@@ -89,7 +89,7 @@ var ParserError = /*#__PURE__*/function (_ExtendableError) {
 
   return ParserError;
 }(ExtendableError);
-var errors_LoadingTimeoutParserError = /*#__PURE__*/function (_ParserError) {
+var LoadingTimeoutParserError = /*#__PURE__*/function (_ParserError) {
   _inherits(LoadingTimeoutParserError, _ParserError);
 
   var _super3 = _createSuper(LoadingTimeoutParserError);
@@ -149,12 +149,12 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 
 
 
-var waitForDisappearance = /*#__PURE__*/(/* unused pure expression or super */ null && (function () {
+var waitForDisappearance = /*#__PURE__*/function () {
   var _ref = _asyncToGenerator(function* (loadingTimeout, selector) {
     var doc = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : window.document;
 
     if (doc.querySelector(selector)) {
-      var loadingIndicator = yield waitForTheElementToDisappear(selector, {
+      var loadingIndicator = yield l(selector, {
         timeout: loadingTimeout,
         scope: doc
       });
@@ -168,7 +168,7 @@ var waitForDisappearance = /*#__PURE__*/(/* unused pure expression or super */ n
   return function waitForDisappearance(_x, _x2) {
     return _ref.apply(this, arguments);
   };
-}()));
+}();
 var waitForAppearance = /*#__PURE__*/function () {
   var _ref2 = _asyncToGenerator(function* () {
     var loadingTimeout = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 3000;
@@ -183,7 +183,7 @@ var waitForAppearance = /*#__PURE__*/function () {
       });
 
       if (!container) {
-        throw new errors_LoadingTimeoutParserError("Render of ".concat(selector, " failed to complete in ").concat(loadingTimeout));
+        throw new LoadingTimeoutParserError("Render of ".concat(selector, " failed to complete in ").concat(loadingTimeout));
       }
     }
 
@@ -990,6 +990,7 @@ var getFlights_CONTAINER_SHELL_SELECTOR = "section #trip-list-wrapper";
 var getFlights_SORT_BUTTON_SELECTOR = "[data-sort='cost']";
 var NO_RESULTS_SELECTOR = ".trip-list-empty";
 var FLIGHT_CARD_SELECTOR = "div[class='trip']:not([data-visited='true'])";
+var PROGRESS_SELECTOR = ".ui-mprogress";
 var getFlights = /*#__PURE__*/function () {
   var _ref = getFlights_asyncToGenerator(function* () {
     var selectedFlight = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : null;
@@ -1002,6 +1003,9 @@ var getFlights = /*#__PURE__*/function () {
     yield waitForAppearance(3000, getFlights_CONTAINER_SHELL_SELECTOR);
     yield waitForAppearance(10000, getFlights_SORT_BUTTON_SELECTOR);
     yield waitForAppearance(10000, FLIGHT_CARD_SELECTOR);
+    console.log(document.querySelectorAll(FLIGHT_CARD_SELECTOR));
+    yield waitForDisappearance(45000, PROGRESS_SELECTOR);
+    console.log(document.querySelectorAll(FLIGHT_CARD_SELECTOR));
     disableHiddenCitySearches();
 
     if (isNoResults()) {
