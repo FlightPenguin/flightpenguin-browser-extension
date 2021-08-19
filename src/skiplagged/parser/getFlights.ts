@@ -12,7 +12,7 @@ const NO_RESULTS_SELECTOR = ".trip-list-empty";
 const FLIGHT_CARD_SELECTOR = "div[class='trip']:not([data-visited='true'])";
 const PROGRESS_SELECTOR = ".ui-mprogress";
 
-export const getFlights = async (selectedFlight = null): Promise<void> => {
+export const getFlights = async (selectedFlight = null): Promise<{ [key: string]: string }> => {
   /*
   skiplagged maintains an infinite scroll trip list.
   It does not contain all elements at run, despite them being pulled from a GQL endpoint.
@@ -31,12 +31,18 @@ export const getFlights = async (selectedFlight = null): Promise<void> => {
     sendNoFlightsEvent("skiplagged");
   }
 
-  const visitedFlightCardIds: string[] = [];
+  const visitedFlightCardMap: { [key: string]: string } = {};
   let hasMoreFlights = true;
   while (hasMoreFlights) {
     const flightCards = document.querySelectorAll(FLIGHT_CARD_SELECTOR) as NodeListOf<HTMLElement>;
-    const newlyVisitedIds = await getUnsentFlights(Array.from(flightCards), visitedFlightCardIds, selectedFlight);
-    visitedFlightCardIds.push(...newlyVisitedIds);
+    const newlyVisitedCardsMap = await getUnsentFlights(
+      Array.from(flightCards),
+      Object.values(visitedFlightCardMap),
+      selectedFlight,
+    );
+    Object.entries(newlyVisitedCardsMap).forEach(([key, value]) => {
+      visitedFlightCardMap[key] = value;
+    });
     scrollToFlightCard(Array.from(flightCards).slice(-1)[0]);
     try {
       await waitForAppearance(3000, FLIGHT_CARD_SELECTOR);
@@ -44,6 +50,8 @@ export const getFlights = async (selectedFlight = null): Promise<void> => {
       hasMoreFlights = false;
     }
   }
+
+  return visitedFlightCardMap;
 };
 
 const isNoResults = () => {

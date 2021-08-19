@@ -10,9 +10,9 @@ export const getUnsentFlights = async (
   flightCards: HTMLElement[],
   visitedFlightCardIds: string[],
   selectedFlight = null,
-): Promise<string[]> => {
+): Promise<{ [key: string]: string }> => {
   const flights = [] as Flight[];
-  const newlyVisitedIds = [] as string[];
+  const newlyVisitedIds: { [key: string]: string } = {};
 
   for (const flightCard of flightCards) {
     if (shouldSkipCard(flightCard, visitedFlightCardIds)) {
@@ -23,14 +23,16 @@ export const getUnsentFlights = async (
     const [departureFlight, returnFlight] = selectedFlight ? [selectedFlight, flightDetails] : [flightDetails, null];
     const fare = getFare(flightCard);
 
-    flightCard.dataset.fpid = getFlightDatasetId(flightDetails);
+    const flightPenguinId = getFlightDatasetId(flightDetails);
+
+    flightCard.dataset.fpid = flightPenguinId;
     flightCard.dataset.visited = "true";
     flights.push({
       departureFlight,
       returnFlight,
       fare,
     });
-    newlyVisitedIds.push(flightCard.id);
+    newlyVisitedIds[flightPenguinId] = flightCard.id.split("|")[0].trim();
     if (selectedFlight) {
       sendReturnFlightsEvent("skiplagged", flights);
     } else {
