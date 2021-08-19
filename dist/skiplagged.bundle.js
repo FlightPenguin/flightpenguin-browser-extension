@@ -935,7 +935,7 @@ var sendFlights = /*#__PURE__*/function () {
           returnFlight: returnFlight,
           fare: fare
         });
-        newlyVisitedIds[flightPenguinId] = flightCard.id.split("|")[0].trim(); // todo: use trip name from ua1234
+        newlyVisitedIds[flightPenguinId] = getFlightCardShortId(flightCard); // todo: use trip name from ua1234
 
         if (selectedFlight) {
           sendReturnFlightsEvent("skiplagged", flights);
@@ -963,7 +963,7 @@ var shouldSkipCard = function shouldSkipCard(flightCard, visitedCardIds) {
     var _flightCard$textConte;
 
     return (_flightCard$textConte = flightCard.textContent) === null || _flightCard$textConte === void 0 ? void 0 : _flightCard$textConte.includes(term);
-  }) || visitedCardIds.includes(flightCard.id);
+  }) || visitedCardIds.includes(getFlightCardShortId(flightCard));
 };
 
 var getFlightDatasetId = function getFlightDatasetId(flight) {
@@ -984,6 +984,10 @@ var getFare = function getFare(flightCard) {
   }
 
   return fareContainer.textContent;
+};
+
+var getFlightCardShortId = function getFlightCardShortId(flightCard) {
+  return flightCard.id.split("|")[0].trim();
 };
 ;// CONCATENATED MODULE: ./src/skiplagged/parser/getFlights.ts
 function getFlights_createForOfIteratorHelper(o, allowArrayLike) { var it; if (typeof Symbol === "undefined" || o[Symbol.iterator] == null) { if (Array.isArray(o) || (it = getFlights_unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e2) { throw _e2; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = o[Symbol.iterator](); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e3) { didErr = true; err = _e3; }, f: function f() { try { if (!normalCompletion && it["return"] != null) it["return"](); } finally { if (didErr) throw err; } } }; }

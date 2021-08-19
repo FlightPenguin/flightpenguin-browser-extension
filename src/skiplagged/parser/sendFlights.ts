@@ -34,7 +34,7 @@ export const sendFlights = async (
       returnFlight,
       fare,
     });
-    newlyVisitedIds[flightPenguinId] = flightCard.id.split("|")[0].trim(); // todo: use trip name from ua1234
+    newlyVisitedIds[flightPenguinId] = getFlightCardShortId(flightCard); // todo: use trip name from ua1234
     if (selectedFlight) {
       sendReturnFlightsEvent("skiplagged", flights);
     } else {
@@ -47,7 +47,10 @@ export const sendFlights = async (
 
 const shouldSkipCard = (flightCard: HTMLElement, visitedCardIds: string[]) => {
   const denyListTerms = ["bargain fare", "special fare", "after booking"];
-  return denyListTerms.some((term) => flightCard.textContent?.includes(term)) || visitedCardIds.includes(flightCard.id);
+  return (
+    denyListTerms.some((term) => flightCard.textContent?.includes(term)) ||
+    visitedCardIds.includes(getFlightCardShortId(flightCard))
+  );
 };
 
 const getFlightDatasetId = (flight: FlightDetails) => {
@@ -66,4 +69,8 @@ const getFare = (flightCard: HTMLElement) => {
   }
 
   return fareContainer.textContent;
+};
+
+const getFlightCardShortId = (flightCard: HTMLElement) => {
+  return flightCard.id.split("|")[0].trim();
 };
