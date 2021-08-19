@@ -8,7 +8,7 @@ import { ParserError } from "../shared/errors";
 import { sendFailedScraper } from "../shared/events";
 import { getFlights } from "./parser/getFlights";
 import { highlightFlightCard } from "./ui/highlightFlightCard";
-import { selectReturnFlight } from "./ui/selectReturnFlight";
+import { selectFlightCard } from "./ui/selectFlightCard";
 
 const flightMaps = {
   departureFlightMap: {} as { [key: string]: string },
@@ -45,8 +45,9 @@ const scrapeDepartureFlights = async () => {
 };
 
 const scrapeReturnFlights = async (departure: any) => {
-  await selectReturnFlight(departure);
   try {
+    const departureId = getDepartureId(departure.id);
+    await selectFlightCard(departureId);
     flightMaps.returnFlightMap = await getFlights(departure);
   } catch (error) {
     window.Sentry.captureException(error);
@@ -63,6 +64,14 @@ const highlightFlight = async (flightPenguinReturnId: string) => {
     window.Sentry.captureException(error);
     sendFailedScraper("skiplagged", error);
   }
+};
+
+const getDepartureId = (flightPenguinDepartureId: string): string => {
+  const skiplaggedId = flightMaps.departureFlightMap[flightPenguinDepartureId];
+  if (!skiplaggedId) {
+    throw new ParserError(`Unable to find mapped flight for ${flightPenguinDepartureId}`);
+  }
+  return skiplaggedId;
 };
 
 const getReturnId = (flightPenguinReturnId: string): string => {

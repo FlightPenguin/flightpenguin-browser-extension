@@ -5,13 +5,20 @@ import { scrollToFlightCard } from "./scrollToFlightCard";
 const FLIGHT_CARD_SELECTOR = "div[class='trip']";
 
 export const findFlightCard = async (flightId: string) => {
-  window.scroll(0, 0);
+  window.scrollTo(0, 0);
   let foundFlight = null;
   let endOfSearch = false;
   const flightSelector = `[id^='${flightId}|']`;
+  const searchFlightSelector = `${FLIGHT_CARD_SELECTOR}:not([data-searched-${flightId}='true'])`;
   while (!foundFlight && !endOfSearch) {
     foundFlight = document.querySelector(flightSelector) as HTMLElement;
-    endOfSearch = await scrollToBottom(flightId);
+    if (!foundFlight) {
+      const flightCards = Array.from(document.querySelectorAll(searchFlightSelector) as NodeListOf<HTMLElement>);
+      flightCards.forEach((flightCard) => {
+        flightCard.dataset[`searched_${flightId}`] = "true";
+      });
+      endOfSearch = await scrollToBottomCard(flightCards.slice(-1)[0], searchFlightSelector);
+    }
   }
   if (!foundFlight) {
     throw new MissingElementLookupError(`Unable to find a flight card with id ${flightId}`);
@@ -19,13 +26,11 @@ export const findFlightCard = async (flightId: string) => {
   return foundFlight;
 };
 
-const scrollToBottom = async (flightId: string) => {
+const scrollToBottomCard = async (flightCard: HTMLElement, unsearchedSelector: string): Promise<boolean> => {
   let hasMoreFlights = true;
-  const selector = `${FLIGHT_CARD_SELECTOR}:not([data-searched-${flightId}='true'])`;
-  const visibleFlightCards = document.querySelectorAll(selector) as NodeListOf<HTMLElement>;
-  scrollToFlightCard(Array.from(visibleFlightCards).slice(-1)[0]);
+  scrollToFlightCard(flightCard);
   try {
-    await waitForAppearance(3000, selector);
+    await waitForAppearance(5000, unsearchedSelector);
   } catch {
     hasMoreFlights = false;
   }
