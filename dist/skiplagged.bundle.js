@@ -986,6 +986,8 @@ var getFare = function getFare(flightCard) {
   return fareContainer.textContent;
 };
 ;// CONCATENATED MODULE: ./src/skiplagged/parser/getFlights.ts
+function getFlights_createForOfIteratorHelper(o, allowArrayLike) { var it; if (typeof Symbol === "undefined" || o[Symbol.iterator] == null) { if (Array.isArray(o) || (it = getFlights_unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e2) { throw _e2; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = o[Symbol.iterator](); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e3) { didErr = true; err = _e3; }, f: function f() { try { if (!normalCompletion && it["return"] != null) it["return"](); } finally { if (didErr) throw err; } } }; }
+
 function getFlights_slicedToArray(arr, i) { return getFlights_arrayWithHoles(arr) || getFlights_iterableToArrayLimit(arr, i) || getFlights_unsupportedIterableToArray(arr, i) || getFlights_nonIterableRest(); }
 
 function getFlights_nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
@@ -1045,44 +1047,44 @@ var getFlights = /*#__PURE__*/function () {
 
     var flightContainer = getFlightContainer(selectedFlight ? "RETURN" : "DEPARTURE");
     var visitedFlights = {};
-    var mutationObserver = new MutationObserver(function (mutations) {
-      mutations.forEach( /*#__PURE__*/function () {
-        var _ref2 = getFlights_asyncToGenerator(function* (mutation) {
-          if (mutation.addedNodes) {
-            var sentFlightMaps = yield sendFlights(Array.from(mutation.addedNodes), Object.values(visitedFlights), selectedFlight);
+    var visitedFlightsVersion = 0;
+    var mutationObserver = new MutationObserver( /*#__PURE__*/function () {
+      var _mutationDriver = getFlights_asyncToGenerator(function* (mutations) {
+        var _yield$mutationCallba = yield mutationCallback(mutations, visitedFlights, visitedFlightsVersion, selectedFlight),
+            newMapEntries = _yield$mutationCallba.flightMap,
+            runtimeVersion = _yield$mutationCallba.version;
 
-            for (var _i = 0, _Object$entries = Object.entries(sentFlightMaps); _i < _Object$entries.length; _i++) {
-              var _Object$entries$_i = getFlights_slicedToArray(_Object$entries[_i], 2),
-                  fpId = _Object$entries$_i[0],
-                  skipId = _Object$entries$_i[1];
+        if (runtimeVersion === visitedFlightsVersion) {
+          visitedFlightsVersion += 1;
 
-              visitedFlights[fpId] = skipId;
-            }
+          for (var _i = 0, _Object$entries = Object.entries(newMapEntries); _i < _Object$entries.length; _i++) {
+            var _Object$entries$_i = getFlights_slicedToArray(_Object$entries[_i], 2),
+                fpId = _Object$entries$_i[0],
+                skipId = _Object$entries$_i[1];
+
+            visitedFlights[fpId] = skipId;
           }
-        });
+        } else {
+          yield pause(100, 10, 50);
+          mutationDriver(mutations);
+        }
+      });
 
-        return function (_x) {
-          return _ref2.apply(this, arguments);
-        };
-      }());
-    });
+      function mutationDriver(_x) {
+        return _mutationDriver.apply(this, arguments);
+      }
+
+      return mutationDriver;
+    }());
     mutationObserver.observe(flightContainer, {
       childList: true
     });
     yield waitForDisappearance(45000, PROGRESS_SELECTOR);
-    var unChangedCounter = 0;
-    var totalFlights = Object.keys(visitedFlights).length;
+    var startTime = new Date().getTime();
 
-    while (unChangedCounter <= 5) {
-      yield progressiveScrolling(flightContainer);
-      var newFlightTotal = Object.keys(visitedFlights).length;
-
-      if (newFlightTotal > totalFlights) {
-        unChangedCounter = 0;
-        totalFlights = newFlightTotal;
-      } else {
-        unChangedCounter += 1;
-      }
+    while (getTimeSinceStart(startTime) < 60000) {
+      yield progressiveScrollingOnce(flightContainer);
+      yield pause(200, 100, 200);
     }
 
     mutationObserver.disconnect();
@@ -1131,9 +1133,10 @@ var getFlightContainer = function getFlightContainer(type) {
   return tripListContainer;
 };
 
-var progressiveScrolling = /*#__PURE__*/function () {
-  var _ref3 = getFlights_asyncToGenerator(function* (flightContainer) {
+var progressiveScrollingOnce = /*#__PURE__*/function () {
+  var _ref2 = getFlights_asyncToGenerator(function* (flightContainer) {
     window.scrollTo(0, 0);
+    pause(300, 100, 200);
     var lastFlightCard = null;
     var batchLastFlightCard = null;
 
@@ -1142,14 +1145,51 @@ var progressiveScrolling = /*#__PURE__*/function () {
       var flightCards = flightContainer.querySelectorAll(FLIGHT_CARD_SELECTOR);
       batchLastFlightCard = Array.from(flightCards).slice(-1)[0];
       scrollToFlightCard(batchLastFlightCard);
-      yield pause(500);
     }
   });
 
-  return function progressiveScrolling(_x2) {
+  return function progressiveScrollingOnce(_x2) {
+    return _ref2.apply(this, arguments);
+  };
+}();
+
+var mutationCallback = /*#__PURE__*/function () {
+  var _ref3 = getFlights_asyncToGenerator(function* (mutations, flightMap, flightMapVersion, selectedFlight) {
+    var flightCards = [];
+
+    var _iterator = getFlights_createForOfIteratorHelper(mutations),
+        _step;
+
+    try {
+      for (_iterator.s(); !(_step = _iterator.n()).done;) {
+        var mutation = _step.value;
+
+        if (mutation.addedNodes) {
+          flightCards = flightCards.concat(Array.from(mutation.addedNodes));
+        }
+      }
+    } catch (err) {
+      _iterator.e(err);
+    } finally {
+      _iterator.f();
+    }
+
+    var sentFlightMaps = yield sendFlights(flightCards, Object.values(flightMap), selectedFlight);
+    return {
+      flightMap: sentFlightMaps,
+      version: flightMapVersion
+    };
+  });
+
+  return function mutationCallback(_x3, _x4, _x5, _x6) {
     return _ref3.apply(this, arguments);
   };
 }();
+
+var getTimeSinceStart = function getTimeSinceStart(startTime) {
+  var currentTime = new Date().getTime();
+  return currentTime - startTime;
+};
 ;// CONCATENATED MODULE: ./src/shared/ui/manageSelectionHighlights.ts
 var highlightSelectedElement = function highlightSelectedElement(element) {
   element.style.border = "10px solid #f2554b";

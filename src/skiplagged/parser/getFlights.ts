@@ -41,20 +41,25 @@ export const getFlights = async (selectedFlight = null): Promise<FlightMap> => {
 
   const flightContainer = getFlightContainer(selectedFlight ? "RETURN" : "DEPARTURE");
   const visitedFlights = {} as FlightMap;
+  let visitedFlightsVersion = 0;
 
-  const mutationObserver = new MutationObserver(function (mutations) {
-    mutations.forEach(async function (mutation) {
-      if (mutation.addedNodes) {
-        const sentFlightMaps = await sendFlights(
-          Array.from(mutation.addedNodes),
-          Object.values(visitedFlights),
-          selectedFlight,
-        );
-        for (const [fpId, skipId] of Object.entries(sentFlightMaps)) {
-          visitedFlights[fpId] = skipId;
-        }
+  const mutationObserver = new MutationObserver(async function mutationDriver(mutations) {
+    const { flightMap: newMapEntries, version: runtimeVersion } = await mutationCallback(
+      mutations,
+      visitedFlights,
+      visitedFlightsVersion,
+      selectedFlight,
+    );
+
+    if (runtimeVersion === visitedFlightsVersion) {
+      visitedFlightsVersion += 1;
+      for (const [fpId, skipId] of Object.entries(newMapEntries)) {
+        visitedFlights[fpId] = skipId;
       }
-    });
+    } else {
+      await pause(100, 10, 50);
+      mutationDriver(mutations);
+    }
   });
 
   mutationObserver.observe(flightContainer, {
@@ -63,17 +68,10 @@ export const getFlights = async (selectedFlight = null): Promise<FlightMap> => {
 
   await waitForDisappearance(45000, PROGRESS_SELECTOR);
 
-  let unChangedCounter = 0;
-  let totalFlights = Object.keys(visitedFlights).length;
-  while (unChangedCounter <= 3) {
-    await progressiveScrolling(flightContainer);
-    const newFlightTotal = Object.keys(visitedFlights).length;
-    if (newFlightTotal > totalFlights) {
-      unChangedCounter = 0;
-      totalFlights = newFlightTotal;
-    } else {
-      unChangedCounter += 1;
-    }
+  const startTime = new Date().getTime();
+  while (getTimeSinceStart(startTime) < 60000) {
+    await progressiveScrollingOnce(flightContainer);
+    await pause(200, 100, 200);
   }
 
   mutationObserver.disconnect();
@@ -109,8 +107,9 @@ const getFlightContainer = (type: "DEPARTURE" | "RETURN") => {
   return tripListContainer as HTMLElement;
 };
 
-const progressiveScrolling = async (flightContainer: HTMLElement) => {
+const progressiveScrollingOnce = async (flightContainer: HTMLElement) => {
   window.scrollTo(0, 0);
+  pause(300, 100, 200);
 
   let lastFlightCard = null;
   let batchLastFlightCard = null;
@@ -119,6 +118,26 @@ const progressiveScrolling = async (flightContainer: HTMLElement) => {
     const flightCards = flightContainer.querySelectorAll(FLIGHT_CARD_SELECTOR) as NodeListOf<HTMLElement>;
     batchLastFlightCard = Array.from(flightCards).slice(-1)[0];
     scrollToFlightCard(batchLastFlightCard);
-    await pause(500);
   }
+};
+
+const mutationCallback = async (
+  mutations: MutationRecord[],
+  flightMap: FlightMap,
+  flightMapVersion: number,
+  selectedFlight: any,
+) => {
+  let flightCards = [] as HTMLElement[];
+  for (const mutation of mutations) {
+    if (mutation.addedNodes) {
+      flightCards = flightCards.concat(Array.from(mutation.addedNodes) as HTMLElement[]);
+    }
+  }
+  const sentFlightMaps = await sendFlights(flightCards, Object.values(flightMap), selectedFlight);
+  return { flightMap: sentFlightMaps, version: flightMapVersion };
+};
+
+const getTimeSinceStart = (startTime: number) => {
+  const currentTime = new Date().getTime();
+  return currentTime - startTime;
 };
