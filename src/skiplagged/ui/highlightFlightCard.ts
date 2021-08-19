@@ -1,6 +1,7 @@
 import { MissingElementLookupError, ParserError } from "../../shared/errors";
 import { clearHighlightFromElement, highlightSelectedElement } from "../../shared/ui/manageSelectionHighlights";
 import { findMatchingDOMNode } from "../../shared/utilities/findMatchingDOMNode";
+import { scrollToFlightCard } from "./scrollToFlightCard";
 
 const FLIGHT_CARD_SELECTOR = "div[class='trip']";
 
@@ -30,9 +31,4 @@ const getFlightCard = (selectedReturnId: string) => {
   }
 
   return flightCard;
-};
-
-const scrollToFlightCard = (flightCard: HTMLElement) => {
-  const yPosition = window.pageYOffset + flightCard.getBoundingClientRect().top - window.innerHeight / 2;
-  window.scroll(0, yPosition);
 };

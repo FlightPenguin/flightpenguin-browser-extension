@@ -32,9 +32,9 @@ export const getUnsentFlights = async (
     });
     newlyVisitedIds.push(flightCard.id);
     if (selectedFlight) {
-      sendFlightsEvent("skiplagged", flights);
-    } else {
       sendReturnFlightsEvent("skiplagged", flights);
+    } else {
+      sendFlightsEvent("skiplagged", flights);
     }
   }
 

@@ -1,4 +1,6 @@
+import { MissingElementLookupError } from "../../shared/errors";
 import { sendNoFlightsEvent } from "../../shared/events";
+import { isVisible } from "../../shared/utilities/isVisible";
 import { waitForAppearance } from "../../shared/utilities/waitFor";
 import { disableHiddenCitySearches } from "../ui/disableHiddenCitySearches";
 import { scrollToFlightCard } from "../ui/scrollToFlightCard";
@@ -18,6 +20,7 @@ export const getFlights = async (selectedFlight = null): Promise<void> => {
 
   await waitForAppearance(3000, CONTAINER_SHELL_SELECTOR);
   await waitForAppearance(10_000, SORT_BUTTON_SELECTOR);
+  await waitForAppearance(10_000, FLIGHT_CARD_SELECTOR);
 
   disableHiddenCitySearches();
 
@@ -41,5 +44,10 @@ export const getFlights = async (selectedFlight = null): Promise<void> => {
 };
 
 const isNoResults = () => {
-  return !!document.querySelector(NO_RESULTS_SELECTOR);
+  const noResultsDiv = document.querySelector(NO_RESULTS_SELECTOR) as HTMLDivElement;
+  if (!noResultsDiv) {
+    throw new MissingElementLookupError("Unable to find the no results container");
+  }
+
+  return isVisible(noResultsDiv);
 };
