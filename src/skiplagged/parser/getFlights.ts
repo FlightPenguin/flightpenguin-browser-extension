@@ -31,7 +31,7 @@ export const getFlights = async (selectedFlight = null): Promise<void> => {
     sendNoFlightsEvent("skiplagged");
   }
 
-  const visitedFlightCardIds: string[] = {};
+  const visitedFlightCardIds: string[] = [];
   let hasMoreFlights = true;
   while (hasMoreFlights) {
     const flightCards = document.querySelectorAll(FLIGHT_CARD_SELECTOR) as NodeListOf<HTMLElement>;

@@ -1002,10 +1002,9 @@ var getFlights = /*#__PURE__*/function () {
      */
     yield waitForAppearance(3000, getFlights_CONTAINER_SHELL_SELECTOR);
     yield waitForAppearance(10000, getFlights_SORT_BUTTON_SELECTOR);
-    yield waitForAppearance(10000, FLIGHT_CARD_SELECTOR);
-    console.log(document.querySelectorAll(FLIGHT_CARD_SELECTOR));
+    yield waitForAppearance(10000, FLIGHT_CARD_SELECTOR); // prices change as providers stream in.  wait for final price at the moment.
+
     yield waitForDisappearance(45000, PROGRESS_SELECTOR);
-    console.log(document.querySelectorAll(FLIGHT_CARD_SELECTOR));
     disableHiddenCitySearches();
 
     if (isNoResults()) {
