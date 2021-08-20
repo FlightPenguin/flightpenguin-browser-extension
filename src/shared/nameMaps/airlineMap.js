@@ -5,6 +5,7 @@ const AirlineMap = {
     Delta: { display: "Delta", color: "#EE722E", code: "DL" },
     Southwest: { display: "Southwest", color: "#F6C04D", code: "WN" },
     United: { display: "United", color: "#235EA6", code: "UA" },
+    "United Airlines": { display: "United", color: "#235EA6", code: "UA" },
     "Air Canada": { display: "Air Canada", color: "#E53222", code: "AC" },
     "Alaska Airlines": { display: "Alaska", color: "#51172C", code: "AS" },
     jetBlue: { display: "jetBlue", color: "#5F90C8", code: "B6" },
@@ -52,9 +53,8 @@ const AirlineMap = {
     "Japan Airlines": { display: "Japan Airlines", color: "#E56E69", code: "JL" },
     "Air India": { display: "Air India", color: "#D47346", code: "AI" },
     "Qantas Airways": { display: "Qantas", color: "#E34538", code: "QF" },
-    "Singapore Airlines": { display: "Sinagpore", color: "#EFA952", code: "SQ" },
+    "Singapore Airlines": { display: "Singapore", color: "#EFA952", code: "SQ" },
     "ANA (All Nippon Airways)": { display: "ANA", color: "#0f4a8d" },
-    "Multiple airlines": { display: "Multiple", color: "#000000" },
   },
   getAirlineName: function (airlineName) {
     if (!airlineName || typeof airlineName !== "string") {

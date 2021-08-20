@@ -245,6 +245,11 @@ var AirlineMap = {
       color: "#235EA6",
       code: "UA"
     },
+    "United Airlines": {
+      display: "United",
+      color: "#235EA6",
+      code: "UA"
+    },
     "Air Canada": {
       display: "Air Canada",
       color: "#E53222",
@@ -405,17 +410,13 @@ var AirlineMap = {
       code: "QF"
     },
     "Singapore Airlines": {
-      display: "Sinagpore",
+      display: "Singapore",
       color: "#EFA952",
       code: "SQ"
     },
     "ANA (All Nippon Airways)": {
       display: "ANA",
       color: "#0f4a8d"
-    },
-    "Multiple airlines": {
-      display: "Multiple",
-      color: "#000000"
     }
   },
   getAirlineName: function getAirlineName(airlineName) {

@@ -312,6 +312,11 @@ var AirlineMap = {
       color: "#235EA6",
       code: "UA"
     },
+    "United Airlines": {
+      display: "United",
+      color: "#235EA6",
+      code: "UA"
+    },
     "Air Canada": {
       display: "Air Canada",
       color: "#E53222",
@@ -472,17 +477,13 @@ var AirlineMap = {
       code: "QF"
     },
     "Singapore Airlines": {
-      display: "Sinagpore",
+      display: "Singapore",
       color: "#EFA952",
       code: "SQ"
     },
     "ANA (All Nippon Airways)": {
       display: "ANA",
       color: "#0f4a8d"
-    },
-    "Multiple airlines": {
-      display: "Multiple",
-      color: "#000000"
     }
   },
   getAirlineName: function getAirlineName(airlineName) {
@@ -1238,47 +1239,7 @@ function findFlightCard_asyncToGenerator(fn) { return function () { var self = t
 
 
 
-var findFlightCard_FLIGHT_CARD_SELECTOR = "div[class='trip']"; // export const findFlightCard = async (flightId: string) => {
-//   window.scrollTo({ top: 0, behavior: "smooth" });
-//   await pause(1000);
-//
-//   let foundFlight = null;
-//   let endOfSearch = false;
-//   const flightSelector = `[id^='${flightId}|']`;
-//   const searchFlightSelector = `${FLIGHT_CARD_SELECTOR}:not([data-searched-${flightId}='true'])`;
-//   let counter = 0;
-//   while (!foundFlight && !endOfSearch) {
-//     counter += 1;
-//     foundFlight = document.querySelector(flightSelector) as HTMLElement;
-//     if (!foundFlight) {
-//       const flightCards = Array.from(document.querySelectorAll(searchFlightSelector) as NodeListOf<HTMLElement>);
-//       flightCards.forEach((flightCard) => {
-//         flightCard.dataset[`searched_${flightId}`] = "true";
-//       });
-//       endOfSearch = await scrollToBottomCard(flightCards.slice(-1)[0], searchFlightSelector);
-//     }
-//     if (counter > 3) {
-//       debugger;
-//     }
-//   }
-//   if (!foundFlight) {
-//     throw new MissingElementLookupError(`Unable to find a flight card with id ${flightId}`);
-//   }
-//   return foundFlight;
-// };
-//
-// const scrollToBottomCard = async (flightCard: HTMLElement, unsearchedSelector: string): Promise<boolean> => {
-//   let endOfSearch = false;
-//   scrollToFlightCard(flightCard);
-//   try {
-//     await waitForAppearance(1500, unsearchedSelector);
-//   } catch {
-//     debugger;
-//     endOfSearch = true;
-//   }
-//   return endOfSearch;
-// };
-
+var findFlightCard_FLIGHT_CARD_SELECTOR = "div[class='trip']";
 var findFlightCard = /*#__PURE__*/function () {
   var _ref = findFlightCard_asyncToGenerator(function* (skiplaggedFlightId) {
     window.scrollTo({
