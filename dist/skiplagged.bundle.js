@@ -227,7 +227,10 @@ var disableHiddenCitySearches = function disableHiddenCitySearches() {
 ;// CONCATENATED MODULE: ./src/skiplagged/ui/scrollToFlightCard.ts
 var scrollToFlightCard = function scrollToFlightCard(flightCard) {
   var yPosition = window.pageYOffset + flightCard.getBoundingClientRect().top - window.innerHeight / 2;
-  window.scrollTo(0, yPosition);
+  window.scrollTo({
+    top: yPosition,
+    behavior: "smooth"
+  });
 };
 ;// CONCATENATED MODULE: ./src/shared/events/sendReturnFlights.ts
 function sendReturnFlightsEvent(providerName, flights) {
@@ -902,7 +905,7 @@ function sendFlights_asyncToGenerator(fn) { return function () { var self = this
 
 var FARE_PARENT_CONTAINER_SELECTOR = "div.trip-cost";
 var sendFlights = /*#__PURE__*/function () {
-  var _ref = sendFlights_asyncToGenerator(function* (flightCards, visitedFlightCardIds) {
+  var _ref = sendFlights_asyncToGenerator(function* (flightCards, flightMap) {
     var selectedFlight = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : null;
     var flights = [];
     var newlyVisitedIds = {};
@@ -915,7 +918,7 @@ var sendFlights = /*#__PURE__*/function () {
         var node = _step.value;
         var flightCard = node;
 
-        if (shouldSkipCard(flightCard, visitedFlightCardIds)) {
+        if (shouldSkipCard(flightCard)) {
           continue;
         }
 
@@ -928,25 +931,29 @@ var sendFlights = /*#__PURE__*/function () {
 
         var fare = getFare(flightCard);
         var flightPenguinId = getFlightDatasetId(flightDetails);
+        var skiplaggedShortId = getFlightCardShortId(flightCard);
         flightCard.dataset.fpid = flightPenguinId;
         flightCard.dataset.visited = "true";
-        flights.push({
-          departureFlight: departureFlight,
-          returnFlight: returnFlight,
-          fare: fare
-        });
-        newlyVisitedIds[flightPenguinId] = getFlightCardShortId(flightCard); // todo: use trip name from ua1234
 
-        if (selectedFlight) {
-          sendReturnFlightsEvent("skiplagged", flights);
-        } else {
-          sendFlightsEvent("skiplagged", flights);
+        if (!shouldSkipFlight(flightPenguinId, skiplaggedShortId, flightMap)) {
+          flights.push({
+            departureFlight: departureFlight,
+            returnFlight: returnFlight,
+            fare: fare
+          });
+          newlyVisitedIds[flightPenguinId] = skiplaggedShortId;
         }
       }
     } catch (err) {
       _iterator.e(err);
     } finally {
       _iterator.f();
+    }
+
+    var sendFlightsFunc = selectedFlight ? sendReturnFlightsEvent : sendFlightsEvent;
+
+    if (flights.length) {
+      sendFlightsFunc("skiplagged", flights);
     }
 
     return newlyVisitedIds;
@@ -957,13 +964,23 @@ var sendFlights = /*#__PURE__*/function () {
   };
 }();
 
-var shouldSkipCard = function shouldSkipCard(flightCard, visitedCardIds) {
+var shouldSkipCard = function shouldSkipCard(flightCard) {
   var denyListTerms = ["bargain fare", "special fare", "after booking"];
   return denyListTerms.some(function (term) {
     var _flightCard$textConte;
 
     return (_flightCard$textConte = flightCard.textContent) === null || _flightCard$textConte === void 0 ? void 0 : _flightCard$textConte.includes(term);
-  }) || visitedCardIds.includes(getFlightCardShortId(flightCard));
+  });
+};
+
+var shouldSkipFlight = function shouldSkipFlight(flightPenguinId, skiplaggedShortId, map) {
+  var currentlyKnownId = map[flightPenguinId];
+
+  if (currentlyKnownId && currentlyKnownId === skiplaggedShortId) {
+    return true;
+  }
+
+  return false;
 };
 
 var getFlightDatasetId = function getFlightDatasetId(flight) {
@@ -1143,7 +1160,7 @@ var progressiveScrollingOnce = /*#__PURE__*/function () {
       top: 0,
       behavior: "smooth"
     });
-    pause(1000, 100, 200);
+    yield pause(1000, 100, 200);
     var lastFlightCard = null;
     var batchLastFlightCard = null;
 
@@ -1152,7 +1169,7 @@ var progressiveScrollingOnce = /*#__PURE__*/function () {
       var flightCards = flightContainer.querySelectorAll(FLIGHT_CARD_SELECTOR);
       batchLastFlightCard = Array.from(flightCards).slice(-1)[0];
       scrollToFlightCard(batchLastFlightCard);
-      pause(300, 50, 100);
+      yield pause(300, 50, 100);
     }
   });
 
@@ -1182,7 +1199,7 @@ var mutationCallback = /*#__PURE__*/function () {
       _iterator.f();
     }
 
-    var sentFlightMaps = yield sendFlights(flightCards, Object.values(flightMap), selectedFlight);
+    var sentFlightMaps = yield sendFlights(flightCards, flightMap, selectedFlight);
     return {
       flightMap: sentFlightMaps,
       version: flightMapVersion
@@ -1221,56 +1238,83 @@ function findFlightCard_asyncToGenerator(fn) { return function () { var self = t
 
 
 
-var findFlightCard_FLIGHT_CARD_SELECTOR = "div[class='trip']";
+var findFlightCard_FLIGHT_CARD_SELECTOR = "div[class='trip']"; // export const findFlightCard = async (flightId: string) => {
+//   window.scrollTo({ top: 0, behavior: "smooth" });
+//   await pause(1000);
+//
+//   let foundFlight = null;
+//   let endOfSearch = false;
+//   const flightSelector = `[id^='${flightId}|']`;
+//   const searchFlightSelector = `${FLIGHT_CARD_SELECTOR}:not([data-searched-${flightId}='true'])`;
+//   let counter = 0;
+//   while (!foundFlight && !endOfSearch) {
+//     counter += 1;
+//     foundFlight = document.querySelector(flightSelector) as HTMLElement;
+//     if (!foundFlight) {
+//       const flightCards = Array.from(document.querySelectorAll(searchFlightSelector) as NodeListOf<HTMLElement>);
+//       flightCards.forEach((flightCard) => {
+//         flightCard.dataset[`searched_${flightId}`] = "true";
+//       });
+//       endOfSearch = await scrollToBottomCard(flightCards.slice(-1)[0], searchFlightSelector);
+//     }
+//     if (counter > 3) {
+//       debugger;
+//     }
+//   }
+//   if (!foundFlight) {
+//     throw new MissingElementLookupError(`Unable to find a flight card with id ${flightId}`);
+//   }
+//   return foundFlight;
+// };
+//
+// const scrollToBottomCard = async (flightCard: HTMLElement, unsearchedSelector: string): Promise<boolean> => {
+//   let endOfSearch = false;
+//   scrollToFlightCard(flightCard);
+//   try {
+//     await waitForAppearance(1500, unsearchedSelector);
+//   } catch {
+//     debugger;
+//     endOfSearch = true;
+//   }
+//   return endOfSearch;
+// };
+
 var findFlightCard = /*#__PURE__*/function () {
-  var _ref = findFlightCard_asyncToGenerator(function* (flightId) {
-    window.scrollTo(0, 0);
-    yield waitForAppearance(5000, "".concat(findFlightCard_FLIGHT_CARD_SELECTOR, ":not([data-visited='true'])"));
-    var foundFlight = null;
-    var endOfSearch = false;
-    var flightSelector = "[id^='".concat(flightId, "|']");
-    var searchFlightSelector = "".concat(findFlightCard_FLIGHT_CARD_SELECTOR, ":not([data-searched-").concat(flightId, "='true'])");
+  var _ref = findFlightCard_asyncToGenerator(function* (skiplaggedFlightId) {
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth"
+    });
+    yield pause(1000);
+    var flightSelector = "[id^='".concat(skiplaggedFlightId, "|']");
+    var flightCard = null;
+    var lastFlightCard = null;
+    var batchLastFlightCard = null;
 
-    while (!foundFlight && !endOfSearch) {
-      foundFlight = document.querySelector(flightSelector);
+    while (lastFlightCard === null || lastFlightCard !== batchLastFlightCard) {
+      lastFlightCard = batchLastFlightCard;
+      flightCard = document.querySelector(flightSelector);
 
-      if (!foundFlight) {
-        var flightCards = Array.from(document.querySelectorAll(searchFlightSelector));
-        flightCards.forEach(function (flightCard) {
-          flightCard.dataset["searched_".concat(flightId)] = "true";
-        });
-        endOfSearch = yield scrollToBottomCard(flightCards.slice(-1)[0], searchFlightSelector);
+      if (flightCard) {
+        break;
       }
+
+      var flightCards = document.querySelectorAll(findFlightCard_FLIGHT_CARD_SELECTOR);
+      batchLastFlightCard = Array.from(flightCards).slice(-1)[0];
+      scrollToFlightCard(batchLastFlightCard);
+      yield pause(300, 50, 100);
     }
 
-    if (!foundFlight) {
-      throw new MissingElementLookupError("Unable to find a flight card with id ".concat(flightId));
+    if (flightCard) {
+      return flightCard;
+    } else {
+      // TODO:
+      throw new ParserError("TODO: ");
     }
-
-    return foundFlight;
   });
 
   return function findFlightCard(_x) {
     return _ref.apply(this, arguments);
-  };
-}();
-
-var scrollToBottomCard = /*#__PURE__*/function () {
-  var _ref2 = findFlightCard_asyncToGenerator(function* (flightCard, unsearchedSelector) {
-    var hasMoreFlights = true;
-    scrollToFlightCard(flightCard);
-
-    try {
-      yield waitForAppearance(5000, unsearchedSelector);
-    } catch (_unused) {
-      hasMoreFlights = false;
-    }
-
-    return hasMoreFlights;
-  });
-
-  return function scrollToBottomCard(_x2, _x3) {
-    return _ref2.apply(this, arguments);
   };
 }();
 ;// CONCATENATED MODULE: ./src/skiplagged/ui/highlightFlightCard.ts
@@ -1348,7 +1392,7 @@ chrome.runtime.onMessage.addListener( /*#__PURE__*/function () {
         break;
 
       case "HIGHLIGHT_FLIGHT":
-        yield highlightFlight(message.selectedReturnId);
+        yield highlightFlight(message.selectedDepartureId, message.selectedReturnId);
         break;
 
       case "CLEAR_SELECTION":
@@ -1402,18 +1446,26 @@ var scrapeReturnFlights = /*#__PURE__*/function () {
 }();
 
 var highlightFlight = /*#__PURE__*/function () {
-  var _ref4 = contentScript_asyncToGenerator(function* (flightPenguinReturnId) {
+  var _ref4 = contentScript_asyncToGenerator(function* (flightPenguinDepartureId, flightPenguinReturnId) {
+    addBackToSearchButton();
+
     try {
-      var returnId = getReturnId(flightPenguinReturnId);
-      yield highlightFlightCard(returnId);
-      addBackToSearchButton();
+      var flightId;
+
+      if (flightPenguinDepartureId) {
+        flightId = getDepartureId(flightPenguinDepartureId);
+      } else {
+        flightId = getReturnId(flightPenguinReturnId);
+      }
+
+      yield highlightFlightCard(flightId);
     } catch (error) {
       window.Sentry.captureException(error);
       sendFailedScraper("skiplagged", error);
     }
   });
 
-  return function highlightFlight(_x3) {
+  return function highlightFlight(_x3, _x4) {
     return _ref4.apply(this, arguments);
   };
 }();

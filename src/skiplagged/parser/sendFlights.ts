@@ -9,7 +9,7 @@ const FARE_PARENT_CONTAINER_SELECTOR = "div.trip-cost";
 
 export const sendFlights = async (
   flightCards: Node[],
-  visitedFlightCardIds: string[],
+  flightMap: FlightMap,
   selectedFlight = null,
 ): Promise<FlightMap> => {
   const flights = [] as Flight[];
@@ -17,40 +17,48 @@ export const sendFlights = async (
 
   for (const node of flightCards) {
     const flightCard = node as HTMLElement;
-    if (shouldSkipCard(flightCard, visitedFlightCardIds)) {
+    if (shouldSkipCard(flightCard)) {
       continue;
     }
 
     const flightDetails = await getFlightDetails(flightCard);
     const [departureFlight, returnFlight] = selectedFlight ? [selectedFlight, flightDetails] : [flightDetails, null];
     const fare = getFare(flightCard);
-
     const flightPenguinId = getFlightDatasetId(flightDetails);
+    const skiplaggedShortId = getFlightCardShortId(flightCard);
 
     flightCard.dataset.fpid = flightPenguinId;
     flightCard.dataset.visited = "true";
-    flights.push({
-      departureFlight,
-      returnFlight,
-      fare,
-    });
-    newlyVisitedIds[flightPenguinId] = getFlightCardShortId(flightCard); // todo: use trip name from ua1234
-    if (selectedFlight) {
-      sendReturnFlightsEvent("skiplagged", flights);
-    } else {
-      sendFlightsEvent("skiplagged", flights);
+
+    if (!shouldSkipFlight(flightPenguinId, skiplaggedShortId, flightMap)) {
+      flights.push({
+        departureFlight,
+        returnFlight,
+        fare,
+      });
+      newlyVisitedIds[flightPenguinId] = skiplaggedShortId;
     }
+  }
+
+  const sendFlightsFunc = selectedFlight ? sendReturnFlightsEvent : sendFlightsEvent;
+  if (flights.length) {
+    sendFlightsFunc("skiplagged", flights);
   }
 
   return newlyVisitedIds;
 };
 
-const shouldSkipCard = (flightCard: HTMLElement, visitedCardIds: string[]) => {
+const shouldSkipCard = (flightCard: HTMLElement) => {
   const denyListTerms = ["bargain fare", "special fare", "after booking"];
-  return (
-    denyListTerms.some((term) => flightCard.textContent?.includes(term)) ||
-    visitedCardIds.includes(getFlightCardShortId(flightCard))
-  );
+  return denyListTerms.some((term) => flightCard.textContent?.includes(term));
+};
+
+const shouldSkipFlight = (flightPenguinId: string, skiplaggedShortId: string, map: FlightMap) => {
+  const currentlyKnownId = map[flightPenguinId];
+  if (currentlyKnownId && currentlyKnownId === skiplaggedShortId) {
+    return true;
+  }
+  return false;
 };
 
 const getFlightDatasetId = (flight: FlightDetails) => {

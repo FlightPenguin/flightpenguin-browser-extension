@@ -880,34 +880,12 @@ var handleDispatchBeginParsing = function handleDispatchBeginParsing(providerMan
     }, timeout);
   }
 };
-;// CONCATENATED MODULE: ./src/shared/pause.ts
-function pause() {
-  var timeout = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 10000;
-  var jitterMin = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 0;
-  var jitterMax = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 0;
-  var jitter = 0;
-
-  if (jitterMin && jitterMax) {
-    jitter += getRandomInt(jitterMin, jitterMax);
-  }
-
-  return new Promise(function (resolve) {
-    setTimeout(resolve, timeout + jitter);
-  });
-}
-
-function getRandomInt(min, max) {
-  min = Math.ceil(min);
-  max = Math.floor(max);
-  return Math.floor(Math.random() * (max - min + 1)) + min;
-}
 ;// CONCATENATED MODULE: ./src/background/eventHandlers/flightResultsReceived.ts
 function flightResultsReceived_ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
 
 function flightResultsReceived_objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { flightResultsReceived_ownKeys(Object(source), true).forEach(function (key) { flightResultsReceived_defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { flightResultsReceived_ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
 
 function flightResultsReceived_defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
 
 
 var handleFlightResultsReceived = function handleFlightResultsReceived(providerManager, flights, providerName) {
@@ -954,7 +932,6 @@ var handleFlightResultsReceived = function handleFlightResultsReceived(providerM
     };
     providerManager.sendMessageToIndexPage(nextMessage);
   } else {
-    pause(100, 10, 50);
     return handleFlightResultsReceived(providerManager, flights, providerName);
   }
 };
@@ -964,7 +941,6 @@ function flightReturnResultsReceived_ownKeys(object, enumerableOnly) { var keys 
 function flightReturnResultsReceived_objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { flightReturnResultsReceived_ownKeys(Object(source), true).forEach(function (key) { flightReturnResultsReceived_defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { flightReturnResultsReceived_ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
 
 function flightReturnResultsReceived_defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
 
 
 var handleFlightReturnResultsReceived = function handleFlightReturnResultsReceived(providerManager, flights, providerName) {
@@ -1009,7 +985,6 @@ var handleFlightReturnResultsReceived = function handleFlightReturnResultsReceiv
     };
     providerManager.sendMessageToIndexPage(nextMessage);
   } else {
-    pause(100, 10, 50);
     return handleFlightReturnResultsReceived(providerManager, flights, providerName);
   }
 };
@@ -1210,6 +1185,27 @@ var formatDate = function formatDate(dateString) {
 
   return [month, day, year].join("/");
 };
+;// CONCATENATED MODULE: ./src/shared/pause.ts
+function pause() {
+  var timeout = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 10000;
+  var jitterMin = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 0;
+  var jitterMax = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 0;
+  var jitter = 0;
+
+  if (jitterMin && jitterMax) {
+    jitter += getRandomInt(jitterMin, jitterMax);
+  }
+
+  return new Promise(function (resolve) {
+    setTimeout(resolve, timeout + jitter);
+  });
+}
+
+function getRandomInt(min, max) {
+  min = Math.ceil(min);
+  max = Math.floor(max);
+  return Math.floor(Math.random() * (max - min + 1)) + min;
+}
 ;// CONCATENATED MODULE: ./src/skiplagged/mappings/getUrl.ts
 var getUrl_getUrl = function getUrl(formData) {
   var from = formData.from,

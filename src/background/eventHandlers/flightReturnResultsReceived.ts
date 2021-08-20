@@ -51,7 +51,6 @@ export const handleFlightReturnResultsReceived = (
 
     providerManager.sendMessageToIndexPage(nextMessage);
   } else {
-    pause(100, 10, 50);
     return handleFlightReturnResultsReceived(providerManager, flights, providerName);
   }
 };

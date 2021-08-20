@@ -25,7 +25,7 @@ chrome.runtime.onMessage.addListener(async function (message) {
       await scrapeReturnFlights(message.departure);
       break;
     case "HIGHLIGHT_FLIGHT":
-      await highlightFlight(message.selectedReturnId);
+      await highlightFlight(message.selectedDepartureId, message.selectedReturnId);
       break;
     case "CLEAR_SELECTION":
       debugger;
@@ -56,11 +56,17 @@ const scrapeReturnFlights = async (departure: any) => {
   }
 };
 
-const highlightFlight = async (flightPenguinReturnId: string) => {
+const highlightFlight = async (flightPenguinDepartureId: string, flightPenguinReturnId: string) => {
+  addBackToSearchButton();
   try {
-    const returnId = getReturnId(flightPenguinReturnId);
-    await highlightFlightCard(returnId);
-    addBackToSearchButton();
+    let flightId;
+    if (flightPenguinDepartureId) {
+      flightId = getDepartureId(flightPenguinDepartureId);
+    } else {
+      flightId = getReturnId(flightPenguinReturnId);
+    }
+
+    await highlightFlightCard(flightId);
   } catch (error) {
     window.Sentry.captureException(error);
     sendFailedScraper("skiplagged", error);

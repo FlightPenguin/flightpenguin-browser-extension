@@ -109,7 +109,7 @@ const getFlightContainer = (type: "DEPARTURE" | "RETURN") => {
 
 const progressiveScrollingOnce = async (flightContainer: HTMLElement) => {
   window.scrollTo({ top: 0, behavior: "smooth" });
-  pause(1000, 100, 200);
+  await pause(1000, 100, 200);
 
   let lastFlightCard = null;
   let batchLastFlightCard = null;
@@ -118,7 +118,7 @@ const progressiveScrollingOnce = async (flightContainer: HTMLElement) => {
     const flightCards = flightContainer.querySelectorAll(FLIGHT_CARD_SELECTOR) as NodeListOf<HTMLElement>;
     batchLastFlightCard = Array.from(flightCards).slice(-1)[0];
     scrollToFlightCard(batchLastFlightCard);
-    pause(300, 50, 100);
+    await pause(300, 50, 100);
   }
 };
 
@@ -134,7 +134,7 @@ const mutationCallback = async (
       flightCards = flightCards.concat(Array.from(mutation.addedNodes) as HTMLElement[]);
     }
   }
-  const sentFlightMaps = await sendFlights(flightCards, Object.values(flightMap), selectedFlight);
+  const sentFlightMaps = await sendFlights(flightCards, flightMap, selectedFlight);
   return { flightMap: sentFlightMaps, version: flightMapVersion };
 };
 

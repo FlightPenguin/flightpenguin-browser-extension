@@ -1,40 +1,33 @@
-import { MissingElementLookupError } from "../../shared/errors";
-import { waitForAppearance } from "../../shared/utilities/waitFor";
+import { ParserError } from "../../shared/errors";
+import { pause } from "../../shared/pause";
 import { scrollToFlightCard } from "./scrollToFlightCard";
 
 const FLIGHT_CARD_SELECTOR = "div[class='trip']";
 
-export const findFlightCard = async (flightId: string) => {
-  window.scrollTo(0, 0);
-  await waitForAppearance(5000, `${FLIGHT_CARD_SELECTOR}:not([data-visited='true'])`);
+export const findFlightCard = async (skiplaggedFlightId: string) => {
+  window.scrollTo({ top: 0, behavior: "smooth" });
+  await pause(1000);
 
-  let foundFlight = null;
-  let endOfSearch = false;
-  const flightSelector = `[id^='${flightId}|']`;
-  const searchFlightSelector = `${FLIGHT_CARD_SELECTOR}:not([data-searched-${flightId}='true'])`;
-  while (!foundFlight && !endOfSearch) {
-    foundFlight = document.querySelector(flightSelector) as HTMLElement;
-    if (!foundFlight) {
-      const flightCards = Array.from(document.querySelectorAll(searchFlightSelector) as NodeListOf<HTMLElement>);
-      flightCards.forEach((flightCard) => {
-        flightCard.dataset[`searched_${flightId}`] = "true";
-      });
-      endOfSearch = await scrollToBottomCard(flightCards.slice(-1)[0], searchFlightSelector);
+  const flightSelector = `[id^='${skiplaggedFlightId}|']`;
+  let flightCard = null;
+  let lastFlightCard = null;
+  let batchLastFlightCard = null;
+
+  while (lastFlightCard === null || lastFlightCard !== batchLastFlightCard) {
+    lastFlightCard = batchLastFlightCard;
+    flightCard = document.querySelector(flightSelector);
+    if (flightCard) {
+      break;
     }
+    const flightCards = document.querySelectorAll(FLIGHT_CARD_SELECTOR) as NodeListOf<HTMLElement>;
+    batchLastFlightCard = Array.from(flightCards).slice(-1)[0];
+    scrollToFlightCard(batchLastFlightCard);
+    await pause(300, 50, 100);
   }
-  if (!foundFlight) {
-    throw new MissingElementLookupError(`Unable to find a flight card with id ${flightId}`);
+  if (flightCard) {
+    return flightCard;
+  } else {
+    // TODO:
+    throw new ParserError("TODO: ");
   }
-  return foundFlight;
-};
-
-const scrollToBottomCard = async (flightCard: HTMLElement, unsearchedSelector: string): Promise<boolean> => {
-  let hasMoreFlights = true;
-  scrollToFlightCard(flightCard);
-  try {
-    await waitForAppearance(5000, unsearchedSelector);
-  } catch {
-    hasMoreFlights = false;
-  }
-  return hasMoreFlights;
 };
