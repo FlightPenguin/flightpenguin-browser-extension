@@ -71,7 +71,7 @@ export const getFlights = async (selectedFlight = null): Promise<FlightMap> => {
   const startTime = new Date().getTime();
   while (getTimeSinceStart(startTime) < 60000) {
     await progressiveScrollingOnce(flightContainer);
-    await pause(200, 100, 200);
+    await pause(300, 100, 200);
   }
 
   mutationObserver.disconnect();
@@ -108,8 +108,8 @@ const getFlightContainer = (type: "DEPARTURE" | "RETURN") => {
 };
 
 const progressiveScrollingOnce = async (flightContainer: HTMLElement) => {
-  window.scrollTo(0, 0);
-  pause(300, 100, 200);
+  window.scrollTo({ top: 0, behavior: "smooth" });
+  pause(1000, 100, 200);
 
   let lastFlightCard = null;
   let batchLastFlightCard = null;
@@ -118,6 +118,7 @@ const progressiveScrollingOnce = async (flightContainer: HTMLElement) => {
     const flightCards = flightContainer.querySelectorAll(FLIGHT_CARD_SELECTOR) as NodeListOf<HTMLElement>;
     batchLastFlightCard = Array.from(flightCards).slice(-1)[0];
     scrollToFlightCard(batchLastFlightCard);
+    pause(300, 50, 100);
   }
 };
 

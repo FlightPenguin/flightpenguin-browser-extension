@@ -1088,7 +1088,7 @@ var getFlights = /*#__PURE__*/function () {
 
     while (getTimeSinceStart(startTime) < 60000) {
       yield progressiveScrollingOnce(flightContainer);
-      yield pause(200, 100, 200);
+      yield pause(300, 100, 200);
     }
 
     mutationObserver.disconnect();
@@ -1139,8 +1139,11 @@ var getFlightContainer = function getFlightContainer(type) {
 
 var progressiveScrollingOnce = /*#__PURE__*/function () {
   var _ref2 = getFlights_asyncToGenerator(function* (flightContainer) {
-    window.scrollTo(0, 0);
-    pause(300, 100, 200);
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth"
+    });
+    pause(1000, 100, 200);
     var lastFlightCard = null;
     var batchLastFlightCard = null;
 
@@ -1149,6 +1152,7 @@ var progressiveScrollingOnce = /*#__PURE__*/function () {
       var flightCards = flightContainer.querySelectorAll(FLIGHT_CARD_SELECTOR);
       batchLastFlightCard = Array.from(flightCards).slice(-1)[0];
       scrollToFlightCard(batchLastFlightCard);
+      pause(300, 50, 100);
     }
   });
 

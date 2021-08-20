@@ -36,7 +36,7 @@ const getFlightCard = (selectedFlightId: string, selectedReturnId: string) => {
 
 export const scrollToFlightCard = (flightCard: HTMLElement) => {
   const yPosition = window.pageYOffset + flightCard.getBoundingClientRect().top - window.innerHeight / 2;
-  window.scroll(0, yPosition);
+  window.scroll({ top: yPosition, behavior: "smooth" });
 };
 
 export const isHighlightActive = (): boolean => {

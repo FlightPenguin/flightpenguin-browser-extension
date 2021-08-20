@@ -34,5 +34,5 @@ const getFlightCard = (selectedReturnId: string) => {
 
 const scrollToFlightCard = (flightCard: HTMLElement) => {
   const yPosition = window.pageYOffset + flightCard.getBoundingClientRect().top - window.innerHeight / 2;
-  window.scroll(0, yPosition);
+  window.scrollTo({ top: yPosition, behavior: "smooth" });
 };

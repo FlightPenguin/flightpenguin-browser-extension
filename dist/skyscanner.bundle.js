@@ -1214,7 +1214,10 @@ var getFlightCard = function getFlightCard(selectedFlightId, selectedReturnId) {
 
 var scrollToFlightCard = function scrollToFlightCard(flightCard) {
   var yPosition = window.pageYOffset + flightCard.getBoundingClientRect().top - window.innerHeight / 2;
-  window.scroll(0, yPosition);
+  window.scroll({
+    top: yPosition,
+    behavior: "smooth"
+  });
 };
 var isHighlightActive = function isHighlightActive() {
   return !!document.querySelector(SELECTED_SELECTOR);

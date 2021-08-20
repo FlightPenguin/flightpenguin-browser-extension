@@ -1270,7 +1270,10 @@ var getFlightCard = function getFlightCard(selectedReturnId) {
 
 var scrollToFlightCard = function scrollToFlightCard(flightCard) {
   var yPosition = window.pageYOffset + flightCard.getBoundingClientRect().top - window.innerHeight / 2;
-  window.scroll(0, yPosition);
+  window.scrollTo({
+    top: yPosition,
+    behavior: "smooth"
+  });
 };
 ;// CONCATENATED MODULE: ./src/expedia/ui/selectReturnFlight.ts
 function selectReturnFlight_asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
