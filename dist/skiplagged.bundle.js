@@ -1061,7 +1061,11 @@ var getFlights = /*#__PURE__*/function () {
     }
 
     yield waitForAppearance(15000, FLIGHT_CARD_SELECTOR);
-    disableHiddenCitySearches();
+
+    if (!selectedFlight) {
+      // Do this once...
+      disableHiddenCitySearches();
+    }
 
     if (isNoResults()) {
       sendNoFlightsEvent("skiplagged");
