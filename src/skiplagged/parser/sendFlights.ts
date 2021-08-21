@@ -13,7 +13,7 @@ export const sendFlights = async (
   selectedFlight = null,
 ): Promise<FlightMap> => {
   const flights = [] as Flight[];
-  const newlyVisitedIds: { [key: string]: string } = {};
+  const newlyVisitedIds: FlightMap = {};
 
   for (const node of flightCards) {
     const flightCard = node as HTMLElement;
@@ -36,7 +36,7 @@ export const sendFlights = async (
         returnFlight,
         fare,
       });
-      newlyVisitedIds[flightPenguinId] = skiplaggedShortId;
+      newlyVisitedIds[flightPenguinId] = { skiplaggedId: skiplaggedShortId, lastUpdatedAt: new Date() };
     }
   }
 
@@ -55,7 +55,7 @@ const shouldSkipCard = (flightCard: HTMLElement) => {
 
 const shouldSkipFlight = (flightPenguinId: string, skiplaggedShortId: string, map: FlightMap) => {
   const currentlyKnownId = map[flightPenguinId];
-  if (currentlyKnownId && currentlyKnownId === skiplaggedShortId) {
+  if (currentlyKnownId && currentlyKnownId["skiplaggedId"] === skiplaggedShortId) {
     return true;
   }
   return false;

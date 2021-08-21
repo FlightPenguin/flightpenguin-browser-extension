@@ -1,3 +1,3 @@
 export interface FlightMap {
-  [key: string]: string;
+  [key: string]: { skiplaggedId: string; lastUpdatedAt: Date };
 }

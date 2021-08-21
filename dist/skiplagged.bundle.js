@@ -2,6 +2,14 @@
 /******/ 	"use strict";
 var __webpack_exports__ = {};
 
+;// CONCATENATED MODULE: ./src/shared/events/sendFailedScraper.ts
+function sendFailedScraper(providerName, error) {
+  chrome.runtime.sendMessage({
+    event: "FAILED_SCRAPER",
+    source: providerName,
+    description: "".concat(error.name, " ").concat(error.message)
+  });
+}
 ;// CONCATENATED MODULE: ./src/shared/ui/backToSearch.ts
 var addBackToSearchButton = function addBackToSearchButton() {
   var backToSearchSelector = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : "#back-to-search";
@@ -120,41 +128,12 @@ var MissingElementLookupError = /*#__PURE__*/function (_ParserError3) {
 
   return MissingElementLookupError;
 }(ParserError);
-;// CONCATENATED MODULE: ./src/shared/events/sendFailedScraper.ts
-function sendFailedScraper(providerName, error) {
-  chrome.runtime.sendMessage({
-    event: "FAILED_SCRAPER",
-    source: providerName,
-    description: "".concat(error.name, " ").concat(error.message)
-  });
-}
 ;// CONCATENATED MODULE: ./src/shared/events/sendNoFlights.ts
 function sendNoFlightsEvent(providerName) {
   chrome.runtime.sendMessage({
     event: "NO_FLIGHTS_FOUND",
     provider: providerName
   });
-}
-;// CONCATENATED MODULE: ./src/shared/pause.ts
-function pause() {
-  var timeout = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 10000;
-  var jitterMin = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 0;
-  var jitterMax = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 0;
-  var jitter = 0;
-
-  if (jitterMin && jitterMax) {
-    jitter += getRandomInt(jitterMin, jitterMax);
-  }
-
-  return new Promise(function (resolve) {
-    setTimeout(resolve, timeout + jitter);
-  });
-}
-
-function getRandomInt(min, max) {
-  min = Math.ceil(min);
-  max = Math.floor(max);
-  return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 ;// CONCATENATED MODULE: ./src/shared/utilities/isVisible.ts
 var isVisible = function isVisible(element) {
@@ -224,14 +203,113 @@ var disableHiddenCitySearches = function disableHiddenCitySearches() {
     input.click();
   }
 };
-;// CONCATENATED MODULE: ./src/skiplagged/ui/scrollToFlightCard.ts
-var scrollToFlightCard = function scrollToFlightCard(flightCard) {
-  var yPosition = window.pageYOffset + flightCard.getBoundingClientRect().top - window.innerHeight / 2;
-  window.scrollTo({
-    top: yPosition,
-    behavior: "smooth"
+;// CONCATENATED MODULE: ./src/skiplagged/parser/getFlightContainer.ts
+function _slicedToArray(arr, i) { return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _unsupportedIterableToArray(arr, i) || _nonIterableRest(); }
+
+function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
+
+function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
+
+function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
+
+function _iterableToArrayLimit(arr, i) { if (typeof Symbol === "undefined" || !(Symbol.iterator in Object(arr))) return; var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"] != null) _i["return"](); } finally { if (_d) throw _e; } } return _arr; }
+
+function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
+
+function getFlightContainer_asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
+
+function getFlightContainer_asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { getFlightContainer_asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { getFlightContainer_asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
+
+
+
+
+
+
+var CONTAINER_SHELL_SELECTOR = "section #trip-list-wrapper";
+var SORT_BUTTON_SELECTOR = "[data-sort='cost']";
+var NO_RESULTS_SELECTOR = ".trip-list-empty";
+var FLIGHT_CARD_SELECTOR = "div[class='trip']";
+var FLIGHT_CARDS_CONTAINER_SELECTOR = ".trip-list";
+var INFINITE_SCROLL_CONTAINER_SELECTOR = ".infinite-trip-list";
+var RETURN_HEADER_SELECTOR = ".trip-return-header";
+var getFlightContainer = /*#__PURE__*/function () {
+  var _ref = getFlightContainer_asyncToGenerator(function* (selectedFlight) {
+    /*
+    skiplagged maintains an infinite scroll trip list.
+    It does not contain all elements at run, despite them being pulled from a GQL endpoint.
+    In fact, many updates occur as the best price is retrieved from different providers.
+    It does delete the top as you scroll down, so care is needed to not duplicate.
+    */
+    yield waitForLoad(selectedFlight);
+    var flightType = selectedFlight ? "RETURN" : "DEPARTURE";
+
+    var _document$querySelect = document.querySelectorAll(FLIGHT_CARDS_CONTAINER_SELECTOR),
+        _document$querySelect2 = _slicedToArray(_document$querySelect, 2),
+        departureContainer = _document$querySelect2[0],
+        returnContainer = _document$querySelect2[1];
+
+    var container = flightType === "DEPARTURE" ? departureContainer : returnContainer;
+
+    if (!container) {
+      throw new MissingElementLookupError("Unable to locate ".concat(flightType.toLowerCase(), " container"));
+    }
+
+    var tripListElement = document.querySelector(INFINITE_SCROLL_CONTAINER_SELECTOR);
+
+    if (!tripListElement) {
+      throw new MissingElementLookupError("Unable to locate infinite scroll container for ".concat(flightType.toLowerCase()));
+    }
+
+    var tripListContainer = tripListElement.children[0];
+
+    if (!tripListContainer) {
+      throw new MissingElementLookupError("Unable to locate infinite scroll container child for ".concat(flightType.toLowerCase()));
+    }
+
+    return tripListContainer;
   });
+
+  return function getFlightContainer(_x) {
+    return _ref.apply(this, arguments);
+  };
+}();
+
+var isNoResults = function isNoResults() {
+  var noResultsDiv = document.querySelector(NO_RESULTS_SELECTOR);
+
+  if (!noResultsDiv) {
+    throw new MissingElementLookupError("Unable to find the no results container");
+  }
+
+  return isVisible(noResultsDiv);
 };
+
+var waitForLoad = /*#__PURE__*/function () {
+  var _ref2 = getFlightContainer_asyncToGenerator(function* (selectedFlight) {
+    yield waitForAppearance(3000, CONTAINER_SHELL_SELECTOR);
+    yield waitForAppearance(3000, FLIGHT_CARDS_CONTAINER_SELECTOR);
+    yield waitForAppearance(10000, SORT_BUTTON_SELECTOR);
+
+    if (selectedFlight) {
+      yield waitForAppearance(3000, RETURN_HEADER_SELECTOR);
+    }
+
+    yield waitForAppearance(15000, FLIGHT_CARD_SELECTOR);
+
+    if (!selectedFlight) {
+      // Do this once...
+      disableHiddenCitySearches();
+    }
+
+    if (isNoResults()) {
+      sendNoFlightsEvent("skiplagged");
+    }
+  });
+
+  return function waitForLoad(_x2) {
+    return _ref2.apply(this, arguments);
+  };
+}();
 ;// CONCATENATED MODULE: ./src/shared/events/sendReturnFlights.ts
 function sendReturnFlightsEvent(providerName, flights) {
   chrome.runtime.sendMessage({
@@ -559,11 +637,11 @@ var getParsedAirlineName = function getParsedAirlineName(flightName) {
   return fullName;
 };
 ;// CONCATENATED MODULE: ./src/skiplagged/parser/getLayovers.ts
-function _createForOfIteratorHelper(o, allowArrayLike) { var it; if (typeof Symbol === "undefined" || o[Symbol.iterator] == null) { if (Array.isArray(o) || (it = _unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = o[Symbol.iterator](); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it["return"] != null) it["return"](); } finally { if (didErr) throw err; } } }; }
+function _createForOfIteratorHelper(o, allowArrayLike) { var it; if (typeof Symbol === "undefined" || o[Symbol.iterator] == null) { if (Array.isArray(o) || (it = getLayovers_unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = o[Symbol.iterator](); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it["return"] != null) it["return"](); } finally { if (didErr) throw err; } } }; }
 
-function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
+function getLayovers_unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return getLayovers_arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return getLayovers_arrayLikeToArray(o, minLen); }
 
-function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
+function getLayovers_arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
 
 
 
@@ -746,15 +824,15 @@ function getFlightDetails_asyncToGenerator(fn) { return function () { var self =
 
 
 
-var CONTAINER_SHELL_SELECTOR = "section #trip-list-wrapper";
-var SORT_BUTTON_SELECTOR = "[data-sort='cost']";
+var getFlightDetails_CONTAINER_SHELL_SELECTOR = "section #trip-list-wrapper";
+var getFlightDetails_SORT_BUTTON_SELECTOR = "[data-sort='cost']";
 var DURATION_SELECTOR = "span.trip-path-duration";
 var getFlightDetails_TRIP_TIME_SELECTOR = "div[class*='trip-path-point-time']";
 var HAS_STOP_REGEX = /\d{1,2} stops?/i;
 var getFlightDetails = /*#__PURE__*/function () {
   var _ref = getFlightDetails_asyncToGenerator(function* (flightCard) {
-    yield waitForAppearance(3000, CONTAINER_SHELL_SELECTOR);
-    yield waitForAppearance(10000, SORT_BUTTON_SELECTOR);
+    yield waitForAppearance(3000, getFlightDetails_CONTAINER_SHELL_SELECTOR);
+    yield waitForAppearance(10000, getFlightDetails_SORT_BUTTON_SELECTOR);
     var marketingAirline = getAirlineName(flightCard);
     var fromTime = getDepartureTime(flightCard);
     var toTime = getArrivalTime(flightCard);
@@ -883,13 +961,13 @@ var getArrivalTime = function getArrivalTime(flightCard) {
   return standardizeTimeString(time);
 };
 ;// CONCATENATED MODULE: ./src/skiplagged/parser/sendFlights.ts
-function _slicedToArray(arr, i) { return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || sendFlights_unsupportedIterableToArray(arr, i) || _nonIterableRest(); }
+function sendFlights_slicedToArray(arr, i) { return sendFlights_arrayWithHoles(arr) || sendFlights_iterableToArrayLimit(arr, i) || sendFlights_unsupportedIterableToArray(arr, i) || sendFlights_nonIterableRest(); }
 
-function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
+function sendFlights_nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
 
-function _iterableToArrayLimit(arr, i) { if (typeof Symbol === "undefined" || !(Symbol.iterator in Object(arr))) return; var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"] != null) _i["return"](); } finally { if (_d) throw _e; } } return _arr; }
+function sendFlights_iterableToArrayLimit(arr, i) { if (typeof Symbol === "undefined" || !(Symbol.iterator in Object(arr))) return; var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"] != null) _i["return"](); } finally { if (_d) throw _e; } } return _arr; }
 
-function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
+function sendFlights_arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
 
 function sendFlights_createForOfIteratorHelper(o, allowArrayLike) { var it; if (typeof Symbol === "undefined" || o[Symbol.iterator] == null) { if (Array.isArray(o) || (it = sendFlights_unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e2) { throw _e2; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = o[Symbol.iterator](); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e3) { didErr = true; err = _e3; }, f: function f() { try { if (!normalCompletion && it["return"] != null) it["return"](); } finally { if (didErr) throw err; } } }; }
 
@@ -926,7 +1004,7 @@ var sendFlights = /*#__PURE__*/function () {
         var flightDetails = yield getFlightDetails(flightCard);
 
         var _ref2 = selectedFlight ? [selectedFlight, flightDetails] : [flightDetails, null],
-            _ref3 = _slicedToArray(_ref2, 2),
+            _ref3 = sendFlights_slicedToArray(_ref2, 2),
             departureFlight = _ref3[0],
             returnFlight = _ref3[1];
 
@@ -942,7 +1020,10 @@ var sendFlights = /*#__PURE__*/function () {
             returnFlight: returnFlight,
             fare: fare
           });
-          newlyVisitedIds[flightPenguinId] = skiplaggedShortId;
+          newlyVisitedIds[flightPenguinId] = {
+            skiplaggedId: skiplaggedShortId,
+            lastUpdatedAt: new Date()
+          };
         }
       }
     } catch (err) {
@@ -977,7 +1058,7 @@ var shouldSkipCard = function shouldSkipCard(flightCard) {
 var shouldSkipFlight = function shouldSkipFlight(flightPenguinId, skiplaggedShortId, map) {
   var currentlyKnownId = map[flightPenguinId];
 
-  if (currentlyKnownId && currentlyKnownId === skiplaggedShortId) {
+  if (currentlyKnownId && currentlyKnownId["skiplaggedId"] === skiplaggedShortId) {
     return true;
   }
 
@@ -1007,219 +1088,106 @@ var getFare = function getFare(flightCard) {
 var getFlightCardShortId = function getFlightCardShortId(flightCard) {
   return flightCard.id.split("|")[0].trim();
 };
-;// CONCATENATED MODULE: ./src/skiplagged/parser/getFlights.ts
-function getFlights_createForOfIteratorHelper(o, allowArrayLike) { var it; if (typeof Symbol === "undefined" || o[Symbol.iterator] == null) { if (Array.isArray(o) || (it = getFlights_unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e2) { throw _e2; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = o[Symbol.iterator](); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e3) { didErr = true; err = _e3; }, f: function f() { try { if (!normalCompletion && it["return"] != null) it["return"](); } finally { if (didErr) throw err; } } }; }
+;// CONCATENATED MODULE: ./src/skiplagged/parser/observer.ts
+function observer_createForOfIteratorHelper(o, allowArrayLike) { var it; if (typeof Symbol === "undefined" || o[Symbol.iterator] == null) { if (Array.isArray(o) || (it = observer_unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = o[Symbol.iterator](); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it["return"] != null) it["return"](); } finally { if (didErr) throw err; } } }; }
 
-function getFlights_slicedToArray(arr, i) { return getFlights_arrayWithHoles(arr) || getFlights_iterableToArrayLimit(arr, i) || getFlights_unsupportedIterableToArray(arr, i) || getFlights_nonIterableRest(); }
+function observer_unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return observer_arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return observer_arrayLikeToArray(o, minLen); }
 
-function getFlights_nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
+function observer_arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
 
-function getFlights_unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return getFlights_arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return getFlights_arrayLikeToArray(o, minLen); }
+function observer_asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
 
-function getFlights_arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
+function observer_asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { observer_asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { observer_asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
 
-function getFlights_iterableToArrayLimit(arr, i) { if (typeof Symbol === "undefined" || !(Symbol.iterator in Object(arr))) return; var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"] != null) _i["return"](); } finally { if (_d) throw _e; } } return _arr; }
+function observer_classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-function getFlights_arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
 
-function getFlights_asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
-
-function getFlights_asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { getFlights_asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { getFlights_asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
 
 
-
-
-
-
-
-
-
-var getFlights_CONTAINER_SHELL_SELECTOR = "section #trip-list-wrapper";
-var getFlights_SORT_BUTTON_SELECTOR = "[data-sort='cost']";
-var NO_RESULTS_SELECTOR = ".trip-list-empty";
-var FLIGHT_CARD_SELECTOR = "div[class='trip']";
-var PROGRESS_SELECTOR = ".ui-mprogress";
-var FLIGHT_CARDS_CONTAINER_SELECTOR = ".trip-list";
-var INFINITE_SCROLL_CONTAINER_SELECTOR = ".infinite-trip-list";
-var RETURN_HEADER_SELECTOR = ".trip-return-header";
-var getFlights = /*#__PURE__*/function () {
-  var _ref = getFlights_asyncToGenerator(function* () {
+var FlightObserver = /*#__PURE__*/function () {
+  function FlightObserver() {
     var selectedFlight = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : null;
 
-    /*
-    skiplagged maintains an infinite scroll trip list.
-    It does not contain all elements at run, despite them being pulled from a GQL endpoint.
-    In fact, many updates occur as the best price is retrieved from different providers.
-    It does delete the top as you scroll down, so care is needed to not duplicate.
-     */
-    yield waitForAppearance(3000, getFlights_CONTAINER_SHELL_SELECTOR);
-    yield waitForAppearance(3000, FLIGHT_CARDS_CONTAINER_SELECTOR);
-    yield waitForAppearance(10000, getFlights_SORT_BUTTON_SELECTOR);
+    observer_classCallCheck(this, FlightObserver);
 
-    if (selectedFlight) {
-      yield waitForAppearance(3000, RETURN_HEADER_SELECTOR);
-    }
+    this.flightMap = {}; // eslint-disable-next-line @typescript-eslint/no-this-alias
 
-    yield waitForAppearance(15000, FLIGHT_CARD_SELECTOR);
+    var that = this;
+    this.observer = new MutationObserver( /*#__PURE__*/function () {
+      var _ref = observer_asyncToGenerator(function* (mutations) {
+        var flightCards = [];
 
-    if (!selectedFlight) {
-      // Do this once...
-      disableHiddenCitySearches();
-    }
+        var _iterator = observer_createForOfIteratorHelper(mutations),
+            _step;
 
-    if (isNoResults()) {
-      sendNoFlightsEvent("skiplagged");
-    }
-
-    var flightContainer = getFlightContainer(selectedFlight ? "RETURN" : "DEPARTURE");
-    var visitedFlights = {};
-    var visitedFlightsVersion = 0;
-    var mutationObserver = new MutationObserver( /*#__PURE__*/function () {
-      var _mutationDriver = getFlights_asyncToGenerator(function* (mutations) {
-        var _yield$mutationCallba = yield mutationCallback(mutations, visitedFlights, visitedFlightsVersion, selectedFlight),
-            newMapEntries = _yield$mutationCallba.flightMap,
-            runtimeVersion = _yield$mutationCallba.version;
-
-        if (runtimeVersion === visitedFlightsVersion) {
-          visitedFlightsVersion += 1;
-
-          for (var _i = 0, _Object$entries = Object.entries(newMapEntries); _i < _Object$entries.length; _i++) {
-            var _Object$entries$_i = getFlights_slicedToArray(_Object$entries[_i], 2),
-                fpId = _Object$entries$_i[0],
-                skipId = _Object$entries$_i[1];
-
-            visitedFlights[fpId] = skipId;
+        try {
+          for (_iterator.s(); !(_step = _iterator.n()).done;) {
+            var mutation = _step.value;
+            flightCards = flightCards.concat(Array.from(mutation.addedNodes));
           }
-        } else {
-          yield pause(100, 10, 50);
-          mutationDriver(mutations);
+        } catch (err) {
+          _iterator.e(err);
+        } finally {
+          _iterator.f();
         }
+
+        var newFlightMaps = yield sendFlights(flightCards, that.flightMap, selectedFlight);
+        that.addNewFlightsToMap(newFlightMaps);
       });
 
-      function mutationDriver(_x) {
-        return _mutationDriver.apply(this, arguments);
-      }
-
-      return mutationDriver;
+      return function (_x) {
+        return _ref.apply(this, arguments);
+      };
     }());
-    mutationObserver.observe(flightContainer, {
-      childList: true
-    });
-    yield waitForDisappearance(45000, PROGRESS_SELECTOR);
-    var startTime = new Date().getTime();
-
-    while (getTimeSinceStart(startTime) < 60000) {
-      yield progressiveScrollingOnce(flightContainer);
-      yield pause(300, 100, 200);
-    }
-
-    mutationObserver.disconnect();
-    return visitedFlights;
-  });
-
-  return function getFlights() {
-    return _ref.apply(this, arguments);
-  };
-}();
-
-var isNoResults = function isNoResults() {
-  var noResultsDiv = document.querySelector(NO_RESULTS_SELECTOR);
-
-  if (!noResultsDiv) {
-    throw new MissingElementLookupError("Unable to find the no results container");
   }
 
-  return isVisible(noResultsDiv);
-};
+  _createClass(FlightObserver, [{
+    key: "addNewFlightsToMap",
+    value: function addNewFlightsToMap(mappings) {
+      for (var flightPenguinId in mappings) {
+        var _mappings$flightPengu = mappings[flightPenguinId],
+            skiplaggedId = _mappings$flightPengu.skiplaggedId,
+            lastUpdatedAt = _mappings$flightPengu.lastUpdatedAt;
+        var currentRecord = this.flightMap[flightPenguinId];
 
-var getFlightContainer = function getFlightContainer(type) {
-  var _document$querySelect = document.querySelectorAll(FLIGHT_CARDS_CONTAINER_SELECTOR),
-      _document$querySelect2 = getFlights_slicedToArray(_document$querySelect, 2),
-      departureContainer = _document$querySelect2[0],
-      returnContainer = _document$querySelect2[1];
-
-  var container = type === "DEPARTURE" ? departureContainer : returnContainer;
-
-  if (!container) {
-    throw new MissingElementLookupError("Unable to locate ".concat(type.toLowerCase(), " container"));
-  }
-
-  var tripListElement = document.querySelector(INFINITE_SCROLL_CONTAINER_SELECTOR);
-
-  if (!tripListElement) {
-    throw new MissingElementLookupError("Unable to locate infinite scroll container for ".concat(type.toLowerCase()));
-  }
-
-  var tripListContainer = tripListElement.children[0];
-
-  if (!tripListContainer) {
-    throw new MissingElementLookupError("Unable to locate infinite scroll container child for ".concat(type.toLowerCase()));
-  }
-
-  return tripListContainer;
-};
-
-var progressiveScrollingOnce = /*#__PURE__*/function () {
-  var _ref2 = getFlights_asyncToGenerator(function* (flightContainer) {
-    window.scrollTo({
-      top: 0,
-      behavior: "smooth"
-    });
-    yield pause(1000, 100, 200);
-    var lastFlightCard = null;
-    var batchLastFlightCard = null;
-
-    while (lastFlightCard === null || lastFlightCard !== batchLastFlightCard) {
-      lastFlightCard = batchLastFlightCard;
-      var flightCards = flightContainer.querySelectorAll(FLIGHT_CARD_SELECTOR);
-      batchLastFlightCard = Array.from(flightCards).slice(-1)[0];
-      scrollToFlightCard(batchLastFlightCard);
-      yield pause(300, 50, 100);
-    }
-  });
-
-  return function progressiveScrollingOnce(_x2) {
-    return _ref2.apply(this, arguments);
-  };
-}();
-
-var mutationCallback = /*#__PURE__*/function () {
-  var _ref3 = getFlights_asyncToGenerator(function* (mutations, flightMap, flightMapVersion, selectedFlight) {
-    var flightCards = [];
-
-    var _iterator = getFlights_createForOfIteratorHelper(mutations),
-        _step;
-
-    try {
-      for (_iterator.s(); !(_step = _iterator.n()).done;) {
-        var mutation = _step.value;
-
-        if (mutation.addedNodes) {
-          flightCards = flightCards.concat(Array.from(mutation.addedNodes));
+        if (currentRecord) {
+          if (currentRecord.skiplaggedId !== skiplaggedId && lastUpdatedAt > currentRecord.lastUpdatedAt) {
+            this.flightMap[flightPenguinId] = {
+              skiplaggedId: skiplaggedId,
+              lastUpdatedAt: lastUpdatedAt
+            };
+          }
+        } else {
+          this.flightMap[flightPenguinId] = {
+            skiplaggedId: skiplaggedId,
+            lastUpdatedAt: lastUpdatedAt
+          };
         }
       }
-    } catch (err) {
-      _iterator.e(err);
-    } finally {
-      _iterator.f();
     }
+  }, {
+    key: "getSkiplaggedId",
+    value: function getSkiplaggedId(flightPenguinId) {
+      return this.flightMap[flightPenguinId]["skiplaggedId"];
+    }
+  }, {
+    key: "beginObservation",
+    value: function beginObservation(flightContainer) {
+      this.observer.observe(flightContainer, {
+        childList: true
+      });
+    }
+  }, {
+    key: "endObservation",
+    value: function endObservation() {
+      this.observer.disconnect();
+    }
+  }]);
 
-    var sentFlightMaps = yield sendFlights(flightCards, flightMap, selectedFlight);
-    return {
-      flightMap: sentFlightMaps,
-      version: flightMapVersion
-    };
-  });
-
-  return function mutationCallback(_x3, _x4, _x5, _x6) {
-    return _ref3.apply(this, arguments);
-  };
+  return FlightObserver;
 }();
-
-var getTimeSinceStart = function getTimeSinceStart(startTime) {
-  var currentTime = new Date().getTime();
-  return currentTime - startTime;
-};
 ;// CONCATENATED MODULE: ./src/shared/ui/manageSelectionHighlights.ts
 var highlightSelectedElement = function highlightSelectedElement(element) {
   element.style.border = "10px solid #f2554b";
@@ -1234,6 +1202,35 @@ var clearHighlightFromElement = function clearHighlightFromElement(element) {
   element.style.paddingTop = "0px";
   element.style.paddingBottom = "0px";
   element.style.borderRadius = "0px";
+};
+;// CONCATENATED MODULE: ./src/shared/pause.ts
+function pause() {
+  var timeout = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 10000;
+  var jitterMin = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 0;
+  var jitterMax = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 0;
+  var jitter = 0;
+
+  if (jitterMin && jitterMax) {
+    jitter += getRandomInt(jitterMin, jitterMax);
+  }
+
+  return new Promise(function (resolve) {
+    setTimeout(resolve, timeout + jitter);
+  });
+}
+
+function getRandomInt(min, max) {
+  min = Math.ceil(min);
+  max = Math.floor(max);
+  return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+;// CONCATENATED MODULE: ./src/skiplagged/ui/scrollToFlightCard.ts
+var scrollToFlightCard = function scrollToFlightCard(flightCard) {
+  var yPosition = window.pageYOffset + flightCard.getBoundingClientRect().top - window.innerHeight / 2;
+  window.scrollTo({
+    top: yPosition,
+    behavior: "smooth"
+  });
 };
 ;// CONCATENATED MODULE: ./src/skiplagged/ui/findFlightCard.ts
 function findFlightCard_asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
@@ -1310,6 +1307,92 @@ var clearExistingSelections = function clearExistingSelections() {
     clearHighlightFromElement(previousDepSelection);
   }
 };
+;// CONCATENATED MODULE: ./src/skiplagged/ui/scrollThroughContainer.ts
+function scrollThroughContainer_asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
+
+function scrollThroughContainer_asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { scrollThroughContainer_asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { scrollThroughContainer_asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
+
+
+
+
+var scrollThroughContainer_FLIGHT_CARD_SELECTOR = "div[class='trip']";
+var PROGRESS_SELECTOR = ".ui-mprogress";
+var STOP_SCROLLING_ID = "stop-scrolling";
+var STOP_SCROLLING_SELECTOR = "div#".concat(STOP_SCROLLING_ID);
+var scrollThroughContainer = /*#__PURE__*/function () {
+  var _ref = scrollThroughContainer_asyncToGenerator(function* (container) {
+    yield waitForDisappearance(45000, PROGRESS_SELECTOR);
+    var startTime = new Date().getTime();
+
+    while (getTimeSinceStart(startTime) < 60000) {
+      if (stopScrollingCheck(true)) {
+        break;
+      }
+
+      yield progressiveScrollingOnce(container);
+      yield pause(300, 100, 200);
+    }
+  });
+
+  return function scrollThroughContainer(_x) {
+    return _ref.apply(this, arguments);
+  };
+}();
+
+var progressiveScrollingOnce = /*#__PURE__*/function () {
+  var _ref2 = scrollThroughContainer_asyncToGenerator(function* (flightContainer) {
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth"
+    });
+    yield pause(1000, 100, 200);
+    var lastFlightCard = null;
+    var batchLastFlightCard = null;
+
+    while (lastFlightCard === null || lastFlightCard !== batchLastFlightCard) {
+      if (stopScrollingCheck(false)) {
+        break;
+      }
+
+      lastFlightCard = batchLastFlightCard;
+      var flightCards = flightContainer.querySelectorAll(scrollThroughContainer_FLIGHT_CARD_SELECTOR);
+      batchLastFlightCard = Array.from(flightCards).slice(-1)[0];
+      scrollToFlightCard(batchLastFlightCard);
+
+      if (stopScrollingCheck(false)) {
+        break;
+      }
+
+      yield pause(300, 50, 100);
+    }
+  });
+
+  return function progressiveScrollingOnce(_x2) {
+    return _ref2.apply(this, arguments);
+  };
+}();
+
+var getTimeSinceStart = function getTimeSinceStart(startTime) {
+  var currentTime = new Date().getTime();
+  return currentTime - startTime;
+};
+
+var stopScrollingCheck = function stopScrollingCheck(remove) {
+  var div = document.querySelector(STOP_SCROLLING_SELECTOR);
+  var stopScrolling = !!div;
+
+  if (stopScrolling && remove) {
+    div.remove();
+  }
+
+  return stopScrolling;
+};
+
+var stopScrollingNow = function stopScrollingNow() {
+  var div = document.createElement("div");
+  div.id = STOP_SCROLLING_ID;
+  document.body.appendChild(div);
+};
 ;// CONCATENATED MODULE: ./src/skiplagged/ui/selectFlightCard.ts
 function selectFlightCard_asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
 
@@ -1331,7 +1414,6 @@ function contentScript_asyncGeneratorStep(gen, resolve, reject, _next, _throw, k
 
 function contentScript_asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { contentScript_asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { contentScript_asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
 
-
 window.Sentry.init({
   dsn: "https://d7f3363dd3774a64ad700b4523bcb789@o407795.ingest.sentry.io/5277451"
 });
@@ -1340,24 +1422,53 @@ window.Sentry.init({
 
 
 
-var flightMaps = {
-  departureFlightMap: {},
-  returnFlightMap: {}
-}; // todo: track and protect by disconnecting observer!
 
+
+var departureFlightContainer;
+var departureObserver = null;
+var returnFlightContainer;
+var returnObserver = null;
 chrome.runtime.onMessage.addListener( /*#__PURE__*/function () {
   var _ref = contentScript_asyncToGenerator(function* (message) {
     switch (message.event) {
       case "BEGIN_PARSING":
-        yield scrapeDepartureFlights();
+        departureObserver = new FlightObserver(null);
+        departureFlightContainer = yield attachObserver(departureObserver, null);
+
+        if (departureFlightContainer) {
+          yield scrollThroughContainer(departureFlightContainer);
+        }
+
+        departureObserver.endObservation();
         break;
 
       case "GET_RETURN_FLIGHTS":
-        yield scrapeReturnFlights(message.departure);
+        if (departureObserver) {
+          departureObserver.endObservation();
+        }
+
+        stopScrollingNow();
+        returnObserver = new FlightObserver(message.departure);
+        returnFlightContainer = yield attachObserver(returnObserver, message.departure.id);
+
+        if (returnFlightContainer) {
+          yield scrollThroughContainer(returnFlightContainer);
+        }
+
         break;
 
       case "HIGHLIGHT_FLIGHT":
-        yield highlightFlight(message.selectedDepartureId, message.selectedReturnId);
+        stopScrollingNow();
+
+        if (departureObserver) {
+          departureObserver.endObservation();
+        }
+
+        if (returnObserver) {
+          returnObserver.endObservation();
+        }
+
+        yield highlightFlight(message.selectedDepartureId, departureObserver, message.selectedReturnId, returnObserver);
         break;
 
       case "CLEAR_SELECTION":
@@ -1378,81 +1489,52 @@ chrome.runtime.onMessage.addListener( /*#__PURE__*/function () {
   };
 }());
 
-var scrapeDepartureFlights = /*#__PURE__*/function () {
-  var _ref2 = contentScript_asyncToGenerator(function* () {
+var attachObserver = /*#__PURE__*/function () {
+  var _ref2 = contentScript_asyncToGenerator(function* (observer, flightId) {
     try {
-      flightMaps.departureFlightMap = yield getFlights(null);
+      if (flightId) {
+        var skiplaggedId = observer.getSkiplaggedId(flightId);
+        yield selectFlightCard(skiplaggedId);
+      }
+
+      var flightContainer = yield getFlightContainer(!!flightId);
+      observer.beginObservation(flightContainer);
+      return flightContainer;
     } catch (error) {
       window.Sentry.captureException(error);
       sendFailedScraper("skiplagged", error);
+      return null;
     }
   });
 
-  return function scrapeDepartureFlights() {
+  return function attachObserver(_x2, _x3) {
     return _ref2.apply(this, arguments);
   };
 }();
 
-var scrapeReturnFlights = /*#__PURE__*/function () {
-  var _ref3 = contentScript_asyncToGenerator(function* (departure) {
-    try {
-      var departureId = getDepartureId(departure.id);
-      yield selectFlightCard(departureId);
-      flightMaps.returnFlightMap = yield getFlights(departure);
-    } catch (error) {
-      window.Sentry.captureException(error);
-      sendFailedScraper("skiplagged", error);
-    }
-  });
-
-  return function scrapeReturnFlights(_x2) {
-    return _ref3.apply(this, arguments);
-  };
-}();
-
 var highlightFlight = /*#__PURE__*/function () {
-  var _ref4 = contentScript_asyncToGenerator(function* (flightPenguinDepartureId, flightPenguinReturnId) {
+  var _ref3 = contentScript_asyncToGenerator(function* (flightPenguinDepartureId, departureObserver, flightPenguinReturnId, returnObserver) {
     addBackToSearchButton();
 
     try {
       var flightId;
 
       if (flightPenguinDepartureId) {
-        flightId = getDepartureId(flightPenguinDepartureId);
+        flightId = departureObserver === null || departureObserver === void 0 ? void 0 : departureObserver.getSkiplaggedId(flightPenguinDepartureId);
       } else {
-        flightId = getReturnId(flightPenguinReturnId);
+        flightId = returnObserver === null || returnObserver === void 0 ? void 0 : returnObserver.getSkiplaggedId(flightPenguinReturnId);
       }
 
-      yield highlightFlightCard(flightId);
+      yield highlightFlightCard(flightId || "");
     } catch (error) {
       window.Sentry.captureException(error);
       sendFailedScraper("skiplagged", error);
     }
   });
 
-  return function highlightFlight(_x3, _x4) {
-    return _ref4.apply(this, arguments);
+  return function highlightFlight(_x4, _x5, _x6, _x7) {
+    return _ref3.apply(this, arguments);
   };
 }();
-
-var getDepartureId = function getDepartureId(flightPenguinDepartureId) {
-  var skiplaggedId = flightMaps.departureFlightMap[flightPenguinDepartureId];
-
-  if (!skiplaggedId) {
-    throw new ParserError("Unable to find mapped flight for ".concat(flightPenguinDepartureId));
-  }
-
-  return skiplaggedId;
-};
-
-var getReturnId = function getReturnId(flightPenguinReturnId) {
-  var skiplaggedId = flightMaps.returnFlightMap[flightPenguinReturnId];
-
-  if (!skiplaggedId) {
-    throw new ParserError("Unable to find mapped flight for ".concat(flightPenguinReturnId));
-  }
-
-  return skiplaggedId;
-};
 /******/ })()
 ;
