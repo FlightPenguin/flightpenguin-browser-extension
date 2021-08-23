@@ -395,6 +395,10 @@ chrome.runtime.onMessage.addListener(function (message) {
       break;
 
     case "FLIGHT_RESULTS_FOR_CLIENT":
+      if (isShowingReturns) {
+        return;
+      }
+
       var _message$flights = message.flights,
           departureList = _message$flights.departureList,
           itins = _message$flights.itins,
@@ -624,6 +628,7 @@ function handleFlightSelection(e) {
       departureId: selectedNode.dataset.id
     }); // hide departures
 
+    isShowingReturns = true;
     flightsNotSelected = Array.from(departuresContainer.querySelectorAll("li:not([data-selected='true'])"));
     flightsNotSelected.forEach(function (flight) {
       return flight.style.display = "none";

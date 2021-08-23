@@ -976,7 +976,7 @@ var handleFlightReturnResultsReceived = function handleFlightReturnResultsReceiv
   if (setSuccessful) {
     var returnList = sortFlights(Object.values(returns), allItins); // TODO dedup returns
 
-    providerManager.setReturns(returnList);
+    providerManager.addReturns(returnList);
     var nextMessage = {
       event: "RETURN_FLIGHTS_FOR_CLIENT",
       flights: {

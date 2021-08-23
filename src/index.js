@@ -169,6 +169,9 @@ chrome.runtime.onMessage.addListener(function (message) {
       retTimeBarContainer.append(timeBarHeader);
       break;
     case "FLIGHT_RESULTS_FOR_CLIENT":
+      if (isShowingReturns) {
+        return;
+      }
       const {
         flights: { departureList, itins },
         formData,
@@ -381,6 +384,7 @@ function handleFlightSelection(e) {
     });
 
     // hide departures
+    isShowingReturns = true;
     flightsNotSelected = Array.from(departuresContainer.querySelectorAll("li:not([data-selected='true'])"));
     flightsNotSelected.forEach((flight) => (flight.style.display = "none"));
     document.querySelector(".sort-container").style.display = "none";
