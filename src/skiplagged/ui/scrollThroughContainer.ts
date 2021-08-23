@@ -9,6 +9,7 @@ const STOP_SCROLLING_SELECTOR = `div#${STOP_SCROLLING_ID}`;
 
 export const scrollThroughContainer = async (container: HTMLElement): Promise<void> => {
   await waitForDisappearance(45000, PROGRESS_SELECTOR);
+  removeScrollingCheck(null);
 
   const startTime = new Date().getTime();
   while (getTimeSinceStart(startTime) < 60000) {
@@ -50,7 +51,7 @@ const stopScrollingCheck = (remove: boolean): boolean => {
   const div = document.querySelector(STOP_SCROLLING_SELECTOR) as HTMLDivElement;
   const stopScrolling = !!div;
   if (stopScrolling && remove) {
-    div.remove();
+    removeScrollingCheck(div);
   }
   return stopScrolling;
 };
@@ -59,4 +60,11 @@ export const stopScrollingNow = (): void => {
   const div = document.createElement("div");
   div.id = STOP_SCROLLING_ID;
   document.body.appendChild(div);
+};
+
+export const removeScrollingCheck = (div: HTMLElement | null): void => {
+  const element = div ? div : (document.querySelector(STOP_SCROLLING_SELECTOR) as HTMLDivElement);
+  if (element) {
+    element.remove();
+  }
 };
