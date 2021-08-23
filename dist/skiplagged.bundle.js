@@ -2,35 +2,6 @@
 /******/ 	"use strict";
 var __webpack_exports__ = {};
 
-;// CONCATENATED MODULE: ./src/shared/events/sendFailedScraper.ts
-function sendFailedScraper(providerName, error) {
-  chrome.runtime.sendMessage({
-    event: "FAILED_SCRAPER",
-    source: providerName,
-    description: "".concat(error.name, " ").concat(error.message)
-  });
-}
-;// CONCATENATED MODULE: ./src/shared/ui/backToSearch.ts
-var addBackToSearchButton = function addBackToSearchButton() {
-  var backToSearchSelector = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : "#back-to-search";
-
-  if (document.querySelector(backToSearchSelector)) {
-    return;
-  }
-
-  var button = document.createElement("button");
-  button.id = "back-to-search";
-  button.textContent = "Return to FlightPenguin";
-  button.title = "Click to return to FlightPenguin and keep browsing.";
-  button.addEventListener("click", handleBackToSearchButtonClick);
-  document.body.append(button);
-};
-
-function handleBackToSearchButtonClick() {
-  chrome.runtime.sendMessage({
-    event: "FOCUS_WEBPAGE"
-  });
-}
 ;// CONCATENATED MODULE: ./src/shared/errors.ts
 function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
@@ -128,6 +99,35 @@ var MissingElementLookupError = /*#__PURE__*/function (_ParserError3) {
 
   return MissingElementLookupError;
 }(ParserError);
+;// CONCATENATED MODULE: ./src/shared/events/sendFailedScraper.ts
+function sendFailedScraper(providerName, error) {
+  chrome.runtime.sendMessage({
+    event: "FAILED_SCRAPER",
+    source: providerName,
+    description: "".concat(error.name, " ").concat(error.message)
+  });
+}
+;// CONCATENATED MODULE: ./src/shared/ui/backToSearch.ts
+var addBackToSearchButton = function addBackToSearchButton() {
+  var backToSearchSelector = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : "#back-to-search";
+
+  if (document.querySelector(backToSearchSelector)) {
+    return;
+  }
+
+  var button = document.createElement("button");
+  button.id = "back-to-search";
+  button.textContent = "Return to FlightPenguin";
+  button.title = "Click to return to FlightPenguin and keep browsing.";
+  button.addEventListener("click", handleBackToSearchButtonClick);
+  document.body.append(button);
+};
+
+function handleBackToSearchButtonClick() {
+  chrome.runtime.sendMessage({
+    event: "FOCUS_WEBPAGE"
+  });
+}
 ;// CONCATENATED MODULE: ./src/shared/events/sendNoFlights.ts
 function sendNoFlightsEvent(providerName) {
   chrome.runtime.sendMessage({
@@ -229,6 +229,7 @@ var CONTAINER_SHELL_SELECTOR = "section #trip-list-wrapper";
 var SORT_BUTTON_SELECTOR = "[data-sort='cost']";
 var NO_RESULTS_SELECTOR = ".trip-list-empty";
 var FLIGHT_CARD_SELECTOR = "div[class='trip']";
+var LOADING_SELECTOR = "div.spinner-title";
 var FLIGHT_CARDS_CONTAINER_SELECTOR = ".trip-list";
 var INFINITE_SCROLL_CONTAINER_SELECTOR = ".infinite-trip-list";
 var RETURN_HEADER_SELECTOR = ".trip-return-header";
@@ -274,10 +275,10 @@ var getFlightContainer = /*#__PURE__*/function () {
   };
 }();
 
-var isNoResults = function isNoResults() {
+var isNoResults = function isNoResults(departureFlight) {
   var noResultsDiv = document.querySelector(NO_RESULTS_SELECTOR);
 
-  if (!noResultsDiv) {
+  if (!noResultsDiv && departureFlight) {
     throw new MissingElementLookupError("Unable to find the no results container");
   }
 
@@ -286,23 +287,28 @@ var isNoResults = function isNoResults() {
 
 var waitForLoad = /*#__PURE__*/function () {
   var _ref2 = getFlightContainer_asyncToGenerator(function* (selectedFlight) {
-    yield waitForAppearance(3000, CONTAINER_SHELL_SELECTOR);
-    yield waitForAppearance(3000, FLIGHT_CARDS_CONTAINER_SELECTOR);
-    yield waitForAppearance(10000, SORT_BUTTON_SELECTOR);
+    try {
+      yield waitForAppearance(3000, CONTAINER_SHELL_SELECTOR);
+      yield waitForAppearance(3000, FLIGHT_CARDS_CONTAINER_SELECTOR);
+      yield waitForAppearance(10000, SORT_BUTTON_SELECTOR);
 
-    if (selectedFlight) {
-      yield waitForAppearance(3000, RETURN_HEADER_SELECTOR);
-    }
+      if (selectedFlight) {
+        yield waitForAppearance(3000, RETURN_HEADER_SELECTOR);
+      }
 
-    yield waitForAppearance(15000, FLIGHT_CARD_SELECTOR);
+      yield waitForDisappearance(15000, LOADING_SELECTOR);
+      yield waitForAppearance(15000, FLIGHT_CARD_SELECTOR);
 
-    if (!selectedFlight) {
-      // Do this once...
-      disableHiddenCitySearches();
-    }
+      if (!selectedFlight) {
+        // Do this once...
+        disableHiddenCitySearches();
+      }
 
-    if (isNoResults()) {
-      sendNoFlightsEvent("skiplagged");
+      if (isNoResults(!selectedFlight)) {
+        sendNoFlightsEvent("skiplagged");
+      }
+    } catch (e) {
+      debugger;
     }
   });
 
@@ -1414,6 +1420,7 @@ function contentScript_asyncGeneratorStep(gen, resolve, reject, _next, _throw, k
 
 function contentScript_asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { contentScript_asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { contentScript_asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
 
+
 window.Sentry.init({
   dsn: "https://d7f3363dd3774a64ad700b4523bcb789@o407795.ingest.sentry.io/5277451"
 });
@@ -1449,7 +1456,7 @@ chrome.runtime.onMessage.addListener( /*#__PURE__*/function () {
 
         stopScrollingNow();
         returnObserver = new FlightObserver(message.departure);
-        returnFlightContainer = yield attachObserver(returnObserver, message.departure.id);
+        returnFlightContainer = yield attachObserver(returnObserver, getSkiplaggedDepartureId(departureObserver, message.departure.id));
 
         if (returnFlightContainer) {
           yield scrollThroughContainer(returnFlightContainer);
@@ -1490,14 +1497,13 @@ chrome.runtime.onMessage.addListener( /*#__PURE__*/function () {
 }());
 
 var attachObserver = /*#__PURE__*/function () {
-  var _ref2 = contentScript_asyncToGenerator(function* (observer, flightId) {
+  var _ref2 = contentScript_asyncToGenerator(function* (observer, skiplaggedFlightId) {
     try {
-      if (flightId) {
-        var skiplaggedId = observer.getSkiplaggedId(flightId);
-        yield selectFlightCard(skiplaggedId);
+      if (skiplaggedFlightId) {
+        yield selectFlightCard(skiplaggedFlightId);
       }
 
-      var flightContainer = yield getFlightContainer(!!flightId);
+      var flightContainer = yield getFlightContainer(!!skiplaggedFlightId);
       observer.beginObservation(flightContainer);
       return flightContainer;
     } catch (error) {
@@ -1536,5 +1542,13 @@ var highlightFlight = /*#__PURE__*/function () {
     return _ref3.apply(this, arguments);
   };
 }();
+
+var getSkiplaggedDepartureId = function getSkiplaggedDepartureId(departureObserver, flightPenguinId) {
+  if (departureObserver) {
+    return departureObserver.getSkiplaggedId(flightPenguinId);
+  }
+
+  throw new ParserError("Departure observer not initialized...");
+};
 /******/ })()
 ;

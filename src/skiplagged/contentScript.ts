@@ -1,3 +1,5 @@
+import { ParserError } from "../shared/errors";
+
 window.Sentry.init({
   dsn: "https://d7f3363dd3774a64ad700b4523bcb789@o407795.ingest.sentry.io/5277451",
 });
@@ -31,7 +33,10 @@ chrome.runtime.onMessage.addListener(async function (message) {
       }
       stopScrollingNow();
       returnObserver = new FlightObserver(message.departure);
-      returnFlightContainer = await attachObserver(returnObserver, message.departure.id);
+      returnFlightContainer = await attachObserver(
+        returnObserver,
+        getSkiplaggedDepartureId(departureObserver, message.departure.id),
+      );
       if (returnFlightContainer) {
         await scrollThroughContainer(returnFlightContainer);
       }
@@ -56,13 +61,15 @@ chrome.runtime.onMessage.addListener(async function (message) {
   }
 });
 
-const attachObserver = async (observer: FlightObserver, flightId: any): Promise<HTMLElement | null> => {
+const attachObserver = async (
+  observer: FlightObserver,
+  skiplaggedFlightId: string | null,
+): Promise<HTMLElement | null> => {
   try {
-    if (flightId) {
-      const skiplaggedId = observer.getSkiplaggedId(flightId);
-      await selectFlightCard(skiplaggedId);
+    if (skiplaggedFlightId) {
+      await selectFlightCard(skiplaggedFlightId);
     }
-    const flightContainer = await getFlightContainer(!!flightId);
+    const flightContainer = await getFlightContainer(!!skiplaggedFlightId);
     observer.beginObservation(flightContainer);
     return flightContainer;
   } catch (error) {
@@ -92,4 +99,11 @@ const highlightFlight = async (
     window.Sentry.captureException(error);
     sendFailedScraper("skiplagged", error);
   }
+};
+
+const getSkiplaggedDepartureId = (departureObserver: FlightObserver | null, flightPenguinId: string) => {
+  if (departureObserver) {
+    return departureObserver.getSkiplaggedId(flightPenguinId);
+  }
+  throw new ParserError("Departure observer not initialized...");
 };

@@ -1,13 +1,14 @@
 import { MissingElementLookupError } from "../../shared/errors";
 import { sendNoFlightsEvent } from "../../shared/events";
 import { isVisible } from "../../shared/utilities/isVisible";
-import { waitForAppearance } from "../../shared/utilities/waitFor";
+import { waitForAppearance, waitForDisappearance } from "../../shared/utilities/waitFor";
 import { disableHiddenCitySearches } from "../ui/disableHiddenCitySearches";
 
 const CONTAINER_SHELL_SELECTOR = "section #trip-list-wrapper";
 const SORT_BUTTON_SELECTOR = "[data-sort='cost']";
 const NO_RESULTS_SELECTOR = ".trip-list-empty";
 const FLIGHT_CARD_SELECTOR = "div[class='trip']";
+const LOADING_SELECTOR = "div.spinner-title";
 
 const FLIGHT_CARDS_CONTAINER_SELECTOR = ".trip-list";
 const INFINITE_SCROLL_CONTAINER_SELECTOR = ".infinite-trip-list";
@@ -42,9 +43,9 @@ It does delete the top as you scroll down, so care is needed to not duplicate.
   return tripListContainer as HTMLElement;
 };
 
-const isNoResults = () => {
+const isNoResults = (departureFlight: boolean) => {
   const noResultsDiv = document.querySelector(NO_RESULTS_SELECTOR) as HTMLDivElement;
-  if (!noResultsDiv) {
+  if (!noResultsDiv && departureFlight) {
     throw new MissingElementLookupError("Unable to find the no results container");
   }
 
@@ -58,6 +59,7 @@ const waitForLoad = async (selectedFlight: boolean) => {
   if (selectedFlight) {
     await waitForAppearance(3000, RETURN_HEADER_SELECTOR);
   }
+  await waitForDisappearance(15000, LOADING_SELECTOR);
   await waitForAppearance(15000, FLIGHT_CARD_SELECTOR);
 
   if (!selectedFlight) {
@@ -65,7 +67,7 @@ const waitForLoad = async (selectedFlight: boolean) => {
     disableHiddenCitySearches();
   }
 
-  if (isNoResults()) {
+  if (isNoResults(!selectedFlight)) {
     sendNoFlightsEvent("skiplagged");
   }
 };
