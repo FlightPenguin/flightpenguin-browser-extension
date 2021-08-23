@@ -43,9 +43,12 @@ It does delete the top as you scroll down, so care is needed to not duplicate.
   return tripListContainer as HTMLElement;
 };
 
-const isNoResults = (departureFlight: boolean) => {
+const isNoResults = (returnFlight: boolean) => {
   const noResultsDiv = document.querySelector(NO_RESULTS_SELECTOR) as HTMLDivElement;
-  if (!noResultsDiv && departureFlight) {
+  if (!noResultsDiv) {
+    if (returnFlight) {
+      return false;
+    }
     throw new MissingElementLookupError("Unable to find the no results container");
   }
 
@@ -67,7 +70,7 @@ const waitForLoad = async (selectedFlight: boolean) => {
     disableHiddenCitySearches();
   }
 
-  if (isNoResults(!selectedFlight)) {
+  if (isNoResults(selectedFlight)) {
     sendNoFlightsEvent("skiplagged");
   }
 };

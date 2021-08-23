@@ -275,10 +275,14 @@ var getFlightContainer = /*#__PURE__*/function () {
   };
 }();
 
-var isNoResults = function isNoResults(departureFlight) {
+var isNoResults = function isNoResults(returnFlight) {
   var noResultsDiv = document.querySelector(NO_RESULTS_SELECTOR);
 
-  if (!noResultsDiv && departureFlight) {
+  if (!noResultsDiv) {
+    if (returnFlight) {
+      return false;
+    }
+
     throw new MissingElementLookupError("Unable to find the no results container");
   }
 
@@ -287,28 +291,24 @@ var isNoResults = function isNoResults(departureFlight) {
 
 var waitForLoad = /*#__PURE__*/function () {
   var _ref2 = getFlightContainer_asyncToGenerator(function* (selectedFlight) {
-    try {
-      yield waitForAppearance(3000, CONTAINER_SHELL_SELECTOR);
-      yield waitForAppearance(3000, FLIGHT_CARDS_CONTAINER_SELECTOR);
-      yield waitForAppearance(10000, SORT_BUTTON_SELECTOR);
+    yield waitForAppearance(3000, CONTAINER_SHELL_SELECTOR);
+    yield waitForAppearance(3000, FLIGHT_CARDS_CONTAINER_SELECTOR);
+    yield waitForAppearance(10000, SORT_BUTTON_SELECTOR);
 
-      if (selectedFlight) {
-        yield waitForAppearance(3000, RETURN_HEADER_SELECTOR);
-      }
+    if (selectedFlight) {
+      yield waitForAppearance(3000, RETURN_HEADER_SELECTOR);
+    }
 
-      yield waitForDisappearance(15000, LOADING_SELECTOR);
-      yield waitForAppearance(15000, FLIGHT_CARD_SELECTOR);
+    yield waitForDisappearance(15000, LOADING_SELECTOR);
+    yield waitForAppearance(15000, FLIGHT_CARD_SELECTOR);
 
-      if (!selectedFlight) {
-        // Do this once...
-        disableHiddenCitySearches();
-      }
+    if (!selectedFlight) {
+      // Do this once...
+      disableHiddenCitySearches();
+    }
 
-      if (isNoResults(!selectedFlight)) {
-        sendNoFlightsEvent("skiplagged");
-      }
-    } catch (e) {
-      debugger;
+    if (isNoResults(selectedFlight)) {
+      sendNoFlightsEvent("skiplagged");
     }
   });
 
@@ -1194,21 +1194,6 @@ var FlightObserver = /*#__PURE__*/function () {
 
   return FlightObserver;
 }();
-;// CONCATENATED MODULE: ./src/shared/ui/manageSelectionHighlights.ts
-var highlightSelectedElement = function highlightSelectedElement(element) {
-  element.style.border = "10px solid #f2554b";
-  element.style.borderRadius = "6px";
-  element.style.paddingTop = "25px";
-  element.style.paddingBottom = "25px";
-  element.dataset.selected = "true";
-};
-var clearHighlightFromElement = function clearHighlightFromElement(element) {
-  element.dataset.selected = "false";
-  element.style.border = "";
-  element.style.paddingTop = "0px";
-  element.style.paddingBottom = "0px";
-  element.style.borderRadius = "0px";
-};
 ;// CONCATENATED MODULE: ./src/shared/pause.ts
 function pause() {
   var timeout = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 10000;
@@ -1230,6 +1215,77 @@ function getRandomInt(min, max) {
   max = Math.floor(max);
   return Math.floor(Math.random() * (max - min + 1)) + min;
 }
+;// CONCATENATED MODULE: ./src/skiplagged/ui/clearSelection.ts
+function clearSelection_asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
+
+function clearSelection_asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { clearSelection_asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { clearSelection_asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
+
+
+
+
+var clearSelection_RETURN_HEADER_SELECTOR = ".trip-return-header";
+var SELECTED_FLIGHT_CARD_SELECTOR = ".selected-trip";
+var clearSelection = /*#__PURE__*/function () {
+  var _ref = clearSelection_asyncToGenerator(function* () {
+    if (!isSelectingReturnFlight()) {
+      return;
+    }
+
+    var flightCard = getSelectedFlightCard();
+    flightCard.click();
+    yield clearSelection_waitForLoad();
+  });
+
+  return function clearSelection() {
+    return _ref.apply(this, arguments);
+  };
+}();
+
+var isSelectingReturnFlight = function isSelectingReturnFlight() {
+  var returnHeader = document.querySelector(clearSelection_RETURN_HEADER_SELECTOR);
+
+  if (!returnHeader) {
+    throw new MissingElementLookupError("Unable to locate return header");
+  }
+
+  return isVisible(returnHeader);
+};
+
+var getSelectedFlightCard = function getSelectedFlightCard() {
+  var flightCard = document.querySelector(SELECTED_FLIGHT_CARD_SELECTOR);
+
+  if (!flightCard) {
+    throw new MissingElementLookupError("Unable to selected departure flight card");
+  }
+
+  return flightCard;
+};
+
+var clearSelection_waitForLoad = /*#__PURE__*/function () {
+  var _ref2 = clearSelection_asyncToGenerator(function* () {
+    // not much in the way of appearance/disappearance...
+    yield pause(500);
+  });
+
+  return function waitForLoad() {
+    return _ref2.apply(this, arguments);
+  };
+}();
+;// CONCATENATED MODULE: ./src/shared/ui/manageSelectionHighlights.ts
+var highlightSelectedElement = function highlightSelectedElement(element) {
+  element.style.border = "10px solid #f2554b";
+  element.style.borderRadius = "6px";
+  element.style.paddingTop = "25px";
+  element.style.paddingBottom = "25px";
+  element.dataset.selected = "true";
+};
+var clearHighlightFromElement = function clearHighlightFromElement(element) {
+  element.dataset.selected = "false";
+  element.style.border = "";
+  element.style.paddingTop = "0px";
+  element.style.paddingBottom = "0px";
+  element.style.borderRadius = "0px";
+};
 ;// CONCATENATED MODULE: ./src/skiplagged/ui/scrollToFlightCard.ts
 var scrollToFlightCard = function scrollToFlightCard(flightCard) {
   var yPosition = window.pageYOffset + flightCard.getBoundingClientRect().top - window.innerHeight / 2;
@@ -1431,6 +1487,7 @@ window.Sentry.init({
 
 
 
+
 var departureFlightContainer;
 var departureObserver = null;
 var returnFlightContainer;
@@ -1479,7 +1536,16 @@ chrome.runtime.onMessage.addListener( /*#__PURE__*/function () {
         break;
 
       case "CLEAR_SELECTION":
-        debugger;
+        if (departureObserver) {
+          departureObserver.endObservation();
+        }
+
+        if (returnObserver) {
+          returnObserver.endObservation();
+        }
+
+        stopScrollingNow();
+        yield clearSelection();
         chrome.runtime.sendMessage({
           event: "PROVIDER_READY",
           provider: "skiplagged"
