@@ -235,6 +235,11 @@ var AirlineMap = {
       color: "#EE722E",
       code: "DL"
     },
+    "Delta Air Lines": {
+      display: "Delta",
+      color: "#EE722E",
+      code: "DL"
+    },
     Southwest: {
       display: "Southwest",
       color: "#F6C04D",
@@ -284,6 +289,11 @@ var AirlineMap = {
       display: "Aeromexico",
       color: "#000000",
       code: "AM"
+    },
+    Frontier: {
+      display: "Frontier",
+      color: "#378055",
+      code: "F9"
     },
     "Frontier Airlines": {
       display: "Frontier",

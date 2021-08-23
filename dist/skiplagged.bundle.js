@@ -294,6 +294,7 @@ var getFlightContainer = /*#__PURE__*/function () {
       throw new MissingElementLookupError("Unable to locate infinite scroll container child for ".concat(flightType.toLowerCase()));
     }
 
+    waitForAppearance(15000, FLIGHT_CARD_SELECTOR, container);
     return tripListContainer;
   });
 
@@ -414,6 +415,11 @@ var AirlineMap = {
       color: "#EE722E",
       code: "DL"
     },
+    "Delta Air Lines": {
+      display: "Delta",
+      color: "#EE722E",
+      code: "DL"
+    },
     Southwest: {
       display: "Southwest",
       color: "#F6C04D",
@@ -463,6 +469,11 @@ var AirlineMap = {
       display: "Aeromexico",
       color: "#000000",
       code: "AM"
+    },
+    Frontier: {
+      display: "Frontier",
+      color: "#378055",
+      code: "F9"
     },
     "Frontier Airlines": {
       display: "Frontier",
@@ -919,7 +930,6 @@ var getDurationDetails = function getDurationDetails(flightCard) {
 };
 
 var getAirlineName = function getAirlineName(flightCard) {
-  // TODO: Nope, no 'multiple airlines'.
   var airlineNames = new Set();
   var flightNames = getAirlines(flightCard);
 
@@ -1260,6 +1270,7 @@ var STOP_SCROLLING_SELECTOR = "div#".concat(STOP_SCROLLING_ID);
 var scrollThroughContainer = /*#__PURE__*/function () {
   var _ref = scrollThroughContainer_asyncToGenerator(function* (container) {
     yield waitForDisappearance(45000, PROGRESS_SELECTOR);
+    yield waitForAppearance(45000, scrollThroughContainer_FLIGHT_CARD_SELECTOR, container);
     removeScrollingCheck(null);
     var startTime = new Date().getTime();
 
@@ -1514,6 +1525,8 @@ var returnFlightContainer;
 var returnObserver = null;
 chrome.runtime.onMessage.addListener( /*#__PURE__*/function () {
   var _ref = contentScript_asyncToGenerator(function* (message) {
+    var _departureObserver, _departureObserver2, _returnObserver, _departureObserver3, _returnObserver2;
+
     switch (message.event) {
       case "BEGIN_PARSING":
         departureObserver = new FlightObserver(null);
@@ -1527,10 +1540,7 @@ chrome.runtime.onMessage.addListener( /*#__PURE__*/function () {
         break;
 
       case "GET_RETURN_FLIGHTS":
-        if (departureObserver) {
-          departureObserver.endObservation();
-        }
-
+        (_departureObserver = departureObserver) === null || _departureObserver === void 0 ? void 0 : _departureObserver.endObservation();
         stopScrollingNow();
         returnObserver = new FlightObserver(message.departure);
         returnFlightContainer = yield attachObserver(returnObserver, getSkiplaggedDepartureId(departureObserver, message.departure.id));
@@ -1543,27 +1553,14 @@ chrome.runtime.onMessage.addListener( /*#__PURE__*/function () {
 
       case "HIGHLIGHT_FLIGHT":
         stopScrollingNow();
-
-        if (departureObserver) {
-          departureObserver.endObservation();
-        }
-
-        if (returnObserver) {
-          returnObserver.endObservation();
-        }
-
+        (_departureObserver2 = departureObserver) === null || _departureObserver2 === void 0 ? void 0 : _departureObserver2.endObservation();
+        (_returnObserver = returnObserver) === null || _returnObserver === void 0 ? void 0 : _returnObserver.endObservation();
         yield highlightFlight(message.selectedDepartureId, departureObserver, message.selectedReturnId, returnObserver);
         break;
 
       case "CLEAR_SELECTION":
-        if (departureObserver) {
-          departureObserver.endObservation();
-        }
-
-        if (returnObserver) {
-          returnObserver.endObservation();
-        }
-
+        (_departureObserver3 = departureObserver) === null || _departureObserver3 === void 0 ? void 0 : _departureObserver3.endObservation();
+        (_returnObserver2 = returnObserver) === null || _returnObserver2 === void 0 ? void 0 : _returnObserver2.endObservation();
         stopScrollingNow();
         yield clearSelection();
         chrome.runtime.sendMessage({

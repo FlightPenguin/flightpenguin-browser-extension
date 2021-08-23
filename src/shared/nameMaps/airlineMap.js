@@ -3,6 +3,7 @@ const AirlineMap = {
     "American Airlines": { display: "American", color: "#C5423E", code: "AA" },
     American: { display: "American", color: "#C5423E", code: "AA" },
     Delta: { display: "Delta", color: "#EE722E", code: "DL" },
+    "Delta Air Lines": { display: "Delta", color: "#EE722E", code: "DL" },
     Southwest: { display: "Southwest", color: "#F6C04D", code: "WN" },
     United: { display: "United", color: "#235EA6", code: "UA" },
     "United Airlines": { display: "United", color: "#235EA6", code: "UA" },
@@ -13,6 +14,7 @@ const AirlineMap = {
     "Spirit Airlines": { display: "Spirit", color: "#BBB140", code: "NK" },
     WestJet: { display: "WestJet", color: "#4BA89C", code: "WS" },
     Aeromexico: { display: "Aeromexico", color: "#000000", code: "AM" },
+    Frontier: { display: "Frontier", color: "#378055", code: "F9" },
     "Frontier Airlines": { display: "Frontier", color: "#378055", code: "F9" },
     // "Volaris": { display: "Volaris", color: "#84417B", code: "Y4" }, // Seems like Priceline doeesn't show Volaris
     Interjet: { display: "Interjet", color: "#A8A8A8", code: "4O" },
