@@ -1476,7 +1476,9 @@ var ProviderManager = /*#__PURE__*/function () {
   }, {
     key: "addReturns",
     value: function addReturns(returns) {
-      this.returns = this.returns.concat(returns);
+      this.returns = this.returns.concat(returns).sort(function (a, b) {
+        return a.pain - b.pain;
+      });
     }
   }, {
     key: "setReturns",

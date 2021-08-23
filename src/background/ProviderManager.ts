@@ -165,7 +165,9 @@ export class ProviderManager {
   }
 
   addReturns(returns: any[]): void {
-    this.returns = this.returns.concat(returns);
+    this.returns = this.returns.concat(returns).sort((a: any, b: any) => {
+      return a.pain - b.pain;
+    });
   }
 
   setReturns(returns: any[]): void {
