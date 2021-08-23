@@ -1,5 +1,5 @@
 import { pause } from "../../shared/pause";
-import { waitForDisappearance } from "../../shared/utilities/waitFor";
+import { waitForAppearance, waitForDisappearance } from "../../shared/utilities/waitFor";
 import { scrollToFlightCard } from "./scrollToFlightCard";
 
 const FLIGHT_CARD_SELECTOR = "div[class='trip']";
@@ -9,6 +9,7 @@ const STOP_SCROLLING_SELECTOR = `div#${STOP_SCROLLING_ID}`;
 
 export const scrollThroughContainer = async (container: HTMLElement): Promise<void> => {
   await waitForDisappearance(45000, PROGRESS_SELECTOR);
+  await waitForAppearance(45000, FLIGHT_CARD_SELECTOR, container);
   removeScrollingCheck(null);
 
   const startTime = new Date().getTime();

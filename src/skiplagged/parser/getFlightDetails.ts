@@ -56,7 +56,6 @@ const getDurationDetails = (flightCard: Element) => {
 };
 
 const getAirlineName = (flightCard: HTMLElement): string => {
-  // TODO: Nope, no 'multiple airlines'.
   const airlineNames = new Set();
   const flightNames = getAirlines(flightCard);
   for (const flightName of flightNames) {

@@ -33,7 +33,6 @@ It does delete the top as you scroll down, so care is needed to not duplicate.
   }
 
   if (!isVisible(container)) {
-    debugger;
     throw new ParserError("Flight container is not visible");
   }
 
@@ -48,6 +47,9 @@ It does delete the top as you scroll down, so care is needed to not duplicate.
       `Unable to locate infinite scroll container child for ${flightType.toLowerCase()}`,
     );
   }
+
+  waitForAppearance(15000, FLIGHT_CARD_SELECTOR, container);
+
   return tripListContainer as HTMLElement;
 };
 
