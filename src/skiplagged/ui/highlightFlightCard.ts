@@ -9,7 +9,7 @@ export const highlightFlightCard = async (selectedReturnId: string): Promise<voi
   scrollToFlightCard(flightCard);
 };
 
-const clearExistingSelections = () => {
+export const clearExistingSelections = () => {
   const previousDepSelection = document.querySelector("[data-selected='true']") as HTMLElement;
   if (previousDepSelection) {
     clearHighlightFromElement(previousDepSelection);

@@ -1,11 +1,14 @@
 import { MissingElementLookupError } from "../../shared/errors";
 import { pause } from "../../shared/pause";
 import { isVisible } from "../../shared/utilities/isVisible";
+import { clearExistingSelections } from "./highlightFlightCard";
 
 const RETURN_HEADER_SELECTOR = ".trip-return-header";
 const SELECTED_FLIGHT_CARD_SELECTOR = ".selected-trip";
 
 export const clearSelection = async (): Promise<void> => {
+  clearExistingSelections();
+
   if (!isSelectingReturnFlight()) {
     return;
   }

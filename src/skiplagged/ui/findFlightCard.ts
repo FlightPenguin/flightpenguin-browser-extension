@@ -1,10 +1,13 @@
 import { ParserError } from "../../shared/errors";
 import { pause } from "../../shared/pause";
+import { stopScrollingNow } from "./scrollThroughContainer";
 import { scrollToFlightCard } from "./scrollToFlightCard";
 
 const FLIGHT_CARD_SELECTOR = "div[class='trip']";
 
 export const findFlightCard = async (skiplaggedFlightId: string) => {
+  stopScrollingNow();
+  await pause(300);
   window.scrollTo({ top: 0, behavior: "smooth" });
   await pause(1000);
 
@@ -27,7 +30,7 @@ export const findFlightCard = async (skiplaggedFlightId: string) => {
   if (flightCard) {
     return flightCard;
   } else {
-    // TODO:
-    throw new ParserError("TODO: ");
+    debugger;
+    throw new ParserError("TODO");
   }
 };

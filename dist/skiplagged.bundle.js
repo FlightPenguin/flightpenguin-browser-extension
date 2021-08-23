@@ -135,6 +135,27 @@ function sendNoFlightsEvent(providerName) {
     provider: providerName
   });
 }
+;// CONCATENATED MODULE: ./src/shared/pause.ts
+function pause() {
+  var timeout = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 10000;
+  var jitterMin = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 0;
+  var jitterMax = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 0;
+  var jitter = 0;
+
+  if (jitterMin && jitterMax) {
+    jitter += getRandomInt(jitterMin, jitterMax);
+  }
+
+  return new Promise(function (resolve) {
+    setTimeout(resolve, timeout + jitter);
+  });
+}
+
+function getRandomInt(min, max) {
+  min = Math.ceil(min);
+  max = Math.floor(max);
+  return Math.floor(Math.random() * (max - min + 1)) + min;
+}
 ;// CONCATENATED MODULE: ./src/shared/utilities/isVisible.ts
 var isVisible = function isVisible(element) {
   return element.offsetWidth > 0 && element.offsetHeight > 0;
@@ -225,6 +246,7 @@ function getFlightContainer_asyncToGenerator(fn) { return function () { var self
 
 
 
+
 var CONTAINER_SHELL_SELECTOR = "section #trip-list-wrapper";
 var SORT_BUTTON_SELECTOR = "[data-sort='cost']";
 var NO_RESULTS_SELECTOR = ".trip-list-empty";
@@ -244,10 +266,10 @@ var getFlightContainer = /*#__PURE__*/function () {
     yield waitForLoad(selectedFlight);
     var flightType = selectedFlight ? "RETURN" : "DEPARTURE";
 
-    var _document$querySelect = document.querySelectorAll(FLIGHT_CARDS_CONTAINER_SELECTOR),
-        _document$querySelect2 = _slicedToArray(_document$querySelect, 2),
-        departureContainer = _document$querySelect2[0],
-        returnContainer = _document$querySelect2[1];
+    var _ref2 = document.querySelectorAll(FLIGHT_CARDS_CONTAINER_SELECTOR),
+        _ref3 = _slicedToArray(_ref2, 2),
+        departureContainer = _ref3[0],
+        returnContainer = _ref3[1];
 
     var container = flightType === "DEPARTURE" ? departureContainer : returnContainer;
 
@@ -255,7 +277,12 @@ var getFlightContainer = /*#__PURE__*/function () {
       throw new MissingElementLookupError("Unable to locate ".concat(flightType.toLowerCase(), " container"));
     }
 
-    var tripListElement = document.querySelector(INFINITE_SCROLL_CONTAINER_SELECTOR);
+    if (!isVisible(container)) {
+      debugger;
+      throw new ParserError("Flight container is not visible");
+    }
+
+    var tripListElement = container.querySelector(INFINITE_SCROLL_CONTAINER_SELECTOR);
 
     if (!tripListElement) {
       throw new MissingElementLookupError("Unable to locate infinite scroll container for ".concat(flightType.toLowerCase()));
@@ -290,13 +317,14 @@ var isNoResults = function isNoResults(returnFlight) {
 };
 
 var waitForLoad = /*#__PURE__*/function () {
-  var _ref2 = getFlightContainer_asyncToGenerator(function* (selectedFlight) {
+  var _ref4 = getFlightContainer_asyncToGenerator(function* (selectedFlight) {
     yield waitForAppearance(3000, CONTAINER_SHELL_SELECTOR);
     yield waitForAppearance(3000, FLIGHT_CARDS_CONTAINER_SELECTOR);
     yield waitForAppearance(10000, SORT_BUTTON_SELECTOR);
 
     if (selectedFlight) {
       yield waitForAppearance(3000, RETURN_HEADER_SELECTOR);
+      yield pause(500);
     }
 
     yield waitForDisappearance(15000, LOADING_SELECTOR);
@@ -313,7 +341,7 @@ var waitForLoad = /*#__PURE__*/function () {
   });
 
   return function waitForLoad(_x2) {
-    return _ref2.apply(this, arguments);
+    return _ref4.apply(this, arguments);
   };
 }();
 ;// CONCATENATED MODULE: ./src/shared/events/sendReturnFlights.ts
@@ -1194,83 +1222,6 @@ var FlightObserver = /*#__PURE__*/function () {
 
   return FlightObserver;
 }();
-;// CONCATENATED MODULE: ./src/shared/pause.ts
-function pause() {
-  var timeout = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 10000;
-  var jitterMin = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 0;
-  var jitterMax = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 0;
-  var jitter = 0;
-
-  if (jitterMin && jitterMax) {
-    jitter += getRandomInt(jitterMin, jitterMax);
-  }
-
-  return new Promise(function (resolve) {
-    setTimeout(resolve, timeout + jitter);
-  });
-}
-
-function getRandomInt(min, max) {
-  min = Math.ceil(min);
-  max = Math.floor(max);
-  return Math.floor(Math.random() * (max - min + 1)) + min;
-}
-;// CONCATENATED MODULE: ./src/skiplagged/ui/clearSelection.ts
-function clearSelection_asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
-
-function clearSelection_asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { clearSelection_asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { clearSelection_asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
-
-
-
-
-var clearSelection_RETURN_HEADER_SELECTOR = ".trip-return-header";
-var SELECTED_FLIGHT_CARD_SELECTOR = ".selected-trip";
-var clearSelection = /*#__PURE__*/function () {
-  var _ref = clearSelection_asyncToGenerator(function* () {
-    if (!isSelectingReturnFlight()) {
-      return;
-    }
-
-    var flightCard = getSelectedFlightCard();
-    flightCard.click();
-    yield clearSelection_waitForLoad();
-  });
-
-  return function clearSelection() {
-    return _ref.apply(this, arguments);
-  };
-}();
-
-var isSelectingReturnFlight = function isSelectingReturnFlight() {
-  var returnHeader = document.querySelector(clearSelection_RETURN_HEADER_SELECTOR);
-
-  if (!returnHeader) {
-    throw new MissingElementLookupError("Unable to locate return header");
-  }
-
-  return isVisible(returnHeader);
-};
-
-var getSelectedFlightCard = function getSelectedFlightCard() {
-  var flightCard = document.querySelector(SELECTED_FLIGHT_CARD_SELECTOR);
-
-  if (!flightCard) {
-    throw new MissingElementLookupError("Unable to selected departure flight card");
-  }
-
-  return flightCard;
-};
-
-var clearSelection_waitForLoad = /*#__PURE__*/function () {
-  var _ref2 = clearSelection_asyncToGenerator(function* () {
-    // not much in the way of appearance/disappearance...
-    yield pause(500);
-  });
-
-  return function waitForLoad() {
-    return _ref2.apply(this, arguments);
-  };
-}();
 ;// CONCATENATED MODULE: ./src/shared/ui/manageSelectionHighlights.ts
 var highlightSelectedElement = function highlightSelectedElement(element) {
   element.style.border = "10px solid #f2554b";
@@ -1294,81 +1245,6 @@ var scrollToFlightCard = function scrollToFlightCard(flightCard) {
     behavior: "smooth"
   });
 };
-;// CONCATENATED MODULE: ./src/skiplagged/ui/findFlightCard.ts
-function findFlightCard_asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
-
-function findFlightCard_asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { findFlightCard_asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { findFlightCard_asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
-
-
-
-
-var findFlightCard_FLIGHT_CARD_SELECTOR = "div[class='trip']";
-var findFlightCard = /*#__PURE__*/function () {
-  var _ref = findFlightCard_asyncToGenerator(function* (skiplaggedFlightId) {
-    window.scrollTo({
-      top: 0,
-      behavior: "smooth"
-    });
-    yield pause(1000);
-    var flightSelector = "[id^='".concat(skiplaggedFlightId, "|']");
-    var flightCard = null;
-    var lastFlightCard = null;
-    var batchLastFlightCard = null;
-
-    while (lastFlightCard === null || lastFlightCard !== batchLastFlightCard) {
-      lastFlightCard = batchLastFlightCard;
-      flightCard = document.querySelector(flightSelector);
-
-      if (flightCard) {
-        break;
-      }
-
-      var flightCards = document.querySelectorAll(findFlightCard_FLIGHT_CARD_SELECTOR);
-      batchLastFlightCard = Array.from(flightCards).slice(-1)[0];
-      scrollToFlightCard(batchLastFlightCard);
-      yield pause(300, 50, 100);
-    }
-
-    if (flightCard) {
-      return flightCard;
-    } else {
-      // TODO:
-      throw new ParserError("TODO: ");
-    }
-  });
-
-  return function findFlightCard(_x) {
-    return _ref.apply(this, arguments);
-  };
-}();
-;// CONCATENATED MODULE: ./src/skiplagged/ui/highlightFlightCard.ts
-function highlightFlightCard_asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
-
-function highlightFlightCard_asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { highlightFlightCard_asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { highlightFlightCard_asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
-
-
-
-
-var highlightFlightCard = /*#__PURE__*/function () {
-  var _ref = highlightFlightCard_asyncToGenerator(function* (selectedReturnId) {
-    clearExistingSelections();
-    var flightCard = yield findFlightCard(selectedReturnId);
-    highlightSelectedElement(flightCard);
-    scrollToFlightCard(flightCard);
-  });
-
-  return function highlightFlightCard(_x) {
-    return _ref.apply(this, arguments);
-  };
-}();
-
-var clearExistingSelections = function clearExistingSelections() {
-  var previousDepSelection = document.querySelector("[data-selected='true']");
-
-  if (previousDepSelection) {
-    clearHighlightFromElement(previousDepSelection);
-  }
-};
 ;// CONCATENATED MODULE: ./src/skiplagged/ui/scrollThroughContainer.ts
 function scrollThroughContainer_asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
 
@@ -1384,6 +1260,7 @@ var STOP_SCROLLING_SELECTOR = "div#".concat(STOP_SCROLLING_ID);
 var scrollThroughContainer = /*#__PURE__*/function () {
   var _ref = scrollThroughContainer_asyncToGenerator(function* (container) {
     yield waitForDisappearance(45000, PROGRESS_SELECTOR);
+    removeScrollingCheck(null);
     var startTime = new Date().getTime();
 
     while (getTimeSinceStart(startTime) < 60000) {
@@ -1444,7 +1321,7 @@ var stopScrollingCheck = function stopScrollingCheck(remove) {
   var stopScrolling = !!div;
 
   if (stopScrolling && remove) {
-    div.remove();
+    removeScrollingCheck(div);
   }
 
   return stopScrolling;
@@ -1455,6 +1332,149 @@ var stopScrollingNow = function stopScrollingNow() {
   div.id = STOP_SCROLLING_ID;
   document.body.appendChild(div);
 };
+var removeScrollingCheck = function removeScrollingCheck(div) {
+  var element = div ? div : document.querySelector(STOP_SCROLLING_SELECTOR);
+
+  if (element) {
+    element.remove();
+  }
+};
+;// CONCATENATED MODULE: ./src/skiplagged/ui/findFlightCard.ts
+function findFlightCard_asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
+
+function findFlightCard_asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { findFlightCard_asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { findFlightCard_asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
+
+
+
+
+
+var findFlightCard_FLIGHT_CARD_SELECTOR = "div[class='trip']";
+var findFlightCard = /*#__PURE__*/function () {
+  var _ref = findFlightCard_asyncToGenerator(function* (skiplaggedFlightId) {
+    stopScrollingNow();
+    yield pause(300);
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth"
+    });
+    yield pause(1000);
+    var flightSelector = "[id^='".concat(skiplaggedFlightId, "|']");
+    var flightCard = null;
+    var lastFlightCard = null;
+    var batchLastFlightCard = null;
+
+    while (lastFlightCard === null || lastFlightCard !== batchLastFlightCard) {
+      lastFlightCard = batchLastFlightCard;
+      flightCard = document.querySelector(flightSelector);
+
+      if (flightCard) {
+        break;
+      }
+
+      var flightCards = document.querySelectorAll(findFlightCard_FLIGHT_CARD_SELECTOR);
+      batchLastFlightCard = Array.from(flightCards).slice(-1)[0];
+      scrollToFlightCard(batchLastFlightCard);
+      yield pause(300, 50, 100);
+    }
+
+    if (flightCard) {
+      return flightCard;
+    } else {
+      debugger;
+      throw new ParserError("TODO");
+    }
+  });
+
+  return function findFlightCard(_x) {
+    return _ref.apply(this, arguments);
+  };
+}();
+;// CONCATENATED MODULE: ./src/skiplagged/ui/highlightFlightCard.ts
+function highlightFlightCard_asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
+
+function highlightFlightCard_asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { highlightFlightCard_asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { highlightFlightCard_asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
+
+
+
+
+var highlightFlightCard = /*#__PURE__*/function () {
+  var _ref = highlightFlightCard_asyncToGenerator(function* (selectedReturnId) {
+    clearExistingSelections();
+    var flightCard = yield findFlightCard(selectedReturnId);
+    highlightSelectedElement(flightCard);
+    scrollToFlightCard(flightCard);
+  });
+
+  return function highlightFlightCard(_x) {
+    return _ref.apply(this, arguments);
+  };
+}();
+var clearExistingSelections = function clearExistingSelections() {
+  var previousDepSelection = document.querySelector("[data-selected='true']");
+
+  if (previousDepSelection) {
+    clearHighlightFromElement(previousDepSelection);
+  }
+};
+;// CONCATENATED MODULE: ./src/skiplagged/ui/clearSelection.ts
+function clearSelection_asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
+
+function clearSelection_asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { clearSelection_asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { clearSelection_asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
+
+
+
+
+
+var clearSelection_RETURN_HEADER_SELECTOR = ".trip-return-header";
+var SELECTED_FLIGHT_CARD_SELECTOR = ".selected-trip";
+var clearSelection = /*#__PURE__*/function () {
+  var _ref = clearSelection_asyncToGenerator(function* () {
+    clearExistingSelections();
+
+    if (!isSelectingReturnFlight()) {
+      return;
+    }
+
+    var flightCard = getSelectedFlightCard();
+    flightCard.click();
+    yield clearSelection_waitForLoad();
+  });
+
+  return function clearSelection() {
+    return _ref.apply(this, arguments);
+  };
+}();
+
+var isSelectingReturnFlight = function isSelectingReturnFlight() {
+  var returnHeader = document.querySelector(clearSelection_RETURN_HEADER_SELECTOR);
+
+  if (!returnHeader) {
+    throw new MissingElementLookupError("Unable to locate return header");
+  }
+
+  return isVisible(returnHeader);
+};
+
+var getSelectedFlightCard = function getSelectedFlightCard() {
+  var flightCard = document.querySelector(SELECTED_FLIGHT_CARD_SELECTOR);
+
+  if (!flightCard) {
+    throw new MissingElementLookupError("Unable to selected departure flight card");
+  }
+
+  return flightCard;
+};
+
+var clearSelection_waitForLoad = /*#__PURE__*/function () {
+  var _ref2 = clearSelection_asyncToGenerator(function* () {
+    // not much in the way of appearance/disappearance...
+    yield pause(500);
+  });
+
+  return function waitForLoad() {
+    return _ref2.apply(this, arguments);
+  };
+}();
 ;// CONCATENATED MODULE: ./src/skiplagged/ui/selectFlightCard.ts
 function selectFlightCard_asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
 
