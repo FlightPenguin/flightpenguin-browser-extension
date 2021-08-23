@@ -8,8 +8,9 @@ import { sendFailedScraper } from "../shared/events";
 import { addBackToSearchButton } from "../shared/ui/backToSearch";
 import { getFlightContainer } from "./parser/getFlightContainer";
 import { FlightObserver } from "./parser/observer";
+import { clearSelection } from "./ui/clearSelection";
 import { highlightFlightCard } from "./ui/highlightFlightCard";
-import { addStopScrollingElement, scrollThroughContainer, stopScrollingNow } from "./ui/scrollThroughContainer";
+import { scrollThroughContainer, stopScrollingNow } from "./ui/scrollThroughContainer";
 import { selectFlightCard } from "./ui/selectFlightCard";
 
 let departureFlightContainer: HTMLElement | null;
@@ -53,7 +54,15 @@ chrome.runtime.onMessage.addListener(async function (message) {
       await highlightFlight(message.selectedDepartureId, departureObserver, message.selectedReturnId, returnObserver);
       break;
     case "CLEAR_SELECTION":
-      debugger;
+      if (departureObserver) {
+        departureObserver.endObservation();
+      }
+      if (returnObserver) {
+        returnObserver.endObservation();
+      }
+      stopScrollingNow();
+
+      await clearSelection();
       chrome.runtime.sendMessage({ event: "PROVIDER_READY", provider: "skiplagged" });
       break;
     default:
