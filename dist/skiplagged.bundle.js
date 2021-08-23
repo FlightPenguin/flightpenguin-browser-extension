@@ -1611,10 +1611,12 @@ var highlightFlight = /*#__PURE__*/function () {
     try {
       var flightId;
 
-      if (flightPenguinDepartureId) {
+      if (flightPenguinReturnId) {
+        flightId = returnObserver === null || returnObserver === void 0 ? void 0 : returnObserver.getSkiplaggedId(flightPenguinReturnId);
+      } else if (flightPenguinDepartureId) {
         flightId = departureObserver === null || departureObserver === void 0 ? void 0 : departureObserver.getSkiplaggedId(flightPenguinDepartureId);
       } else {
-        flightId = returnObserver === null || returnObserver === void 0 ? void 0 : returnObserver.getSkiplaggedId(flightPenguinReturnId);
+        throw new ParserError("highlighting without a flight...");
       }
 
       yield highlightFlightCard(flightId || "");

@@ -97,10 +97,12 @@ const highlightFlight = async (
   addBackToSearchButton();
   try {
     let flightId;
-    if (flightPenguinDepartureId) {
+    if (flightPenguinReturnId) {
+      flightId = returnObserver?.getSkiplaggedId(flightPenguinReturnId);
+    } else if (flightPenguinDepartureId) {
       flightId = departureObserver?.getSkiplaggedId(flightPenguinDepartureId);
     } else {
-      flightId = returnObserver?.getSkiplaggedId(flightPenguinReturnId);
+      throw new ParserError("highlighting without a flight...");
     }
 
     await highlightFlightCard(flightId || "");
