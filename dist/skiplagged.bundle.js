@@ -278,7 +278,6 @@ var getFlightContainer = /*#__PURE__*/function () {
     }
 
     if (!isVisible(container)) {
-      debugger;
       throw new ParserError("Flight container is not visible");
     }
 
@@ -1391,8 +1390,7 @@ var findFlightCard = /*#__PURE__*/function () {
     if (flightCard) {
       return flightCard;
     } else {
-      debugger;
-      throw new ParserError("TODO");
+      throw new ParserError("Could not find flight card");
     }
   });
 

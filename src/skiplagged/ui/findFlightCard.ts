@@ -5,7 +5,7 @@ import { scrollToFlightCard } from "./scrollToFlightCard";
 
 const FLIGHT_CARD_SELECTOR = "div[class='trip']";
 
-export const findFlightCard = async (skiplaggedFlightId: string) => {
+export const findFlightCard = async (skiplaggedFlightId: string): Promise<HTMLElement> => {
   stopScrollingNow();
   await pause(300);
   window.scrollTo({ top: 0, behavior: "smooth" });
@@ -18,7 +18,7 @@ export const findFlightCard = async (skiplaggedFlightId: string) => {
 
   while (lastFlightCard === null || lastFlightCard !== batchLastFlightCard) {
     lastFlightCard = batchLastFlightCard;
-    flightCard = document.querySelector(flightSelector);
+    flightCard = document.querySelector(flightSelector) as HTMLElement;
     if (flightCard) {
       break;
     }
@@ -30,7 +30,6 @@ export const findFlightCard = async (skiplaggedFlightId: string) => {
   if (flightCard) {
     return flightCard;
   } else {
-    debugger;
-    throw new ParserError("TODO");
+    throw new ParserError("Could not find flight card");
   }
 };
