@@ -41,9 +41,6 @@ const progressiveScrollingOnce = async (flightContainer: HTMLElement): Promise<v
     await pause(300, 50, 100);
     lastFlightCard = getLastFlightCard(flightContainer);
   }
-  if (window.visualViewport.pageTop < 10000) {
-    debugger;
-  }
 };
 
 const getTimeSinceStart = (startTime: number) => {
