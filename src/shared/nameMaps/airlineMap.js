@@ -4,13 +4,16 @@ const AirlineMap = {
     American: { display: "American", color: "#C5423E", code: "AA" },
     Delta: { display: "Delta", color: "#EE722E", code: "DL" },
     "Delta Air Lines": { display: "Delta", color: "#EE722E", code: "DL" },
+    "Southwest Airlines": { display: "Southwest", color: "#F6C04D", code: "WN" },
     Southwest: { display: "Southwest", color: "#F6C04D", code: "WN" },
     United: { display: "United", color: "#235EA6", code: "UA" },
     "United Airlines": { display: "United", color: "#235EA6", code: "UA" },
     "Air Canada": { display: "Air Canada", color: "#E53222", code: "AC" },
+    Alaska: { display: "Alaska", color: "#51172C", code: "AS" },
     "Alaska Airlines": { display: "Alaska", color: "#51172C", code: "AS" },
     jetBlue: { display: "jetBlue", color: "#5F90C8", code: "B6" },
     "JetBlue Airways": { display: "jetBlue", color: "#5F90C8", code: "B6" },
+    Spirit: { display: "Spirit", color: "#BBB140", code: "NK" },
     "Spirit Airlines": { display: "Spirit", color: "#BBB140", code: "NK" },
     WestJet: { display: "WestJet", color: "#4BA89C", code: "WS" },
     Aeromexico: { display: "Aeromexico", color: "#000000", code: "AM" },
@@ -21,6 +24,11 @@ const AirlineMap = {
     // "Allegiant": { display: "Allegiant", color: "#CAB83D", code: "G4" }, // Seems like Priceline doesn't show Allegiant
     "Hawaiian Airlines": { display: "Hawaiian", color: "#4D388A", code: "HA" },
     // "VivaAerobus": { display: "VivaAerobus", color: "", code: "" }, // Seems like Priceline doesn't show VivaAerobus
+    "Sun Country": {
+      display: "Sun Country",
+      color: "#D79A71",
+      code: "SY",
+    },
     "Sun Country Airlines": {
       display: "Sun Country",
       color: "#D79A71",
