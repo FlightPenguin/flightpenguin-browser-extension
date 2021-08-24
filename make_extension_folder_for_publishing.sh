@@ -36,8 +36,26 @@ copy_directory() {
   fi
 }
 
+build() {
+  branch_name=$(git symbolic-ref --short -q HEAD)
+  if [ ${branch_name} != "main" ]; then
+    echo "ERROR: Build this project on the main branch"
+    exit 89
+  fi
 
+  uncommitted_file_count = $(git status -s -uall | wc -l)
+  if [ ${uncommitted_file_count} -ne 0 ]; then
+    echo "ERROR: No building with uncommitted changes!"
+    exit 89
+  fi
 
+  npm run build
+  exitcode=$?
+  if [ $exitcode -ne 0 ]; then
+    echo "ERROR: Failed to build the project"
+    exit 80
+  fi
+}
 
 if [ -z ${VERSION} ]; then
   echo "ERROR: Must provide version string (e.g. bash make_extension_folder_for_publishing.sh x.y.z"
@@ -54,6 +72,8 @@ if [ ${VERSION_COUNT} -ne 1 ]; then
   echo "ERROR: Update manifest file to match version ${VERSION}"
   exit 4
 fi
+
+build
 
 PACKAGE_NAME="flightpenguin_ext_${VERSION}"
 TARGET_DIR="./local/packaging/${PACKAGE_NAME}"
