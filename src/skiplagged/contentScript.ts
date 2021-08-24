@@ -39,6 +39,8 @@ chrome.runtime.onMessage.addListener(async function (message) {
       );
       if (returnFlightContainer) {
         await scrollThroughContainer(returnFlightContainer);
+      } else {
+        debugger;
       }
       break;
     case "HIGHLIGHT_FLIGHT":

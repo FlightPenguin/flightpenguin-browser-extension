@@ -26,13 +26,12 @@ const progressiveScrollingOnce = async (flightContainer: HTMLElement): Promise<v
   window.scrollTo({ top: 0, behavior: "smooth" });
   await pause(1000, 100, 200);
 
-  let lastFlightCard = null;
+  let lastFlightCard = getLastFlightCard(flightContainer);
   let batchLastFlightCard = null;
-  while (lastFlightCard === null || lastFlightCard !== batchLastFlightCard) {
+  while (lastFlightCard !== batchLastFlightCard) {
     if (stopScrollingCheck(false)) {
       break;
     }
-    lastFlightCard = batchLastFlightCard;
     const flightCards = flightContainer.querySelectorAll(FLIGHT_CARD_SELECTOR) as NodeListOf<HTMLElement>;
     batchLastFlightCard = Array.from(flightCards).slice(-1)[0];
     scrollToFlightCard(batchLastFlightCard);
@@ -40,6 +39,10 @@ const progressiveScrollingOnce = async (flightContainer: HTMLElement): Promise<v
       break;
     }
     await pause(300, 50, 100);
+    lastFlightCard = getLastFlightCard(flightContainer);
+  }
+  if (window.visualViewport.pageTop < 10000) {
+    debugger;
   }
 };
 
@@ -68,4 +71,8 @@ export const removeScrollingCheck = (div: HTMLElement | null): void => {
   if (element) {
     element.remove();
   }
+};
+
+export const getLastFlightCard = (container: HTMLElement | Document): HTMLElement => {
+  return Array.from(container.querySelectorAll(FLIGHT_CARD_SELECTOR)).slice(-1)[0] as HTMLElement;
 };

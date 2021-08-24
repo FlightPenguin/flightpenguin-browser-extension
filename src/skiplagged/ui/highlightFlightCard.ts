@@ -2,9 +2,9 @@ import { clearHighlightFromElement, highlightSelectedElement } from "../../share
 import { findFlightCard } from "./findFlightCard";
 import { scrollToFlightCard } from "./scrollToFlightCard";
 
-export const highlightFlightCard = async (selectedReturnId: string): Promise<void> => {
+export const highlightFlightCard = async (selectedFlightId: string): Promise<void> => {
   clearExistingSelections();
-  const flightCard = await findFlightCard(selectedReturnId);
+  const flightCard = await findFlightCard(selectedFlightId);
   highlightSelectedElement(flightCard);
   scrollToFlightCard(flightCard);
 };
