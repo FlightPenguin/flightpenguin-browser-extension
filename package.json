@@ -4,7 +4,8 @@
   "description": "flight search",
   "private": true,
   "scripts": {
-    "build": "webpack --mode=production",
+    "build": "npx webpack -c ./webpack.production.config.js",
+    "build:dev": "npx webpack -c webpack.development.config.js --watch",
     "prepare": "husky install"
   },
   "repository": {
@@ -22,6 +23,7 @@
     "@babel/preset-env": "^7.13.10",
     "@babel/preset-typescript": "^7.15.0",
     "@types/chrome": "0.0.147",
+    "@types/terser-webpack-plugin": "^5.0.4",
     "@typescript-eslint/eslint-plugin": "^4.29.1",
     "@typescript-eslint/parser": "^4.29.1",
     "babel-loader": "^8.2.2",
