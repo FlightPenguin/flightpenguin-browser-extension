@@ -1,5 +1,4 @@
 import { makeItins, sortFlights } from "../../dataModels";
-import { pause } from "../../shared/pause";
 import { Flight } from "../../shared/types/Flight";
 import { ProviderManager } from "../ProviderManager";
 
@@ -39,7 +38,7 @@ export const handleFlightReturnResultsReceived = (
   const setSuccessful = providerManager.setItineraries(allItins, existingItinerariesVersion);
   if (setSuccessful) {
     const returnList = sortFlights(Object.values(returns), allItins); // TODO dedup returns
-    providerManager.setReturns(returnList);
+    providerManager.addReturns(returnList);
 
     const nextMessage = {
       event: "RETURN_FLIGHTS_FOR_CLIENT",
@@ -51,7 +50,6 @@ export const handleFlightReturnResultsReceived = (
 
     providerManager.sendMessageToIndexPage(nextMessage);
   } else {
-    pause(100, 10, 50);
     return handleFlightReturnResultsReceived(providerManager, flights, providerName);
   }
 };

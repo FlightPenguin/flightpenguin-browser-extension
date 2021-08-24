@@ -1,6 +1,6 @@
 {
   "name": "FlightPenguin",
-  "version": "1.0.23",
+  "version": "1.1.0",
   "description": "Search flights",
   "background": {
     "page": "src/background.html",
@@ -44,6 +44,14 @@
       "js": [
         "src/shared/sentry.js",
         "dist/expedia.bundle.js"
+      ]
+    },
+    {
+      "matches": ["https://skiplagged.com/flights/*"],
+      "css": ["src/shared/contentScript.css"],
+      "js": [
+        "src/shared/sentry.js",
+        "dist/skiplagged.bundle.js"
       ]
     }
   ],

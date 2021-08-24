@@ -23,7 +23,7 @@ chrome.runtime.onMessage.addListener(async function (message) {
       break;
     case "CLEAR_SELECTION":
       history.back();
-      chrome.runtime.sendMessage({ event: "EXPEDIA_READY" });
+      chrome.runtime.sendMessage({ event: "PROVIDER_READY", provider: "expedia" });
       break;
     default:
       break;

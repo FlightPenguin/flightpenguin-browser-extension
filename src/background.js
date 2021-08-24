@@ -52,8 +52,8 @@ chrome.runtime.onMessage.addListener(function (message, sender, reply) {
     case "SEND_BEGIN_EVENT":
       handleDispatchBeginParsing(providerManager, message.provider, 2000);
       break;
-    case "EXPEDIA_READY":
-      handleProviderReady(providerManager, "expedia");
+    case "PROVIDER_READY":
+      handleProviderReady(providerManager, message.provider);
       break;
     case "FOCUS_WEBPAGE":
       handleFocusWebpage(providerManager);

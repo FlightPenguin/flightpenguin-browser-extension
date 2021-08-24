@@ -3,6 +3,7 @@ import { pause } from "../shared/pause";
 import { FlightSearchFormData } from "../shared/types/FlightSearchFormData";
 import { Itinerary } from "../shared/types/Itinerary";
 import { WindowConfig } from "../shared/types/WindowConfig";
+import { getUrl as getSkiplaggedUrl } from "../skiplagged/mappings/getUrl";
 import { getUrl as getSkyscannerUrl } from "../skyscanner/mappings/getUrl";
 import { getUrl as getSouthwestUrl } from "../southwest/mappings/getUrl";
 import { DEFAULT_ON_READY_FUNCTION, PROVIDERS_SUPPORTING_POINTS_SEARCH, SUPPORTED_PROVIDERS } from "./constants";
@@ -25,6 +26,7 @@ const providerURLBaseMap: { [key: string]: (formData: FlightSearchFormData) => s
   southwest: getSouthwestUrl,
   skyscanner: getSkyscannerUrl,
   expedia: getExpediaUrl,
+  skiplagged: getSkiplaggedUrl,
 };
 
 export class ProviderManager {
@@ -163,7 +165,9 @@ export class ProviderManager {
   }
 
   addReturns(returns: any[]): void {
-    this.returns = this.returns.concat(returns);
+    this.returns = this.returns.concat(returns).sort((a: any, b: any) => {
+      return a.pain - b.pain;
+    });
   }
 
   setReturns(returns: any[]): void {
