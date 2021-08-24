@@ -62,6 +62,7 @@ const AirlineMap = {
     "ANA Airlines": { display: "ANA", color: "#254897", code: "NH" },
     "Japan Airlines": { display: "Japan Airlines", color: "#E56E69", code: "JL" },
     "Air India": { display: "Air India", color: "#D47346", code: "AI" },
+    "Air India Limited": { display: "Air India", color: "#D47346", code: "AI" },
     "Qantas Airways": { display: "Qantas", color: "#E34538", code: "QF" },
     "Singapore Airlines": { display: "Singapore", color: "#EFA952", code: "SQ" },
     "ANA (All Nippon Airways)": { display: "ANA", color: "#0f4a8d" },
