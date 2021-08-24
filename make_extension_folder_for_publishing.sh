@@ -43,7 +43,7 @@ build() {
     exit 89
   fi
 
-  uncommitted_file_count = $(git status -s -uall | wc -l)
+  uncommitted_file_count=$(git status -s -uall | wc -l)
   if [ ${uncommitted_file_count} -ne 0 ]; then
     echo "ERROR: No building with uncommitted changes!"
     exit 89
