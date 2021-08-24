@@ -11,7 +11,7 @@ export const findFlightCard = async (skiplaggedFlightId: string): Promise<HTMLEl
   window.scrollTo({ top: 0, behavior: "smooth" });
   await pause(1000);
 
-  const flightSelector = `[id^='${skiplaggedFlightId}|']`;
+  const flightSelector = `div[id*='"key":"${skiplaggedFlightId}"']`;
   let flightCard = null;
   let lastFlightCard = getLastFlightCard(document);
   let batchLastFlightCard = null;

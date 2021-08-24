@@ -76,10 +76,7 @@ const waitForLoad = async (selectedFlight: boolean) => {
   await waitForDisappearance(15000, LOADING_SELECTOR);
   await waitForAppearance(15000, FLIGHT_CARD_SELECTOR);
 
-  if (!selectedFlight) {
-    // Do this once...
-    disableHiddenCitySearches();
-  }
+  disableHiddenCitySearches();
 
   if (isNoResults(selectedFlight)) {
     sendNoFlightsEvent("skiplagged");

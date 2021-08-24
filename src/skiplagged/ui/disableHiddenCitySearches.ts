@@ -1,8 +1,11 @@
-const HIDDEN_CITY_SELECTOR = "input[data-name='hiddenCity']";
+const STANDARD_SELECTOR = "input[data-name='standard']";
 
 export const disableHiddenCitySearches = (): void => {
-  const input = document.querySelector(HIDDEN_CITY_SELECTOR) as HTMLInputElement;
+  const input = document.querySelector(STANDARD_SELECTOR) as HTMLInputElement;
   if (input) {
-    input.click();
+    const only = input.parentElement?.querySelector(".only") as HTMLElement;
+    if (only) {
+      only.click();
+    }
   }
 };

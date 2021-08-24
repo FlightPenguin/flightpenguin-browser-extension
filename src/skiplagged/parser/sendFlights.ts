@@ -80,5 +80,5 @@ const getFare = (flightCard: HTMLElement) => {
 };
 
 const getFlightCardShortId = (flightCard: HTMLElement) => {
-  return flightCard.id.split("|")[0].trim();
+  return flightCard.id.split('"key":')[1].split(",")[0].replace(/\W/g, "").trim();
 };

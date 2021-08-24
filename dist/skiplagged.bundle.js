@@ -216,12 +216,18 @@ var waitForAppearance = /*#__PURE__*/function () {
   };
 }();
 ;// CONCATENATED MODULE: ./src/skiplagged/ui/disableHiddenCitySearches.ts
-var HIDDEN_CITY_SELECTOR = "input[data-name='hiddenCity']";
+var STANDARD_SELECTOR = "input[data-name='standard']";
 var disableHiddenCitySearches = function disableHiddenCitySearches() {
-  var input = document.querySelector(HIDDEN_CITY_SELECTOR);
+  var input = document.querySelector(STANDARD_SELECTOR);
 
   if (input) {
-    input.click();
+    var _input$parentElement;
+
+    var only = (_input$parentElement = input.parentElement) === null || _input$parentElement === void 0 ? void 0 : _input$parentElement.querySelector(".only");
+
+    if (only) {
+      only.click();
+    }
   }
 };
 ;// CONCATENATED MODULE: ./src/skiplagged/parser/getFlightContainer.ts
@@ -329,11 +335,7 @@ var waitForLoad = /*#__PURE__*/function () {
 
     yield waitForDisappearance(15000, LOADING_SELECTOR);
     yield waitForAppearance(15000, FLIGHT_CARD_SELECTOR);
-
-    if (!selectedFlight) {
-      // Do this once...
-      disableHiddenCitySearches();
-    }
+    disableHiddenCitySearches();
 
     if (isNoResults(selectedFlight)) {
       sendNoFlightsEvent("skiplagged");
@@ -1149,7 +1151,7 @@ var getFare = function getFare(flightCard) {
 };
 
 var getFlightCardShortId = function getFlightCardShortId(flightCard) {
-  return flightCard.id.split("|")[0].trim();
+  return flightCard.id.split('"key":')[1].split(",")[0].replace(/\W/g, "").trim();
 };
 ;// CONCATENATED MODULE: ./src/skiplagged/parser/observer.ts
 function observer_createForOfIteratorHelper(o, allowArrayLike) { var it; if (typeof Symbol === "undefined" || o[Symbol.iterator] == null) { if (Array.isArray(o) || (it = observer_unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = o[Symbol.iterator](); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it["return"] != null) it["return"](); } finally { if (didErr) throw err; } } }; }
@@ -1395,7 +1397,7 @@ var findFlightCard = /*#__PURE__*/function () {
       behavior: "smooth"
     });
     yield pause(1000);
-    var flightSelector = "[id^='".concat(skiplaggedFlightId, "|']");
+    var flightSelector = "div[id*='\"key\":\"".concat(skiplaggedFlightId, "\"']");
     var flightCard = null;
     var lastFlightCard = getLastFlightCard(document);
     var batchLastFlightCard = null;
@@ -1434,9 +1436,9 @@ function highlightFlightCard_asyncToGenerator(fn) { return function () { var sel
 
 
 var highlightFlightCard = /*#__PURE__*/function () {
-  var _ref = highlightFlightCard_asyncToGenerator(function* (selectedReturnId) {
+  var _ref = highlightFlightCard_asyncToGenerator(function* (selectedFlightId) {
     clearExistingSelections();
-    var flightCard = yield findFlightCard(selectedReturnId);
+    var flightCard = yield findFlightCard(selectedFlightId);
     highlightSelectedElement(flightCard);
     scrollToFlightCard(flightCard);
   });
