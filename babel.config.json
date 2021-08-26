@@ -1,7 +1,8 @@
 {
   "presets":[
     ["@babel/preset-env", { "modules": false, "exclude": ["transform-regenerator"] }],
-    "@babel/preset-typescript"
+    "@babel/preset-typescript",
+    "@babel/preset-react"
   ],
   "plugins":[
     ["module-resolver", { "alias": "package.alias" }]

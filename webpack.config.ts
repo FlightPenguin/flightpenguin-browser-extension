@@ -30,6 +30,9 @@ const getModuleRules = ({ mode }: { mode: "production" | "development" }) => [
 
 const baseResolve = {
   extensions: ["*", ".js", ".jsx", ".tsx", ".ts"],
+  alias: {
+    components: path.resolve(__dirname, "src/components"),
+  },
 };
 
 const basePlugins = [
