@@ -30,7 +30,9 @@ export const TimelineContainer = ({
         {pluralize(capitalize(flightType), itineraries.length)}
       </Text>
       <List>
-        {itineraries.map((itinerary, index) => {
+        {itineraries.map((itinerary) => {
+          const flightPenguinId = getFlightPenguinId(itinerary, flightType);
+
           return (
             <TimelineRow
               itinerary={itinerary}
@@ -39,7 +41,7 @@ export const TimelineContainer = ({
               intervalCount={intervals.length}
               increment={increment}
               startHourOffset={startHour}
-              key={`itinerary-${index}`}
+              key={`itinerary-${flightPenguinId}`}
               onClick={(event) => {
                 return;
               }} // TODO
@@ -56,6 +58,11 @@ export const TimelineContainer = ({
       />
     </Container>
   );
+};
+
+const getFlightPenguinId = (itinerary: Itinerary, flightType: "DEPARTURE" | "RETURN"): string => {
+  const flight = flightType === "RETURN" ? itinerary.returnFlight : itinerary.departureFlight;
+  return flight.id;
 };
 
 const getFlights = (itineraries: Itinerary[], flightType: "DEPARTURE" | "RETURN"): FlightDetails[] => {

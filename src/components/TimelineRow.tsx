@@ -63,7 +63,7 @@ export const TimelineRow = ({
         {layovers.map((layover, index) => {
           return (
             <Container
-              key={`flight-segment-${index}`}
+              key={`flight-segment-${getLayoverFlightId}`}
               title={getLayoverFlightName(layover)}
               data-name="flight-segment"
               width={layover.layout.width}
@@ -94,6 +94,10 @@ const getFlightName = (flight: FlightDetails): string => {
 
 const getLayoverFlightName = (flight: Layover): string => {
   return `${flight.operatingAirline.display} ${flight.fromTime}-${flight.toTime}`;
+};
+
+const getLayoverFlightId = (flight: Layover): string => {
+  return `${flight.operatingAirline.display}-${flight.fromTime}-${flight.toTime}`;
 };
 
 interface Layover {

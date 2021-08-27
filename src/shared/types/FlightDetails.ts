@@ -13,6 +13,7 @@ interface FlightDetailsInput {
 }
 
 export class FlightDetails {
+  id: string;
   fromTime: string;
   toTime: string;
   fromTimeDetails: FlightTimeDetails;
@@ -37,6 +38,7 @@ export class FlightDetails {
     this.marketingAirlineDetails = AirlineMap.getAirlineDetails(marketingAirline);
     this.layovers = layovers;
     this.timezoneOffset = getTimezoneOffset(fromTime, toTime, duration);
+    this.id = this.getFlightPenguinId();
   }
 
   getTimeDetails(time: string): FlightTimeDetails {
@@ -52,5 +54,9 @@ export class FlightDetails {
       timeOfDay,
       excessDays: excessDays ? excessDays[0] : excessDays,
     };
+  }
+
+  getFlightPenguinId() {
+    return `${this.operatingAirline}-${this.fromTime}-${this.toTime}`;
   }
 }
