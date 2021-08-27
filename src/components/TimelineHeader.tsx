@@ -43,11 +43,10 @@ export const TimelineHeader = ({
           }
 
           return (
-            <>
+            <Box key={`interval-wrapper-${intervalDate}-${time}`}>
               <Box
                 data-name="interval"
                 left={`${startX}px`}
-                key={`interval-${intervalDate}-${time}`}
                 display="flex"
                 flexDirection="column"
                 justifyContent="flex-end"
@@ -57,23 +56,25 @@ export const TimelineHeader = ({
                 position="absolute"
               >
                 {isMidnight ? (
-                  <Text position="relative" border="default" padding="major-1" borderRadius="4" fontWeight="700">
-                    {getWeekdayName(intervalDate)}
-                  </Text>
+                  <Box position="relative" border="default" padding="major-1" borderRadius="4">
+                    <Tooltip content={intervalDate.toLocaleDateString("en-US")} hasArrow placement="right">
+                      <Text fontWeight="700">{getWeekdayName(intervalDate)}</Text>
+                    </Tooltip>
+                  </Box>
                 ) : (
                   <Text padding="major-1">&nbsp;</Text>
                 )}
-                <Tooltip content={`Time at ${departureAirportCode}`}>
+                <Tooltip content={`Time at ${departureAirportCode}`} hasArrow placement="right">
                   <Text>{time.toLowerCase()}</Text>
                 </Tooltip>
                 {tzOffset && (
-                  <Tooltip content={`Time at ${arrivalAirportCode}`}>
+                  <Tooltip content={`Time at ${arrivalAirportCode}`} hasArrow placement="right">
                     <Text>{offsetTime.toLowerCase()}</Text>
                   </Tooltip>
                 )}
               </Box>
               <Box data-name="interval-line" key={`interval-line-${intervalDate}-${time}`} />
-            </>
+            </Box>
           );
         })}
       </Box>
