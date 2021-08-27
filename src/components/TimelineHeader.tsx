@@ -1,5 +1,5 @@
 import { Box, Text, Tooltip } from "bumbag";
-import React, { useState } from "react";
+import React from "react";
 
 import { FlightSearchFormData } from "../shared/types/FlightSearchFormData";
 import { getWeekdayName } from "../shared/utilities/getWeekdayName";
@@ -45,38 +45,56 @@ export const TimelineHeader = ({
           const startX = intervalWidth * index;
 
           return (
-            <Box key={`interval-wrapper-${intervalDate.toLocaleDateString("en-US")}-${time}`}>
-              <Box
-                data-name="interval"
-                left={`${startX}px`}
-                display="flex"
-                flexDirection="column"
-                justifyContent="flex-end"
-                alignX="center"
-                marginLeft="-17px"
-                width="48px"
-                position="absolute"
-              >
-                {isMidnight ? (
-                  <Box position="relative" border="default" padding="major-1" borderRadius="4">
-                    <Tooltip content={intervalDate.toLocaleDateString("en-US")} hasArrow placement="right">
-                      <Text fontWeight="700">{getWeekdayName(intervalDate)}</Text>
-                    </Tooltip>
-                  </Box>
-                ) : (
-                  <Text padding="major-1">&nbsp;</Text>
-                )}
-                <Tooltip content={`Time at ${departureAirportCode}`} hasArrow placement="right">
-                  <Text>{time.toLowerCase()}</Text>
-                </Tooltip>
-                {!!tzOffset && (
-                  <Tooltip content={`Time at ${arrivalAirportCode}`} hasArrow placement="right">
-                    <Text>{offsetTime.toLowerCase()}</Text>
+            <Box
+              key={`interval-wrapper-${intervalDate.toLocaleDateString("en-US")}-${time}`}
+              data-name="interval"
+              left={`${startX}px`}
+              display="flex"
+              flexDirection="column"
+              justifyContent="flex-end"
+              alignX="center"
+              marginLeft="-17px"
+              width="48px"
+              position="absolute"
+            >
+              {isMidnight ? (
+                <Box position="relative" border="default" padding="major-1" borderRadius="4">
+                  <Tooltip content={intervalDate.toLocaleDateString("en-US")} hasArrow placement="right">
+                    <Text fontWeight="700">{getWeekdayName(intervalDate)}</Text>
                   </Tooltip>
-                )}
-              </Box>
-              <Box data-name="interval-line" />
+                </Box>
+              ) : (
+                <Text padding="major-1">&nbsp;</Text>
+              )}
+              <Tooltip content={`Time at ${departureAirportCode}`} hasArrow placement="right">
+                <Text>{time.toLowerCase()}</Text>
+              </Tooltip>
+              {!!tzOffset && (
+                <Tooltip content={`Time at ${arrivalAirportCode}`} hasArrow placement="right">
+                  <Text>{offsetTime.toLowerCase()}</Text>
+                </Tooltip>
+              )}
             </Box>
+          );
+        })}
+      </Box>
+      <Box
+        data-name={`${flightType.toLowerCase()}-dividers`}
+        position="absolute"
+        display="flex"
+        flexDirection="row"
+        height="100%"
+      >
+        {intervals.map((interval, index) => {
+          const startX = intervalWidth * index;
+          return (
+            <Box
+              key={`interval-divider-${startX}`}
+              left={`${startX}px`}
+              width={`${intervalWidth}px`}
+              height="100%"
+              borderLeft="default"
+            />
           );
         })}
       </Box>
