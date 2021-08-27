@@ -22,7 +22,8 @@ export const TimelineContainer = ({
 }: TimelimeContainerProps): React.ReactElement => {
   const width = 1418;
   const { intervals, increment, startHour } = getIntervalInfo(itineraries, flightType, width);
-  const timezoneOffset = itineraries[0].departureFlight.timezoneOffset;
+  // const timezoneOffset = new FlightDetails(itineraries[0].departureFlight).timezoneOffset;
+  const timezoneOffset = 60;
 
   return (
     <Box use="section" paddingLeft="major-3" paddingTop="major-3">

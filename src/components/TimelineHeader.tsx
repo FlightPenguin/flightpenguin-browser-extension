@@ -20,7 +20,7 @@ export const TimelineHeader = ({
   tzOffset,
   maxRowWidth,
 }: TimelineHeaderProps): React.ReactElement => {
-  const [daysCounter, setDaysCounter] = useState(0);
+  let daysCounter = 0;
   const intervalWidth = maxRowWidth / (intervals.length - 1);
   const { startDate, departureAirportCode, arrivalAirportCode } = getFlightInfo(formData, flightType);
 
@@ -30,7 +30,12 @@ export const TimelineHeader = ({
         {intervals.map((interval, index) => {
           const time = getHeaderTime(interval);
           const offsetTime = getHeaderTime(interval, tzOffset);
-          const isMidnight = time === "12 AM";
+          const isMidnight = time.toUpperCase() === "12 AM";
+
+          if (isMidnight && index !== 0) {
+            daysCounter += 1;
+          }
+
           const intervalDate = new Date(
             startDate.getFullYear(),
             startDate.getMonth(),
@@ -38,12 +43,8 @@ export const TimelineHeader = ({
           );
           const startX = intervalWidth * index;
 
-          if (isMidnight && index !== 0) {
-            setDaysCounter(daysCounter + 1);
-          }
-
           return (
-            <Box key={`interval-wrapper-${intervalDate}-${time}`}>
+            <Box key={`interval-wrapper-${intervalDate.toLocaleDateString("en-US")}-${time}`}>
               <Box
                 data-name="interval"
                 left={`${startX}px`}
@@ -73,7 +74,7 @@ export const TimelineHeader = ({
                   </Tooltip>
                 )}
               </Box>
-              <Box data-name="interval-line" key={`interval-line-${intervalDate}-${time}`} />
+              <Box data-name="interval-line" />
             </Box>
           );
         })}

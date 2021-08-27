@@ -75,7 +75,7 @@ if (root) {
                 fromTime: "06:45am",
                 fromTimeDetails: { hours: 6, minutes: 45, excessDays: null, displayHours: 6, timeOfDay: "am" },
                 toTime: "3:38pm+1",
-                toTimeDetails: { hours: 15, minutes: 38, excessDays: 1, displayHours: 3, timeOfDay: "pm" },
+                toTimeDetails: { hours: 39, minutes: 38, excessDays: 1, displayHours: 3, timeOfDay: "pm" },
                 duration: "31h53m",
                 layovers: [
                   {
@@ -93,7 +93,7 @@ if (root) {
                     fromTime: "11:59pm",
                     fromTimeDetails: { hours: 23, minutes: 59, excessDays: null, displayHours: 11, timeOfDay: "pm" },
                     toTime: "10:57am+1",
-                    toTimeDetails: { hours: 10, minutes: 57, excessDays: +1, displayHours: 10, timeOfDay: "am" },
+                    toTimeDetails: { hours: 34, minutes: 57, excessDays: +1, displayHours: 10, timeOfDay: "am" },
                     duration: "10h58m",
                     operatingAirline: "Alaska Express DBA Mercutio Airlines Limited",
                     operatingAirlineDetails: { display: "Alaska", color: "#51172C" },
@@ -102,9 +102,9 @@ if (root) {
                   },
                   {
                     fromTime: "10:57am",
-                    fromTimeDetails: { hours: 10, minutes: 57, excessDays: +1, displayHours: 10, timeOfDay: "am" },
+                    fromTimeDetails: { hours: 34, minutes: 57, excessDays: +1, displayHours: 10, timeOfDay: "am" },
                     toTime: "3:38pm",
-                    toTimeDetails: { hours: 15, minutes: 38, excessDays: null, displayHours: 3, timeOfDay: "pm" },
+                    toTimeDetails: { hours: 39, minutes: 38, excessDays: null, displayHours: 3, timeOfDay: "pm" },
                     duration: "4h16m",
                     operatingAirline: "Frontier",
                     operatingAirlineDetails: { display: "Frontier", color: "#378055" },

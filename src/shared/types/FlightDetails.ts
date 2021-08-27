@@ -37,7 +37,7 @@ export class FlightDetails {
     this.marketingAirline = marketingAirline;
     this.marketingAirlineDetails = AirlineMap.getAirlineDetails(marketingAirline);
     this.layovers = layovers;
-    this.timezoneOffset = getTimezoneOffset(fromTime, toTime, duration);
+    this.timezoneOffset = this.getTimezoneOffset();
     this.id = this.getFlightPenguinId();
   }
 
@@ -58,5 +58,9 @@ export class FlightDetails {
 
   getFlightPenguinId() {
     return `${this.operatingAirline}-${this.fromTime}-${this.toTime}`;
+  }
+
+  getTimezoneOffset() {
+    return getTimezoneOffset(this.fromTime, this.toTime, this.duration);
   }
 }
