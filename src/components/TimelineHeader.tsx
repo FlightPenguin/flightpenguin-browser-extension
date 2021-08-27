@@ -1,4 +1,4 @@
-import { Container, Text } from "bumbag";
+import { Box, Text, Tooltip } from "bumbag";
 import React, { useState } from "react";
 
 import { FlightSearchFormData } from "../shared/types/FlightSearchFormData";
@@ -25,30 +25,59 @@ export const TimelineHeader = ({
   const { startDate, departureAirportCode, arrivalAirportCode } = getFlightInfo(formData, flightType);
 
   return (
-    <Container data-name={`${flightType.toLowerCase()}-header`}>
-      {intervals.map((interval, index) => {
-        const time = getHeaderTime(interval);
-        const offsetTime = getHeaderTime(interval, tzOffset);
-        const isMidnight = time === "12 AM";
-        const intervalDate = new Date(startDate.getFullYear(), startDate.getMonth(), startDate.getDay() + daysCounter);
-        const startX = intervalWidth * index;
+    <Box data-name={`${flightType.toLowerCase()}-header`} position="relative" width="1067px">
+      <Box position="absolute" top="-100px">
+        {intervals.map((interval, index) => {
+          const time = getHeaderTime(interval);
+          const offsetTime = getHeaderTime(interval, tzOffset);
+          const isMidnight = time === "12 AM";
+          const intervalDate = new Date(
+            startDate.getFullYear(),
+            startDate.getMonth(),
+            startDate.getDay() + daysCounter,
+          );
+          const startX = intervalWidth * index;
 
-        if (isMidnight && index !== 0) {
-          setDaysCounter(daysCounter + 1);
-        }
+          if (isMidnight && index !== 0) {
+            setDaysCounter(daysCounter + 1);
+          }
 
-        return (
-          <Container key={`interval-wrapper-${intervalDate}-${time}`}>
-            <Container data-name="interval" left={startX}>
-              {isMidnight && <Text>{getWeekdayName(intervalDate)}</Text>}
-              <Text title={`Time at ${departureAirportCode}`}>{time.toLowerCase()}</Text>
-              {tzOffset && <Text title={`Time at ${arrivalAirportCode}`}>{offsetTime.toLowerCase()}</Text>}
-            </Container>
-            <Container data-name="interval-line" />
-          </Container>
-        );
-      })}
-    </Container>
+          return (
+            <>
+              <Box
+                data-name="interval"
+                left={`${startX}px`}
+                key={`interval-${intervalDate}-${time}`}
+                display="flex"
+                flexDirection="column"
+                justifyContent="flex-end"
+                alignX="center"
+                marginLeft="-17px"
+                width="48px"
+                position="absolute"
+              >
+                {isMidnight ? (
+                  <Text position="relative" border="default" padding="major-1" borderRadius="4" fontWeight="700">
+                    {getWeekdayName(intervalDate)}
+                  </Text>
+                ) : (
+                  <Text padding="major-1">&nbsp;</Text>
+                )}
+                <Tooltip content={`Time at ${departureAirportCode}`}>
+                  <Text>{time.toLowerCase()}</Text>
+                </Tooltip>
+                {tzOffset && (
+                  <Tooltip content={`Time at ${arrivalAirportCode}`}>
+                    <Text>{offsetTime.toLowerCase()}</Text>
+                  </Tooltip>
+                )}
+              </Box>
+              <Box data-name="interval-line" key={`interval-line-${intervalDate}-${time}`} />
+            </>
+          );
+        })}
+      </Box>
+    </Box>
   );
 };
 

@@ -1,4 +1,4 @@
-import { Container, List, Text } from "bumbag";
+import { Box, List, Text } from "bumbag";
 import capitalize from "lodash.capitalize";
 import pluralize from "pluralize";
 import React from "react";
@@ -25,44 +25,45 @@ export const TimelineContainer = ({
   const timezoneOffset = itineraries[0].departureFlight.timezoneOffset;
 
   return (
-    <Container use="section">
+    <Box use="section" paddingLeft="major-3" paddingTop="major-3">
       <Text fontWeight="bold" fontSize={400}>
         {pluralize(capitalize(flightType), itineraries.length)}
       </Text>
-      <List>
-        {itineraries.map((itinerary) => {
-          const flightPenguinId = getFlightPenguinId(itinerary, flightType);
-
-          return (
-            <TimelineRow
-              itinerary={itinerary}
-              flightType={flightType}
-              maxRowWidth={width}
-              intervalCount={intervals.length}
-              increment={increment}
-              startHourOffset={startHour}
-              key={`itinerary-${flightPenguinId}`}
-              onClick={(event) => {
-                return;
-              }} // TODO
-            />
-          );
-        })}
-      </List>
-      <TimelineHeader
-        formData={formData}
-        flightType={flightType}
-        intervals={intervals}
-        tzOffset={timezoneOffset}
-        maxRowWidth={width}
-      />
-    </Container>
+      <Box data-name={"container"} display="flex" position="relative" justifyContent="center">
+        <List width="350px">
+          {itineraries.map((itinerary) => {
+            const flightPenguinId = getFlightPenguinId(itinerary, flightType);
+            return (
+              <TimelineRow
+                itinerary={itinerary}
+                flightType={flightType}
+                maxRowWidth={width}
+                intervalCount={intervals.length}
+                increment={increment}
+                startHourOffset={startHour}
+                key={`itinerary-${flightPenguinId}`}
+                onClick={(event) => {
+                  return;
+                }} // TODO
+              />
+            );
+          })}
+        </List>
+        <TimelineHeader
+          formData={formData}
+          flightType={flightType}
+          intervals={intervals}
+          tzOffset={timezoneOffset}
+          maxRowWidth={width}
+        />
+      </Box>
+    </Box>
   );
 };
 
 const getFlightPenguinId = (itinerary: Itinerary, flightType: "DEPARTURE" | "RETURN"): string => {
   const flight = flightType === "RETURN" ? itinerary.returnFlight : itinerary.departureFlight;
-  return flight.id;
+  return `${flight.operatingAirline}-${flight.fromTime}-${flight.toTime}`;
 };
 
 const getFlights = (itineraries: Itinerary[], flightType: "DEPARTURE" | "RETURN"): FlightDetails[] => {

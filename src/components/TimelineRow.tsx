@@ -1,4 +1,4 @@
-import { Container, List, Text } from "bumbag";
+import { Box, List, Text, Tooltip } from "bumbag";
 import React, { useState } from "react";
 
 import AirlineMap from "../shared/nameMaps/airlineMap";
@@ -36,6 +36,11 @@ export const TimelineRow = ({
   return (
     <List.Item
       data-name="flight-list-item"
+      display="flex"
+      boxSizing="border-flex"
+      whiteSpace="nowrap"
+      alignX="center"
+      border="1px solid #da1717"
       tabIndex={0}
       key={flightPenguinId}
       data-flightpenguin-id={flightPenguinId}
@@ -50,36 +55,73 @@ export const TimelineRow = ({
         onClick(event);
       }}
     >
-      <Container data-name="flight-legend">
-        <Container data-name="flight-price">
-          <Text>{`${itinerary.currency}${itinerary.fare}`}</Text>
-        </Container>
-        <Container data-name="airlines">
-          <Text data-name="primary-airline">{flight.marketingAirline}</Text>
-          {flight.operatingAirline && <Text data-name="secondary-airline">{flight.marketingAirline}</Text>}
-        </Container>
-      </Container>
-      <Container data-name="flight-segments" data-content={flight.duration} left={left}>
-        {layovers.map((layover, index) => {
-          return (
-            <Container
-              key={`flight-segment-${getLayoverFlightId}`}
-              title={getLayoverFlightName(layover)}
-              data-name="flight-segment"
-              width={layover.layout.width}
-              left={layover.layout.startPosition}
-              data-content={layover.from}
-              backgroundColor={layover.operatingAirline.color}
-            />
-          );
-        })}
-        <Container data-name="departure-time" left={left - 97 + 10}>
+      <Box
+        data-name="flight-legend"
+        display="flex"
+        boxSizing="border-box"
+        whiteSpace="nowrap"
+        alignX="center"
+        width="350px"
+        padding="major-1"
+      >
+        <Box data-name="flight-price">
+          <Text fontSize="500" fontWeight="700">{`${itinerary.currency}${itinerary.fare}`}</Text>
+        </Box>
+        <Box
+          data-name="airlines"
+          display="flex"
+          flexDirection="column"
+          width="265px"
+          paddingLeft="10px"
+          whiteSpace="normal"
+        >
+          <Text data-name="primary-airline" whiteSpace="nowrap" width="200px">
+            {flight.marketingAirline}
+          </Text>
+          {flight.operatingAirline && (
+            <Text data-name="secondary-airline" fontSize="100" fontWeight="200" whiteSpace="normal" width="200px">
+              {flight.operatingAirline}
+            </Text>
+          )}
+        </Box>
+      </Box>
+      <Box data-name={"flight-container"} zIndex="1" position="relative" display="flex" alignX="center">
+        <Box
+          data-name="flight-segments"
+          data-content={flight.duration}
+          left={left}
+          display="flex"
+          alignX="center"
+          position="absolute"
+        >
+          {layovers.map((layover) => {
+            return (
+              <Box
+                key={`flight-segment-${getLayoverFlightId(layover)}`}
+                data-name="flight-segment"
+                width={`${layover.layout.width}px`}
+                left={`${layover.layout.startPosition}px`}
+                data-content={layover.from}
+                backgroundColor={layover.operatingAirline.color}
+                height="30px"
+                position="absolute"
+              >
+                <Tooltip content={getLayoverFlightName(layover)} hasArrow placement="bottom">
+                  <Box width={`${layover.layout.width}px`}>
+                    <Text>&nbsp;</Text>
+                  </Box>
+                </Tooltip>
+              </Box>
+            );
+          })}
+        </Box>
+        <Box data-name="departure-time" left={`${left - 97 + 10}px`} position="absolute" textAlign="right">
           {flight.fromTime}
-        </Container>
-        <Container data-name="arrival-time" left={right + 10}>
+        </Box>
+        <Box data-name="arrival-time" left={`${right + 10}px`} position="absolute">
           {flight.toTime}
-        </Container>
-      </Container>
+        </Box>
+      </Box>
     </List.Item>
   );
 };
