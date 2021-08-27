@@ -33,7 +33,8 @@ if (root) {
                     to: "DEN",
                   },
                 ],
-                operatingAirline: "United",
+                operatingAirline:
+                  "United DBA United Express in the United States because fuck you I need something LONG",
                 operatingAirlineDetails: { display: "United", color: "#235EA6" },
                 marketingAirline: "United",
                 marketingAirlineDetails: { display: "United", color: "#235EA6" },

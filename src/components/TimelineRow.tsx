@@ -58,6 +58,8 @@ export const TimelineRow = ({
         setSelected(true);
         onClick(event);
       }}
+      role="group"
+      cursor="pointer"
     >
       <Box
         data-name="flight-legend"
@@ -89,7 +91,16 @@ export const TimelineRow = ({
           )}
         </Box>
       </Box>
-      <Box data-name={"flight-container"} zIndex="1" position="relative" display="flex" alignX="center">
+      <Box
+        data-name={"flight-container"}
+        zIndex="1"
+        position="relative"
+        display="flex"
+        alignX="center"
+        width="100%"
+        alignSelf="normal"
+        flex={1}
+      >
         <Box
           data-name="flight-segments"
           data-content={flight.duration}
@@ -119,10 +130,25 @@ export const TimelineRow = ({
             );
           })}
         </Box>
-        <Box data-name="departure-time" left={`${left - 97 + 10}px`} position="absolute" textAlign="right">
+        <Box
+          data-name="departure-time"
+          left={`${left - 97 + 10}px`}
+          height="25px"
+          position="absolute"
+          textAlign="right"
+          visibility="hidden"
+          _groupHover={{ visibility: "visible" }}
+        >
           {flight.fromTime}
         </Box>
-        <Box data-name="arrival-time" left={`${right + 10}px`} position="absolute">
+        <Box
+          data-name="arrival-time"
+          left={`${right + 10}px`}
+          height="25px"
+          position="absolute"
+          visibility="hidden"
+          _groupHover={{ visibility: "visible" }}
+        >
           {flight.toTime}
         </Box>
       </Box>
