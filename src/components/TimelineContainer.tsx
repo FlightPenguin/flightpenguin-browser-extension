@@ -20,10 +20,11 @@ export const TimelineContainer = ({
   itineraries,
   formData,
 }: TimelimeContainerProps): React.ReactElement => {
-  const width = 1418;
-  const { intervals, increment, startHour } = getIntervalInfo(itineraries, flightType, width);
-  // const timezoneOffset = new FlightDetails(itineraries[0].departureFlight).timezoneOffset;
-  const timezoneOffset = 60;
+  const containerWidth = 1418;
+  const legendWidth = 300;
+  const flightTimeContainerWidth = containerWidth - legendWidth - 1;
+  const { intervals, increment, startHour } = getIntervalInfo(itineraries, flightType, flightTimeContainerWidth);
+  const timezoneOffset = new FlightDetails(itineraries[0].departureFlight).timezoneOffset;
 
   return (
     <Box use="section" paddingLeft="major-3" paddingTop="major-3">
@@ -31,14 +32,16 @@ export const TimelineContainer = ({
         {pluralize(capitalize(flightType), itineraries.length)}
       </Text>
       <Box data-name={"container"} display="flex" position="relative" justifyContent="center">
-        <List width="350px">
+        <List width={`${legendWidth}px`}>
           {itineraries.map((itinerary) => {
             const flightPenguinId = getFlightPenguinId(itinerary, flightType);
             return (
               <TimelineRow
                 itinerary={itinerary}
                 flightType={flightType}
-                maxRowWidth={width}
+                maxRowWidth={containerWidth}
+                flightTimeContainerWidth={flightTimeContainerWidth}
+                legendWidth={legendWidth}
                 intervalCount={intervals.length}
                 increment={increment}
                 startHourOffset={startHour}
@@ -55,7 +58,7 @@ export const TimelineContainer = ({
           flightType={flightType}
           intervals={intervals}
           tzOffset={timezoneOffset}
-          maxRowWidth={width}
+          flightTimeContainerWidth={flightTimeContainerWidth}
         />
       </Box>
     </Box>

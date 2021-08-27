@@ -19,7 +19,7 @@ if (root) {
                 fromTimeDetails: { hours: 12, minutes: 31, excessDays: null, displayHours: 12, timeOfDay: "pm" },
                 toTime: "3:38pm",
                 toTimeDetails: { hours: 15, minutes: 38, excessDays: null, displayHours: 3, timeOfDay: "pm" },
-                duration: "3h7m",
+                duration: "2h7m",
                 layovers: [
                   {
                     fromTime: "12:31pm",
@@ -76,7 +76,7 @@ if (root) {
                 fromTimeDetails: { hours: 6, minutes: 45, excessDays: null, displayHours: 6, timeOfDay: "am" },
                 toTime: "3:38pm+1",
                 toTimeDetails: { hours: 39, minutes: 38, excessDays: 1, displayHours: 3, timeOfDay: "pm" },
-                duration: "31h53m",
+                duration: "30h53m",
                 layovers: [
                   {
                     fromTime: "6:45am",
@@ -94,7 +94,7 @@ if (root) {
                     fromTimeDetails: { hours: 23, minutes: 59, excessDays: null, displayHours: 11, timeOfDay: "pm" },
                     toTime: "10:57am+1",
                     toTimeDetails: { hours: 34, minutes: 57, excessDays: +1, displayHours: 10, timeOfDay: "am" },
-                    duration: "10h58m",
+                    duration: "8h58m",
                     operatingAirline: "Alaska Express DBA Mercutio Airlines Limited",
                     operatingAirlineDetails: { display: "Alaska", color: "#51172C" },
                     from: "SEA",
@@ -105,7 +105,7 @@ if (root) {
                     fromTimeDetails: { hours: 34, minutes: 57, excessDays: +1, displayHours: 10, timeOfDay: "am" },
                     toTime: "3:38pm",
                     toTimeDetails: { hours: 39, minutes: 38, excessDays: null, displayHours: 3, timeOfDay: "pm" },
-                    duration: "4h16m",
+                    duration: "5h16m",
                     operatingAirline: "Frontier",
                     operatingAirlineDetails: { display: "Frontier", color: "#378055" },
                     from: "ORD",

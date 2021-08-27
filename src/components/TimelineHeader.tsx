@@ -10,7 +10,7 @@ interface TimelineHeaderProps {
   flightType: "DEPARTURE" | "RETURN";
   intervals: number[];
   tzOffset: number;
-  maxRowWidth: number;
+  flightTimeContainerWidth: number;
 }
 
 export const TimelineHeader = ({
@@ -18,15 +18,16 @@ export const TimelineHeader = ({
   flightType,
   intervals,
   tzOffset,
-  maxRowWidth,
+  flightTimeContainerWidth,
 }: TimelineHeaderProps): React.ReactElement => {
   let daysCounter = 0;
-  const intervalWidth = maxRowWidth / (intervals.length - 1);
+  const intervalWidth = flightTimeContainerWidth / (intervals.length - 1);
   const { startDate, departureAirportCode, arrivalAirportCode } = getFlightInfo(formData, flightType);
+  const headerOffset = tzOffset ? 100 : 70;
 
   return (
     <Box data-name={`${flightType.toLowerCase()}-header`} position="relative" width="1067px">
-      <Box position="absolute" top="-100px">
+      <Box position="absolute" top={`-${headerOffset}px`}>
         {intervals.map((interval, index) => {
           const time = getHeaderTime(interval);
           const offsetTime = getHeaderTime(interval, tzOffset);
@@ -68,7 +69,7 @@ export const TimelineHeader = ({
                 <Tooltip content={`Time at ${departureAirportCode}`} hasArrow placement="right">
                   <Text>{time.toLowerCase()}</Text>
                 </Tooltip>
-                {tzOffset && (
+                {!!tzOffset && (
                   <Tooltip content={`Time at ${arrivalAirportCode}`} hasArrow placement="right">
                     <Text>{offsetTime.toLowerCase()}</Text>
                   </Tooltip>

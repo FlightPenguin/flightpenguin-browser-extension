@@ -10,6 +10,8 @@ import { convertTimeTo24HourClock } from "../utilityFunctions";
 interface TimelineRowProps {
   itinerary: Itinerary;
   flightType: "DEPARTURE" | "RETURN";
+  flightTimeContainerWidth: number;
+  legendWidth: number;
   maxRowWidth: number;
   intervalCount: number;
   increment: number; // TODO: Better name!
@@ -20,6 +22,8 @@ interface TimelineRowProps {
 export const TimelineRow = ({
   itinerary,
   flightType,
+  legendWidth,
+  flightTimeContainerWidth,
   maxRowWidth,
   intervalCount,
   increment,
@@ -29,7 +33,7 @@ export const TimelineRow = ({
   const [selected, setSelected] = useState(false);
 
   const flight = flightType === "RETURN" ? itinerary.returnFlight : itinerary.departureFlight;
-  const layovers = getLayovers(flight.layovers, increment, startHourOffset, intervalCount, maxRowWidth);
+  const layovers = getLayovers(flight.layovers, increment, startHourOffset, intervalCount, flightTimeContainerWidth);
   const flightPenguinId = getFlightPenguinFlightId(flight);
   const { left, right } = getSegmentContainerPositions(layovers);
 
@@ -61,7 +65,7 @@ export const TimelineRow = ({
         boxSizing="border-box"
         whiteSpace="nowrap"
         alignX="center"
-        width="350px"
+        width={`${legendWidth}px`}
         padding="major-1"
       >
         <Box data-name="flight-price">
@@ -163,7 +167,7 @@ const getLayovers = (
   increment: number,
   startHourOffset: number,
   intervalCount: number,
-  maxRowWidth: number,
+  containerWidth: number,
 ): Layover[] => {
   const layoversWithStops = [];
   for (let i = 0; i < legs.length - 1; i++) {
@@ -232,7 +236,7 @@ const getLayovers = (
       increment,
       startHourOffset,
       intervalCount,
-      maxRowWidth,
+      containerWidth,
     );
 
     if (layover.isLayoverStop) {
@@ -250,7 +254,7 @@ function getPosition(
   increment: number,
   startHourOffset: number,
   intervalCount: number,
-  maxRowWidth: number,
+  containerWidth: number,
 ): { width: number; startX: number } {
   /**
    * Basically this is what's happening here:
@@ -263,7 +267,7 @@ function getPosition(
    */
   const totalHours = (intervalCount - 1) * increment;
   const totalMinutes = totalHours * 60;
-  const pxPerMinute = maxRowWidth / totalMinutes;
+  const pxPerMinute = containerWidth / totalMinutes;
   const minutesPerHour = 60;
   const minutesPerDay = minutesPerHour * 24;
   const positionAtMidnight = pxPerMinute * minutesPerDay;
