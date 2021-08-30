@@ -1,4 +1,4 @@
-import { Box, List, Text, Tooltip } from "bumbag";
+import { Box, List, Tag, Text, Tooltip } from "bumbag";
 import React, { useState } from "react";
 
 import AirlineMap from "../shared/nameMaps/airlineMap";
@@ -17,6 +17,7 @@ interface TimelineRowProps {
   startHourOffset: number;
   from: string;
   to: string;
+  index: number;
   onClick: (event: React.MouseEvent<any, MouseEvent>) => void;
 }
 
@@ -31,6 +32,7 @@ export const TimelineRow = ({
   startHourOffset,
   from,
   to,
+  index,
   onClick,
 }: TimelineRowProps): React.ReactElement => {
   const [selected, setSelected] = useState(false);
@@ -56,7 +58,7 @@ export const TimelineRow = ({
       boxSizing="border-flex"
       whiteSpace="nowrap"
       alignX="center"
-      border="1px solid #da1717"
+      // border="1px solid #da1717"
       tabIndex={0}
       key={flightPenguinId}
       data-flightpenguin-id={flightPenguinId}
@@ -72,6 +74,8 @@ export const TimelineRow = ({
       }}
       role="group"
       cursor="pointer"
+      marginBottom="0px"
+      backgroundColor={index % 2 === 1 ? "white" : "indigoTint"}
     >
       <Box
         data-name="flight-legend"
@@ -93,11 +97,11 @@ export const TimelineRow = ({
           paddingLeft="10px"
           whiteSpace="normal"
         >
-          <Text data-name="primary-airline" whiteSpace="nowrap" width="200px">
+          <Text data-name="primary-airline" whiteSpace="normal" width="185px">
             {flight.marketingAirline}
           </Text>
           {flight.operatingAirline && (
-            <Text data-name="secondary-airline" fontSize="100" fontWeight="200" whiteSpace="normal" width="200px">
+            <Text data-name="secondary-airline" fontSize="100" fontWeight="200" whiteSpace="normal" maxWidth="185px">
               {flight.operatingAirline}
             </Text>
           )}
@@ -137,8 +141,9 @@ export const TimelineRow = ({
                 backgroundColor={flightSegment.operatingAirline.color}
                 height="30px"
                 position="absolute"
+                tabIndex={-1}
               >
-                <Tooltip content={getFlightSegmentName(flightSegment)} hasArrow placement="bottom">
+                <Tooltip content={getFlightSegmentName(flightSegment)} hasArrow placement="bottom" tabIndex={-1}>
                   <Box width={`${flightSegment.layout.width}px`}>
                     <Text>&nbsp;</Text>
                   </Box>
@@ -147,27 +152,31 @@ export const TimelineRow = ({
             );
           })}
         </Box>
-        <Box
+        <Tag
           data-name="departure-time"
-          left={`${left - 97 + 10}px`}
-          height="25px"
+          palette="text"
+          variant="outlined"
+          size="medium"
+          left={`${left - 117}px`}
           position="absolute"
           textAlign="right"
           visibility="hidden"
           _groupHover={{ visibility: "visible" }}
         >
           {flight.fromTime}
-        </Box>
-        <Box
+        </Tag>
+        <Tag
+          palette="text"
+          variant="outlined"
+          size="medium"
           data-name="arrival-time"
-          left={`${right + 10}px`}
-          height="25px"
+          left={`${right + 35}px`}
           position="absolute"
           visibility="hidden"
           _groupHover={{ visibility: "visible" }}
         >
           {flight.toTime}
-        </Box>
+        </Tag>
       </Box>
     </List.Item>
   );

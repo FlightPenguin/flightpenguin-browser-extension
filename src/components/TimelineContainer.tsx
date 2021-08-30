@@ -32,8 +32,8 @@ export const TimelineContainer = ({
         {pluralize(capitalize(flightType), itineraries.length)}
       </Text>
       <Box data-name={"container"} display="flex" position="relative" justifyContent="center">
-        <List width={`${legendWidth}px`}>
-          {itineraries.map((itinerary) => {
+        <List width={`${legendWidth}px`} borderLeft="default">
+          {itineraries.map((itinerary, index) => {
             const flightPenguinId = getFlightPenguinId(itinerary, flightType);
             return (
               <TimelineRow
@@ -46,6 +46,9 @@ export const TimelineContainer = ({
                 increment={increment}
                 startHourOffset={startHour}
                 key={`itinerary-${flightPenguinId}`}
+                from={formData.from}
+                to={formData.to}
+                index={index}
                 onClick={(event) => {
                   return;
                 }} // TODO

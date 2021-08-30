@@ -67,11 +67,11 @@ export const TimelineHeader = ({
                 <Text padding="major-1">&nbsp;</Text>
               )}
               <Tooltip content={`Time at ${departureAirportCode}`} hasArrow placement="right">
-                <Text>{time.toLowerCase()}</Text>
+                <Text fontWeight={isMidnight ? "700" : "400"}>{time.toLowerCase()}</Text>
               </Tooltip>
               {!!tzOffset && (
                 <Tooltip content={`Time at ${arrivalAirportCode}`} hasArrow placement="right">
-                  <Text>{offsetTime.toLowerCase()}</Text>
+                  <Text fontWeight={isMidnight ? "700" : "400"}>{offsetTime.toLowerCase()}</Text>
                 </Tooltip>
               )}
             </Box>
@@ -87,13 +87,16 @@ export const TimelineHeader = ({
       >
         {intervals.map((interval, index) => {
           const startX = intervalWidth * index;
+          const time = getHeaderTime(interval);
+          const isMidnight = time.toUpperCase() === "12 AM";
           return (
             <Box
               key={`interval-divider-${startX}`}
               left={`${startX}px`}
               width={`${intervalWidth}px`}
               height="100%"
-              borderLeft="default"
+              borderLeft={isMidnight ? "5px solid #e6e6eb" : "3px solid #e6e6eb"}
+              zIndex={-1}
             />
           );
         })}
