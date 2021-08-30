@@ -58,7 +58,6 @@ export const TimelineRow = ({
       boxSizing="border-flex"
       whiteSpace="nowrap"
       alignX="center"
-      // border="1px solid #da1717"
       tabIndex={0}
       key={flightPenguinId}
       data-flightpenguin-id={flightPenguinId}
@@ -75,7 +74,9 @@ export const TimelineRow = ({
       role="group"
       cursor="pointer"
       marginBottom="0px"
-      backgroundColor={index % 2 === 1 ? "white" : "indigoTint"}
+      backgroundColor={index % 2 === 1 ? "white" : "primaryTint"}
+      _hover={{ backgroundColor: "primary200", zIndex: "999" }}
+      _focus={{ backgroundColor: "primary200", zIndex: "999" }}
     >
       <Box
         data-name="flight-legend"
@@ -162,6 +163,8 @@ export const TimelineRow = ({
           textAlign="right"
           visibility="hidden"
           _groupHover={{ visibility: "visible" }}
+          _groupFocus={{ visibility: "visible" }}
+          backgroundColor="white"
         >
           {flight.fromTime}
         </Tag>
@@ -173,7 +176,9 @@ export const TimelineRow = ({
           left={`${right + 35}px`}
           position="absolute"
           visibility="hidden"
+          _groupFocus={{ visibility: "visible" }}
           _groupHover={{ visibility: "visible" }}
+          backgroundColor="white"
         >
           {flight.toTime}
         </Tag>
