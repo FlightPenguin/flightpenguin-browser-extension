@@ -486,7 +486,7 @@ var AirlineMap = {
       return;
     }
 
-    var formattedAirlineName = airlineName.trim();
+    var formattedAirlineName = airlineName.trim().replace(/\s+/g, " ");
     var airlineDetails = this.airlineDetailsMap[formattedAirlineName];
 
     if (airlineDetails) {
@@ -496,7 +496,7 @@ var AirlineMap = {
     return formattedAirlineName;
   },
   getAirlineDetails: function getAirlineDetails(airlineName) {
-    var formattedAirlineName = airlineName.trim();
+    var formattedAirlineName = airlineName.trim().replace(/\s+/g, " ");
     return this.airlineDetailsMap[formattedAirlineName] || {
       display: formattedAirlineName,
       color: "#DFCCFB"

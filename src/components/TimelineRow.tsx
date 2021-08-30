@@ -3,7 +3,6 @@ import React, { useState } from "react";
 
 import AirlineMap from "../shared/nameMaps/airlineMap";
 import { FlightDetails } from "../shared/types/FlightDetails";
-import { FlightLeg } from "../shared/types/FlightLeg";
 import { Itinerary } from "../shared/types/Itinerary";
 import { convertTimeTo24HourClock } from "../utilityFunctions";
 
@@ -14,8 +13,10 @@ interface TimelineRowProps {
   legendWidth: number;
   maxRowWidth: number;
   intervalCount: number;
-  increment: number; // TODO: Better name!
+  increment: number;
   startHourOffset: number;
+  from: string;
+  to: string;
   onClick: (event: React.MouseEvent<any, MouseEvent>) => void;
 }
 
@@ -28,14 +29,24 @@ export const TimelineRow = ({
   intervalCount,
   increment,
   startHourOffset,
+  from,
+  to,
   onClick,
 }: TimelineRowProps): React.ReactElement => {
   const [selected, setSelected] = useState(false);
 
   const flight = flightType === "RETURN" ? itinerary.returnFlight : itinerary.departureFlight;
-  const layovers = getLayovers(flight.layovers, increment, startHourOffset, intervalCount, flightTimeContainerWidth);
+  const flightSegments = getFlightSegments(
+    flight,
+    from,
+    to,
+    increment,
+    startHourOffset,
+    intervalCount,
+    flightTimeContainerWidth,
+  );
   const flightPenguinId = getFlightPenguinFlightId(flight);
-  const { left, right } = getSegmentContainerPositions(layovers);
+  const { left, right } = getSegmentContainerPositions(flightSegments);
 
   return (
     <List.Item
@@ -71,7 +82,7 @@ export const TimelineRow = ({
         padding="major-1"
       >
         <Box data-name="flight-price">
-          <Text fontSize="500" fontWeight="700">{`${itinerary.currency}${itinerary.fare}`}</Text>
+          <Text fontSize="500" fontWeight="700">{`${itinerary.fare}`}</Text>
         </Box>
         <Box
           data-name="airlines"
@@ -109,20 +120,20 @@ export const TimelineRow = ({
           alignX="center"
           position="absolute"
         >
-          {layovers.map((layover) => {
+          {flightSegments.map((flightSegment) => {
             return (
               <Box
-                key={`flight-segment-${getLayoverFlightId(layover)}`}
+                key={`flight-segment-${getFlightSegmentId(flightSegment)}`}
                 data-name="flight-segment"
-                width={`${layover.layout.width}px`}
-                left={`${layover.layout.startPosition}px`}
-                data-content={layover.from}
-                backgroundColor={layover.operatingAirline.color}
+                width={`${flightSegment.layout.width}px`}
+                left={`${flightSegment.layout.startPosition}px`}
+                data-content={flightSegment.from}
+                backgroundColor={flightSegment.operatingAirline.color}
                 height="30px"
                 position="absolute"
               >
-                <Tooltip content={getLayoverFlightName(layover)} hasArrow placement="bottom">
-                  <Box width={`${layover.layout.width}px`}>
+                <Tooltip content={getFlightSegmentName(flightSegment)} hasArrow placement="bottom">
+                  <Box width={`${flightSegment.layout.width}px`}>
                     <Text>&nbsp;</Text>
                   </Box>
                 </Tooltip>
@@ -164,15 +175,15 @@ const getFlightName = (flight: FlightDetails): string => {
   return `${flight.operatingAirline} ${flight.fromTime}-${flight.toTime}`;
 };
 
-const getLayoverFlightName = (flight: Layover): string => {
+const getFlightSegmentName = (flight: FlightSegment): string => {
   return `${flight.operatingAirline.display} ${flight.fromTime}-${flight.toTime}`;
 };
 
-const getLayoverFlightId = (flight: Layover): string => {
+const getFlightSegmentId = (flight: FlightSegment): string => {
   return `${flight.operatingAirline.display}-${flight.fromTime}-${flight.toTime}`;
 };
 
-interface Layover {
+interface FlightSegment {
   fromTime: string;
   toTime: string;
   from: string;
@@ -188,17 +199,19 @@ interface Layover {
   };
 }
 
-const getLayovers = (
-  legs: FlightLeg[],
+const getFlightSegments = (
+  flight: FlightDetails,
+  tripStartAirport: string,
+  tripEndAirport: string,
   increment: number,
   startHourOffset: number,
   intervalCount: number,
   containerWidth: number,
-): Layover[] => {
+): FlightSegment[] => {
   const layoversWithStops = [];
-  for (let i = 0; i < legs.length - 1; i++) {
-    const previousFlight = legs[i];
-    const nextFlight = legs[i + 1];
+  for (let i = 0; i < flight.layovers.length - 1; i++) {
+    const previousFlight = flight.layovers[i];
+    const nextFlight = flight.layovers[i + 1];
     const { toTime: fromTime, to: from } = previousFlight;
     const { fromTime: toTime, from: to } = nextFlight;
 
@@ -223,7 +236,15 @@ const getLayovers = (
     });
   }
 
-  const lastFlight = legs[legs.length - 1];
+  const lastFlight =
+    layoversWithStops.length > 0
+      ? flight.layovers[flight.layovers.length - 1]
+      : {
+          ...flight,
+          from: tripStartAirport,
+          to: tripEndAirport,
+          operatingAirline: flight.marketingAirline || flight.operatingAirline,
+        };
   layoversWithStops.push({
     fromTime: lastFlight.fromTime,
     toTime: lastFlight.toTime,
@@ -318,7 +339,7 @@ function getPosition(
   return { width: timeBarWidth, startX: startPositionPx };
 }
 
-const getSegmentContainerPositions = (layovers: Layover[]): { left: number; right: number } => {
+const getSegmentContainerPositions = (layovers: FlightSegment[]): { left: number; right: number } => {
   const firstLeg = layovers[0];
   const lastLeg = layovers.slice(-1)[0];
 

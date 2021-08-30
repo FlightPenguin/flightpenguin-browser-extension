@@ -1327,7 +1327,7 @@ var AirlineMap = {
       return;
     }
 
-    var formattedAirlineName = airlineName.trim();
+    var formattedAirlineName = airlineName.trim().replace(/\s+/g, " ");
     var airlineDetails = this.airlineDetailsMap[formattedAirlineName];
 
     if (airlineDetails) {
@@ -1337,7 +1337,7 @@ var AirlineMap = {
     return formattedAirlineName;
   },
   getAirlineDetails: function getAirlineDetails(airlineName) {
-    var formattedAirlineName = airlineName.trim();
+    var formattedAirlineName = airlineName.trim().replace(/\s+/g, " ");
     return this.airlineDetailsMap[formattedAirlineName] || {
       display: formattedAirlineName,
       color: "#DFCCFB"
@@ -1620,8 +1620,7 @@ function convertDurationToMinutes(duration) {
   }
 
   var durationMinutes = durationRest.trim().split("m")[0] || 0;
-  var durationTotalMinutes = Number(durationMinutes) + Number(durationHours) * 60;
-  return durationTotalMinutes;
+  return Number(durationMinutes) + Number(durationHours) * 60;
 } // calculate timezone offset in minutes
 
 
@@ -1686,7 +1685,7 @@ function isOvernight(fromTime, toTime) {
   var MINUTES_PER_DAY = 24 * 60; // return convert12HourTimeToMinutes(fromTime) + convertDurationToMinutes(duration) > MINUTES_PER_DAY;
   // if fromTime + duration > 24 hour
 
-  return fromTime.toLowerCase().includes('pm') && toTime.toLowerCase().includes('am');
+  return fromTime.toLowerCase().includes("pm") && toTime.toLowerCase().includes("am");
 }
 
 

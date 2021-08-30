@@ -71,15 +71,16 @@ const AirlineMap = {
     if (!airlineName || typeof airlineName !== "string") {
       return;
     }
-    let formattedAirlineName = airlineName.trim();
+    let formattedAirlineName = airlineName.trim().replace(/\s+/g, " ");
     const airlineDetails = this.airlineDetailsMap[formattedAirlineName];
     if (airlineDetails) {
       formattedAirlineName = airlineDetails.display;
     }
+
     return formattedAirlineName;
   },
   getAirlineDetails: function (airlineName) {
-    let formattedAirlineName = airlineName.trim();
+    let formattedAirlineName = airlineName.trim().replace(/\s+/g, " ");
 
     return (
       this.airlineDetailsMap[formattedAirlineName] || {
