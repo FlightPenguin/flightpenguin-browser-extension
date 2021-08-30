@@ -8,6 +8,7 @@ import { FlightSearchFormData } from "../shared/types/FlightSearchFormData";
 import { Itinerary } from "../shared/types/Itinerary";
 import { TimelineHeader } from "./TimelineHeader";
 import { TimelineRow } from "./TimelineRow";
+import { TimelineTitle } from "./TimelineTitle";
 
 interface TimelimeContainerProps {
   flightType: "DEPARTURE" | "RETURN";
@@ -28,10 +29,18 @@ export const TimelineContainer = ({
 
   return (
     <Box use="section" paddingLeft="major-3" paddingTop="major-3">
-      <Text fontWeight="bold" fontSize={400}>
-        {pluralize(capitalize(flightType), itineraries.length)}
-      </Text>
-      <Box data-name={"container"} display="flex" position="relative" justifyContent="center">
+      <TimelineTitle
+        flightType={flightType}
+        itinerariesCount={itineraries.length}
+        headerWidth={flightTimeContainerWidth}
+        legendWidth={legendWidth}
+      />
+      <Box
+        data-name={`${flightType.toLowerCase()}-container`}
+        display="flex"
+        position="relative"
+        justifyContent="center"
+      >
         <List width={`${legendWidth}px`} borderLeft="default" altitude="400">
           {itineraries.map((itinerary, index) => {
             const flightPenguinId = getFlightPenguinId(itinerary, flightType);

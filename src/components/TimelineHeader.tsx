@@ -26,7 +26,7 @@ export const TimelineHeader = ({
   const headerOffset = tzOffset ? 100 : 70;
 
   return (
-    <Box data-name={`${flightType.toLowerCase()}-header`} position="relative" width="1067px">
+    <Box data-name={`${flightType.toLowerCase()}-header`} position="relative" width={`${flightTimeContainerWidth}px`}>
       <Box position="absolute" top={`-${headerOffset}px`}>
         {intervals.map((interval, index) => {
           const time = getHeaderTime(interval);
