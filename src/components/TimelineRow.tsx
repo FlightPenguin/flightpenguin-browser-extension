@@ -128,6 +128,11 @@ export const TimelineRow = ({
                 width={`${flightSegment.layout.width}px`}
                 left={`${flightSegment.layout.startPosition}px`}
                 data-content={flightSegment.from}
+                background={
+                  flightSegment.isLayoverStop
+                    ? "repeating-linear-gradient(45deg, rgba(125, 130, 162, 0.5), rgba(147, 153, 191, 0.5) 5px, rgba(122, 128, 165, 0.5) 5px, rgba(98, 105, 146, 0.5) 10px)"
+                    : undefined
+                }
                 backgroundColor={flightSegment.operatingAirline.color}
                 height="30px"
                 position="absolute"
