@@ -36,6 +36,7 @@ export const TimelineRow = ({
   const [selected, setSelected] = useState(false);
 
   const flight = flightType === "RETURN" ? itinerary.returnFlight : itinerary.departureFlight;
+
   const flightSegments = getFlightSegments(
     flight,
     from,
@@ -262,7 +263,11 @@ const getFlightSegments = (
   let startDayOffset = 0;
   let endDayOffset = 0;
 
-  return layoversWithStops.map((layover) => {
+  return layoversWithStops.map((layover, index) => {
+    if (endDayOffset > startDayOffset) {
+      startDayOffset = endDayOffset;
+    }
+
     const endsNextDay = layover.toTime.match(/(\+\d)/);
     const startsNextDay = layover.fromTime.match(/(\+\d)/);
     if (!layover.isLayoverStop) {
