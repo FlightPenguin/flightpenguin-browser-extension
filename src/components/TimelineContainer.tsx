@@ -32,7 +32,7 @@ export const TimelineContainer = ({
         {pluralize(capitalize(flightType), itineraries.length)}
       </Text>
       <Box data-name={"container"} display="flex" position="relative" justifyContent="center">
-        <List width={`${legendWidth}px`} borderLeft="default">
+        <List width={`${legendWidth}px`} borderLeft="default" altitude="400">
           {itineraries.map((itinerary, index) => {
             const flightPenguinId = getFlightPenguinId(itinerary, flightType);
             return (
