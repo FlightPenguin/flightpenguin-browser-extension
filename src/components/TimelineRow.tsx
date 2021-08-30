@@ -196,7 +196,15 @@ const getFlightName = (flight: FlightDetails): string => {
 };
 
 const getFlightSegmentName = (flight: FlightSegment): string => {
-  return `${flight.operatingAirline.display} ${flight.fromTime}-${flight.toTime}`;
+  let name = `${flight.operatingAirline.display} ${flight.fromTime} `;
+  if (!flight.isLayoverStop) {
+    name += `(${flight.from}) `;
+  }
+  name += `- ${flight.toTime}`;
+  if (!flight.isLayoverStop) {
+    name += ` (${flight.to})`;
+  }
+  return name;
 };
 
 const getFlightSegmentId = (flight: FlightSegment): string => {
