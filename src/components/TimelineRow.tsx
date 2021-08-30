@@ -140,7 +140,6 @@ export const TimelineRow = ({
               >
                 <Box
                   data-name="flight-segment"
-                  data-content={flightSegment.from}
                   background={
                     flightSegment.isLayoverStop
                       ? "repeating-linear-gradient(45deg, rgba(125, 130, 162, 0.5), rgba(147, 153, 191, 0.5) 5px, rgba(122, 128, 165, 0.5) 5px, rgba(98, 105, 146, 0.5) 10px)"
@@ -148,7 +147,7 @@ export const TimelineRow = ({
                   }
                   backgroundColor={flightSegment.operatingAirline.color}
                 >
-                  <Tooltip content={getFlightSegmentName(flightSegment)} hasArrow placement="top" tabIndex={-1}>
+                  <Tooltip content={getFlightSegmentName(flightSegment)} hasArrow placement="bottom" tabIndex={-1}>
                     <Box width={`${flightSegment.layout.width}px`}>
                       <Text>&nbsp;</Text>
                     </Box>
@@ -177,6 +176,7 @@ export const TimelineRow = ({
           _groupHover={{ visibility: "visible" }}
           _groupFocus={{ visibility: "visible" }}
           backgroundColor="white"
+          marginTop="-8px"
         >
           {flight.fromTime}
         </Tag>
@@ -191,6 +191,7 @@ export const TimelineRow = ({
           _groupFocus={{ visibility: "visible" }}
           _groupHover={{ visibility: "visible" }}
           backgroundColor="white"
+          marginTop="-8px"
         >
           {flight.toTime}
         </Tag>
