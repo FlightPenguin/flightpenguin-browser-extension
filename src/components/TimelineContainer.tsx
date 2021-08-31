@@ -28,7 +28,15 @@ export const TimelineContainer = ({
   const timezoneOffset = new FlightDetails(itineraries[0].departureFlight).timezoneOffset;
 
   return (
-    <Box use="section" paddingLeft="major-3" paddingTop="major-3">
+    <Box
+      use="section"
+      paddingLeft="40px"
+      paddingRight="40px"
+      paddingBottom="40px"
+      paddingTop={timezoneOffset > 0 ? "95px" : "65px"}
+      altitude="400"
+      width={`${containerWidth + 80}px`}
+    >
       <TimelineTitle
         flightType={flightType}
         itinerariesCount={itineraries.length}
@@ -42,7 +50,7 @@ export const TimelineContainer = ({
         justifyContent="center"
       >
         <Box display="flex" position="relative" justifyContent="center">
-          <List width={`${legendWidth}px`} borderLeft="default" altitude="400">
+          <List width={`${legendWidth}px`} borderLeft="default">
             {itineraries.map((itinerary, index) => {
               const flightPenguinId = getFlightPenguinId(itinerary, flightType);
               return (
