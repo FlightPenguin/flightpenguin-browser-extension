@@ -74,6 +74,13 @@ window.addEventListener("popstate", function () {
   clearSelections();
 });
 
+window.addEventListener("beforeunload", function () {
+  // send message to bg that the page is being unloaded
+  chrome.runtime.sendMessage({
+    event: "INDEX_UNLOAD",
+  });
+});
+
 const sortContainer = document.querySelectorAll(".sort-container");
 sortContainer.forEach((node) => {
   node.addEventListener("change", (e) => {
