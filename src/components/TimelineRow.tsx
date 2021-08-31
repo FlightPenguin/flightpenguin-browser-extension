@@ -37,7 +37,7 @@ export const TimelineRow = ({
 }: TimelineRowProps): React.ReactElement => {
   const [selected, setSelected] = useState(false);
 
-  const flight = flightType === "RETURN" ? itinerary.returnFlight : itinerary.departureFlight;
+  const flight = new FlightDetails(flightType === "RETURN" ? itinerary.returnFlight : itinerary.departureFlight);
 
   const flightSegments = getFlightSegments(
     flight,

@@ -1,6 +1,4 @@
-import { Box, List, Text } from "bumbag";
-import capitalize from "lodash.capitalize";
-import pluralize from "pluralize";
+import { Box, List } from "bumbag";
 import React from "react";
 
 import { FlightDetails } from "../shared/types/FlightDetails";
