@@ -41,46 +41,46 @@ export const TimelineContainer = ({
         position="relative"
         justifyContent="center"
       >
-        <List width={`${legendWidth}px`} borderLeft="default" altitude="400">
-          {itineraries.map((itinerary, index) => {
-            const flightPenguinId = getFlightPenguinId(itinerary, flightType);
-            return (
-              <TimelineRow
-                itinerary={itinerary}
-                flightType={flightType}
-                maxRowWidth={containerWidth}
-                flightTimeContainerWidth={flightTimeContainerWidth}
-                legendWidth={legendWidth}
-                intervalCount={intervals.length}
-                increment={increment}
-                startHourOffset={startHour}
-                key={`itinerary-${flightPenguinId}`}
-                from={formData.from}
-                to={formData.to}
-                index={index}
-                hide={!!selected}
-                onClick={(event) => {
-                  setSelected(true);
-                  history.pushState({}, null, window.location.pathname);
+        <Box display="flex" position="relative" justifyContent="center">
+          <List width={`${legendWidth}px`} borderLeft="default" altitude="400">
+            {itineraries.map((itinerary, index) => {
+              const flightPenguinId = getFlightPenguinId(itinerary, flightType);
+              return (
+                <TimelineRow
+                  itinerary={itinerary}
+                  flightType={flightType}
+                  maxRowWidth={containerWidth}
+                  flightTimeContainerWidth={flightTimeContainerWidth}
+                  legendWidth={legendWidth}
+                  intervalCount={intervals.length}
+                  increment={increment}
+                  startHourOffset={startHour}
+                  key={`itinerary-${flightPenguinId}`}
+                  from={formData.from}
+                  to={formData.to}
+                  index={index}
+                  hide={!!selected}
+                  onClick={(event) => {
+                    setSelected(true);
+                    // chrome.runtime.sendMessage({
+                    //   event: "DEPARTURE_SELECTED",
+                    //   departureId: selectedNode.dataset.id,
+                    // });
 
-                  // chrome.runtime.sendMessage({
-                  //   event: "DEPARTURE_SELECTED",
-                  //   departureId: selectedNode.dataset.id,
-                  // });
-
-                  return;
-                }} // TODO
-              />
-            );
-          })}
-        </List>
-        <TimelineHeader
-          formData={formData}
-          flightType={flightType}
-          intervals={intervals}
-          tzOffset={timezoneOffset}
-          flightTimeContainerWidth={flightTimeContainerWidth}
-        />
+                    return;
+                  }} // TODO
+                />
+              );
+            })}
+          </List>
+          <TimelineHeader
+            formData={formData}
+            flightType={flightType}
+            intervals={intervals}
+            tzOffset={timezoneOffset}
+            flightTimeContainerWidth={flightTimeContainerWidth}
+          />
+        </Box>
       </Box>
     </Box>
   );
