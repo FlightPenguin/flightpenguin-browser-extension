@@ -75,6 +75,7 @@ export const TimelineRow = ({
       cursor="pointer"
       marginBottom="0px"
       backgroundColor={index % 2 === 1 ? "white" : "primaryTint"}
+      minHeight="80px"
       _hover={{ backgroundColor: "primary200", zIndex: "999" }}
       _focus={{ backgroundColor: "primary200", zIndex: "999" }}
     >
@@ -121,48 +122,66 @@ export const TimelineRow = ({
         <Box
           data-name="flight-segments"
           data-content={flight.duration}
-          left={left}
+          left={`${left}px`}
           display="flex"
           alignX="center"
+          flexDirection={"column"}
           position="absolute"
+          width={`${right - left}px`}
         >
-          {flightSegments.map((flightSegment) => {
-            return (
-              <Box
-                display="flex"
-                width={`${flightSegment.layout.width}px`}
-                left={`${flightSegment.layout.startPosition}px`}
-                key={`flight-segment-${getFlightSegmentId(flightSegment)}`}
-                height="30px"
-                position="absolute"
-                tabIndex={-1}
-                flexDirection="column"
-              >
+          <Box height={`60px`} marginBottom="16px">
+            <Text
+              alignX="center"
+              alignY="top"
+              fontSize="100"
+              visibility="hidden"
+              marginBottom="5px"
+              border="1px solid #404040"
+              borderWidth="0px 0px 1px 0px"
+              width={`${right - left}px`}
+              _groupFocus={{ visibility: "visible" }}
+              _groupHover={{ visibility: "visible" }}
+            >
+              {flight.duration}
+            </Text>
+            {flightSegments.map((flightSegment) => {
+              return (
                 <Box
-                  data-name="flight-segment"
-                  background={
-                    flightSegment.isLayoverStop
-                      ? "repeating-linear-gradient(45deg, rgba(125, 130, 162, 0.5), rgba(147, 153, 191, 0.5) 5px, rgba(122, 128, 165, 0.5) 5px, rgba(98, 105, 146, 0.5) 10px)"
-                      : undefined
-                  }
-                  backgroundColor={flightSegment.operatingAirline.color}
+                  display="flex"
+                  width={`${flightSegment.layout.width}px`}
+                  left={`${flightSegment.layout.startPosition - left}px`}
+                  key={`flight-segment-${getFlightSegmentId(flightSegment)}`}
+                  height="30px"
+                  position="absolute"
+                  tabIndex={-1}
+                  flexDirection="column"
                 >
-                  <Tooltip content={getFlightSegmentName(flightSegment)} hasArrow placement="bottom" tabIndex={-1}>
-                    <Box width={`${flightSegment.layout.width}px`}>
-                      <Text>&nbsp;</Text>
-                    </Box>
-                  </Tooltip>
-                </Box>
-                {flightSegment.isLayoverStop && (
-                  <Box>
-                    <Text alignX="center" fontSize="150">
-                      {flightSegment.from}
-                    </Text>
+                  <Box
+                    data-name="flight-segment"
+                    background={
+                      flightSegment.isLayoverStop
+                        ? "repeating-linear-gradient(45deg, rgba(125, 130, 162, 0.5), rgba(147, 153, 191, 0.5) 5px, rgba(122, 128, 165, 0.5) 5px, rgba(98, 105, 146, 0.5) 10px)"
+                        : undefined
+                    }
+                    backgroundColor={flightSegment.operatingAirline.color}
+                  >
+                    <Tooltip content={getFlightSegmentName(flightSegment)} hasArrow placement="bottom" tabIndex={-1}>
+                      <Box width={`${flightSegment.layout.width}px`}>
+                        <Text>&nbsp;</Text>
+                      </Box>
+                    </Tooltip>
                   </Box>
-                )}
-              </Box>
-            );
-          })}
+                  {flightSegment.isLayoverStop && (
+                    <Box>
+                      <Text alignX="center" fontSize="150">
+                        {flightSegment.from}
+                      </Text>
+                    </Box>
+                  )}
+                </Box>
+              );
+            })}
+          </Box>
         </Box>
         <Tag
           data-name="departure-time"
