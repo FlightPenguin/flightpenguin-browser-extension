@@ -1,5 +1,5 @@
 import { Box, List } from "bumbag";
-import React, { useState } from "react";
+import React, { useCallback, useState } from "react";
 
 import { FlightDetails } from "../shared/types/FlightDetails";
 import { FlightSearchFormData } from "../shared/types/FlightSearchFormData";
@@ -19,13 +19,20 @@ export const TimelineContainer = ({
   itineraries,
   formData,
 }: TimelimeContainerProps): React.ReactElement => {
-  const [selected, setSelected] = useState(null);
+  const [selectedFlight, setSelectedFlight] = useState<Itinerary | null>(null);
 
   const containerWidth = 1418;
   const legendWidth = 300;
   const flightTimeContainerWidth = containerWidth - legendWidth - 1;
   const { intervals, increment, startHour } = getIntervalInfo(itineraries, flightType, flightTimeContainerWidth);
   const timezoneOffset = new FlightDetails(itineraries[0].departureFlight).timezoneOffset;
+
+  const onSelection = useCallback(
+    (flight) => {
+      setSelectedFlight(flight);
+    },
+    [selectedFlight],
+  );
 
   return (
     <Box
@@ -67,16 +74,8 @@ export const TimelineContainer = ({
                   from={formData.from}
                   to={formData.to}
                   index={index}
-                  hide={!!selected}
-                  onClick={(event) => {
-                    setSelected(true);
-                    // chrome.runtime.sendMessage({
-                    //   event: "DEPARTURE_SELECTED",
-                    //   departureId: selectedNode.dataset.id,
-                    // });
-
-                    return;
-                  }} // TODO
+                  hide={!!selectedFlight}
+                  onClick={onSelection}
                 />
               );
             })}

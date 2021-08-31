@@ -1,6 +1,7 @@
 import { Box, List, Tag, Text, Tooltip } from "bumbag";
 import React, { useState } from "react";
 
+import { sendSelectedFlight } from "../shared/events";
 import AirlineMap from "../shared/nameMaps/airlineMap";
 import { FlightDetails } from "../shared/types/FlightDetails";
 import { Itinerary } from "../shared/types/Itinerary";
@@ -19,7 +20,7 @@ interface TimelineRowProps {
   to: string;
   index: number;
   hide: boolean;
-  onClick: (event: React.MouseEvent<any, MouseEvent>) => void;
+  onClick: (itinerary: Itinerary) => void;
 }
 
 export const TimelineRow = ({
@@ -69,10 +70,10 @@ export const TimelineRow = ({
       data-provider={itinerary.provider}
       data-selected={selected}
       width={`${maxRowWidth}px`}
-      onClick={(event) => {
+      onClick={() => {
         setSelected(true);
-        onClick(event);
-        return { flight: flight, key: flightPenguinId };
+        onClick(itinerary);
+        sendSelectedFlight(flightType, flightPenguinId);
       }}
       role="group"
       cursor="pointer"
