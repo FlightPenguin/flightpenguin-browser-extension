@@ -128,6 +128,7 @@ export const TimelineRow = ({
           flexDirection={"column"}
           position="absolute"
           width={`${right - left}px`}
+          marginTop="8px"
         >
           <Box height={`60px`} marginBottom="16px">
             <Text
