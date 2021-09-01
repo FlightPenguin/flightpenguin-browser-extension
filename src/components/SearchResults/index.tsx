@@ -1,12 +1,12 @@
 import { Box } from "bumbag";
 import React, { useState } from "react";
 
-import { sendHighlightTab } from "../shared/events/sendHighlightTab";
-import { FlightSearchFormData } from "../shared/types/FlightSearchFormData";
-import { ProcessedFlightSearchResult } from "../shared/types/ProcessedFlightSearchResult";
-import { ProcessedItinerary } from "../shared/types/ProcessedItinerary";
-import { TimelineContainer } from "./TimelineContainer";
-import { FlightSelection } from "./types/FlightSelection";
+import { sendHighlightTab } from "../../shared/events/sendHighlightTab";
+import { FlightSearchFormData } from "../../shared/types/FlightSearchFormData";
+import { ProcessedFlightSearchResult } from "../../shared/types/ProcessedFlightSearchResult";
+import { ProcessedItinerary } from "../../shared/types/ProcessedItinerary";
+import { TimelineContainer } from "./Container";
+import { FlightSelection } from "./FlightSelection";
 
 interface SearchResultProps {
   itineraries: { [keyof: string]: ProcessedItinerary };
@@ -15,7 +15,7 @@ interface SearchResultProps {
   formData: FlightSearchFormData;
 }
 
-export const SearchResults = ({
+export const Index = ({
   itineraries,
   departureFlights,
   returnFlights,

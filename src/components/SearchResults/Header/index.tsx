@@ -1,9 +1,10 @@
 import { Box, Text, Tooltip } from "bumbag";
 import React from "react";
 
-import { FlightSearchFormData } from "../shared/types/FlightSearchFormData";
-import { getWeekdayName } from "../shared/utilities/getWeekdayName";
-import { convertMinutesTo12HourClock } from "../utilityFunctions";
+import { FlightSearchFormData } from "../../../shared/types/FlightSearchFormData";
+import { getWeekdayName } from "../../../shared/utilities/getWeekdayName";
+import { getFlightInfo } from "./utilities/getFlightInfo";
+import { getHeaderTime } from "./utilities/getHeaderTime";
 
 interface TimelineHeaderProps {
   formData: FlightSearchFormData;
@@ -103,35 +104,4 @@ export const TimelineHeader = ({
       </Box>
     </Box>
   );
-};
-
-const getHeaderTime = (interval: number, offset?: number): string => {
-  let timeMinutes = interval * 60;
-  if (offset) {
-    timeMinutes -= offset;
-  }
-  const time = convertMinutesTo12HourClock(Math.abs(timeMinutes));
-  return time.replace(":00", "");
-};
-
-const getFlightInfo = (formData: FlightSearchFormData, flightType: "DEPARTURE" | "RETURN") => {
-  let startDate;
-  let departureAirportCode;
-  let arrivalAirportCode;
-  if (flightType === "DEPARTURE") {
-    startDate = formData.fromDate;
-    departureAirportCode = formData.from;
-    arrivalAirportCode = formData.to;
-  } else {
-    startDate = formData.toDate;
-    departureAirportCode = formData.to;
-    arrivalAirportCode = formData.from;
-  }
-
-  const [year, month, day] = startDate.split("-").map((date: string) => Number(date));
-  return {
-    startDate: new Date(year, month, day),
-    departureAirportCode,
-    arrivalAirportCode,
-  };
 };

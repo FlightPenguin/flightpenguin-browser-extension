@@ -26,3 +26,7 @@ interface Layover {
   toTime: string;
   timezoneOffset: number;
 }
+
+export const getProcessedSearchResultFlightName = (flight: ProcessedFlightSearchResult) => {
+  return `${flight.operatingAirline.display} ${flight.fromTime}-${flight.toTime}`;
+};
