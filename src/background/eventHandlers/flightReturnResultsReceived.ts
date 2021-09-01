@@ -1,12 +1,12 @@
 import { makeItins, sortFlights } from "../../dataModels";
-import { Flight } from "../../shared/types/Flight";
+import { UnprocessedFlightSearchResult } from "../../shared/types/UnprocessedFlightSearchResult";
 import { ProviderManager } from "../ProviderManager";
 
 export const handleFlightReturnResultsReceived = (
   providerManager: ProviderManager,
-  flights: Flight[],
+  flights: UnprocessedFlightSearchResult[],
   providerName: string,
-): any => {
+): undefined | void => {
   // for providers that show returns separate from departures,
   // and only once you select a departure.
   if (flights.length === 0) {

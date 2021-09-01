@@ -1,7 +1,7 @@
 import { MissingElementLookupError } from "../../shared/errors";
 import { sendFlightsEvent, sendReturnFlightsEvent } from "../../shared/events";
-import { Flight } from "../../shared/types/Flight";
 import { FlightDetails } from "../../shared/types/FlightDetails";
+import { UnprocessedFlightSearchResult } from "../../shared/types/UnprocessedFlightSearchResult";
 import { FlightMap } from "./constants";
 import { getFlightDetails } from "./getFlightDetails";
 
@@ -12,7 +12,7 @@ export const sendFlights = async (
   flightMap: FlightMap,
   selectedFlight = null,
 ): Promise<FlightMap> => {
-  const flights = [] as Flight[];
+  const flights = [] as UnprocessedFlightSearchResult[];
   const newlyVisitedIds: FlightMap = {};
 
   for (const node of flightCards) {

@@ -1,13 +1,12 @@
 import { makeItins, sortFlights } from "../../dataModels";
-import { pause } from "../../shared/pause";
-import { Flight } from "../../shared/types/Flight";
+import { UnprocessedFlightSearchResult } from "../../shared/types/UnprocessedFlightSearchResult";
 import { ProviderManager } from "../ProviderManager";
 
 export const handleFlightResultsReceived = (
   providerManager: ProviderManager,
-  flights: Flight[],
+  flights: UnprocessedFlightSearchResult[],
   providerName: string,
-): any => {
+): undefined | void => {
   if (flights.length === 0) {
     return; // TODO: Enhance
   }

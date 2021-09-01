@@ -1,8 +1,8 @@
-import { FlightDetails } from "../../shared/types/FlightDetails";
-import { Itinerary } from "../../shared/types/Itinerary";
+import { ProcessedFlightSearchResult } from "../../shared/types/ProcessedFlightSearchResult";
+import { ProcessedItinerary } from "../../shared/types/ProcessedItinerary";
 
 export interface FlightSelection {
-  itinerary: Itinerary;
-  flight: FlightDetails;
+  itinerary: ProcessedItinerary;
+  flight: ProcessedFlightSearchResult;
   flightPenguinId: string;
 }

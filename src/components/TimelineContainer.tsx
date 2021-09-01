@@ -1,9 +1,9 @@
 import { Box, List } from "bumbag";
 import React, { useState } from "react";
 
-import { FlightDetails } from "../shared/types/FlightDetails";
 import { FlightSearchFormData } from "../shared/types/FlightSearchFormData";
-import { Itinerary } from "../shared/types/Itinerary";
+import { ProcessedFlightSearchResult } from "../shared/types/ProcessedFlightSearchResult";
+import { ProcessedItinerary } from "../shared/types/ProcessedItinerary";
 import { TimelineHeader } from "./TimelineHeader";
 import { TimelineRow } from "./TimelineRow";
 import { TimelineTitle } from "./TimelineTitle";
@@ -11,13 +11,15 @@ import { FlightSelection } from "./types/FlightSelection";
 
 interface TimelimeContainerProps {
   flightType: "DEPARTURE" | "RETURN";
-  itineraries: Itinerary[];
+  itineraries: { [keyof: string]: ProcessedItinerary };
+  flights: ProcessedFlightSearchResult[];
   formData: FlightSearchFormData;
   onSelection: (details: FlightSelection) => void;
 }
 
 export const TimelineContainer = ({
   flightType,
+  flights,
   itineraries,
   formData,
   onSelection,
@@ -27,8 +29,12 @@ export const TimelineContainer = ({
   const containerWidth = 1418;
   const legendWidth = 300;
   const flightTimeContainerWidth = containerWidth - legendWidth - 1;
-  const { intervals, increment, startHour } = getIntervalInfo(itineraries, flightType, flightTimeContainerWidth);
-  const timezoneOffset = new FlightDetails(itineraries[0].departureFlight).timezoneOffset;
+  const { intervals, increment, startHour } = getIntervalInfo(
+    Object.values(itineraries),
+    flightType,
+    flightTimeContainerWidth,
+  );
+  const timezoneOffset = itineraries[0].depFlight.timezoneOffset;
 
   return (
     <Box
@@ -42,7 +48,7 @@ export const TimelineContainer = ({
     >
       <TimelineTitle
         flightType={flightType}
-        itinerariesCount={itineraries.length}
+        flightCount={flights.length}
         headerWidth={flightTimeContainerWidth}
         legendWidth={legendWidth}
       />
@@ -54,11 +60,13 @@ export const TimelineContainer = ({
       >
         <Box display="flex" position="relative" justifyContent="center">
           <List width={`${legendWidth}px`} borderLeft="default">
-            {itineraries.map((itinerary, index) => {
-              const flightPenguinId = getFlightPenguinId(itinerary, flightType);
+            {flights.map((flight, index) => {
+              const flightPenguinId = getFlightPenguinId(flight);
+              const cheapestItinerary = getCheapestItinerary(flight, itineraries);
               return (
                 <TimelineRow
-                  itinerary={itinerary}
+                  flight={flight}
+                  itinerary={cheapestItinerary}
                   flightType={flightType}
                   maxRowWidth={containerWidth}
                   flightTimeContainerWidth={flightTimeContainerWidth}
@@ -92,18 +100,35 @@ export const TimelineContainer = ({
   );
 };
 
-const getFlightPenguinId = (itinerary: Itinerary, flightType: "DEPARTURE" | "RETURN"): string => {
-  const flight = flightType === "RETURN" ? itinerary.returnFlight : itinerary.departureFlight;
-  return `${flight.operatingAirline}-${flight.fromTime}-${flight.toTime}`;
+const getCheapestItinerary = (
+  flight: ProcessedFlightSearchResult,
+  itineraries: { [keyof: string]: ProcessedItinerary },
+) => {
+  return flight.itinIds.map((itinId) => itineraries[itinId]).sort((a, b) => a.fareNumber - b.fareNumber)[0];
 };
 
-const getFlights = (itineraries: Itinerary[], flightType: "DEPARTURE" | "RETURN"): FlightDetails[] => {
+const getFlightPenguinId = (flight: ProcessedFlightSearchResult): string => {
+  return `${flight.operatingAirline.display}-${flight.fromTime}-${flight.toTime}`;
+};
+
+const getFlights = (
+  itineraries: ProcessedItinerary[],
+  flightType: "DEPARTURE" | "RETURN",
+): ProcessedFlightSearchResult[] => {
   return itineraries.map((itinerary) => {
-    return flightType === "RETURN" ? itinerary.returnFlight : itinerary.departureFlight;
+    const flight = flightType === "RETURN" ? itinerary.retFlight : itinerary.depFlight;
+    if (!flight) {
+      throw new Error(`No ${flightType.toLowerCase()} in itinerary`);
+    }
+    return flight;
   });
 };
 
-const getIntervalInfo = (itineraries: Itinerary[], flightType: "DEPARTURE" | "RETURN", rowMaxWidth: number) => {
+const getIntervalInfo = (
+  itineraries: ProcessedItinerary[],
+  flightType: "DEPARTURE" | "RETURN",
+  rowMaxWidth: number,
+) => {
   const flights = getFlights(itineraries, flightType);
   const earliestFlight = getEarliestFlight(flights);
   const latestFlight = getLatestFlight(flights);
@@ -116,17 +141,17 @@ const getIntervalInfo = (itineraries: Itinerary[], flightType: "DEPARTURE" | "RE
   return { lowerBound, upperBound, startHour, increment, intervals };
 };
 
-const getEarliestFlight = (flights: FlightDetails[]): FlightDetails => {
+const getEarliestFlight = (flights: ProcessedFlightSearchResult[]): ProcessedFlightSearchResult => {
   return flights.slice().sort((a, b) => a.fromTimeDetails.hours - b.fromTimeDetails.hours)[0];
 };
 
-const getLatestFlight = (flights: FlightDetails[]): FlightDetails => {
+const getLatestFlight = (flights: ProcessedFlightSearchResult[]): ProcessedFlightSearchResult => {
   return flights.slice().sort((a, b) => b.toTimeDetails.hours - a.toTimeDetails.hours)[0];
 };
 
 const getTableTimeBounds = (
-  earliestFlight: FlightDetails,
-  latestFlight: FlightDetails,
+  earliestFlight: ProcessedFlightSearchResult,
+  latestFlight: ProcessedFlightSearchResult,
   buffer = 2,
 ): { lowerBound: number; upperBound: number } => {
   return {

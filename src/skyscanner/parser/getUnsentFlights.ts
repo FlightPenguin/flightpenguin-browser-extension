@@ -1,5 +1,5 @@
-import { Flight } from "../../shared/types/Flight";
 import { FlightDetails } from "../../shared/types/FlightDetails";
+import { UnprocessedFlightSearchResult } from "../../shared/types/UnprocessedFlightSearchResult";
 import { waitForAppearance } from "../../shared/utilities/waitFor";
 import { handleCaptcha } from "../ui/handleCaptcha";
 import { getFlight } from "./getFlight";
@@ -9,7 +9,7 @@ const NO_RESULTS_SELECTOR = "div[class*=FallbackNoResults_container]";
 const RESULTS_SELECTOR = "span[class*=SummaryInfo_itineraryCountContainer]";
 const FLIGHT_CARD_SELECTOR = "[class*='FlightsTicket_container'] [role='button']:not([data-visited='true'])";
 
-export const getUnsentFlights = async (loadingTimeout = 30_000): Promise<Flight[]> => {
+export const getUnsentFlights = async (loadingTimeout = 30_000): Promise<UnprocessedFlightSearchResult[]> => {
   await waitForAppearance(loadingTimeout, "body");
   if (isCaptcha()) {
     handleCaptcha();
@@ -47,7 +47,7 @@ const shouldSkipCard = (flightCard: HTMLElement) => {
   return denyListTerms.some((term) => flightCard.textContent?.includes(term));
 };
 
-const setFlightId = (flightCard: HTMLElement, flight: Flight) => {
+const setFlightId = (flightCard: HTMLElement, flight: UnprocessedFlightSearchResult) => {
   const departureId = getFlightDatasetId(flight.departureFlight as FlightDetails);
   const returnId = getFlightDatasetId(flight.returnFlight as FlightDetails);
   flightCard.dataset.fpid = `${departureId}-${returnId}`;

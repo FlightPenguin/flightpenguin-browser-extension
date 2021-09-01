@@ -1,8 +1,8 @@
 import { waitForTheElementToDisappear } from "wait-for-the-element";
 
 import { LoadingTimeoutParserError, MissingElementLookupError } from "../../shared/errors";
-import { Flight } from "../../shared/types/Flight";
 import { FlightDetails } from "../../shared/types/FlightDetails";
+import { UnprocessedFlightSearchResult } from "../../shared/types/UnprocessedFlightSearchResult";
 import { waitForAppearance, waitForDisappearance } from "../../shared/utilities/waitFor";
 import { closeFlightDetailsModal } from "../ui/closeFlightDetailsModal";
 import { getFlight } from "./getFlight";
@@ -19,7 +19,10 @@ const FLIGHT_CARD_SELECTOR = "[data-test-id='offer-listing']";
 const MODAL_FARE_SELECTOR = "[data-test-id='fare-types-carousel'] .uitk-lockup-price";
 const LIST_CARD_FARE_SELECTOR = ".uitk-price-subtext";
 
-export const getFlights = async (selectedFlight = null, loadingTimeout = 30_000): Promise<Flight[]> => {
+export const getFlights = async (
+  selectedFlight = null,
+  loadingTimeout = 30_000,
+): Promise<UnprocessedFlightSearchResult[]> => {
   // beware - make sure you're on the right page before waiting for elements to go away...
   await waitForAppearance(3000, CONTAINER_SHELL_SELECTOR);
   if (selectedFlight) {

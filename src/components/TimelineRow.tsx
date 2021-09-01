@@ -3,13 +3,14 @@ import React, { useState } from "react";
 
 import { sendSelectedFlight } from "../shared/events";
 import AirlineMap from "../shared/nameMaps/airlineMap";
-import { FlightDetails } from "../shared/types/FlightDetails";
-import { Itinerary } from "../shared/types/Itinerary";
+import { ProcessedFlightSearchResult } from "../shared/types/ProcessedFlightSearchResult";
+import { ProcessedItinerary } from "../shared/types/ProcessedItinerary";
 import { convertTimeTo24HourClock } from "../utilityFunctions";
 import { FlightSelection } from "./types/FlightSelection";
 
 interface TimelineRowProps {
-  itinerary: Itinerary;
+  itinerary: ProcessedItinerary;
+  flight: ProcessedFlightSearchResult;
   flightType: "DEPARTURE" | "RETURN";
   flightTimeContainerWidth: number;
   legendWidth: number;
@@ -26,6 +27,7 @@ interface TimelineRowProps {
 
 export const TimelineRow = ({
   itinerary,
+  flight,
   flightType,
   legendWidth,
   flightTimeContainerWidth,
@@ -41,8 +43,6 @@ export const TimelineRow = ({
 }: TimelineRowProps): React.ReactElement => {
   const [selected, setSelected] = useState(false);
 
-  const flight = new FlightDetails(flightType === "RETURN" ? itinerary.returnFlight : itinerary.departureFlight);
-
   const flightSegments = getFlightSegments(
     flight,
     from,
@@ -52,7 +52,7 @@ export const TimelineRow = ({
     intervalCount,
     flightTimeContainerWidth,
   );
-  const flightPenguinId = getFlightPenguinFlightId(flight);
+  const flightPenguinId = flight.id;
   const { left, right } = getSegmentContainerPositions(flightSegments);
 
   return (
@@ -64,16 +64,13 @@ export const TimelineRow = ({
       alignX="center"
       tabIndex={0}
       key={flightPenguinId}
-      data-flightpenguin-id={flightPenguinId}
+      data-flightpenguin-id={flight.id}
       data-flight-name={getFlightName(flight)}
-      data-window-id={itinerary.windowId}
-      data-tab-id={itinerary.tabId}
-      data-provider={itinerary.provider}
       data-selected={selected}
       width={`${maxRowWidth}px`}
       onClick={() => {
         setSelected(true);
-        onSelection({ itinerary, flight, flightPenguinId });
+        onSelection({ flight, itinerary, flightPenguinId });
         sendSelectedFlight(flightType, flightPenguinId);
       }}
       role="group"
@@ -94,7 +91,7 @@ export const TimelineRow = ({
         padding="major-1"
       >
         <Box data-name="flight-price">
-          <Text fontSize="500" fontWeight="700">{`${itinerary.fare}`}</Text>
+          <Text fontSize="500" fontWeight="700">{`${itinerary.fareNumber}`}</Text>
         </Box>
         <Box
           data-name="airlines"
@@ -105,11 +102,11 @@ export const TimelineRow = ({
           whiteSpace="normal"
         >
           <Text data-name="primary-airline" whiteSpace="normal" width="185px">
-            {flight.marketingAirline}
+            {flight.operatingAirline.display}
           </Text>
-          {flight.operatingAirline && (
+          {flight.marketingAirlineText && (
             <Text data-name="secondary-airline" fontSize="100" fontWeight="200" whiteSpace="normal" maxWidth="185px">
-              {flight.operatingAirline}
+              {flight.marketingAirlineText}
             </Text>
           )}
         </Box>
@@ -225,11 +222,7 @@ export const TimelineRow = ({
   );
 };
 
-const getFlightPenguinFlightId = (flight: FlightDetails): string => {
-  return `${flight.operatingAirline}-${flight.fromTime}-${flight.toTime}`;
-};
-
-const getFlightName = (flight: FlightDetails): string => {
+const getFlightName = (flight: ProcessedFlightSearchResult): string => {
   return `${flight.operatingAirline} ${flight.fromTime}-${flight.toTime}`;
 };
 
@@ -266,7 +259,7 @@ interface FlightSegment {
 }
 
 const getFlightSegments = (
-  flight: FlightDetails,
+  flight: ProcessedFlightSearchResult,
   tripStartAirport: string,
   tripEndAirport: string,
   increment: number,
@@ -309,7 +302,7 @@ const getFlightSegments = (
           ...flight,
           from: tripStartAirport,
           to: tripEndAirport,
-          operatingAirline: flight.marketingAirline || flight.operatingAirline,
+          operatingAirline: flight.operatingAirline,
         };
   layoversWithStops.push({
     fromTime: lastFlight.fromTime,
@@ -317,7 +310,7 @@ const getFlightSegments = (
     from: lastFlight.from,
     to: lastFlight.to,
     isLayoverStop: false,
-    operatingAirline: AirlineMap.getAirlineDetails(lastFlight.operatingAirline),
+    operatingAirline: flight.operatingAirline,
   });
 
   let startDayOffset = 0;
