@@ -1,8 +1,8 @@
-import { Box, Provider as BumbagProvider } from "bumbag";
+import { Provider as BumbagProvider } from "bumbag";
 import React from "react";
 import ReactDom from "react-dom";
 
-import { TimelineContainer } from "./components/TimelineContainer";
+import { SearchResults } from "./components/SearchResults";
 
 const root = document.getElementById("react-root");
 
@@ -2589,10 +2589,7 @@ if (root) {
 
   ReactDom.render(
     <BumbagProvider>
-      <Box paddingTop="400px" display="flex" position="relative" justifyContent="center">
-        <TimelineContainer flightType={"DEPARTURE"} itineraries={itineraries} formData={formData} />
-        {/*<TimelineContainer flightType={"RETURN"} itineraries={itineraries} formData={formData} />*/}
-      </Box>
+      <SearchResults itineraries={itineraries} formData={formData} />
     </BumbagProvider>,
     root,
   );

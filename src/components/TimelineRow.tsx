@@ -6,6 +6,7 @@ import AirlineMap from "../shared/nameMaps/airlineMap";
 import { FlightDetails } from "../shared/types/FlightDetails";
 import { Itinerary } from "../shared/types/Itinerary";
 import { convertTimeTo24HourClock } from "../utilityFunctions";
+import { FlightSelection } from "./types/FlightSelection";
 
 interface TimelineRowProps {
   itinerary: Itinerary;
@@ -20,7 +21,7 @@ interface TimelineRowProps {
   to: string;
   index: number;
   hide: boolean;
-  onClick: (itinerary: Itinerary) => void;
+  onSelection: (details: FlightSelection) => void;
 }
 
 export const TimelineRow = ({
@@ -36,7 +37,7 @@ export const TimelineRow = ({
   to,
   index,
   hide,
-  onClick,
+  onSelection,
 }: TimelineRowProps): React.ReactElement => {
   const [selected, setSelected] = useState(false);
 
@@ -72,7 +73,7 @@ export const TimelineRow = ({
       width={`${maxRowWidth}px`}
       onClick={() => {
         setSelected(true);
-        onClick(itinerary);
+        onSelection({ itinerary, flight, flightPenguinId });
         sendSelectedFlight(flightType, flightPenguinId);
       }}
       role="group"
@@ -322,7 +323,7 @@ const getFlightSegments = (
   let startDayOffset = 0;
   let endDayOffset = 0;
 
-  return layoversWithStops.map((layover, index) => {
+  return layoversWithStops.map((layover) => {
     if (endDayOffset > startDayOffset) {
       startDayOffset = endDayOffset;
     }

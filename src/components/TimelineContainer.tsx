@@ -1,5 +1,5 @@
 import { Box, List } from "bumbag";
-import React, { useCallback, useState } from "react";
+import React, { useState } from "react";
 
 import { FlightDetails } from "../shared/types/FlightDetails";
 import { FlightSearchFormData } from "../shared/types/FlightSearchFormData";
@@ -7,32 +7,28 @@ import { Itinerary } from "../shared/types/Itinerary";
 import { TimelineHeader } from "./TimelineHeader";
 import { TimelineRow } from "./TimelineRow";
 import { TimelineTitle } from "./TimelineTitle";
+import { FlightSelection } from "./types/FlightSelection";
 
 interface TimelimeContainerProps {
   flightType: "DEPARTURE" | "RETURN";
   itineraries: Itinerary[];
   formData: FlightSearchFormData;
+  onSelection: (details: FlightSelection) => void;
 }
 
 export const TimelineContainer = ({
   flightType,
   itineraries,
   formData,
+  onSelection,
 }: TimelimeContainerProps): React.ReactElement => {
-  const [selectedFlight, setSelectedFlight] = useState<Itinerary | null>(null);
+  const [selectedFlightDetails, setSelectedFlightDetails] = useState<FlightSelection | null>(null);
 
   const containerWidth = 1418;
   const legendWidth = 300;
   const flightTimeContainerWidth = containerWidth - legendWidth - 1;
   const { intervals, increment, startHour } = getIntervalInfo(itineraries, flightType, flightTimeContainerWidth);
   const timezoneOffset = new FlightDetails(itineraries[0].departureFlight).timezoneOffset;
-
-  const onSelection = useCallback(
-    (flight) => {
-      setSelectedFlight(flight);
-    },
-    [selectedFlight],
-  );
 
   return (
     <Box
@@ -74,8 +70,11 @@ export const TimelineContainer = ({
                   from={formData.from}
                   to={formData.to}
                   index={index}
-                  hide={!!selectedFlight}
-                  onClick={onSelection}
+                  hide={!!selectedFlightDetails}
+                  onSelection={(details: FlightSelection) => {
+                    setSelectedFlightDetails(details);
+                    onSelection(details);
+                  }}
                 />
               );
             })}
