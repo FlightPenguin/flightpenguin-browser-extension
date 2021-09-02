@@ -15,7 +15,7 @@ interface SearchResultProps {
   formData: FlightSearchFormData;
 }
 
-export const Index = ({
+export const SearchResults = ({
   itineraries,
   departureFlights,
   returnFlights,

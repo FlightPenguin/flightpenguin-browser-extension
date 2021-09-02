@@ -1,6 +1,8 @@
 import { Provider as BumbagProvider } from "bumbag";
+import React from "react";
 import ReactDom from "react-dom";
 
+import { SearchForm } from "./components/SearchForm/index";
 import { SearchResults } from "./components/SearchResults";
 
 const itineraries = [];
@@ -42,12 +44,15 @@ chrome.runtime.onMessage.addListener(function (message) {
 if (root) {
   ReactDom.render(
     <BumbagProvider>
-      <SearchResults
-        itineraries={itineraries}
-        formData={formData}
-        departureFlights={departureFlights}
-        returnFlights={returnFlights}
-      />
+      <SearchForm />
+      {formData && (
+        <SearchResults
+          itineraries={itineraries}
+          formData={formData}
+          departureFlights={departureFlights}
+          returnFlights={returnFlights}
+        />
+      )}
     </BumbagProvider>,
     root,
   );

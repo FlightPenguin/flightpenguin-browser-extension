@@ -977,12 +977,15 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "sendFailedScraper": () => (/* reexport safe */ _sendFailedScraper__WEBPACK_IMPORTED_MODULE_0__.sendFailedScraper),
 /* harmony export */   "sendFlightsEvent": () => (/* reexport safe */ _sendFlights__WEBPACK_IMPORTED_MODULE_1__.sendFlightsEvent),
 /* harmony export */   "sendNoFlightsEvent": () => (/* reexport safe */ _sendNoFlights__WEBPACK_IMPORTED_MODULE_2__.sendNoFlightsEvent),
-/* harmony export */   "sendReturnFlightsEvent": () => (/* reexport safe */ _sendReturnFlights__WEBPACK_IMPORTED_MODULE_3__.sendReturnFlightsEvent)
+/* harmony export */   "sendReturnFlightsEvent": () => (/* reexport safe */ _sendReturnFlights__WEBPACK_IMPORTED_MODULE_3__.sendReturnFlightsEvent),
+/* harmony export */   "sendSelectedFlight": () => (/* reexport safe */ _sendSelectedFlight__WEBPACK_IMPORTED_MODULE_4__.sendSelectedFlight)
 /* harmony export */ });
 /* harmony import */ var _sendFailedScraper__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./sendFailedScraper */ "./src/shared/events/sendFailedScraper.ts");
 /* harmony import */ var _sendFlights__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./sendFlights */ "./src/shared/events/sendFlights.ts");
 /* harmony import */ var _sendNoFlights__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./sendNoFlights */ "./src/shared/events/sendNoFlights.ts");
 /* harmony import */ var _sendReturnFlights__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./sendReturnFlights */ "./src/shared/events/sendReturnFlights.ts");
+/* harmony import */ var _sendSelectedFlight__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./sendSelectedFlight */ "./src/shared/events/sendSelectedFlight.ts");
+
 
 
 
@@ -1070,6 +1073,28 @@ function sendReturnFlightsEvent(providerName, flights) {
     provider: providerName
   });
 }
+
+/***/ }),
+
+/***/ "./src/shared/events/sendSelectedFlight.ts":
+/*!*************************************************!*\
+  !*** ./src/shared/events/sendSelectedFlight.ts ***!
+  \*************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "sendSelectedFlight": () => (/* binding */ sendSelectedFlight)
+/* harmony export */ });
+var sendSelectedFlight = function sendSelectedFlight(flightType, flightId) {
+  if (flightType === "DEPARTURE") {
+    chrome.runtime.sendMessage({
+      event: "".concat(flightType.toUpperCase(), "_SELECTED"),
+      departureId: flightId
+    });
+  }
+};
 
 /***/ }),
 
@@ -2116,9 +2141,8 @@ function t(t,r){return function(t){if(Array.isArray(t))return t}(t)||function(t,
 /******/ 	// The require function
 /******/ 	function __webpack_require__(moduleId) {
 /******/ 		// Check if module is in cache
-/******/ 		var cachedModule = __webpack_module_cache__[moduleId];
-/******/ 		if (cachedModule !== undefined) {
-/******/ 			return cachedModule.exports;
+/******/ 		if(__webpack_module_cache__[moduleId]) {
+/******/ 			return __webpack_module_cache__[moduleId].exports;
 /******/ 		}
 /******/ 		// Create a new module (and put it into the cache)
 /******/ 		var module = __webpack_module_cache__[moduleId] = {
