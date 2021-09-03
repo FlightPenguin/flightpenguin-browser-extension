@@ -1,7 +1,8 @@
-import { Provider as BumbagProvider } from "bumbag";
+import { PageContent, PageWithHeader, Provider as BumbagProvider } from "bumbag";
 import React from "react";
 import ReactDom from "react-dom";
 
+import NavigationBar from "./components/NavigationBar/index";
 import { SearchForm } from "./components/SearchForm/index";
 import { SearchResults } from "./components/SearchResults";
 import { FlightPenguinTheme } from "./components/utilities/bumbag/theme";
@@ -45,15 +46,19 @@ chrome.runtime.onMessage.addListener(function (message) {
 if (root) {
   ReactDom.render(
     <BumbagProvider theme={FlightPenguinTheme}>
-      <SearchForm />
-      {formData && (
-        <SearchResults
-          itineraries={itineraries}
-          formData={formData}
-          departureFlights={departureFlights}
-          returnFlights={returnFlights}
-        />
-      )}
+      <PageWithHeader header={<NavigationBar />}>
+        <PageContent breakpoint="desktop" paddingY={{ default: "major-15", "max-tablet": "major-8" }}>
+          <SearchForm />
+          {formData && (
+            <SearchResults
+              itineraries={itineraries}
+              formData={formData}
+              departureFlights={departureFlights}
+              returnFlights={returnFlights}
+            />
+          )}
+        </PageContent>
+      </PageWithHeader>
     </BumbagProvider>,
     root,
   );
