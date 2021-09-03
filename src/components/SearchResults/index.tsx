@@ -48,7 +48,7 @@ export const SearchResults = (): React.ReactElement => {
 
   return (
     <Box className="search-results-container">
-      {formData && itineraries && departureFlights.length && (
+      {!!formData && !!itineraries && !!departureFlights.length && (
         <TimelineContainer
           flightType="DEPARTURE"
           itineraries={itineraries}
@@ -64,7 +64,7 @@ export const SearchResults = (): React.ReactElement => {
         />
       )}
 
-      {departureFlightDetails && formData && itineraries && returnFlights.length && (
+      {!!departureFlightDetails && !!formData && !!itineraries && !!returnFlights.length && (
         <TimelineContainer
           flightType="RETURN"
           itineraries={itineraries}
