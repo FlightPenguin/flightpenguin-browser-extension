@@ -11,54 +11,19 @@ export const getFlightSegments = (
   intervalCount: number,
   containerWidth: number,
 ): FlightSegment[] => {
-  const layoversWithStops = [];
-  for (let i = 0; i < flight.layovers.length - 1; i++) {
-    const previousFlight = flight.layovers[i];
-    const nextFlight = flight.layovers[i + 1];
-    const { toTime: fromTime, to: from } = previousFlight;
-    const { fromTime: toTime, from: to } = nextFlight;
-
+  const layoversWithStops = flight.layovers;
+  if (layoversWithStops.length === 0) {
     layoversWithStops.push({
-      fromTime: previousFlight.fromTime,
-      toTime: previousFlight.toTime,
-      from: previousFlight.from,
-      to: previousFlight.to,
+      fromTime: flight.fromTime,
+      toTime: flight.toTime,
+      from: tripStartAirport,
+      to: tripEndAirport,
       isLayoverStop: false,
-      operatingAirline: {
-        display: previousFlight.operatingAirline.display,
-        color: previousFlight.operatingAirline.color,
-      },
-    });
-    layoversWithStops.push({
-      fromTime,
-      toTime,
-      from,
-      to,
-      isLayoverStop: true,
-      operatingAirline: {
-        display: `Layover at ${from}.`,
-        color: "transparent",
-      },
+      operatingAirline: flight.operatingAirline,
+      duration: flight.duration,
+      timezoneOffset: flight.timezoneOffset,
     });
   }
-
-  const lastFlight =
-    layoversWithStops.length > 0
-      ? flight.layovers[flight.layovers.length - 1]
-      : {
-          ...flight,
-          from: tripStartAirport,
-          to: tripEndAirport,
-          operatingAirline: flight.operatingAirline,
-        };
-  layoversWithStops.push({
-    fromTime: lastFlight.fromTime,
-    toTime: lastFlight.toTime,
-    from: lastFlight.from,
-    to: lastFlight.to,
-    isLayoverStop: false,
-    operatingAirline: flight.operatingAirline,
-  });
 
   let startDayOffset = 0;
   let endDayOffset = 0;

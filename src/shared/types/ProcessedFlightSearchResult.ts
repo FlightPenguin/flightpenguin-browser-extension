@@ -25,6 +25,7 @@ interface Layover {
   to: string;
   toTime: string;
   timezoneOffset: number;
+  isLayoverStop: boolean;
 }
 
 export const getProcessedSearchResultFlightName = (flight: ProcessedFlightSearchResult) => {
