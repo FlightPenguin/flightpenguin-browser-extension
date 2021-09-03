@@ -1,7 +1,7 @@
 import { Box, Button, Card, FieldStack, FieldWrapper, Input, RadioGroup, Select, Switch } from "bumbag";
 import { addDays, endOfDay, startOfDay } from "date-fns";
 import { Field as FormikField, Form, Formik } from "formik";
-import React from "react";
+import React, { useState } from "react";
 import { boolean, mixed, number, object, string } from "yup";
 
 import { WindowConfig } from "../../shared/types/WindowConfig";
@@ -79,8 +79,10 @@ const initialValues = {
 };
 
 export const SearchForm = (): React.ReactElement => {
+  const [sent, setSent] = useState(false);
+
   return (
-    <Box className="search-form-wrapper">
+    <Box className="search-form-wrapper" display={sent ? "none" : "block"}>
       <Card maxWidth="768px">
         <Formik
           initialValues={initialValues}
@@ -104,6 +106,7 @@ export const SearchForm = (): React.ReactElement => {
               },
               windowConfig,
             });
+            setSent(true);
           }}
         >
           {(formik) => (

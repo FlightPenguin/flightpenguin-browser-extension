@@ -31,23 +31,24 @@ export const TimelineContainer = ({
 
   const containerWidth = 1418;
   const legendWidth = 300;
+  const sidePaddingWidth = 85;
   const flightTimeContainerWidth = containerWidth - legendWidth - 1;
   const { intervals, increment, startHour } = getIntervalInfo(
     Object.values(itineraries),
     flightType,
     flightTimeContainerWidth,
   );
-  const timezoneOffset = itineraries[0].depFlight.timezoneOffset;
+  const timezoneOffset = flights[0].timezoneOffset;
 
   return (
     <Box
       use="section"
-      paddingLeft="40px"
-      paddingRight="40px"
-      paddingBottom="40px"
+      paddingLeft={`${sidePaddingWidth}px`}
+      paddingRight={`${sidePaddingWidth}px`}
+      paddingBottom="45px"
       paddingTop={timezoneOffset > 0 ? "95px" : "65px"}
       altitude="400"
-      width={`${containerWidth + 80}px`}
+      width={`${containerWidth + sidePaddingWidth * 2}px`}
     >
       <TimelineTitle
         flightType={flightType}

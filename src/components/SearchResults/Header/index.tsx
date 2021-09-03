@@ -97,7 +97,7 @@ export const TimelineHeader = ({
               width={`${intervalWidth}px`}
               height="100%"
               boxShadow={`inset ${isMidnight ? 5 : 3}px 0 0 0 #e6e6eb`}
-              zIndex={-1}
+              zIndex={-10}
             />
           );
         })}

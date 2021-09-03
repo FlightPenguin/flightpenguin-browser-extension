@@ -561,7 +561,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 var PROVIDERS_NEEDING_RETURNS = ["expedia", "skiplagged"];
 var PROVIDERS_SUPPORTING_POINTS_SEARCH = ["expedia"];
-var SUPPORTED_PROVIDERS = ["expedia", "skiplagged", "skyscanner", "southwest"]; // eslint-disable-next-line @typescript-eslint/no-empty-function
+var SUPPORTED_PROVIDERS = ["southwest"]; // eslint-disable-next-line @typescript-eslint/no-empty-function
 
 var DEFAULT_ON_READY_FUNCTION = function DEFAULT_ON_READY_FUNCTION() {};
 

@@ -7,41 +7,7 @@ import { SearchForm } from "./components/SearchForm/index";
 import { SearchResults } from "./components/SearchResults";
 import { FlightPenguinTheme } from "./components/utilities/bumbag/theme";
 
-const itineraries = [];
-const departureFlights = [];
-const returnFlights = [];
-let formData;
-
 const root = document.getElementById("react-root");
-
-chrome.runtime.onMessage.addListener(function (message) {
-  switch (message.event) {
-    case "FLIGHT_RESULTS_FOR_CLIENT":
-      message.flights?.departureList.forEach((departure) => {
-        departureFlights.push(departure);
-      });
-
-      message.flights?.itins.forEach((itinerary) => {
-        itineraries.push(itinerary);
-      });
-
-      formData = message.formData;
-
-      break;
-    case "RETURN_FLIGHTS_FOR_CLIENT":
-      message.flights?.returnList.forEach((departure) => {
-        returnFlights.push(departure);
-      });
-
-      message.flights?.itins.forEach((itinerary) => {
-        itineraries.push(itinerary);
-      });
-
-      break;
-    default:
-      break;
-  }
-});
 
 if (root) {
   ReactDom.render(
@@ -49,14 +15,7 @@ if (root) {
       <PageWithHeader header={<NavigationBar />}>
         <PageContent breakpoint="desktop" paddingY={{ default: "major-15", "max-tablet": "major-8" }}>
           <SearchForm />
-          {formData && (
-            <SearchResults
-              itineraries={itineraries}
-              formData={formData}
-              departureFlights={departureFlights}
-              returnFlights={returnFlights}
-            />
-          )}
+          <SearchResults />
         </PageContent>
       </PageWithHeader>
     </BumbagProvider>,

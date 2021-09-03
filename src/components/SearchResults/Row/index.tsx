@@ -65,7 +65,7 @@ export const TimelineRow = ({
     <List.Item
       data-name="flight-list-item"
       display={hide && !selected ? "none" : "flex"}
-      boxSizing="border-flex"
+      // boxSizing="border-box"
       whiteSpace="nowrap"
       alignX="center"
       tabIndex={0}
@@ -84,13 +84,13 @@ export const TimelineRow = ({
       marginBottom="0px"
       backgroundColor={index % 2 === 0 || selected ? "primaryTint" : "white"}
       minHeight="80px"
-      _hover={selected ? {} : { backgroundColor: "primary200", zIndex: "999" }}
-      _focus={selected ? {} : { backgroundColor: "primary200", zIndex: "999" }}
+      _hover={selected ? {} : { backgroundColor: "primary200", zIndex: 999 }}
+      _focus={selected ? {} : { backgroundColor: "primary200", zIndex: 999 }}
     >
       <FlightLegend legendWidth={legendWidth} itinerary={itinerary} flight={flight} />
       <Box
         data-name={"flight-container"}
-        zIndex="1"
+        zIndex={1}
         position="relative"
         display="flex"
         alignX="center"
@@ -125,7 +125,7 @@ export const TimelineRow = ({
               {flight.duration}
             </Text>
             {flightSegments.map((flightSegment: FlightSegment) => {
-              return <FlightSegmentBox flightSegment={flightSegment} left={left} />;
+              return <FlightSegmentBox flightSegment={flightSegment} left={left} key={flightSegment.id} />;
             })}
           </Box>
         </Box>

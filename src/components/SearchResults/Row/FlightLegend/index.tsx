@@ -22,7 +22,9 @@ export const FlightLegend = ({ flight, itinerary, legendWidth }: FlightLegendPro
       padding="major-1"
     >
       <Box data-name="flight-price">
-        <Text fontSize="500" fontWeight="700">{`${itinerary.fareNumber}`}</Text>
+        <Text fontSize="500" fontWeight="700">
+          ${`${itinerary.fareNumber}`}
+        </Text>
       </Box>
       <Box
         data-name="airlines"

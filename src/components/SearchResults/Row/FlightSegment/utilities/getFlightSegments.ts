@@ -1,4 +1,3 @@
-import AirlineMap from "../../../../../shared/nameMaps/airlineMap";
 import { ProcessedFlightSearchResult } from "../../../../../shared/types/ProcessedFlightSearchResult";
 import { FlightSegment } from "../FlightSegment";
 import { getPosition } from "./getPosition";
@@ -25,7 +24,10 @@ export const getFlightSegments = (
       from: previousFlight.from,
       to: previousFlight.to,
       isLayoverStop: false,
-      operatingAirline: AirlineMap.getAirlineDetails(previousFlight.operatingAirline),
+      operatingAirline: {
+        display: previousFlight.operatingAirline.display,
+        color: previousFlight.operatingAirline.color,
+      },
     });
     layoversWithStops.push({
       fromTime,
