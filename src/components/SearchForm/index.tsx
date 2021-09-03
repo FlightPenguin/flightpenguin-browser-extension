@@ -79,7 +79,7 @@ const initialValues = {
 
 export const SearchForm = (): React.ReactElement => {
   return (
-    <Box className="search-form-wrapper" display="flex" position="relative" justifyContent="center">
+    <Box className="search-form-wrapper">
       <Card maxWidth="768px">
         <Formik
           initialValues={initialValues}
@@ -92,7 +92,7 @@ export const SearchForm = (): React.ReactElement => {
               left: window.screenX,
               top: window.screenY,
             };
-            chrome.runtime.sendMessage({ event: "FORM_DATA_RECEIVED", values, windowConfig });
+            chrome.runtime.sendMessage({ event: "FORM_DATA_RECEIVED", formData: values, windowConfig });
           }}
         >
           {(formik) => (
