@@ -2,14 +2,18 @@ import { Box, Button, Card, FieldStack, FieldWrapper, Input, RadioGroup, Select,
 import { addDays, endOfDay, startOfDay } from "date-fns";
 import { Field as FormikField, Form, Formik } from "formik";
 import React from "react";
-import { boolean, date, mixed, number, object, ref, string } from "yup";
+import { boolean, mixed, number, object, string } from "yup";
 
 import { getFieldState, getParsedDate, getValidationText } from "../utilities/forms";
 import { getFormattedDate } from "../utilities/forms/getFormattedDate";
-import { setType } from "../utilities/forms/setType";
+import { getStandardizedFormatDate } from "../utilities/forms/getStandardizedFormatDate";
+import { isValidDateInputString } from "../utilities/forms/isValidDateInputString";
 
 const airportCodeHelpText = "Airport codes must be three uppercase letters (e.g. SFO).";
 const cabinHelpText = "You must select a cabin type.";
+
+const today = startOfDay(new Date());
+const maxDate = addDays(endOfDay(new Date()), 345);
 
 const SearchFormSchema = object({
   from: string()
@@ -21,21 +25,35 @@ const SearchFormSchema = object({
     .min(3, airportCodeHelpText)
     .max(3, airportCodeHelpText)
     .matches(/[A-Z]{3}/, airportCodeHelpText)
+    .test(
+      "not same source and destination",
+      "Your source and destination airports cannot be the same.",
+      (value, ctx) => {
+        return value !== ctx.parent.from;
+      },
+    )
     .required("What airport do you want to leave from?"),
-  fromDate: date()
-    .transform(getParsedDate)
+  fromDate: string()
     .required("What day do you want to leave on?")
-    .min(startOfDay(new Date()), "Your flight cannot start in the past.")
-    .max(addDays(endOfDay(new Date()), 345), "We cannot look up flights this far in the future."),
-  toDate: date().when("roundtrip", {
-    is: (value: boolean) => value,
-    then: date()
-      .transform(getParsedDate)
-      .required("What day do you want to return on?")
-      // .min(ref("departureDate"), "Your return flight cannot start before the departure flight.")
-      .max(addDays(endOfDay(new Date()), 345), "We cannot look up flights this far in the future."),
-    otherwise: date().nullable(),
-  }),
+    .test("future start date", "Your flight cannot start in the past.", (value) => {
+      const fromDate = getParsedDate(value as string);
+      return fromDate >= today;
+    })
+    .test("not too future start date", "We cannot look up flights this far in the future.", (value) => {
+      const fromDate = getParsedDate(value as string);
+      return fromDate <= maxDate;
+    }),
+  toDate: string()
+    .required("What day do you want to leave on?")
+    .test("future end date", "Your return flight cannot start before your departure flight.", (value, ctx) => {
+      const toDate = getParsedDate(value as string);
+      const fromDate = getParsedDate(ctx.parent.fromDate);
+      return toDate >= fromDate;
+    })
+    .test("not too future start date", "We cannot look up flights this far in the future.", (value) => {
+      const toDate = getParsedDate(value as string);
+      return toDate <= maxDate;
+    }),
   numPax: number()
     .required("How many people will be travelling on this flight?")
     .min(1, "You must always have at least one passenger.")
@@ -47,25 +65,24 @@ const SearchFormSchema = object({
 }).required();
 
 type FormState = ReturnType<typeof SearchFormSchema.validateSync>;
+const initialValues = {
+  from: "",
+  to: "",
+  fromDate: getFormattedDate(addDays(today, 1)),
+  toDate: getFormattedDate(addDays(today, 4)),
+  numPax: 1,
+  roundtrip: true,
+  cabin: "econ",
+  searchByPoints: false,
+};
 
 export const SearchForm = (): React.ReactElement => {
   return (
     <Box className="search-form-wrapper" display="flex" position="relative" justifyContent="center">
       <Card maxWidth="768px">
         <Formik
-          initialValues={{
-            from: "",
-            to: "",
-            // @ts-ignore
-            fromDate: getFormattedDate(addDays(startOfDay(new Date()), 1)),
-            // @ts-ignore
-            toDate: getFormattedDate(addDays(startOfDay(new Date()), 4)),
-            numPax: 1,
-            roundtrip: true,
-            cabin: "econ",
-            searchByPoints: false,
-          }}
-          validateOnBlur
+          initialValues={initialValues}
+          validateOnBlur={true}
           validationSchema={SearchFormSchema}
           onSubmit={(values: FormState) => {
             console.log(values);
@@ -79,10 +96,19 @@ export const SearchForm = (): React.ReactElement => {
                     component={Input.Formik}
                     name="from"
                     label="Starting airport"
+                    after={<Input.Icon icon="solid-plane-departure" fontSize="300" color="black" />}
                     autoComplete="off"
                     hasFieldWrapper={true}
                     onChange={formik.handleChange}
-                    onBlur={formik.handleBlur}
+                    onBlur={(event: Event) => {
+                      const target = event.target as HTMLInputElement;
+                      target.placeholder = "";
+                      return formik.handleBlur(event);
+                    }}
+                    onFocus={(event: Event) => {
+                      const target = event.target as HTMLInputElement;
+                      target.placeholder = "SFO";
+                    }}
                     maxlength="3"
                     minlength="3"
                     disabled={formik.isSubmitting}
@@ -94,10 +120,19 @@ export const SearchForm = (): React.ReactElement => {
                     component={Input.Formik}
                     name="to"
                     label="Destination airport"
+                    after={<Input.Icon icon="solid-plane-arrival" fontSize="300" color="black" />}
                     autoComplete="off"
                     hasFieldWrapper={true}
                     onChange={formik.handleChange}
-                    onBlur={formik.handleBlur}
+                    onBlur={(event: Event) => {
+                      const target = event.target as HTMLInputElement;
+                      target.placeholder = "";
+                      return formik.handleBlur(event);
+                    }}
+                    onFocus={(event: Event) => {
+                      const target = event.target as HTMLInputElement;
+                      target.placeholder = "LAX";
+                    }}
                     disabled={formik.isSubmitting}
                     containLabel
                   />
@@ -136,8 +171,21 @@ export const SearchForm = (): React.ReactElement => {
                     autoComplete="off"
                     hasFieldWrapper={true}
                     onChange={formik.handleChange}
-                    onBlur={(event: Event) => setType(event, "text", formik.handleBlur)}
-                    onFocus={(event: Event) => setType(event, "date")}
+                    onBlur={(event: Event) => {
+                      const target = event.target as HTMLInputElement;
+                      target.type = "text";
+
+                      const value = isValidDateInputString(target.value)
+                        ? getStandardizedFormatDate(target.value)
+                        : initialValues.fromDate;
+
+                      formik.setFieldValue("fromDate", value);
+                      formik.handleBlur(event);
+                    }}
+                    onFocus={(event: Event) => {
+                      const target = event.target as HTMLInputElement;
+                      target.type = "date";
+                    }}
                     disabled={formik.isSubmitting}
                     containLabel
                   />
@@ -155,9 +203,23 @@ export const SearchForm = (): React.ReactElement => {
                       autoComplete="off"
                       hasFieldWrapper={true}
                       onChange={formik.handleChange}
-                      onBlur={(event: Event) => setType(event, "text", formik.handleBlur)}
-                      onFocus={(event: Event) => setType(event, "date")}
+                      onBlur={(event: Event) => {
+                        const target = event.target as HTMLInputElement;
+                        target.type = "text";
+
+                        const value = isValidDateInputString(target.value)
+                          ? getStandardizedFormatDate(target.value)
+                          : initialValues.fromDate;
+
+                        formik.setFieldValue("toDate", value);
+                        formik.handleBlur(event);
+                      }}
+                      onFocus={(event: Event) => {
+                        const target = event.target as HTMLInputElement;
+                        target.type = "date";
+                      }}
                       disabled={formik.isSubmitting}
+                      group="role"
                       containLabel
                     />
                   </FieldWrapper>
@@ -182,6 +244,7 @@ export const SearchForm = (): React.ReactElement => {
                     onChange={formik.handleChange}
                     onBlur={formik.handleBlur}
                     disabled={formik.isSubmitting}
+                    after={<Input.Icon icon="solid-user" fontSize="300" color="black" />}
                     containLabel
                   />
                 </FieldWrapper>
@@ -205,6 +268,7 @@ export const SearchForm = (): React.ReactElement => {
                     onBlur={formik.handleBlur}
                     label="Cabin"
                     disabled={formik.isSubmitting}
+                    after={<Input.Icon icon="solid-plane-departure" fontSize="300" />}
                     containLabel
                   />
                 </FieldWrapper>
@@ -237,10 +301,13 @@ export const SearchForm = (): React.ReactElement => {
                   />
                 </FieldWrapper>
               </FieldStack>
-              <Card.Footer>
+              <Card.Footer display="flex" justifyContent="center">
                 <Button
                   type="submit"
                   palette="primary"
+                  alignX="center"
+                  paddingLeft="major-4"
+                  paddingRight="major-4"
                   disabled={formik.isSubmitting}
                   isLoading={formik.isSubmitting}
                   style={{ whiteSpace: "nowrap" }}

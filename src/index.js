@@ -4,6 +4,7 @@ import ReactDom from "react-dom";
 
 import { SearchForm } from "./components/SearchForm/index";
 import { SearchResults } from "./components/SearchResults";
+import { FlightPenguinTheme } from "./components/utilities/bumbag/theme";
 
 const itineraries = [];
 const departureFlights = [];
@@ -43,7 +44,7 @@ chrome.runtime.onMessage.addListener(function (message) {
 
 if (root) {
   ReactDom.render(
-    <BumbagProvider>
+    <BumbagProvider theme={FlightPenguinTheme}>
       <SearchForm />
       {formData && (
         <SearchResults
