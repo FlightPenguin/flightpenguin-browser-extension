@@ -7,10 +7,5 @@ export const handleFormDataReceived = (
   formData: FlightSearchFormData,
   windowConfig: WindowConfig,
 ) => {
-  formData = {
-    ...formData,
-    from: formData.from.toUpperCase(),
-    to: formData.to.toUpperCase(),
-  };
   providerManager.searchForResults(formData, windowConfig);
 };

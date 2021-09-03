@@ -6,6 +6,7 @@ import { boolean, mixed, number, object, string } from "yup";
 
 import { WindowConfig } from "../../shared/types/WindowConfig";
 import { getFieldState, getParsedDate, getValidationText } from "../utilities/forms";
+import { getChromeFormatDate } from "../utilities/forms/getChromeFormatDate";
 import { getFormattedDate } from "../utilities/forms/getFormattedDate";
 import { getStandardizedFormatDate } from "../utilities/forms/getStandardizedFormatDate";
 import { isValidDateInputString } from "../utilities/forms/isValidDateInputString";
@@ -92,7 +93,17 @@ export const SearchForm = (): React.ReactElement => {
               left: window.screenX,
               top: window.screenY,
             };
-            chrome.runtime.sendMessage({ event: "FORM_DATA_RECEIVED", formData: values, windowConfig });
+            chrome.runtime.sendMessage({
+              event: "FORM_DATA_RECEIVED",
+              formData: {
+                ...values,
+                from: values.from.toUpperCase(),
+                fromDate: getChromeFormatDate(values.fromDate),
+                to: values.to.toUpperCase(),
+                toDate: getChromeFormatDate(values.toDate),
+              },
+              windowConfig,
+            });
           }}
         >
           {(formik) => (
