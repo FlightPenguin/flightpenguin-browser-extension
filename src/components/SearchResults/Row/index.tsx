@@ -84,19 +84,19 @@ export const TimelineRow = ({
       marginBottom="0px"
       backgroundColor={index % 2 === 0 || selected ? "primaryTint" : "white"}
       minHeight="80px"
-      _hover={selected ? {} : { backgroundColor: "primary200", zIndex: 999 }}
-      _focus={selected ? {} : { backgroundColor: "primary200", zIndex: 999 }}
+      _hover={selected ? {} : { backgroundColor: "primary200", zIndex: "999" }}
+      _focus={selected ? {} : { backgroundColor: "primary200", zIndex: "999" }}
     >
       <FlightLegend legendWidth={legendWidth} itinerary={itinerary} flight={flight} />
       <Box
         data-name={"flight-container"}
-        zIndex={1}
         position="relative"
         display="flex"
         alignX="center"
         width="100%"
         alignSelf="normal"
         flex={1}
+        zIndex="1"
       >
         <Box
           data-name="flight-segments"
