@@ -62,7 +62,14 @@ export const TimelineContainer = ({
         position="relative"
         justifyContent="center"
       >
-        <Box display="flex" position="relative" justifyContent="center">
+        <Box
+          display="flex"
+          position="relative"
+          justifyContent="center"
+          border="default"
+          boxSizing="border-box"
+          flexGrow={1}
+        >
           <List width={`${legendWidth}px`} borderLeft="default">
             {flights.map((flight, index) => {
               const flightPenguinId = getFlightPenguinId(flight);
