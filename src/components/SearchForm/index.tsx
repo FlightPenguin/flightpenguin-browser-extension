@@ -4,6 +4,7 @@ import { Field as FormikField, Form, Formik } from "formik";
 import React from "react";
 import { boolean, mixed, number, object, string } from "yup";
 
+import { WindowConfig } from "../../shared/types/WindowConfig";
 import { getFieldState, getParsedDate, getValidationText } from "../utilities/forms";
 import { getFormattedDate } from "../utilities/forms/getFormattedDate";
 import { getStandardizedFormatDate } from "../utilities/forms/getStandardizedFormatDate";
@@ -85,7 +86,13 @@ export const SearchForm = (): React.ReactElement => {
           validateOnBlur={true}
           validationSchema={SearchFormSchema}
           onSubmit={(values: FormState) => {
-            console.log(values);
+            const windowConfig: WindowConfig = {
+              height: window.outerHeight,
+              width: window.outerWidth,
+              left: window.screenX,
+              top: window.screenY,
+            };
+            chrome.runtime.sendMessage({ event: "FORM_DATA_RECEIVED", values, windowConfig });
           }}
         >
           {(formik) => (
