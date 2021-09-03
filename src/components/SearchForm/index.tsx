@@ -87,6 +87,7 @@ export const SearchForm = (): React.ReactElement => {
         <Formik
           initialValues={initialValues}
           validateOnBlur={true}
+          validateOnChange={false}
           validationSchema={SearchFormSchema}
           onSubmit={(values: FormState) => {
             const windowConfig: WindowConfig = {
@@ -205,7 +206,12 @@ export const SearchForm = (): React.ReactElement => {
                     }}
                     onFocus={(event: Event) => {
                       const target = event.target as HTMLInputElement;
+                      const currentValue = target.value;
+
                       target.type = "date";
+                      if (currentValue) {
+                        target.value = getChromeFormatDate(currentValue);
+                      }
                     }}
                     disabled={formik.isSubmitting}
                     containLabel
@@ -237,7 +243,12 @@ export const SearchForm = (): React.ReactElement => {
                       }}
                       onFocus={(event: Event) => {
                         const target = event.target as HTMLInputElement;
+                        const currentValue = target.value;
+
                         target.type = "date";
+                        if (currentValue) {
+                          target.value = getChromeFormatDate(currentValue);
+                        }
                       }}
                       disabled={formik.isSubmitting}
                       group="role"
