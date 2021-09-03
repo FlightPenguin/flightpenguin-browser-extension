@@ -13,6 +13,7 @@ import {
   handleFocusWebpage,
   handleFormDataReceived,
   handleHighlightTab,
+  handleIndexUnloaded,
   handleNoFlightsFound,
   handleProviderReady,
   handleScraperFailed,
@@ -60,6 +61,9 @@ chrome.runtime.onMessage.addListener(function (message, sender, reply) {
       break;
     case "CLEAR_SELECTIONS":
       handleClearSelections(providerManager);
+      break;
+    case "INDEX_UNLOAD":
+      handleIndexUnloaded(providerManager);
       break;
     default:
       window.Sentry.captureException(new Error(message));
