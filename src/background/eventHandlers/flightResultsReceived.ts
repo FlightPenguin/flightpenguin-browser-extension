@@ -45,8 +45,9 @@ export const handleFlightResultsReceived = (
       flights: {
         departureList: departuresToSend,
         itins: updatedItineraries,
+        returnList: sortFlights(providerManager.getReturns(), updatedItineraries),
+        updatedAt: new Date(),
       },
-      tabId: tabId,
       formData: providerManager.getFormData(),
     };
     providerManager.sendMessageToIndexPage(nextMessage);

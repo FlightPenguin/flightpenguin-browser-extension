@@ -43,9 +43,12 @@ export const handleFlightReturnResultsReceived = (
     const nextMessage = {
       event: "RETURN_FLIGHTS_FOR_CLIENT",
       flights: {
-        returnList: providerManager.getReturns(),
+        departureList: sortFlights(providerManager.getDepartures(), allItins),
+        returnList: returnList,
         itins: itineraries,
+        updatedAt: new Date(),
       },
+      formData: providerManager.getFormData(),
     };
 
     providerManager.sendMessageToIndexPage(nextMessage);

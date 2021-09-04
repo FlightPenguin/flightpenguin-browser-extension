@@ -5,11 +5,11 @@ export const getFlights = (
   itineraries: ProcessedItinerary[],
   flightType: "DEPARTURE" | "RETURN",
 ): ProcessedFlightSearchResult[] => {
-  return itineraries.map((itinerary) => {
-    const flight = flightType === "RETURN" ? itinerary.retFlight : itinerary.depFlight;
-    if (!flight) {
-      throw new Error(`No ${flightType.toLowerCase()} in itinerary`);
-    }
-    return flight;
+  const flights = itineraries.map((itinerary) => {
+    return flightType === "RETURN" ? itinerary.retFlight : itinerary.depFlight;
   });
+  if (!flights || !flights.length) {
+    throw new Error(`No ${flightType.toLowerCase()} in itineraries`);
+  }
+  return flights as ProcessedFlightSearchResult[];
 };

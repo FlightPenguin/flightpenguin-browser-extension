@@ -1,4 +1,5 @@
 import { Box } from "bumbag";
+import { parseISO } from "date-fns";
 import React, { useEffect, useState } from "react";
 
 import { sendHighlightTab } from "../../shared/events/sendHighlightTab";
@@ -9,11 +10,19 @@ import { TimelineContainer } from "./Container";
 import { FlightSelection } from "./FlightSelection";
 
 export const SearchResults = (): React.ReactElement => {
-  const [itineraries, setItineraries] = useState<{ [keyof: string]: ProcessedItinerary }>({});
-  const [departureFlights, setDepartureFlights] = useState<ProcessedFlightSearchResult[]>([]);
-  const [returnFlights, setReturnFlights] = useState<ProcessedFlightSearchResult[]>([]);
-  const [formData, setFormData] = useState<FlightSearchFormData | null>(null);
-
+  const [flights, setFlights] = useState<{
+    itineraries: { [keyof: string]: ProcessedItinerary };
+    departureFlights: ProcessedFlightSearchResult[];
+    returnFlights: ProcessedFlightSearchResult[];
+    formData: FlightSearchFormData | null;
+    lastUpdatedAt: Date | null;
+  }>({
+    itineraries: {},
+    departureFlights: [],
+    returnFlights: [],
+    formData: null,
+    lastUpdatedAt: null, // helper to make sure we ignore out of order updates.
+  });
   const [departureFlightDetails, setDepartureFlightDetails] = useState<FlightSelection | null>(null);
   const [returnFlightDetails, setReturnFlightDetails] = useState<FlightSelection | null>(null);
 
@@ -21,21 +30,22 @@ export const SearchResults = (): React.ReactElement => {
     chrome.runtime.onMessage.addListener((message) => {
       switch (message.event) {
         case "FLIGHT_RESULTS_FOR_CLIENT":
-          setDepartureFlights([...departureFlights, ...message.flights.departureList]);
-          setItineraries({ ...itineraries, ...message.flights.itins });
-          setFormData(message.formData);
-
-          break;
         case "RETURN_FLIGHTS_FOR_CLIENT":
-          setReturnFlights([...departureFlights, ...message.flights.departureList]);
-          setItineraries({ ...itineraries, ...message.flights.itins });
-
+          if (!flights.lastUpdatedAt || parseISO(message.flights.updatedAt) > flights.lastUpdatedAt) {
+            setFlights({
+              itineraries: message.flights.itins,
+              departureFlights: message.flights.departureList,
+              formData: message.formData,
+              returnFlights: message.flights.returnList,
+              lastUpdatedAt: parseISO(message.flights.updatedAt),
+            });
+          }
           break;
         default:
           break;
       }
     });
-  }, [setItineraries, setDepartureFlights, setReturnFlights, setFormData]);
+  }, [flights, setFlights]);
 
   useEffect(() => {
     window.addEventListener("beforeunload", function () {
@@ -48,35 +58,41 @@ export const SearchResults = (): React.ReactElement => {
 
   return (
     <Box className="search-results-container">
-      {!!formData && !!itineraries && !!departureFlights.length && (
+      {!!flights.formData && !!Object.keys(flights.itineraries).length && !!flights.departureFlights.length && (
         <TimelineContainer
           flightType="DEPARTURE"
-          itineraries={itineraries}
-          flights={departureFlights}
-          formData={formData}
+          itineraries={flights.itineraries}
+          flights={flights.departureFlights}
+          formData={flights.formData}
           onSelection={(details) => {
             setDepartureFlightDetails(details);
 
-            if (!formData.roundtrip) {
+            if (!flights.formData?.roundtrip) {
               sendHighlightTab(details.flightPenguinId, "");
             }
           }}
         />
       )}
 
-      {!!departureFlightDetails && !!formData && !!itineraries && !!returnFlights.length && (
-        <TimelineContainer
-          flightType="RETURN"
-          itineraries={itineraries}
-          flights={returnFlights}
-          formData={formData}
-          onSelection={(details) => {
-            setReturnFlightDetails(details);
+      {!!departureFlightDetails &&
+        !!flights.formData &&
+        !!Object.keys(flights.itineraries).length &&
+        !!flights.returnFlights.length && (
+          <>
+            <Box height="100px" />
+            <TimelineContainer
+              flightType="RETURN"
+              itineraries={flights.itineraries}
+              flights={flights.returnFlights}
+              formData={flights.formData}
+              onSelection={(details) => {
+                setReturnFlightDetails(details);
 
-            sendHighlightTab(departureFlightDetails?.flightPenguinId, details.flightPenguinId);
-          }}
-        />
-      )}
+                sendHighlightTab(departureFlightDetails?.flightPenguinId, details.flightPenguinId);
+              }}
+            />
+          </>
+        )}
     </Box>
   );
 };

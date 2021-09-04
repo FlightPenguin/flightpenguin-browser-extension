@@ -1,4 +1,5 @@
 import { Box, List } from "bumbag";
+import uniqBy from "lodash.uniqby";
 import React, { useState } from "react";
 
 import { FlightSearchFormData } from "../../../shared/types/FlightSearchFormData";
@@ -29,6 +30,10 @@ export const TimelineContainer = ({
 }: TimelimeContainerProps): React.ReactElement => {
   const [selectedFlightDetails, setSelectedFlightDetails] = useState<FlightSelection | null>(null);
 
+  const displayFlights = uniqBy(flights, "id").sort((a, b) => {
+    return a.pain - b.pain;
+  });
+
   const containerWidth = 1418;
   const legendWidth = 300;
   const sidePaddingWidth = 85;
@@ -38,7 +43,7 @@ export const TimelineContainer = ({
     flightType,
     flightTimeContainerWidth,
   );
-  const timezoneOffset = flights[0].timezoneOffset;
+  const timezoneOffset = displayFlights[0].timezoneOffset;
 
   return (
     <Box
@@ -52,7 +57,7 @@ export const TimelineContainer = ({
     >
       <TimelineTitle
         flightType={flightType}
-        flightCount={flights.length}
+        flightCount={displayFlights.length}
         headerWidth={flightTimeContainerWidth}
         legendWidth={legendWidth}
       />
@@ -71,7 +76,7 @@ export const TimelineContainer = ({
           flexGrow={1}
         >
           <List width={`${legendWidth}px`} borderLeft="default">
-            {flights.map((flight, index) => {
+            {displayFlights.map((flight, index) => {
               const flightPenguinId = getFlightPenguinId(flight);
               const cheapestItinerary = getCheapestItinerary(flight, itineraries);
               return (

@@ -561,7 +561,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 var PROVIDERS_NEEDING_RETURNS = ["expedia", "skiplagged"];
 var PROVIDERS_SUPPORTING_POINTS_SEARCH = ["expedia"];
-var SUPPORTED_PROVIDERS = ["southwest"]; // eslint-disable-next-line @typescript-eslint/no-empty-function
+var SUPPORTED_PROVIDERS = ["expedia", "southwest"]; // eslint-disable-next-line @typescript-eslint/no-empty-function
 
 var DEFAULT_ON_READY_FUNCTION = function DEFAULT_ON_READY_FUNCTION() {};
 
@@ -719,11 +719,16 @@ var getRoundtripProviderReturns = function getRoundtripProviderReturns(departure
       itineraries = _providerManager$getI2.itineraries;
 
   var returnList = (0,_dataModels__WEBPACK_IMPORTED_MODULE_0__.sortFlights)((0,_dataModels__WEBPACK_IMPORTED_MODULE_0__.findReturnFlights)(departure, itineraries), itineraries);
+  providerManager.addReturns(returnList);
   var message = {
     event: "RETURN_FLIGHTS_FOR_CLIENT",
     flights: {
-      returnList: returnList
-    }
+      departureList: (0,_dataModels__WEBPACK_IMPORTED_MODULE_0__.sortFlights)(providerManager.getDepartures(), itineraries),
+      returnList: returnList,
+      itins: itineraries,
+      updatedAt: new Date()
+    },
+    formData: providerManager.getFormData()
   };
   providerManager.sendMessageToIndexPage(message);
 };
@@ -812,9 +817,10 @@ var handleFlightResultsReceived = function handleFlightResultsReceived(providerM
       event: "FLIGHT_RESULTS_FOR_CLIENT",
       flights: {
         departureList: departuresToSend,
-        itins: updatedItineraries
+        itins: updatedItineraries,
+        returnList: (0,_dataModels__WEBPACK_IMPORTED_MODULE_0__.sortFlights)(providerManager.getReturns(), updatedItineraries),
+        updatedAt: new Date()
       },
-      tabId: tabId,
       formData: providerManager.getFormData()
     };
     providerManager.sendMessageToIndexPage(nextMessage);
@@ -880,9 +886,12 @@ var handleFlightReturnResultsReceived = function handleFlightReturnResultsReceiv
     var nextMessage = {
       event: "RETURN_FLIGHTS_FOR_CLIENT",
       flights: {
-        returnList: providerManager.getReturns(),
-        itins: itineraries
-      }
+        departureList: (0,_dataModels__WEBPACK_IMPORTED_MODULE_0__.sortFlights)(providerManager.getDepartures(), allItins),
+        returnList: returnList,
+        itins: itineraries,
+        updatedAt: new Date()
+      },
+      formData: providerManager.getFormData()
     };
     providerManager.sendMessageToIndexPage(nextMessage);
   } else {
@@ -1009,9 +1018,10 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "handleFocusWebpage": () => (/* reexport safe */ _focusWebpage__WEBPACK_IMPORTED_MODULE_5__.handleFocusWebpage),
 /* harmony export */   "handleFormDataReceived": () => (/* reexport safe */ _formDataReceived__WEBPACK_IMPORTED_MODULE_6__.handleFormDataReceived),
 /* harmony export */   "handleHighlightTab": () => (/* reexport safe */ _highlightTab__WEBPACK_IMPORTED_MODULE_7__.handleHighlightTab),
-/* harmony export */   "handleNoFlightsFound": () => (/* reexport safe */ _noFlightsFound__WEBPACK_IMPORTED_MODULE_8__.handleNoFlightsFound),
-/* harmony export */   "handleProviderReady": () => (/* reexport safe */ _providerReady__WEBPACK_IMPORTED_MODULE_9__.handleProviderReady),
-/* harmony export */   "handleScraperFailed": () => (/* reexport safe */ _scraperFailed__WEBPACK_IMPORTED_MODULE_10__.handleScraperFailed)
+/* harmony export */   "handleIndexUnloaded": () => (/* reexport safe */ _indexUnloaded__WEBPACK_IMPORTED_MODULE_8__.handleIndexUnloaded),
+/* harmony export */   "handleNoFlightsFound": () => (/* reexport safe */ _noFlightsFound__WEBPACK_IMPORTED_MODULE_9__.handleNoFlightsFound),
+/* harmony export */   "handleProviderReady": () => (/* reexport safe */ _providerReady__WEBPACK_IMPORTED_MODULE_10__.handleProviderReady),
+/* harmony export */   "handleScraperFailed": () => (/* reexport safe */ _scraperFailed__WEBPACK_IMPORTED_MODULE_11__.handleScraperFailed)
 /* harmony export */ });
 /* harmony import */ var _clearSelections__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./clearSelections */ "./src/background/eventHandlers/clearSelections.ts");
 /* harmony import */ var _departureSelected__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./departureSelected */ "./src/background/eventHandlers/departureSelected.ts");
@@ -1021,9 +1031,10 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _focusWebpage__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./focusWebpage */ "./src/background/eventHandlers/focusWebpage.ts");
 /* harmony import */ var _formDataReceived__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./formDataReceived */ "./src/background/eventHandlers/formDataReceived.ts");
 /* harmony import */ var _highlightTab__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./highlightTab */ "./src/background/eventHandlers/highlightTab.ts");
-/* harmony import */ var _noFlightsFound__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./noFlightsFound */ "./src/background/eventHandlers/noFlightsFound.ts");
-/* harmony import */ var _providerReady__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./providerReady */ "./src/background/eventHandlers/providerReady.ts");
-/* harmony import */ var _scraperFailed__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ./scraperFailed */ "./src/background/eventHandlers/scraperFailed.ts");
+/* harmony import */ var _indexUnloaded__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./indexUnloaded */ "./src/background/eventHandlers/indexUnloaded.ts");
+/* harmony import */ var _noFlightsFound__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./noFlightsFound */ "./src/background/eventHandlers/noFlightsFound.ts");
+/* harmony import */ var _providerReady__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ./providerReady */ "./src/background/eventHandlers/providerReady.ts");
+/* harmony import */ var _scraperFailed__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ./scraperFailed */ "./src/background/eventHandlers/scraperFailed.ts");
 
 
 
@@ -1035,6 +1046,26 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
+
+
+/***/ }),
+
+/***/ "./src/background/eventHandlers/indexUnloaded.ts":
+/*!*******************************************************!*\
+  !*** ./src/background/eventHandlers/indexUnloaded.ts ***!
+  \*******************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "handleIndexUnloaded": () => (/* binding */ handleIndexUnloaded)
+/* harmony export */ });
+var handleIndexUnloaded = function handleIndexUnloaded(providerManager) {
+  if (providerManager.getFormData()) {
+    providerManager.closeWindows();
+  }
+};
 
 /***/ }),
 
@@ -2934,6 +2965,10 @@ chrome.runtime.onMessage.addListener(function (message, sender, reply) {
 
     case "CLEAR_SELECTIONS":
       (0,_background_eventHandlers__WEBPACK_IMPORTED_MODULE_0__.handleClearSelections)(providerManager);
+      break;
+
+    case "INDEX_UNLOAD":
+      (0,_background_eventHandlers__WEBPACK_IMPORTED_MODULE_0__.handleIndexUnloaded)(providerManager);
       break;
 
     default:

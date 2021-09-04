@@ -249,10 +249,10 @@ var getFlights = /*#__PURE__*/function () {
     var selectedFlight = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : null;
     var loadingTimeout = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 30000;
     // beware - make sure you're on the right page before waiting for elements to go away...
-    yield (0,_shared_utilities_waitFor__WEBPACK_IMPORTED_MODULE_2__.waitForAppearance)(3000, CONTAINER_SHELL_SELECTOR);
+    yield (0,_shared_utilities_waitFor__WEBPACK_IMPORTED_MODULE_2__.waitForAppearance)(30000, CONTAINER_SHELL_SELECTOR);
 
     if (selectedFlight) {
-      yield (0,_shared_utilities_waitFor__WEBPACK_IMPORTED_MODULE_2__.waitForAppearance)(3000, RETURN_FLIGHT_LINK_SELECTOR);
+      yield (0,_shared_utilities_waitFor__WEBPACK_IMPORTED_MODULE_2__.waitForAppearance)(30000, RETURN_FLIGHT_LINK_SELECTOR);
     } // to all our horror, expedia has a very large number of loading components that fire sequentially...
 
 

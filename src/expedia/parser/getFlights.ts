@@ -24,9 +24,9 @@ export const getFlights = async (
   loadingTimeout = 30_000,
 ): Promise<UnprocessedFlightSearchResult[]> => {
   // beware - make sure you're on the right page before waiting for elements to go away...
-  await waitForAppearance(3000, CONTAINER_SHELL_SELECTOR);
+  await waitForAppearance(30000, CONTAINER_SHELL_SELECTOR);
   if (selectedFlight) {
-    await waitForAppearance(3000, RETURN_FLIGHT_LINK_SELECTOR);
+    await waitForAppearance(30000, RETURN_FLIGHT_LINK_SELECTOR);
   }
 
   // to all our horror, expedia has a very large number of loading components that fire sequentially...
