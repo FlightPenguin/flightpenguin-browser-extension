@@ -65,7 +65,6 @@ export const TimelineRow = ({
     <List.Item
       data-name="flight-list-item"
       display={hide && !selected ? "none" : "flex"}
-      // boxSizing="border-box"
       whiteSpace="nowrap"
       alignX="center"
       tabIndex={0}

@@ -1,6 +1,7 @@
 import { Box, List } from "bumbag";
 import uniqBy from "lodash.uniqby";
 import React, { useState } from "react";
+import FadeIn from "react-fade-in";
 
 import { FlightSearchFormData } from "../../../shared/types/FlightSearchFormData";
 import { ProcessedFlightSearchResult } from "../../../shared/types/ProcessedFlightSearchResult";
@@ -80,26 +81,28 @@ export const TimelineContainer = ({
               const flightPenguinId = getFlightPenguinId(flight);
               const cheapestItinerary = getCheapestItinerary(flight, itineraries);
               return (
-                <TimelineRow
-                  flight={flight}
-                  itinerary={cheapestItinerary}
-                  flightType={flightType}
-                  maxRowWidth={containerWidth}
-                  flightTimeContainerWidth={flightTimeContainerWidth}
-                  legendWidth={legendWidth}
-                  intervalCount={intervals.length}
-                  increment={increment}
-                  startHourOffset={startHour}
-                  key={`itinerary-${flightPenguinId}`}
-                  from={formData.from}
-                  to={formData.to}
-                  index={index}
-                  hide={!!selectedFlightDetails}
-                  onSelection={(details: FlightSelection) => {
-                    setSelectedFlightDetails(details);
-                    onSelection(details);
-                  }}
-                />
+                <FadeIn transitionDuration={1000} key={`itinerary-${flightPenguinId}`}>
+                  <TimelineRow
+                    flight={flight}
+                    itinerary={cheapestItinerary}
+                    flightType={flightType}
+                    maxRowWidth={containerWidth}
+                    flightTimeContainerWidth={flightTimeContainerWidth}
+                    legendWidth={legendWidth}
+                    intervalCount={intervals.length}
+                    increment={increment}
+                    startHourOffset={startHour}
+                    key={`itinerary-${flightPenguinId}`}
+                    from={formData.from}
+                    to={formData.to}
+                    index={index}
+                    hide={!!selectedFlightDetails}
+                    onSelection={(details: FlightSelection) => {
+                      setSelectedFlightDetails(details);
+                      onSelection(details);
+                    }}
+                  />
+                </FadeIn>
               );
             })}
           </List>
