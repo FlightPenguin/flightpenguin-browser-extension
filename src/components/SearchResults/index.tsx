@@ -57,7 +57,7 @@ export const SearchResults = (): React.ReactElement => {
   });
 
   return (
-    <Box className="search-results-container">
+    <Box className="search-results-container" alignX="center">
       {!!flights.formData && !!Object.keys(flights.itineraries).length && !!flights.departureFlights.length && (
         <TimelineContainer
           flightType="DEPARTURE"
