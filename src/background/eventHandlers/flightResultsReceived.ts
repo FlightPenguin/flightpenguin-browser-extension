@@ -1,5 +1,6 @@
 import { makeItins, sortFlights } from "../../dataModels";
 import { UnprocessedFlightSearchResult } from "../../shared/types/UnprocessedFlightSearchResult";
+import { SCROLLING_PROVIDERS } from "../constants";
 import { ProviderManager } from "../ProviderManager";
 
 export const handleFlightResultsReceived = (
@@ -40,6 +41,10 @@ export const handleFlightResultsReceived = (
 
     const departuresToSend = sortFlights(updatedDepartures, updatedItineraries);
 
+    if (!SCROLLING_PROVIDERS.includes(providerName)) {
+      providerManager.setSuccessful(providerName, departuresToSend.length);
+    }
+
     const nextMessage = {
       event: "FLIGHT_RESULTS_FOR_CLIENT",
       flights: {
@@ -49,6 +54,7 @@ export const handleFlightResultsReceived = (
         updatedAt: new Date(),
       },
       formData: providerManager.getFormData(),
+      complete: providerManager.isComplete(),
     };
     providerManager.sendMessageToIndexPage(nextMessage);
   } else {

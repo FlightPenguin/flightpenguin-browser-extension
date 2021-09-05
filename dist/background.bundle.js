@@ -227,7 +227,7 @@ var ProviderManager = /*#__PURE__*/function () {
       var _this = this;
 
       return this.knownProviders.every(function (providerName) {
-        _this.isProviderComplete(providerName);
+        return _this.isProviderComplete(providerName);
       });
     }
   }, {
@@ -557,11 +557,13 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "PROVIDERS_NEEDING_RETURNS": () => (/* binding */ PROVIDERS_NEEDING_RETURNS),
 /* harmony export */   "PROVIDERS_SUPPORTING_POINTS_SEARCH": () => (/* binding */ PROVIDERS_SUPPORTING_POINTS_SEARCH),
 /* harmony export */   "SUPPORTED_PROVIDERS": () => (/* binding */ SUPPORTED_PROVIDERS),
+/* harmony export */   "SCROLLING_PROVIDERS": () => (/* binding */ SCROLLING_PROVIDERS),
 /* harmony export */   "DEFAULT_ON_READY_FUNCTION": () => (/* binding */ DEFAULT_ON_READY_FUNCTION)
 /* harmony export */ });
 var PROVIDERS_NEEDING_RETURNS = ["expedia", "skiplagged"];
 var PROVIDERS_SUPPORTING_POINTS_SEARCH = ["expedia"];
-var SUPPORTED_PROVIDERS = ["expedia", "southwest"]; // eslint-disable-next-line @typescript-eslint/no-empty-function
+var SUPPORTED_PROVIDERS = ["expedia", "southwest"];
+var SCROLLING_PROVIDERS = ["skiplagged"]; // eslint-disable-next-line @typescript-eslint/no-empty-function
 
 var DEFAULT_ON_READY_FUNCTION = function DEFAULT_ON_READY_FUNCTION() {};
 
@@ -728,7 +730,8 @@ var getRoundtripProviderReturns = function getRoundtripProviderReturns(departure
       itins: itineraries,
       updatedAt: new Date()
     },
-    formData: providerManager.getFormData()
+    formData: providerManager.getFormData(),
+    complete: providerManager.isComplete()
   };
   providerManager.sendMessageToIndexPage(message);
 };
@@ -773,11 +776,13 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "handleFlightResultsReceived": () => (/* binding */ handleFlightResultsReceived)
 /* harmony export */ });
 /* harmony import */ var _dataModels__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../dataModels */ "./src/dataModels.js");
+/* harmony import */ var _constants__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../constants */ "./src/background/constants.ts");
 function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
 
 function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { _defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
 
 
 var handleFlightResultsReceived = function handleFlightResultsReceived(providerManager, flights, providerName) {
@@ -813,6 +818,11 @@ var handleFlightResultsReceived = function handleFlightResultsReceived(providerM
         updatedItineraries = _providerManager$getI2.itineraries;
 
     var departuresToSend = (0,_dataModels__WEBPACK_IMPORTED_MODULE_0__.sortFlights)(updatedDepartures, updatedItineraries);
+
+    if (!_constants__WEBPACK_IMPORTED_MODULE_1__.SCROLLING_PROVIDERS.includes(providerName)) {
+      providerManager.setSuccessful(providerName, departuresToSend.length);
+    }
+
     var nextMessage = {
       event: "FLIGHT_RESULTS_FOR_CLIENT",
       flights: {
@@ -821,7 +831,8 @@ var handleFlightResultsReceived = function handleFlightResultsReceived(providerM
         returnList: (0,_dataModels__WEBPACK_IMPORTED_MODULE_0__.sortFlights)(providerManager.getReturns(), updatedItineraries),
         updatedAt: new Date()
       },
-      formData: providerManager.getFormData()
+      formData: providerManager.getFormData(),
+      complete: providerManager.isComplete()
     };
     providerManager.sendMessageToIndexPage(nextMessage);
   } else {

@@ -19,6 +19,7 @@ interface TimelimeContainerProps {
   itineraries: { [keyof: string]: ProcessedItinerary };
   flights: ProcessedFlightSearchResult[];
   formData: FlightSearchFormData;
+  loading: boolean;
   onSelection: (details: FlightSelection) => void;
 }
 
@@ -27,6 +28,7 @@ export const TimelineContainer = ({
   flights,
   itineraries,
   formData,
+  loading,
   onSelection,
 }: TimelimeContainerProps): React.ReactElement => {
   const [selectedFlightDetails, setSelectedFlightDetails] = useState<FlightSelection | null>(null);
@@ -61,6 +63,7 @@ export const TimelineContainer = ({
         flightCount={displayFlights.length}
         headerWidth={flightTimeContainerWidth}
         legendWidth={legendWidth}
+        loading={loading}
       />
       <Box
         data-name={`${flightType.toLowerCase()}-container`}

@@ -119,7 +119,7 @@ export class ProviderManager {
 
   isComplete(): boolean {
     return this.knownProviders.every((providerName) => {
-      this.isProviderComplete(providerName);
+      return this.isProviderComplete(providerName);
     });
   }
 
