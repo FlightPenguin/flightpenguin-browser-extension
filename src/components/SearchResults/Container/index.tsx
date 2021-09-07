@@ -10,6 +10,7 @@ import { FlightSelection } from "../FlightSelection";
 import { TimelineHeader } from "../Header";
 import { TimelineRow } from "../Row";
 import TimelineTitle from "../Title";
+import _skeletonItineraries from "./skeletonItineraries.json";
 import { getCheapestItinerary } from "./utilities/getCheapestItinerary";
 import { getFlightPenguinId } from "./utilities/getFlightPenguinId";
 import { getIntervalInfo } from "./utilities/getIntervalInfo";
@@ -36,6 +37,8 @@ export const TimelineContainer = ({
   const sidePaddingWidth = 85;
   const flightTimeContainerWidth = containerWidth - legendWidth - 1;
 
+  const skeletonItineraries = _skeletonItineraries as { [keyof: string]: ProcessedItinerary };
+
   const [selectedFlightDetails, setSelectedFlightDetails] = useState<FlightSelection | null>(null);
   const [displayFlights, setDisplayFlights] = useState<ProcessedFlightSearchResult[]>([]);
   const [intervalInfo, setIntervalInfo] = useState<{
@@ -43,7 +46,7 @@ export const TimelineContainer = ({
     increment: number;
     intervals: number[];
     timezoneOffset: number;
-  }>({ startHour: 0, increment: 3, intervals: [0, 3, 6, 12, 15, 18, 21, 24], timezoneOffset: 0 });
+  }>({ startHour: 0, increment: 4, intervals: [0, 4, 8, 12, 16, 20, 24, 28], timezoneOffset: 0 });
 
   useEffect(() => {
     const sortedFlights = uniqBy(flights, "id").sort((a, b) => {
@@ -53,13 +56,15 @@ export const TimelineContainer = ({
   }, [flights]);
 
   useEffect(() => {
-    const { intervals, increment, startHour } = getIntervalInfo(
-      Object.values(itineraries),
-      flightType,
-      flightTimeContainerWidth,
-    );
-    const timezoneOffset = displayFlights[0]?.timezoneOffset || 0;
-    setIntervalInfo({ intervals, increment, startHour, timezoneOffset });
+    if (Object.keys(itineraries).length) {
+      const { intervals, increment, startHour } = getIntervalInfo(
+        Object.values(itineraries),
+        flightType,
+        flightTimeContainerWidth,
+      );
+      const timezoneOffset = Object.values(itineraries)[0].depFlight?.timezoneOffset || 0;
+      setIntervalInfo({ intervals, increment, startHour, timezoneOffset });
+    }
   }, [itineraries]);
 
   return (
@@ -95,6 +100,32 @@ export const TimelineContainer = ({
           flexGrow={1}
         >
           <List width={`${legendWidth}px`} borderLeft="default">
+            {Object.keys(skeletonItineraries).map((itineraryId, index) => {
+              // Present blurred items as placeholder during load...
+              // eslint-disable-next-line security/detect-object-injection
+              const itinerary = skeletonItineraries[itineraryId];
+              const flight = flightType === "RETURN" && itinerary.retFlight ? itinerary.retFlight : itinerary.depFlight;
+              return (
+                <TimelineRow
+                  flight={flight}
+                  itinerary={itinerary}
+                  flightType={flightType}
+                  maxRowWidth={containerWidth}
+                  flightTimeContainerWidth={flightTimeContainerWidth}
+                  legendWidth={legendWidth}
+                  intervalCount={intervalInfo.intervals.length}
+                  increment={intervalInfo.increment}
+                  startHourOffset={intervalInfo.startHour}
+                  key={`skeleton-itinerary-${index}`}
+                  from={formData.from}
+                  to={formData.to}
+                  index={index}
+                  hide={!!displayFlights.length}
+                  skeleton={true}
+                  onSelection={() => {}} // eslint-disable-line @typescript-eslint/no-empty-function
+                />
+              );
+            })}
             {displayFlights.map((flight, index) => {
               const flightPenguinId = getFlightPenguinId(flight);
               const cheapestItinerary = getCheapestItinerary(flight, itineraries);
@@ -115,6 +146,7 @@ export const TimelineContainer = ({
                     to={formData.to}
                     index={index}
                     hide={!!selectedFlightDetails}
+                    skeleton={false}
                     onSelection={(details: FlightSelection) => {
                       setSelectedFlightDetails(details);
                       onSelection(details);

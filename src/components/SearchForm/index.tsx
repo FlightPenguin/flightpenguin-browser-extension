@@ -4,12 +4,13 @@ import { Field as FormikField, Form, Formik } from "formik";
 import React, { useState } from "react";
 import { boolean, mixed, number, object, string } from "yup";
 
-import { WindowConfig } from "../../shared/types/WindowConfig";
+import { FlightSearchFormData } from "../../shared/types/FlightSearchFormData";
 import { getFieldState, getParsedDate, getValidationText } from "../utilities/forms";
 import { getChromeFormatDate } from "../utilities/forms/getChromeFormatDate";
 import { getFormattedDate } from "../utilities/forms/getFormattedDate";
 import { getStandardizedFormatDate } from "../utilities/forms/getStandardizedFormatDate";
 import { isValidDateInputString } from "../utilities/forms/isValidDateInputString";
+import { sendFormDataToBackground } from "./utilities/sendFormDataToBackground";
 
 const airportCodeHelpText = "Airport codes must be three uppercase letters (e.g. SFO).";
 const cabinHelpText = "You must select a cabin type.";
@@ -78,7 +79,11 @@ const initialValues = {
   searchByPoints: false,
 };
 
-export const SearchForm = (): React.ReactElement => {
+interface SearchFormProps {
+  onSubmit: (values: FlightSearchFormData) => void;
+}
+
+export const SearchForm = ({ onSubmit }: SearchFormProps): React.ReactElement => {
   const [sent, setSent] = useState(false);
 
   return (
@@ -90,23 +95,16 @@ export const SearchForm = (): React.ReactElement => {
           validateOnChange={false}
           validationSchema={SearchFormSchema}
           onSubmit={(values: FormState) => {
-            const windowConfig: WindowConfig = {
-              height: window.outerHeight,
-              width: window.outerWidth,
-              left: window.screenX,
-              top: window.screenY,
+            const cleanValues = {
+              ...values,
+              from: values.from.toUpperCase(),
+              fromDate: getChromeFormatDate(values.fromDate),
+              to: values.to.toUpperCase(),
+              toDate: getChromeFormatDate(values.toDate),
             };
-            chrome.runtime.sendMessage({
-              event: "FORM_DATA_RECEIVED",
-              formData: {
-                ...values,
-                from: values.from.toUpperCase(),
-                fromDate: getChromeFormatDate(values.fromDate),
-                to: values.to.toUpperCase(),
-                toDate: getChromeFormatDate(values.toDate),
-              },
-              windowConfig,
-            });
+
+            sendFormDataToBackground(cleanValues);
+            onSubmit(cleanValues);
             setSent(true);
           }}
         >
@@ -146,6 +144,7 @@ export const SearchForm = (): React.ReactElement => {
                     autoComplete="off"
                     hasFieldWrapper={true}
                     onChange={formik.handleChange}
+                    // eslint-disable-next-line sonarjs/no-identical-functions
                     onBlur={(event: Event) => {
                       const target = event.target as HTMLInputElement;
                       target.placeholder = "";
@@ -241,6 +240,7 @@ export const SearchForm = (): React.ReactElement => {
                         formik.setFieldValue("toDate", value);
                         formik.handleBlur(event);
                       }}
+                      // eslint-disable-next-line sonarjs/no-identical-functions
                       onFocus={(event: Event) => {
                         const target = event.target as HTMLInputElement;
                         const currentValue = target.value;

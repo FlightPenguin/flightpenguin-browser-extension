@@ -28,6 +28,7 @@ interface TimelineRowProps {
   to: string;
   index: number;
   hide: boolean;
+  skeleton: boolean;
   onSelection: (details: FlightSelection) => void;
 }
 
@@ -45,6 +46,7 @@ export const TimelineRow = ({
   to,
   index,
   hide,
+  skeleton,
   onSelection,
 }: TimelineRowProps): React.ReactElement => {
   const [selected, setSelected] = useState(false);
@@ -79,10 +81,11 @@ export const TimelineRow = ({
         sendSelectedFlight(flightType, flightPenguinId);
       }}
       role="group"
-      cursor="pointer"
+      cursor={skeleton ? "not-allowed" : "pointer"}
       marginBottom="0px"
       backgroundColor={index % 2 === 0 || selected ? "primaryTint" : "white"}
       minHeight="80px"
+      filter={skeleton ? `blur(8px)` : ""}
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
       _hover={
