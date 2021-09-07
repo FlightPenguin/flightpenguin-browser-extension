@@ -1,5 +1,5 @@
 import { Box, List, Tag, Text } from "bumbag";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 import { sendSelectedFlight } from "../../../shared/events";
 import {
@@ -50,6 +50,12 @@ export const TimelineRow = ({
   onSelection,
 }: TimelineRowProps): React.ReactElement => {
   const [selected, setSelected] = useState(false);
+
+  useEffect(() => {
+    if (!hide) {
+      setSelected(false);
+    }
+  }, [hide]);
 
   const flightSegments = getFlightSegments(
     flight,

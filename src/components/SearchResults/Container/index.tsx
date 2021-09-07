@@ -1,4 +1,4 @@
-import { Box, List } from "bumbag";
+import { Badge, Box, List } from "bumbag";
 import uniqBy from "lodash.uniqby";
 import React, { useEffect, useState } from "react";
 import FadeIn from "react-fade-in";
@@ -165,6 +165,13 @@ export const TimelineContainer = ({
           />
         </Box>
       </Box>
+      {selectedFlightDetails && (
+        <Badge isAttached size="large" palette="danger">
+          <Box marginBottom="5px" fontSize={200} cursor="pointer" onClick={() => setSelectedFlightDetails(null)}>
+            x
+          </Box>
+        </Badge>
+      )}
     </Box>
   );
 };
