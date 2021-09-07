@@ -83,8 +83,26 @@ export const TimelineRow = ({
       marginBottom="0px"
       backgroundColor={index % 2 === 0 || selected ? "primaryTint" : "white"}
       minHeight="80px"
-      _hover={selected ? {} : { backgroundColor: "primary200", zIndex: "999" }}
-      _focus={selected ? {} : { backgroundColor: "primary200", zIndex: "999" }}
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      _hover={
+        selected
+          ? {}
+          : {
+              backgroundColor: "primary200",
+              zIndex: "999",
+            }
+      }
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      _focus={
+        selected
+          ? {}
+          : {
+              backgroundColor: "primary200",
+              zIndex: "999",
+            }
+      }
     >
       <FlightLegend legendWidth={legendWidth} itinerary={itinerary} flight={flight} />
       <Box
@@ -95,6 +113,8 @@ export const TimelineRow = ({
         width="100%"
         alignSelf="normal"
         flex={1}
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
         zIndex="1"
       >
         <Box
