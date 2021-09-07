@@ -5,24 +5,17 @@ import React from "react";
 
 interface TimelineTitleProps {
   flightType: "DEPARTURE" | "RETURN";
-  flightCount: number;
   legendWidth: number;
   headerWidth: number;
   loading: boolean;
 }
 
-export const TimelineTitle = ({
-  flightType,
-  flightCount,
-  legendWidth,
-  headerWidth,
-  loading,
-}: TimelineTitleProps): React.ReactElement => {
+const TimelineTitle = ({ flightType, legendWidth, headerWidth, loading }: TimelineTitleProps): React.ReactElement => {
   return (
     <Box data-name={`${flightType.toLowerCase()}-container`} display="flex" position="relative" justifyContent="center">
       <Box alignX="left" width={`${legendWidth}px`} flexDirection="row">
         <Text alignX="left" fontWeight="700" fontSize="500">
-          {pluralize(capitalize(flightType), flightCount)}
+          {capitalize(flightType)}s
         </Text>
         {loading && (
           <Tooltip
@@ -41,3 +34,7 @@ export const TimelineTitle = ({
     </Box>
   );
 };
+
+export default React.memo(TimelineTitle, (previous, next) => {
+  return previous.loading === next.loading;
+});
