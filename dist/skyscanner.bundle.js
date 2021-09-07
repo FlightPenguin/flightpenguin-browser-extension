@@ -127,13 +127,19 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "sendFlightsEvent": () => (/* reexport safe */ _sendFlights__WEBPACK_IMPORTED_MODULE_1__.sendFlightsEvent),
 /* harmony export */   "sendNoFlightsEvent": () => (/* reexport safe */ _sendNoFlights__WEBPACK_IMPORTED_MODULE_2__.sendNoFlightsEvent),
 /* harmony export */   "sendReturnFlightsEvent": () => (/* reexport safe */ _sendReturnFlights__WEBPACK_IMPORTED_MODULE_3__.sendReturnFlightsEvent),
-/* harmony export */   "sendSelectedFlight": () => (/* reexport safe */ _sendSelectedFlight__WEBPACK_IMPORTED_MODULE_4__.sendSelectedFlight)
+/* harmony export */   "sendSelectedFlight": () => (/* reexport safe */ _sendSelectedFlight__WEBPACK_IMPORTED_MODULE_4__.sendSelectedFlight),
+/* harmony export */   "sendHighlightTab": () => (/* reexport safe */ _sendHighlightTab__WEBPACK_IMPORTED_MODULE_5__.sendHighlightTab),
+/* harmony export */   "sendScraperComplete": () => (/* reexport safe */ _sendScraperComplete__WEBPACK_IMPORTED_MODULE_6__.sendScraperComplete)
 /* harmony export */ });
 /* harmony import */ var _sendFailedScraper__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./sendFailedScraper */ "./src/shared/events/sendFailedScraper.ts");
 /* harmony import */ var _sendFlights__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./sendFlights */ "./src/shared/events/sendFlights.ts");
 /* harmony import */ var _sendNoFlights__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./sendNoFlights */ "./src/shared/events/sendNoFlights.ts");
 /* harmony import */ var _sendReturnFlights__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./sendReturnFlights */ "./src/shared/events/sendReturnFlights.ts");
 /* harmony import */ var _sendSelectedFlight__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./sendSelectedFlight */ "./src/shared/events/sendSelectedFlight.ts");
+/* harmony import */ var _sendHighlightTab__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./sendHighlightTab */ "./src/shared/events/sendHighlightTab.ts");
+/* harmony import */ var _sendScraperComplete__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./sendScraperComplete */ "./src/shared/events/sendScraperComplete.ts");
+
+
 
 
 
@@ -153,10 +159,11 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "sendFailedScraper": () => (/* binding */ sendFailedScraper)
 /* harmony export */ });
-function sendFailedScraper(providerName, error) {
+function sendFailedScraper(providerName, error, searchType) {
   chrome.runtime.sendMessage({
     event: "FAILED_SCRAPER",
-    source: providerName,
+    searchType: searchType,
+    providerName: providerName,
     description: "".concat(error.name, " ").concat(error.message)
   });
 }
@@ -184,6 +191,27 @@ function sendFlightsEvent(providerName, flights) {
 
 /***/ }),
 
+/***/ "./src/shared/events/sendHighlightTab.ts":
+/*!***********************************************!*\
+  !*** ./src/shared/events/sendHighlightTab.ts ***!
+  \***********************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "sendHighlightTab": () => (/* binding */ sendHighlightTab)
+/* harmony export */ });
+var sendHighlightTab = function sendHighlightTab(departureFlightId, returnFlightId) {
+  chrome.runtime.sendMessage({
+    event: "HIGHLIGHT_TAB",
+    selectedDepartureId: departureFlightId,
+    selectedReturnId: returnFlightId
+  });
+};
+
+/***/ }),
+
 /***/ "./src/shared/events/sendNoFlights.ts":
 /*!********************************************!*\
   !*** ./src/shared/events/sendNoFlights.ts ***!
@@ -195,10 +223,11 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "sendNoFlightsEvent": () => (/* binding */ sendNoFlightsEvent)
 /* harmony export */ });
-function sendNoFlightsEvent(providerName) {
+function sendNoFlightsEvent(providerName, searchType) {
   chrome.runtime.sendMessage({
     event: "NO_FLIGHTS_FOUND",
-    provider: providerName
+    provider: providerName,
+    searchType: searchType
   });
 }
 
@@ -220,6 +249,27 @@ function sendReturnFlightsEvent(providerName, flights) {
     event: "RETURN_FLIGHTS_RECEIVED",
     flights: flights,
     provider: providerName
+  });
+}
+
+/***/ }),
+
+/***/ "./src/shared/events/sendScraperComplete.ts":
+/*!**************************************************!*\
+  !*** ./src/shared/events/sendScraperComplete.ts ***!
+  \**************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "sendScraperComplete": () => (/* binding */ sendScraperComplete)
+/* harmony export */ });
+function sendScraperComplete(providerName, searchType) {
+  chrome.runtime.sendMessage({
+    event: "SUCCESSFUL_SCRAPER",
+    searchType: searchType,
+    providerName: providerName
   });
 }
 
@@ -2160,17 +2210,18 @@ var scrapeFlights = /*#__PURE__*/function () {
           totalFlightCount += unsentFlights.length;
           yield (0,_ui_getMoreResults__WEBPACK_IMPORTED_MODULE_4__.getMoreResults)();
         } else if (totalFlightCount === 0) {
-          (0,_shared_events__WEBPACK_IMPORTED_MODULE_1__.sendNoFlightsEvent)("skyscanner");
+          (0,_shared_events__WEBPACK_IMPORTED_MODULE_1__.sendNoFlightsEvent)("skyscanner", "BOTH");
           hasMoreFlights = false;
         } else {
           hasMoreFlights = false;
+          (0,_shared_events__WEBPACK_IMPORTED_MODULE_1__.sendScraperComplete)("skyscanner", "BOTH");
         }
       }
     } catch (error) {
       window.Sentry.captureException(error);
 
       if (!totalFlightCount) {
-        (0,_shared_events__WEBPACK_IMPORTED_MODULE_1__.sendFailedScraper)("skyscanner", error);
+        (0,_shared_events__WEBPACK_IMPORTED_MODULE_1__.sendFailedScraper)("skyscanner", error, "BOTH");
       }
     }
   });

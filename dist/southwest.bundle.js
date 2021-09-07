@@ -2,6 +2,181 @@
 /******/ 	"use strict";
 /******/ 	var __webpack_modules__ = ({
 
+/***/ "./src/shared/events/index.ts":
+/*!************************************!*\
+  !*** ./src/shared/events/index.ts ***!
+  \************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "sendFailedScraper": () => (/* reexport safe */ _sendFailedScraper__WEBPACK_IMPORTED_MODULE_0__.sendFailedScraper),
+/* harmony export */   "sendFlightsEvent": () => (/* reexport safe */ _sendFlights__WEBPACK_IMPORTED_MODULE_1__.sendFlightsEvent),
+/* harmony export */   "sendNoFlightsEvent": () => (/* reexport safe */ _sendNoFlights__WEBPACK_IMPORTED_MODULE_2__.sendNoFlightsEvent),
+/* harmony export */   "sendReturnFlightsEvent": () => (/* reexport safe */ _sendReturnFlights__WEBPACK_IMPORTED_MODULE_3__.sendReturnFlightsEvent),
+/* harmony export */   "sendSelectedFlight": () => (/* reexport safe */ _sendSelectedFlight__WEBPACK_IMPORTED_MODULE_4__.sendSelectedFlight),
+/* harmony export */   "sendHighlightTab": () => (/* reexport safe */ _sendHighlightTab__WEBPACK_IMPORTED_MODULE_5__.sendHighlightTab),
+/* harmony export */   "sendScraperComplete": () => (/* reexport safe */ _sendScraperComplete__WEBPACK_IMPORTED_MODULE_6__.sendScraperComplete)
+/* harmony export */ });
+/* harmony import */ var _sendFailedScraper__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./sendFailedScraper */ "./src/shared/events/sendFailedScraper.ts");
+/* harmony import */ var _sendFlights__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./sendFlights */ "./src/shared/events/sendFlights.ts");
+/* harmony import */ var _sendNoFlights__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./sendNoFlights */ "./src/shared/events/sendNoFlights.ts");
+/* harmony import */ var _sendReturnFlights__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./sendReturnFlights */ "./src/shared/events/sendReturnFlights.ts");
+/* harmony import */ var _sendSelectedFlight__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./sendSelectedFlight */ "./src/shared/events/sendSelectedFlight.ts");
+/* harmony import */ var _sendHighlightTab__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./sendHighlightTab */ "./src/shared/events/sendHighlightTab.ts");
+/* harmony import */ var _sendScraperComplete__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./sendScraperComplete */ "./src/shared/events/sendScraperComplete.ts");
+
+
+
+
+
+
+
+
+/***/ }),
+
+/***/ "./src/shared/events/sendFailedScraper.ts":
+/*!************************************************!*\
+  !*** ./src/shared/events/sendFailedScraper.ts ***!
+  \************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "sendFailedScraper": () => (/* binding */ sendFailedScraper)
+/* harmony export */ });
+function sendFailedScraper(providerName, error, searchType) {
+  chrome.runtime.sendMessage({
+    event: "FAILED_SCRAPER",
+    searchType: searchType,
+    providerName: providerName,
+    description: "".concat(error.name, " ").concat(error.message)
+  });
+}
+
+/***/ }),
+
+/***/ "./src/shared/events/sendFlights.ts":
+/*!******************************************!*\
+  !*** ./src/shared/events/sendFlights.ts ***!
+  \******************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "sendFlightsEvent": () => (/* binding */ sendFlightsEvent)
+/* harmony export */ });
+function sendFlightsEvent(providerName, flights) {
+  chrome.runtime.sendMessage({
+    event: "FLIGHT_RESULTS_RECEIVED",
+    flights: flights,
+    provider: providerName
+  });
+}
+
+/***/ }),
+
+/***/ "./src/shared/events/sendHighlightTab.ts":
+/*!***********************************************!*\
+  !*** ./src/shared/events/sendHighlightTab.ts ***!
+  \***********************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "sendHighlightTab": () => (/* binding */ sendHighlightTab)
+/* harmony export */ });
+var sendHighlightTab = function sendHighlightTab(departureFlightId, returnFlightId) {
+  chrome.runtime.sendMessage({
+    event: "HIGHLIGHT_TAB",
+    selectedDepartureId: departureFlightId,
+    selectedReturnId: returnFlightId
+  });
+};
+
+/***/ }),
+
+/***/ "./src/shared/events/sendNoFlights.ts":
+/*!********************************************!*\
+  !*** ./src/shared/events/sendNoFlights.ts ***!
+  \********************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "sendNoFlightsEvent": () => (/* binding */ sendNoFlightsEvent)
+/* harmony export */ });
+function sendNoFlightsEvent(providerName, searchType) {
+  chrome.runtime.sendMessage({
+    event: "NO_FLIGHTS_FOUND",
+    provider: providerName,
+    searchType: searchType
+  });
+}
+
+/***/ }),
+
+/***/ "./src/shared/events/sendReturnFlights.ts":
+/*!************************************************!*\
+  !*** ./src/shared/events/sendReturnFlights.ts ***!
+  \************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "sendReturnFlightsEvent": () => (/* binding */ sendReturnFlightsEvent)
+/* harmony export */ });
+function sendReturnFlightsEvent(providerName, flights) {
+  chrome.runtime.sendMessage({
+    event: "RETURN_FLIGHTS_RECEIVED",
+    flights: flights,
+    provider: providerName
+  });
+}
+
+/***/ }),
+
+/***/ "./src/shared/events/sendScraperComplete.ts":
+/*!**************************************************!*\
+  !*** ./src/shared/events/sendScraperComplete.ts ***!
+  \**************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "sendScraperComplete": () => (/* binding */ sendScraperComplete)
+/* harmony export */ });
+function sendScraperComplete(providerName, searchType) {
+  chrome.runtime.sendMessage({
+    event: "SUCCESSFUL_SCRAPER",
+    searchType: searchType,
+    providerName: providerName
+  });
+}
+
+/***/ }),
+
+/***/ "./src/shared/events/sendSelectedFlight.ts":
+/*!*************************************************!*\
+  !*** ./src/shared/events/sendSelectedFlight.ts ***!
+  \*************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "sendSelectedFlight": () => (/* binding */ sendSelectedFlight)
+/* harmony export */ });
+var sendSelectedFlight = function sendSelectedFlight(flightType, flightId) {
+  if (flightType === "DEPARTURE") {
+    chrome.runtime.sendMessage({
+      event: "".concat(flightType.toUpperCase(), "_SELECTED"),
+      departureId: flightId
+    });
+  }
+};
+
+/***/ }),
+
 /***/ "./src/shared/helpers.js":
 /*!*******************************!*\
   !*** ./src/shared/helpers.js ***!
@@ -82,7 +257,9 @@ var __webpack_exports__ = {};
   !*** ./src/southwest/contentScript.js ***!
   \****************************************/
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _shared_helpers_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../shared/helpers.js */ "./src/shared/helpers.js");
+/* harmony import */ var _shared_events_sendNoFlights__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../shared/events/sendNoFlights */ "./src/shared/events/sendNoFlights.ts");
+/* harmony import */ var _shared_events___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../shared/events/ */ "./src/shared/events/index.ts");
+/* harmony import */ var _shared_helpers_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../shared/helpers.js */ "./src/shared/helpers.js");
 function _createForOfIteratorHelper(o, allowArrayLike) { var it; if (typeof Symbol === "undefined" || o[Symbol.iterator] == null) { if (Array.isArray(o) || (it = _unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e2) { throw _e2; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = o[Symbol.iterator](); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e3) { didErr = true; err = _e3; }, f: function f() { try { if (!normalCompletion && it["return"] != null) it["return"](); } finally { if (didErr) throw err; } } }; }
 
 function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _unsupportedIterableToArray(arr) || _nonIterableSpread(); }
@@ -105,9 +282,11 @@ function _iterableToArrayLimit(arr, i) { if (typeof Symbol === "undefined" || !(
 
 function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
 
+
 Sentry.init({
   dsn: "https://d7f3363dd3774a64ad700b4523bcb789@o407795.ingest.sentry.io/5277451"
 });
+
 
 chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
   // parse page to get flights, then send background to process and display on new web page.
@@ -116,14 +295,21 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
       break;
 
     case "BEGIN_PARSING":
-      var id = window.setInterval(function () {
-        var southwestFlights = JSON.parse(window.sessionStorage.getItem("AirBookingSearchResultsSearchStore-searchResults-v1"));
+      try {
+        var id = window.setInterval(function () {
+          var southwestFlights = JSON.parse(window.sessionStorage.getItem("AirBookingSearchResultsSearchStore-searchResults-v1"));
 
-        if (southwestFlights && southwestFlights.searchResults) {
-          sendFlightsToBackground(southwestFlights);
-          window.clearInterval(id);
-        }
-      }, 500);
+          if (southwestFlights && southwestFlights.searchResults) {
+            sendFlightsToBackground(southwestFlights);
+            window.clearInterval(id);
+            (0,_shared_events___WEBPACK_IMPORTED_MODULE_1__.sendScraperComplete)("southwest", "BOTH");
+          }
+        }, 500);
+      } catch (error) {
+        window.Sentry.captureException(error);
+        (0,_shared_events___WEBPACK_IMPORTED_MODULE_1__.sendFailedScraper)("southwest", error, "ALL");
+      }
+
       break;
 
     case "HIGHLIGHT_FLIGHT":
@@ -149,22 +335,14 @@ function sendFlightsToBackground(southwestFlights) {
       returns = _southwestFlights$sea[1];
 
   if (departures && departures.details.length === 0 || returns && returns.details.length === 0) {
-    // no complete itins
-    chrome.runtime.sendMessage({
-      event: "NO_FLIGHTS_FOUND",
-      provider: "southwest"
-    });
+    (0,_shared_events_sendNoFlights__WEBPACK_IMPORTED_MODULE_0__.sendNoFlightsEvent)("southwest", "BOTH");
     return;
   }
 
   departures = departures.details;
   returns = returns ? returns.details : [];
   var itins = createSouthwestItins(departures, returns);
-  chrome.runtime.sendMessage({
-    event: "FLIGHT_RESULTS_RECEIVED",
-    flights: itins,
-    provider: "southwest"
-  });
+  (0,_shared_events___WEBPACK_IMPORTED_MODULE_1__.sendFlightsEvent)("southwest", itins);
 }
 
 function addBackToSearchButton() {
@@ -294,8 +472,8 @@ function getIndividualSouthwestLegDetails(flight) {
       var stopsDetails = _ref.stopsDetails;
       return stopsDetails.map(function (stop) {
         return {
-          fromTime: (0,_shared_helpers_js__WEBPACK_IMPORTED_MODULE_0__.standardizeTimeString)(formatTimeTo12HourClock(stop.departureTime)),
-          toTime: (0,_shared_helpers_js__WEBPACK_IMPORTED_MODULE_0__.standardizeTimeString)(formatTimeTo12HourClock(stop.arrivalTime)),
+          fromTime: (0,_shared_helpers_js__WEBPACK_IMPORTED_MODULE_2__.standardizeTimeString)(formatTimeTo12HourClock(stop.departureTime)),
+          toTime: (0,_shared_helpers_js__WEBPACK_IMPORTED_MODULE_2__.standardizeTimeString)(formatTimeTo12HourClock(stop.arrivalTime)),
           operatingAirline: "Southwest",
           duration: convertDurationMinutesToString(stop.legDuration),
           from: stop.originationAirportCode,
@@ -315,8 +493,8 @@ function getIndividualSouthwestLegDetails(flight) {
   }
 
   return {
-    fromTime: (0,_shared_helpers_js__WEBPACK_IMPORTED_MODULE_0__.standardizeTimeString)(formatTimeTo12HourClock(flight.departureTime)),
-    toTime: (0,_shared_helpers_js__WEBPACK_IMPORTED_MODULE_0__.standardizeTimeString)(formatTimeTo12HourClock(flight.arrivalTime)),
+    fromTime: (0,_shared_helpers_js__WEBPACK_IMPORTED_MODULE_2__.standardizeTimeString)(formatTimeTo12HourClock(flight.departureTime)),
+    toTime: (0,_shared_helpers_js__WEBPACK_IMPORTED_MODULE_2__.standardizeTimeString)(formatTimeTo12HourClock(flight.arrivalTime)),
     marketingAirline: "Southwest",
     layovers: layovers,
     fare: Math.round(Number(fare)),
@@ -419,8 +597,8 @@ function querySouthwestDOM(htmlCollection) {
         fromTimeRaw = _map2[0],
         toTimeRaw = _map2[1];
 
-    var fromTime = (0,_shared_helpers_js__WEBPACK_IMPORTED_MODULE_0__.standardizeTimeString)(fromTimeRaw).replace("departs", "");
-    var toTime = (0,_shared_helpers_js__WEBPACK_IMPORTED_MODULE_0__.standardizeTimeString)(toTimeRaw).replace("arrives", "");
+    var fromTime = (0,_shared_helpers_js__WEBPACK_IMPORTED_MODULE_2__.standardizeTimeString)(fromTimeRaw).replace("departs", "");
+    var toTime = (0,_shared_helpers_js__WEBPACK_IMPORTED_MODULE_2__.standardizeTimeString)(toTimeRaw).replace("arrives", "");
     data.fromTime = fromTime;
     data.toTime = toTime;
     data.airline = "Southwest";

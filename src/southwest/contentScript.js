@@ -1,6 +1,9 @@
+import { sendNoFlightsEvent } from "../shared/events/sendNoFlights";
+
 Sentry.init({
   dsn: "https://d7f3363dd3774a64ad700b4523bcb789@o407795.ingest.sentry.io/5277451",
 });
+import { sendFailedScraper, sendFlightsEvent, sendScraperComplete } from "../shared/events/";
 import { standardizeTimeString } from "../shared/helpers.js";
 
 chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
@@ -9,15 +12,21 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
     case "STOP_PARSING":
       break;
     case "BEGIN_PARSING":
-      const id = window.setInterval(() => {
-        const southwestFlights = JSON.parse(
-          window.sessionStorage.getItem("AirBookingSearchResultsSearchStore-searchResults-v1"),
-        );
-        if (southwestFlights && southwestFlights.searchResults) {
-          sendFlightsToBackground(southwestFlights);
-          window.clearInterval(id);
-        }
-      }, 500);
+      try {
+        const id = window.setInterval(() => {
+          const southwestFlights = JSON.parse(
+            window.sessionStorage.getItem("AirBookingSearchResultsSearchStore-searchResults-v1"),
+          );
+          if (southwestFlights && southwestFlights.searchResults) {
+            sendFlightsToBackground(southwestFlights);
+            window.clearInterval(id);
+            sendScraperComplete("southwest", "BOTH");
+          }
+        }, 500);
+      } catch (error) {
+        window.Sentry.captureException(error);
+        sendFailedScraper("southwest", error, "ALL");
+      }
       break;
     case "HIGHLIGHT_FLIGHT":
       const { selectedDepartureId, selectedReturnId } = message;
@@ -36,21 +45,13 @@ function sendFlightsToBackground(southwestFlights) {
   }
   let [departures, returns] = southwestFlights.searchResults.airProducts;
   if ((departures && departures.details.length === 0) || (returns && returns.details.length === 0)) {
-    // no complete itins
-    chrome.runtime.sendMessage({
-      event: "NO_FLIGHTS_FOUND",
-      provider: "southwest",
-    });
+    sendNoFlightsEvent("southwest", "BOTH");
     return;
   }
   departures = departures.details;
   returns = returns ? returns.details : [];
   const itins = createSouthwestItins(departures, returns);
-  chrome.runtime.sendMessage({
-    event: "FLIGHT_RESULTS_RECEIVED",
-    flights: itins,
-    provider: "southwest",
-  });
+  sendFlightsEvent("southwest", itins);
 }
 
 function addBackToSearchButton() {

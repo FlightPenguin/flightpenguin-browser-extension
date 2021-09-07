@@ -7,5 +7,6 @@ export const handleFormDataReceived = (
   formData: FlightSearchFormData,
   windowConfig: WindowConfig,
 ) => {
+  providerManager.closeWindows();
   providerManager.searchForResults(formData, windowConfig);
 };

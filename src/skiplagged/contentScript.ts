@@ -4,7 +4,7 @@ window.Sentry.init({
   dsn: "https://d7f3363dd3774a64ad700b4523bcb789@o407795.ingest.sentry.io/5277451",
 });
 
-import { sendFailedScraper } from "../shared/events";
+import { sendFailedScraper, sendScraperComplete } from "../shared/events";
 import { addBackToSearchButton } from "../shared/ui/backToSearch";
 import { getFlightContainer } from "./parser/getFlightContainer";
 import { FlightObserver } from "./parser/observer";
@@ -26,6 +26,7 @@ chrome.runtime.onMessage.addListener(async function (message) {
       if (departureFlightContainer) {
         await scrollThroughContainer(departureFlightContainer);
       }
+      sendScraperComplete("skiplagged", "DEPARTURE");
       departureObserver.endObservation();
       break;
     case "GET_RETURN_FLIGHTS":
@@ -40,6 +41,7 @@ chrome.runtime.onMessage.addListener(async function (message) {
       if (returnFlightContainer) {
         await scrollThroughContainer(returnFlightContainer);
       }
+      sendScraperComplete("skiplagged", "RETURN");
       break;
     case "HIGHLIGHT_FLIGHT":
       stopScrollingNow();
@@ -74,7 +76,8 @@ const attachObserver = async (
     return flightContainer;
   } catch (error) {
     window.Sentry.captureException(error);
-    sendFailedScraper("skiplagged", error);
+    const flightType = skiplaggedFlightId ? "RETURN" : "DEPARTURE";
+    sendFailedScraper("skiplagged", error, flightType);
     return null;
   }
 };
@@ -99,7 +102,8 @@ const highlightFlight = async (
     await highlightFlightCard(flightId || "");
   } catch (error) {
     window.Sentry.captureException(error);
-    sendFailedScraper("skiplagged", error);
+    const flightType = flightPenguinReturnId ? "RETURN" : "DEPARTURE";
+    sendFailedScraper("skiplagged", error, flightType);
   }
 };
 

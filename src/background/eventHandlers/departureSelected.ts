@@ -75,7 +75,7 @@ const getRoundtripProviderReturns = (departure: any, providerManager: ProviderMa
       updatedAt: new Date(),
     },
     formData: providerManager.getFormData(),
-    complete: providerManager.isComplete(),
   };
   providerManager.sendMessageToIndexPage(message);
+  providerManager.sendMessageToIndexPage({ event: "SCRAPING_COMPLETED", searchType: "RETURN" });
 };

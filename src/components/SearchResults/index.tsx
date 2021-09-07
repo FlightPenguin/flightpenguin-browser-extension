@@ -16,15 +16,16 @@ export const SearchResults = (): React.ReactElement => {
     returnFlights: ProcessedFlightSearchResult[];
     formData: FlightSearchFormData | null;
     lastUpdatedAt: Date | null;
-    departuresComplete: boolean;
   }>({
     itineraries: {},
     departureFlights: [],
     returnFlights: [],
     formData: null,
     lastUpdatedAt: null, // helper to make sure we ignore out of order updates.
-    departuresComplete: false,
   });
+
+  const [departuresComplete, setDeparturesComplete] = useState(false);
+  const [returnsComplete, setReturnsComplete] = useState(false);
   const [departureFlightDetails, setDepartureFlightDetails] = useState<FlightSelection | null>(null);
   const [returnFlightDetails, setReturnFlightDetails] = useState<FlightSelection | null>(null);
 
@@ -40,8 +41,14 @@ export const SearchResults = (): React.ReactElement => {
               formData: message.formData,
               returnFlights: message.flights.returnList,
               lastUpdatedAt: parseISO(message.flights.updatedAt),
-              departuresComplete: message.complete,
             });
+          }
+          break;
+        case "SCRAPING_COMPLETED":
+          if (message.searchType === "RETURN") {
+            setReturnsComplete(true);
+          } else {
+            setDeparturesComplete(true);
           }
           break;
         default:
@@ -67,7 +74,7 @@ export const SearchResults = (): React.ReactElement => {
           itineraries={flights.itineraries}
           flights={flights.departureFlights}
           formData={flights.formData}
-          loading={!departureFlightDetails && !flights.departuresComplete}
+          loading={!departuresComplete}
           onSelection={(details) => {
             setDepartureFlightDetails(details);
 
@@ -89,7 +96,7 @@ export const SearchResults = (): React.ReactElement => {
               itineraries={flights.itineraries}
               flights={flights.returnFlights}
               formData={flights.formData}
-              loading={false}
+              loading={!returnsComplete}
               onSelection={(details) => {
                 setReturnFlightDetails(details);
 

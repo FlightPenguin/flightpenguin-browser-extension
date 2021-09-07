@@ -79,6 +79,7 @@ const waitForLoad = async (selectedFlight: boolean) => {
   disableHiddenCitySearches();
 
   if (isNoResults(selectedFlight)) {
-    sendNoFlightsEvent("skiplagged");
+    const searchType = selectedFlight ? "RETURN" : "DEPARTURE";
+    sendNoFlightsEvent("skiplagged", searchType);
   }
 };

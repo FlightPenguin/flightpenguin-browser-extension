@@ -185,64 +185,135 @@ var ProviderManager = /*#__PURE__*/function () {
       return this.formData;
     }
   }, {
+    key: "setStatus",
+    value: function setStatus(providerName, status, searchType) {
+      if (searchType === "DEPARTURE") {
+        this.state[providerName]["departureStatus"] = status;
+      } else if (searchType === "RETURN") {
+        this.state[providerName]["returnStatus"] = status;
+      } else {
+        this.state[providerName]["departureStatus"] = status;
+        this.state[providerName]["returnStatus"] = status;
+      }
+    }
+  }, {
     key: "setPending",
-    value: function setPending(providerName) {
-      this.state[providerName]["status"] = "PENDING";
-      this.setFlightCount(providerName, 0);
+    value: function setPending(providerName, searchType) {
+      this.setStatus(providerName, "PENDING", searchType);
     }
   }, {
     key: "setFailed",
-    value: function setFailed(providerName) {
-      var flightCount = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 0;
-      this.state[providerName]["status"] = "FAILED";
-      this.setFlightCount(providerName, flightCount);
+    value: function setFailed(providerName, searchType) {
+      this.setStatus(providerName, "FAILED", searchType);
     }
   }, {
     key: "setSuccessful",
-    value: function setSuccessful(providerName, flightCount) {
-      this.state[providerName]["status"] = "SUCCESS";
-      this.setFlightCount(providerName, flightCount);
+    value: function setSuccessful(providerName, searchType) {
+      this.setStatus(providerName, "SUCCESS", searchType);
     }
   }, {
     key: "setPartialReturn",
-    value: function setPartialReturn(providerName, flightCountBatchSize) {
-      this.state[providerName]["status"] = "PARTIAL_RETURN_CONTINUING";
-      var currentCount = this.getFlightCount(providerName);
-      return currentCount + flightCountBatchSize;
+    value: function setPartialReturn(providerName, searchType) {
+      var status;
+
+      if (searchType === "BOTH") {
+        status = this.getStatus(providerName, "DEPARTURE") && this.getStatus(providerName, "RETURN");
+      } else {
+        status = this.getStatus(providerName, searchType);
+      }
+
+      if (!status || !terminalStates.includes(status)) {
+        this.setStatus(providerName, "PARTIAL_RETURN_CONTINUING", searchType);
+      }
     }
   }, {
     key: "getStatus",
-    value: function getStatus(providerName) {
-      return this.state[providerName]["status"];
+    value: function getStatus(providerName, searchType) {
+      return searchType === "DEPARTURE" ? this.getDepartureStatus(providerName) : this.getReturnStatus(providerName);
     }
   }, {
-    key: "isProviderComplete",
-    value: function isProviderComplete(providerName) {
-      var status = this.getStatus(providerName);
+    key: "getDepartureStatus",
+    value: function getDepartureStatus(providerName) {
+      return this.state[providerName]["departureStatus"];
+    }
+  }, {
+    key: "getReturnStatus",
+    value: function getReturnStatus(providerName) {
+      return this.state[providerName]["returnStatus"];
+    }
+  }, {
+    key: "isProviderDepartureComplete",
+    value: function isProviderDepartureComplete(providerName) {
+      var status = this.getDepartureStatus(providerName);
       return status ? terminalStates.includes(status) : false;
     }
   }, {
-    key: "isComplete",
-    value: function isComplete() {
+    key: "isProviderReturnComplete",
+    value: function isProviderReturnComplete(providerName) {
+      var status = this.getReturnStatus(providerName);
+      return status ? terminalStates.includes(status) : false;
+    }
+  }, {
+    key: "isDepartureComplete",
+    value: function isDepartureComplete() {
       var _this = this;
 
       return this.knownProviders.every(function (providerName) {
-        return _this.isProviderComplete(providerName);
+        return _this.isProviderDepartureComplete(providerName);
       });
     }
   }, {
-    key: "isProviderSuccessful",
-    value: function isProviderSuccessful(providerName) {
-      var status = this.getStatus(providerName);
-      return status ? successStates.includes(status) : false;
-    }
-  }, {
-    key: "isSuccessful",
-    value: function isSuccessful() {
+    key: "isReturnComplete",
+    value: function isReturnComplete() {
       var _this2 = this;
 
       return this.knownProviders.every(function (providerName) {
-        _this2.isProviderSuccessful(providerName);
+        return _this2.isProviderReturnComplete(providerName);
+      });
+    }
+  }, {
+    key: "isComplete",
+    value: function isComplete(searchType) {
+      var status;
+
+      if (searchType === "BOTH") {
+        status = this.isDepartureComplete() && this.isReturnComplete();
+      } else if (searchType === "DEPARTURE") {
+        status = this.isDepartureComplete();
+      } else {
+        status = this.isReturnComplete();
+      }
+
+      return status;
+    }
+  }, {
+    key: "isProviderDepartureSuccessful",
+    value: function isProviderDepartureSuccessful(providerName) {
+      var status = this.getDepartureStatus(providerName);
+      return status ? successStates.includes(status) : false;
+    }
+  }, {
+    key: "isProviderReturnSuccessful",
+    value: function isProviderReturnSuccessful(providerName) {
+      var status = this.getReturnStatus(providerName);
+      return status ? successStates.includes(status) : false;
+    }
+  }, {
+    key: "isDepartureSuccessful",
+    value: function isDepartureSuccessful() {
+      var _this3 = this;
+
+      return this.knownProviders.every(function (providerName) {
+        _this3.isProviderDepartureSuccessful(providerName);
+      });
+    }
+  }, {
+    key: "isReturnSuccessful",
+    value: function isReturnSuccessful() {
+      var _this4 = this;
+
+      return this.knownProviders.every(function (providerName) {
+        _this4.isProviderReturnSuccessful(providerName);
       });
     }
   }, {
@@ -297,16 +368,6 @@ var ProviderManager = /*#__PURE__*/function () {
       this.returns = returns;
     }
   }, {
-    key: "setFlightCount",
-    value: function setFlightCount(providerName, flightCount) {
-      this.state[providerName]["flightCount"] = flightCount;
-    }
-  }, {
-    key: "getFlightCount",
-    value: function getFlightCount(providerName) {
-      return this.state[providerName]["flightCount"];
-    }
-  }, {
     key: "setReady",
     value: function setReady(providerName, value) {
       this.state[providerName].ready = value;
@@ -329,12 +390,12 @@ var ProviderManager = /*#__PURE__*/function () {
   }, {
     key: "setDefault",
     value: function setDefault() {
-      var _this3 = this;
+      var _this5 = this;
 
       this.knownProviders.forEach(function (providerName) {
-        _this3.state[providerName] = {
-          status: "PENDING",
-          flightCount: 0,
+        _this5.state[providerName] = {
+          departureStatus: "PENDING",
+          returnStatus: "PENDING",
           ready: true,
           onReady: _constants__WEBPACK_IMPORTED_MODULE_5__.DEFAULT_ON_READY_FUNCTION,
           timer: null
@@ -409,16 +470,16 @@ var ProviderManager = /*#__PURE__*/function () {
   }, {
     key: "setPrimaryTab",
     value: function setPrimaryTab() {
-      var _this4 = this;
+      var _this6 = this;
 
       (0,_state__WEBPACK_IMPORTED_MODULE_6__.isExtensionOpen)({
         extensionOpenCallback: function extensionOpenCallback(tab) {
-          _this4.primaryTab = tab;
+          _this6.primaryTab = tab;
         },
         extensionClosedCallback: function extensionClosedCallback() {
           // Simpler than polling for status...
           (0,_shared_pause__WEBPACK_IMPORTED_MODULE_1__.pause)(500).then(function () {
-            _this4.setPrimaryTab();
+            _this6.setPrimaryTab();
           });
         }
       });
@@ -484,17 +545,17 @@ var ProviderManager = /*#__PURE__*/function () {
   }, {
     key: "closeWindows",
     value: function closeWindows() {
-      var _this5 = this;
+      var _this7 = this;
 
       this.knownProviders.forEach(function (providerName) {
-        _this5.closeWindow(providerName);
+        _this7.closeWindow(providerName);
       });
     }
   }, {
     key: "searchForResults",
     value: function searchForResults(formData, windowConfig) {
       var _this$primaryTab4,
-          _this6 = this;
+          _this8 = this;
 
       this.setFormData(formData);
       var primaryTabId = this === null || this === void 0 ? void 0 : (_this$primaryTab4 = this.primaryTab) === null || _this$primaryTab4 === void 0 ? void 0 : _this$primaryTab4.id;
@@ -504,7 +565,7 @@ var ProviderManager = /*#__PURE__*/function () {
           var url = providerURLBaseMap[provider](formData); // Open url in a new window.
           // Not a new tab because we can't read results from inactive tabs (browser powers down inactive tabs).
 
-          return _this6.createWindow(url, provider, windowConfig, formData);
+          return _this8.createWindow(url, provider, windowConfig, formData);
         });
         Promise.all(promises).then(function () {
           // update again for chrome on windows, to move results window to foreground
@@ -513,21 +574,6 @@ var ProviderManager = /*#__PURE__*/function () {
           });
         });
       }
-    }
-  }, {
-    key: "getTotalFlightCount",
-    value: function getTotalFlightCount() {
-      var _this7 = this;
-
-      if (!this.isComplete()) {
-        return null;
-      }
-
-      var total = 0;
-      this.knownProviders.forEach(function (providerName) {
-        total += _this7.getFlightCount(providerName);
-      });
-      return total;
     }
   }, {
     key: "sendMessageToIndexPage",
@@ -557,13 +603,11 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "PROVIDERS_NEEDING_RETURNS": () => (/* binding */ PROVIDERS_NEEDING_RETURNS),
 /* harmony export */   "PROVIDERS_SUPPORTING_POINTS_SEARCH": () => (/* binding */ PROVIDERS_SUPPORTING_POINTS_SEARCH),
 /* harmony export */   "SUPPORTED_PROVIDERS": () => (/* binding */ SUPPORTED_PROVIDERS),
-/* harmony export */   "SCROLLING_PROVIDERS": () => (/* binding */ SCROLLING_PROVIDERS),
 /* harmony export */   "DEFAULT_ON_READY_FUNCTION": () => (/* binding */ DEFAULT_ON_READY_FUNCTION)
 /* harmony export */ });
 var PROVIDERS_NEEDING_RETURNS = ["expedia", "skiplagged"];
 var PROVIDERS_SUPPORTING_POINTS_SEARCH = ["expedia"];
-var SUPPORTED_PROVIDERS = ["expedia", "southwest"];
-var SCROLLING_PROVIDERS = ["skiplagged"]; // eslint-disable-next-line @typescript-eslint/no-empty-function
+var SUPPORTED_PROVIDERS = ["expedia", "southwest"]; // eslint-disable-next-line @typescript-eslint/no-empty-function
 
 var DEFAULT_ON_READY_FUNCTION = function DEFAULT_ON_READY_FUNCTION() {};
 
@@ -730,10 +774,13 @@ var getRoundtripProviderReturns = function getRoundtripProviderReturns(departure
       itins: itineraries,
       updatedAt: new Date()
     },
-    formData: providerManager.getFormData(),
-    complete: providerManager.isComplete()
+    formData: providerManager.getFormData()
   };
   providerManager.sendMessageToIndexPage(message);
+  providerManager.sendMessageToIndexPage({
+    event: "SCRAPING_COMPLETED",
+    searchType: "RETURN"
+  });
 };
 
 /***/ }),
@@ -750,6 +797,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "handleDispatchBeginParsing": () => (/* binding */ handleDispatchBeginParsing)
 /* harmony export */ });
 var handleDispatchBeginParsing = function handleDispatchBeginParsing(providerManager, providerName, timeout) {
+  providerManager.setPending(providerName, "BOTH"); // de facto begin parsing resets both...
+
   var tabId = providerManager.getTabId(providerName);
 
   if (tabId !== null && tabId !== undefined) {
@@ -776,13 +825,11 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "handleFlightResultsReceived": () => (/* binding */ handleFlightResultsReceived)
 /* harmony export */ });
 /* harmony import */ var _dataModels__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../dataModels */ "./src/dataModels.js");
-/* harmony import */ var _constants__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../constants */ "./src/background/constants.ts");
 function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
 
 function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { _defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
 
 
 var handleFlightResultsReceived = function handleFlightResultsReceived(providerManager, flights, providerName) {
@@ -811,6 +858,7 @@ var handleFlightResultsReceived = function handleFlightResultsReceived(providerM
   var setSuccessful = providerManager.setItineraries(_objectSpread({}, itineraries), existingItinerariesVersion);
 
   if (setSuccessful) {
+    providerManager.setPartialReturn(providerName, "DEPARTURE");
     providerManager.setDepartures(_objectSpread({}, departures));
     var updatedDepartures = providerManager.getDepartures();
 
@@ -818,11 +866,6 @@ var handleFlightResultsReceived = function handleFlightResultsReceived(providerM
         updatedItineraries = _providerManager$getI2.itineraries;
 
     var departuresToSend = (0,_dataModels__WEBPACK_IMPORTED_MODULE_0__.sortFlights)(updatedDepartures, updatedItineraries);
-
-    if (!_constants__WEBPACK_IMPORTED_MODULE_1__.SCROLLING_PROVIDERS.includes(providerName)) {
-      providerManager.setSuccessful(providerName, departuresToSend.length);
-    }
-
     var nextMessage = {
       event: "FLIGHT_RESULTS_FOR_CLIENT",
       flights: {
@@ -831,8 +874,7 @@ var handleFlightResultsReceived = function handleFlightResultsReceived(providerM
         returnList: (0,_dataModels__WEBPACK_IMPORTED_MODULE_0__.sortFlights)(providerManager.getReturns(), updatedItineraries),
         updatedAt: new Date()
       },
-      formData: providerManager.getFormData(),
-      complete: providerManager.isComplete()
+      formData: providerManager.getFormData()
     };
     providerManager.sendMessageToIndexPage(nextMessage);
   } else {
@@ -891,6 +933,7 @@ var handleFlightReturnResultsReceived = function handleFlightReturnResultsReceiv
   var setSuccessful = providerManager.setItineraries(allItins, existingItinerariesVersion);
 
   if (setSuccessful) {
+    providerManager.setPartialReturn(providerName, "RETURN");
     var returnList = (0,_dataModels__WEBPACK_IMPORTED_MODULE_0__.sortFlights)(Object.values(returns), allItins); // TODO dedup returns
 
     providerManager.addReturns(returnList);
@@ -951,6 +994,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "handleFormDataReceived": () => (/* binding */ handleFormDataReceived)
 /* harmony export */ });
 var handleFormDataReceived = function handleFormDataReceived(providerManager, formData, windowConfig) {
+  providerManager.closeWindows();
   providerManager.searchForResults(formData, windowConfig);
 };
 
@@ -1032,7 +1076,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "handleIndexUnloaded": () => (/* reexport safe */ _indexUnloaded__WEBPACK_IMPORTED_MODULE_8__.handleIndexUnloaded),
 /* harmony export */   "handleNoFlightsFound": () => (/* reexport safe */ _noFlightsFound__WEBPACK_IMPORTED_MODULE_9__.handleNoFlightsFound),
 /* harmony export */   "handleProviderReady": () => (/* reexport safe */ _providerReady__WEBPACK_IMPORTED_MODULE_10__.handleProviderReady),
-/* harmony export */   "handleScraperFailed": () => (/* reexport safe */ _scraperFailed__WEBPACK_IMPORTED_MODULE_11__.handleScraperFailed)
+/* harmony export */   "handleScraperFailed": () => (/* reexport safe */ _scraperFailed__WEBPACK_IMPORTED_MODULE_11__.handleScraperFailed),
+/* harmony export */   "handleScraperSuccess": () => (/* reexport safe */ _scraperSuccess__WEBPACK_IMPORTED_MODULE_12__.handleScraperSuccess)
 /* harmony export */ });
 /* harmony import */ var _clearSelections__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./clearSelections */ "./src/background/eventHandlers/clearSelections.ts");
 /* harmony import */ var _departureSelected__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./departureSelected */ "./src/background/eventHandlers/departureSelected.ts");
@@ -1046,6 +1091,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _noFlightsFound__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./noFlightsFound */ "./src/background/eventHandlers/noFlightsFound.ts");
 /* harmony import */ var _providerReady__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ./providerReady */ "./src/background/eventHandlers/providerReady.ts");
 /* harmony import */ var _scraperFailed__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ./scraperFailed */ "./src/background/eventHandlers/scraperFailed.ts");
+/* harmony import */ var _scraperSuccess__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! ./scraperSuccess */ "./src/background/eventHandlers/scraperSuccess.ts");
+
 
 
 
@@ -1091,20 +1138,15 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "handleNoFlightsFound": () => (/* binding */ handleNoFlightsFound)
 /* harmony export */ });
-var handleNoFlightsFound = function handleNoFlightsFound(providerManager, providerName) {
-  providerManager.setSuccessful(providerName, 0);
+var handleNoFlightsFound = function handleNoFlightsFound(providerManager, providerName, searchType) {
+  providerManager.setSuccessful(providerName, searchType);
 
-  if (providerManager.isComplete() && providerManager.getTotalFlightCount() === 0) {
+  if (providerManager.isComplete(searchType)) {
     providerManager.sendMessageToIndexPage({
       event: "NO_FLIGHTS_FOUND_CLIENT"
     });
     providerManager.closeWindows();
-  } // Sentry.captureException(
-  //   new Error(`No flights found ${message.provider}`, {
-  //     extra: formData,
-  //   }),
-  // );
-
+  }
 };
 
 /***/ }),
@@ -1142,21 +1184,58 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "handleScraperFailed": () => (/* binding */ handleScraperFailed)
 /* harmony export */ });
-var handleScraperFailed = function handleScraperFailed(providerManager, providerName, errorDescription) {
-  providerManager.setFailed(providerName);
+var handleScraperFailed = function handleScraperFailed(providerManager, providerName, errorDescription, searchType) {
+  providerManager.setFailed(providerName, searchType);
+  providerManager.sendMessageToIndexPage({
+    event: "SCRAPER_COMPLETE",
+    providerName: providerName,
+    status: "FAILED"
+  });
+  providerManager.closeWindow(providerName);
 
-  if (providerManager.isComplete() && providerManager.getTotalFlightCount() === 0) {
+  if (providerManager.isComplete(searchType)) {
+    var flightType = searchType === "BOTH" ? "DEPARTURE" : searchType;
     providerManager.sendMessageToIndexPage({
-      event: "FAILED_SCRAPER_CLIENT"
+      event: "SCRAPING_COMPLETED",
+      searchType: flightType
     });
-    providerManager.closeWindows();
   } // @ts-ignore
 
 
-  window.Sentry.captureException(new Error("Scraper failed for ".concat(providerName)), {
+  window.Sentry.captureException(new Error("Scraper (".concat(searchType, ") failed for ").concat(providerName)), {
     extra: providerManager.getFormData(),
     details: errorDescription
   });
+};
+
+/***/ }),
+
+/***/ "./src/background/eventHandlers/scraperSuccess.ts":
+/*!********************************************************!*\
+  !*** ./src/background/eventHandlers/scraperSuccess.ts ***!
+  \********************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "handleScraperSuccess": () => (/* binding */ handleScraperSuccess)
+/* harmony export */ });
+var handleScraperSuccess = function handleScraperSuccess(providerManager, providerName, searchType) {
+  providerManager.setSuccessful(providerName, searchType);
+  providerManager.sendMessageToIndexPage({
+    event: "SCRAPER_COMPLETE",
+    providerName: providerName,
+    status: "SUCCESS"
+  });
+
+  if (providerManager.isComplete(searchType)) {
+    var flightType = searchType === "BOTH" ? "DEPARTURE" : searchType;
+    providerManager.sendMessageToIndexPage({
+      event: "SCRAPING_COMPLETED",
+      searchType: flightType
+    });
+  }
 };
 
 /***/ }),
@@ -2939,11 +3018,15 @@ chrome.runtime.onMessage.addListener(function (message, sender, reply) {
       break;
 
     case "NO_FLIGHTS_FOUND":
-      (0,_background_eventHandlers__WEBPACK_IMPORTED_MODULE_0__.handleNoFlightsFound)(providerManager, message.provider);
+      (0,_background_eventHandlers__WEBPACK_IMPORTED_MODULE_0__.handleNoFlightsFound)(providerManager, message.provider, message.searchType);
+      break;
+
+    case "SUCCESSFUL_SCRAPER":
+      (0,_background_eventHandlers__WEBPACK_IMPORTED_MODULE_0__.handleScraperSuccess)(providerManager, message.providerName, message.searchType);
       break;
 
     case "FAILED_SCRAPER":
-      (0,_background_eventHandlers__WEBPACK_IMPORTED_MODULE_0__.handleScraperFailed)(providerManager, message.source, message.formData, message.description);
+      (0,_background_eventHandlers__WEBPACK_IMPORTED_MODULE_0__.handleScraperFailed)(providerManager, message.providerName, message.formData, message.description, message.searchType);
       break;
 
     case "FLIGHT_RESULTS_RECEIVED":

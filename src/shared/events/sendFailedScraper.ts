@@ -1,7 +1,8 @@
-export function sendFailedScraper(providerName: string, error: Error) {
+export function sendFailedScraper(providerName: string, error: Error, searchType: "DEPARTURE" | "RETURN" | "ALL") {
   chrome.runtime.sendMessage({
     event: "FAILED_SCRAPER",
-    source: providerName,
+    searchType: searchType,
+    providerName: providerName,
     description: `${error.name} ${error.message}`,
   });
 }

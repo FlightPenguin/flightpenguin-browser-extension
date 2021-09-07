@@ -17,6 +17,7 @@ import {
   handleNoFlightsFound,
   handleProviderReady,
   handleScraperFailed,
+  handleScraperSuccess,
 } from "./background/eventHandlers";
 import { ProviderManager } from "./background/ProviderManager";
 import { ExtensionInstalledHandler, ExtensionOpenedHandler, ExtensionUninstalledHandler } from "./background/state";
@@ -33,10 +34,19 @@ chrome.runtime.onMessage.addListener(function (message, sender, reply) {
       handleFormDataReceived(providerManager, message.formData, message.windowConfig);
       break;
     case "NO_FLIGHTS_FOUND":
-      handleNoFlightsFound(providerManager, message.provider);
+      handleNoFlightsFound(providerManager, message.provider, message.searchType);
+      break;
+    case "SUCCESSFUL_SCRAPER":
+      handleScraperSuccess(providerManager, message.providerName, message.searchType);
       break;
     case "FAILED_SCRAPER":
-      handleScraperFailed(providerManager, message.source, message.formData, message.description);
+      handleScraperFailed(
+        providerManager,
+        message.providerName,
+        message.formData,
+        message.description,
+        message.searchType,
+      );
       break;
     case "FLIGHT_RESULTS_RECEIVED":
       handleFlightResultsReceived(providerManager, message.flights, message.provider);

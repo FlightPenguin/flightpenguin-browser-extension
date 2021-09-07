@@ -37,6 +37,7 @@ export const handleFlightReturnResultsReceived = (
   const allItins = { ...existingItineraries, ...itineraries };
   const setSuccessful = providerManager.setItineraries(allItins, existingItinerariesVersion);
   if (setSuccessful) {
+    providerManager.setPartialReturn(providerName, "RETURN");
     const returnList = sortFlights(Object.values(returns), allItins); // TODO dedup returns
     providerManager.addReturns(returnList);
 
