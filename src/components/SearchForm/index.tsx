@@ -117,7 +117,7 @@ export const SearchForm = ({ onSubmit, initialValues = defaultInitialValues }: S
                   <FormikField
                     component={Input.Formik}
                     name="from"
-                    label="Starting airport"
+                    label="Starting airport code"
                     after={<Input.Icon icon="solid-plane-departure" fontSize="300" color="black" />}
                     autoComplete="off"
                     hasFieldWrapper={true}
@@ -144,7 +144,7 @@ export const SearchForm = ({ onSubmit, initialValues = defaultInitialValues }: S
                   <FormikField
                     component={Input.Formik}
                     name="to"
-                    label="Destination airport"
+                    label="Destination airport code"
                     after={<Input.Icon icon="solid-plane-arrival" fontSize="300" color="black" />}
                     autoComplete="off"
                     hasFieldWrapper={true}
