@@ -8,9 +8,11 @@ import { CabinMap } from "../../background/constants";
 import { FlightSearchFormData } from "../../shared/types/FlightSearchFormData";
 import { searchFormWidth } from "../constants";
 import { getFieldState, getParsedDate, getValidationText } from "../utilities/forms";
+import { disableNonAlphaInput } from "../utilities/forms/disableNonAlphaInput";
 import { getChromeFormatDate } from "../utilities/forms/getChromeFormatDate";
 import { getFormattedDate } from "../utilities/forms/getFormattedDate";
 import { getStandardizedFormatDate } from "../utilities/forms/getStandardizedFormatDate";
+import { isAlphaKeyboardInput } from "../utilities/forms/isAlphaKeyboardInput";
 import { isValidDateInputString } from "../utilities/forms/isValidDateInputString";
 import { sendFormDataToBackground } from "./utilities/sendFormDataToBackground";
 
@@ -129,8 +131,11 @@ export const SearchForm = ({ onSubmit, initialValues = defaultInitialValues }: S
                       const target = event.target as HTMLInputElement;
                       target.placeholder = "SFO";
                     }}
-                    maxlength="3"
-                    minlength="3"
+                    maxLength="3"
+                    minLength="3"
+                    onKeyPress={(event: KeyboardEvent) => {
+                      disableNonAlphaInput(event);
+                    }}
                     disabled={formik.isSubmitting}
                     containLabel
                   />
@@ -155,6 +160,11 @@ export const SearchForm = ({ onSubmit, initialValues = defaultInitialValues }: S
                       target.placeholder = "LAX";
                     }}
                     disabled={formik.isSubmitting}
+                    maxLength="3"
+                    minLength="3"
+                    onKeyPress={(event: KeyboardEvent) => {
+                      disableNonAlphaInput(event);
+                    }}
                     containLabel
                   />
                 </FieldWrapper>
