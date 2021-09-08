@@ -2,7 +2,7 @@ import { Button, Image, TopNav } from "bumbag";
 import React, { useEffect, useState } from "react";
 import UserInfo = chrome.identity.UserInfo;
 
-export default function NavigationBar() {
+const NavigationBar = () => {
   const [profileInfo, setProfileInfo] = useState<UserInfo | null>(null);
 
   useEffect(() => {
@@ -29,4 +29,8 @@ export default function NavigationBar() {
       )}
     </TopNav>
   );
-}
+};
+
+export default React.memo(NavigationBar, (previous, next) => {
+  return true;
+});
