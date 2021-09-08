@@ -23,7 +23,7 @@ export const SearchPage = (): React.ReactElement => {
                 ...formData,
                 cabin: formData?.cabin || "econ",
                 fromDate: getStandardizedFormatDate(formData.fromDate),
-                toDate: getStandardizedFormatDate(formData.fromDate),
+                toDate: getStandardizedFormatDate(formData.toDate),
               }
             }
             onSubmit={(values) => {
