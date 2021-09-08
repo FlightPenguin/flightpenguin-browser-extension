@@ -8,7 +8,7 @@ import { ProcessedFlightSearchResult } from "../../../shared/types/ProcessedFlig
 import { ProcessedItinerary } from "../../../shared/types/ProcessedItinerary";
 import { containerWidth, flightTimeContainerWidth, legendWidth, sidePaddingWidth } from "../../constants";
 import { FlightSelection } from "../FlightSelection";
-import { TimelineHeader } from "../Header";
+import TimelineHeader from "../Header";
 import { TimelineRow } from "../Row";
 import TimelineTitle from "../Title";
 import _skeletonItineraries from "./skeletonItineraries.json";
@@ -157,7 +157,6 @@ export const TimelineContainer = ({
             flightType={flightType}
             intervals={intervalInfo.intervals}
             tzOffset={intervalInfo.timezoneOffset}
-            flightTimeContainerWidth={flightTimeContainerWidth}
           />
         </Box>
       </Box>

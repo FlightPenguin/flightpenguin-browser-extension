@@ -3,6 +3,7 @@ import React from "react";
 
 import { FlightSearchFormData } from "../../../shared/types/FlightSearchFormData";
 import { getWeekdayName } from "../../../shared/utilities/getWeekdayName";
+import { flightTimeContainerWidth } from "../../constants";
 import { getFlightInfo } from "./utilities/getFlightInfo";
 import { getHeaderTime } from "./utilities/getHeaderTime";
 
@@ -11,16 +12,9 @@ interface TimelineHeaderProps {
   flightType: "DEPARTURE" | "RETURN";
   intervals: number[];
   tzOffset: number;
-  flightTimeContainerWidth: number;
 }
 
-export const TimelineHeader = ({
-  formData,
-  flightType,
-  intervals,
-  tzOffset,
-  flightTimeContainerWidth,
-}: TimelineHeaderProps): React.ReactElement => {
+const TimelineHeader = ({ formData, flightType, intervals, tzOffset }: TimelineHeaderProps): React.ReactElement => {
   let daysCounter = 0;
   const intervalWidth = flightTimeContainerWidth / (intervals.length - 1);
   const { startDate, departureAirportCode, arrivalAirportCode } = getFlightInfo(formData, flightType);
@@ -104,3 +98,12 @@ export const TimelineHeader = ({
     </Box>
   );
 };
+
+export default React.memo(TimelineHeader, (previous, next) => {
+  return (
+    previous.flightType === next.flightType &&
+    previous.intervals === next.intervals &&
+    previous.tzOffset === next.tzOffset &&
+    previous.formData === next.formData
+  );
+});
