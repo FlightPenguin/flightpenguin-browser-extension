@@ -82,6 +82,9 @@ export const TimelineRow = ({
       data-selected={selected}
       width={`${maxRowWidth}px`}
       onClick={() => {
+        if (skeleton) {
+          return;
+        }
         setSelected(true);
         onSelection({ flight, itinerary, flightPenguinId });
         sendSelectedFlight(flightType, flightPenguinId);
