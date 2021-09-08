@@ -1,13 +1,10 @@
 import { Box, List, Tag, Text } from "bumbag";
-import React, { useEffect, useState } from "react";
+import React from "react";
 
 import { sendSelectedFlight } from "../../../shared/events";
-import {
-  getProcessedSearchResultFlightName,
-  ProcessedFlightSearchResult,
-} from "../../../shared/types/ProcessedFlightSearchResult";
+import { ProcessedFlightSearchResult } from "../../../shared/types/ProcessedFlightSearchResult";
 import { ProcessedItinerary } from "../../../shared/types/ProcessedItinerary";
-import { containerWidth, flightTimeContainerWidth, legendWidth, sidePaddingWidth } from "../../constants";
+import { containerWidth, flightTimeContainerWidth, legendWidth } from "../../constants";
 import { FlightSelection } from "../FlightSelection";
 import { FlightLegend } from "./FlightLegend";
 import { FlightSegmentBox } from "./FlightSegment";
@@ -25,8 +22,8 @@ interface TimelineRowProps {
   from: string;
   to: string;
   index: number;
-  hide: boolean;
   skeleton: boolean;
+  selected: boolean;
   onSelection: (details: FlightSelection) => void;
 }
 
@@ -40,18 +37,10 @@ export const TimelineRow = ({
   from,
   to,
   index,
-  hide,
+  selected,
   skeleton,
   onSelection,
 }: TimelineRowProps): React.ReactElement => {
-  const [selected, setSelected] = useState(false);
-
-  useEffect(() => {
-    if (!hide) {
-      setSelected(false);
-    }
-  }, [hide]);
-
   const flightSegments = getFlightSegments(
     flight,
     from,
@@ -67,25 +56,21 @@ export const TimelineRow = ({
   return (
     <List.Item
       data-name="flight-list-item"
-      display={hide && !selected ? "none" : "flex"}
       whiteSpace="nowrap"
       alignX="center"
+      display="flex"
       tabIndex={0}
       key={flightPenguinId}
-      data-flightpenguin-id={flight.id}
-      data-flight-name={getProcessedSearchResultFlightName(flight)}
-      data-selected={selected}
       width={`${containerWidth}px`}
       onClick={() => {
-        if (skeleton) {
+        if (skeleton || selected) {
           return;
         }
-        setSelected(true);
         onSelection({ flight, itinerary, flightPenguinId });
         sendSelectedFlight(flightType, flightPenguinId);
       }}
       role="group"
-      cursor={skeleton ? "not-allowed" : "pointer"}
+      cursor={skeleton ? "not-allowed" : selected ? "auto" : "pointer"}
       marginBottom="0px"
       backgroundColor={index % 2 === 0 || selected ? "primaryTint" : "white"}
       minHeight="80px"

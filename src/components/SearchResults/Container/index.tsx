@@ -45,11 +45,14 @@ export const TimelineContainer = ({
   }>({ startHour: 0, increment: 4, intervals: [0, 4, 8, 12, 16, 20, 24, 28], timezoneOffset: 0 });
 
   useEffect(() => {
+    if (selectedFlightDetails) {
+      return;
+    }
     const sortedFlights = uniqBy(flights, "id").sort((a, b) => {
       return a.pain - b.pain;
     });
     setDisplayFlights(sortedFlights);
-  }, [flights]);
+  }, [flights, selectedFlightDetails]);
 
   useEffect(() => {
     if (Object.keys(itineraries).length) {
@@ -90,29 +93,31 @@ export const TimelineContainer = ({
           flexGrow={1}
         >
           <List width={`${legendWidth}px`} borderLeft="default">
-            {Object.keys(skeletonItineraries).map((itineraryId, index) => {
-              // Present blurred items as placeholder during load...
-              // eslint-disable-next-line security/detect-object-injection
-              const itinerary = skeletonItineraries[itineraryId];
-              const flight = flightType === "RETURN" && itinerary.retFlight ? itinerary.retFlight : itinerary.depFlight;
-              return (
-                <TimelineRow
-                  flight={flight}
-                  itinerary={itinerary}
-                  flightType={flightType}
-                  intervalCount={intervalInfo.intervals.length}
-                  increment={intervalInfo.increment}
-                  startHourOffset={intervalInfo.startHour}
-                  key={`skeleton-itinerary-${index}`}
-                  from={formData.from}
-                  to={formData.to}
-                  index={index}
-                  hide={!!displayFlights.length}
-                  skeleton={true}
-                  onSelection={() => {}} // eslint-disable-line @typescript-eslint/no-empty-function
-                />
-              );
-            })}
+            {!displayFlights.length &&
+              Object.keys(skeletonItineraries).map((itineraryId, index) => {
+                // Present blurred items as placeholder during load...
+                // eslint-disable-next-line security/detect-object-injection
+                const itinerary = skeletonItineraries[itineraryId];
+                const flight =
+                  flightType === "RETURN" && itinerary.retFlight ? itinerary.retFlight : itinerary.depFlight;
+                return (
+                  <TimelineRow
+                    flight={flight}
+                    itinerary={itinerary}
+                    flightType={flightType}
+                    intervalCount={intervalInfo.intervals.length}
+                    increment={intervalInfo.increment}
+                    startHourOffset={intervalInfo.startHour}
+                    key={`skeleton-itinerary-${index}`}
+                    from={formData.from}
+                    to={formData.to}
+                    index={index}
+                    selected={false}
+                    skeleton={true}
+                    onSelection={() => {}} // eslint-disable-line @typescript-eslint/no-empty-function
+                  />
+                );
+              })}
             {displayFlights.map((flight, index) => {
               const flightPenguinId = getFlightPenguinId(flight);
               const cheapestItinerary = getCheapestItinerary(flight, itineraries);
@@ -129,10 +134,11 @@ export const TimelineContainer = ({
                     from={formData.from}
                     to={formData.to}
                     index={index}
-                    hide={!!selectedFlightDetails}
+                    selected={!!selectedFlightDetails && selectedFlightDetails.flightPenguinId === flight.id}
                     skeleton={false}
                     onSelection={(details: FlightSelection) => {
                       setSelectedFlightDetails(details);
+                      setDisplayFlights([details.flight]);
                       onSelection(details);
                     }}
                   />
