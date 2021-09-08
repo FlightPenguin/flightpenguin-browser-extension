@@ -6,6 +6,7 @@ import FadeIn from "react-fade-in";
 import { FlightSearchFormData } from "../../../shared/types/FlightSearchFormData";
 import { ProcessedFlightSearchResult } from "../../../shared/types/ProcessedFlightSearchResult";
 import { ProcessedItinerary } from "../../../shared/types/ProcessedItinerary";
+import { containerWidth, flightTimeContainerWidth, legendWidth, sidePaddingWidth } from "../../constants";
 import { FlightSelection } from "../FlightSelection";
 import { TimelineHeader } from "../Header";
 import { TimelineRow } from "../Row";
@@ -32,11 +33,6 @@ export const TimelineContainer = ({
   loading,
   onSelection,
 }: TimelimeContainerProps): React.ReactElement => {
-  const containerWidth = 1418;
-  const legendWidth = 300;
-  const sidePaddingWidth = 85;
-  const flightTimeContainerWidth = containerWidth - legendWidth - 1;
-
   const skeletonItineraries = _skeletonItineraries as { [keyof: string]: ProcessedItinerary };
 
   const [selectedFlightDetails, setSelectedFlightDetails] = useState<FlightSelection | null>(null);

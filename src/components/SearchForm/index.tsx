@@ -4,7 +4,9 @@ import { Field as FormikField, Form, Formik } from "formik";
 import React, { useState } from "react";
 import { boolean, mixed, number, object, string } from "yup";
 
+import { CabinMap } from "../../background/constants";
 import { FlightSearchFormData } from "../../shared/types/FlightSearchFormData";
+import { searchFormWidth } from "../constants";
 import { getFieldState, getParsedDate, getValidationText } from "../utilities/forms";
 import { getChromeFormatDate } from "../utilities/forms/getChromeFormatDate";
 import { getFormattedDate } from "../utilities/forms/getFormattedDate";
@@ -68,7 +70,7 @@ const SearchFormSchema = object({
 }).required();
 
 type FormState = ReturnType<typeof SearchFormSchema.validateSync>;
-const initialValues = {
+const defaultInitialValues: FormState = {
   from: "",
   to: "",
   fromDate: getFormattedDate(addDays(today, 1)),
@@ -81,14 +83,13 @@ const initialValues = {
 
 interface SearchFormProps {
   onSubmit: (values: FlightSearchFormData) => void;
+  initialValues?: FormState;
 }
 
-export const SearchForm = ({ onSubmit }: SearchFormProps): React.ReactElement => {
-  const [sent, setSent] = useState(false);
-
+export const SearchForm = ({ onSubmit, initialValues = defaultInitialValues }: SearchFormProps): React.ReactElement => {
   return (
-    <Box className="search-form-wrapper" display={sent ? "none" : "block"}>
-      <Card maxWidth="768px">
+    <Box className="search-form-wrapper">
+      <Card maxWidth={`${searchFormWidth}px`}>
         <Formik
           initialValues={initialValues}
           validateOnBlur={true}
@@ -105,7 +106,6 @@ export const SearchForm = ({ onSubmit }: SearchFormProps): React.ReactElement =>
 
             sendFormDataToBackground(cleanValues);
             onSubmit(cleanValues);
-            setSent(true);
           }}
         >
           {(formik) => (
@@ -287,12 +287,9 @@ export const SearchForm = ({ onSubmit }: SearchFormProps): React.ReactElement =>
                   <FormikField
                     component={Select.Formik}
                     name="cabin"
-                    options={[
-                      { value: "econ", label: "Economy" },
-                      { value: "prem_econ", label: "Premium economy" },
-                      { value: "business", label: "Business" },
-                      { value: "first", label: "First" },
-                    ]}
+                    options={Object.entries(CabinMap).map(([key, val]) => {
+                      return { label: val, value: key };
+                    })}
                     width="100%"
                     autoComplete="off"
                     hasFieldWrapper={true}

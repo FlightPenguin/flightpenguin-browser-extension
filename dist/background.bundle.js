@@ -603,13 +603,20 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "PROVIDERS_NEEDING_RETURNS": () => (/* binding */ PROVIDERS_NEEDING_RETURNS),
 /* harmony export */   "PROVIDERS_SUPPORTING_POINTS_SEARCH": () => (/* binding */ PROVIDERS_SUPPORTING_POINTS_SEARCH),
 /* harmony export */   "SUPPORTED_PROVIDERS": () => (/* binding */ SUPPORTED_PROVIDERS),
-/* harmony export */   "DEFAULT_ON_READY_FUNCTION": () => (/* binding */ DEFAULT_ON_READY_FUNCTION)
+/* harmony export */   "DEFAULT_ON_READY_FUNCTION": () => (/* binding */ DEFAULT_ON_READY_FUNCTION),
+/* harmony export */   "CabinMap": () => (/* binding */ CabinMap)
 /* harmony export */ });
 var PROVIDERS_NEEDING_RETURNS = ["expedia", "skiplagged"];
 var PROVIDERS_SUPPORTING_POINTS_SEARCH = ["expedia"];
 var SUPPORTED_PROVIDERS = ["expedia", "southwest"]; // eslint-disable-next-line @typescript-eslint/no-empty-function
 
 var DEFAULT_ON_READY_FUNCTION = function DEFAULT_ON_READY_FUNCTION() {};
+var CabinMap = {
+  econ: "Economy",
+  prem_econ: "Premium Economy",
+  business: "Business",
+  first: "First"
+};
 
 /***/ }),
 

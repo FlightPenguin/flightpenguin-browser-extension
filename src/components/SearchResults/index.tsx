@@ -3,6 +3,7 @@ import { parseISO } from "date-fns";
 import React, { useEffect, useState } from "react";
 
 import { sendHighlightTab } from "../../shared/events";
+import { sendIndexUnload } from "../../shared/events/sendIndexUnload";
 import { FlightSearchFormData } from "../../shared/types/FlightSearchFormData";
 import { ProcessedFlightSearchResult } from "../../shared/types/ProcessedFlightSearchResult";
 import { ProcessedItinerary } from "../../shared/types/ProcessedItinerary";
@@ -10,7 +11,7 @@ import { TimelineContainer } from "./Container";
 import { FlightSelection } from "./FlightSelection";
 
 interface SearchResultsProps {
-  formData: FlightSearchFormData | null;
+  formData: FlightSearchFormData;
 }
 
 export const SearchResults = ({ formData }: SearchResultsProps): React.ReactElement => {
@@ -60,33 +61,28 @@ export const SearchResults = ({ formData }: SearchResultsProps): React.ReactElem
 
   useEffect(() => {
     window.addEventListener("beforeunload", function () {
-      // send message to bg that the page is being unloaded
-      chrome.runtime.sendMessage({
-        event: "INDEX_UNLOAD",
-      });
+      sendIndexUnload();
     });
   });
 
   return (
-    <Box className="search-results-container" alignX="center">
-      {!!formData && (
-        <TimelineContainer
-          flightType="DEPARTURE"
-          itineraries={flights.itineraries}
-          flights={flights.departureFlights}
-          formData={formData}
-          loading={!departuresComplete}
-          onSelection={(details) => {
-            setDepartureFlightDetails(details);
+    <Box className="search-results-container" alignX="center" paddingTop="50px">
+      <TimelineContainer
+        flightType="DEPARTURE"
+        itineraries={flights.itineraries}
+        flights={flights.departureFlights}
+        formData={formData}
+        loading={!departuresComplete}
+        onSelection={(details) => {
+          setDepartureFlightDetails(details);
 
-            if (!formData?.roundtrip) {
-              sendHighlightTab(details.flightPenguinId, "");
-            }
-          }}
-        />
-      )}
+          if (!formData?.roundtrip) {
+            sendHighlightTab(details.flightPenguinId, "");
+          }
+        }}
+      />
 
-      {!!departureFlightDetails && !!formData && (
+      {!!departureFlightDetails && (
         <>
           <Box height="100px" />
           <TimelineContainer
