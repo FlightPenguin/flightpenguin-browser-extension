@@ -1,7 +1,7 @@
 import { Box, Button, Card, FieldStack, FieldWrapper, Input, RadioGroup, Select, Switch } from "bumbag";
-import { addDays, endOfDay, startOfDay } from "date-fns";
+import { addDays, endOfDay, nextSunday, startOfDay } from "date-fns";
 import { Field as FormikField, Form, Formik } from "formik";
-import React, { useState } from "react";
+import React from "react";
 import { boolean, mixed, number, object, string } from "yup";
 
 import { CabinMap } from "../../background/constants";
@@ -12,8 +12,8 @@ import { disableNonAlphaInput } from "../utilities/forms/disableNonAlphaInput";
 import { getChromeFormatDate } from "../utilities/forms/getChromeFormatDate";
 import { getFormattedDate } from "../utilities/forms/getFormattedDate";
 import { getStandardizedFormatDate } from "../utilities/forms/getStandardizedFormatDate";
-import { isAlphaKeyboardInput } from "../utilities/forms/isAlphaKeyboardInput";
 import { isValidDateInputString } from "../utilities/forms/isValidDateInputString";
+import { getFridayAfterNext } from "./utilities/getFridayAfterNext";
 import { sendFormDataToBackground } from "./utilities/sendFormDataToBackground";
 
 const airportCodeHelpText = "Airport codes must be three uppercase letters (e.g. SFO).";
@@ -21,6 +21,7 @@ const cabinHelpText = "You must select a cabin type.";
 
 const today = startOfDay(new Date());
 const maxDate = addDays(endOfDay(new Date()), 345);
+const fridayAfterNext = getFridayAfterNext();
 
 const SearchFormSchema = object({
   from: string()
@@ -75,8 +76,8 @@ type FormState = ReturnType<typeof SearchFormSchema.validateSync>;
 const defaultInitialValues: FormState = {
   from: "",
   to: "",
-  fromDate: getFormattedDate(addDays(today, 1)),
-  toDate: getFormattedDate(addDays(today, 4)),
+  fromDate: getFormattedDate(fridayAfterNext),
+  toDate: getFormattedDate(nextSunday(fridayAfterNext)),
   numPax: 1,
   roundtrip: true,
   cabin: "econ",
