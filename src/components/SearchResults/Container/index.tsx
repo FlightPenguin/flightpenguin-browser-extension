@@ -74,13 +74,7 @@ export const TimelineContainer = ({
       altitude="400"
       width={`${containerWidth + sidePaddingWidth * 2}px`}
     >
-      <TimelineTitle
-        key="search-title"
-        flightType={flightType}
-        headerWidth={flightTimeContainerWidth}
-        legendWidth={legendWidth}
-        loading={loading}
-      />
+      <TimelineTitle key="search-title" flightType={flightType} loading={loading} />
       <Box
         data-name={`${flightType.toLowerCase()}-container`}
         display="flex"
@@ -106,9 +100,6 @@ export const TimelineContainer = ({
                   flight={flight}
                   itinerary={itinerary}
                   flightType={flightType}
-                  maxRowWidth={containerWidth}
-                  flightTimeContainerWidth={flightTimeContainerWidth}
-                  legendWidth={legendWidth}
                   intervalCount={intervalInfo.intervals.length}
                   increment={intervalInfo.increment}
                   startHourOffset={intervalInfo.startHour}
@@ -131,9 +122,6 @@ export const TimelineContainer = ({
                     flight={flight}
                     itinerary={cheapestItinerary}
                     flightType={flightType}
-                    maxRowWidth={containerWidth}
-                    flightTimeContainerWidth={flightTimeContainerWidth}
-                    legendWidth={legendWidth}
                     intervalCount={intervalInfo.intervals.length}
                     increment={intervalInfo.increment}
                     startHourOffset={intervalInfo.startHour}

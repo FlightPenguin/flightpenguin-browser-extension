@@ -7,6 +7,7 @@ import {
   ProcessedFlightSearchResult,
 } from "../../../shared/types/ProcessedFlightSearchResult";
 import { ProcessedItinerary } from "../../../shared/types/ProcessedItinerary";
+import { containerWidth, flightTimeContainerWidth, legendWidth, sidePaddingWidth } from "../../constants";
 import { FlightSelection } from "../FlightSelection";
 import { FlightLegend } from "./FlightLegend";
 import { FlightSegmentBox } from "./FlightSegment";
@@ -18,9 +19,6 @@ interface TimelineRowProps {
   itinerary: ProcessedItinerary;
   flight: ProcessedFlightSearchResult;
   flightType: "DEPARTURE" | "RETURN";
-  flightTimeContainerWidth: number;
-  legendWidth: number;
-  maxRowWidth: number;
   intervalCount: number;
   increment: number;
   startHourOffset: number;
@@ -36,9 +34,6 @@ export const TimelineRow = ({
   itinerary,
   flight,
   flightType,
-  legendWidth,
-  flightTimeContainerWidth,
-  maxRowWidth,
   intervalCount,
   increment,
   startHourOffset,
@@ -80,7 +75,7 @@ export const TimelineRow = ({
       data-flightpenguin-id={flight.id}
       data-flight-name={getProcessedSearchResultFlightName(flight)}
       data-selected={selected}
-      width={`${maxRowWidth}px`}
+      width={`${containerWidth}px`}
       onClick={() => {
         if (skeleton) {
           return;

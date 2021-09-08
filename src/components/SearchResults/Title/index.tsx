@@ -1,16 +1,15 @@
 import { Box, Spinner, Text, Tooltip } from "bumbag";
 import capitalize from "lodash.capitalize";
-import pluralize from "pluralize";
 import React from "react";
+
+import { flightTimeContainerWidth as headerWidth, legendWidth } from "../../constants";
 
 interface TimelineTitleProps {
   flightType: "DEPARTURE" | "RETURN";
-  legendWidth: number;
-  headerWidth: number;
   loading: boolean;
 }
 
-const TimelineTitle = ({ flightType, legendWidth, headerWidth, loading }: TimelineTitleProps): React.ReactElement => {
+const TimelineTitle = ({ flightType, loading }: TimelineTitleProps): React.ReactElement => {
   return (
     <Box data-name={`${flightType.toLowerCase()}-container`} display="flex" position="relative" justifyContent="center">
       <Box alignX="left" width={`${legendWidth}px`} flexDirection="row">
@@ -36,5 +35,5 @@ const TimelineTitle = ({ flightType, legendWidth, headerWidth, loading }: Timeli
 };
 
 export default React.memo(TimelineTitle, (previous, next) => {
-  return previous.loading === next.loading;
+  return previous.loading === next.loading && previous.flightType === next.flightType;
 });
