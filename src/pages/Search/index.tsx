@@ -3,7 +3,7 @@ import React, { useState } from "react";
 
 import NavigationBar from "../../components/NavigationBar";
 import { SearchForm } from "../../components/SearchForm";
-import { SearchFormDisplay } from "../../components/SearchFormDisplay";
+import SearchFormDisplay from "../../components/SearchFormDisplay";
 import { SearchResults } from "../../components/SearchResults";
 import { getStandardizedFormatDate } from "../../components/utilities/forms/getStandardizedFormatDate";
 import { sendIndexUnload } from "../../shared/events/sendIndexUnload";

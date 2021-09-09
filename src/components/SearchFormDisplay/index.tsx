@@ -1,4 +1,5 @@
 import { Box, Button, Icon, Input, Text } from "bumbag";
+import isEqual from "lodash.isequal";
 import React, { useState } from "react";
 
 import { CabinMap } from "../../background/constants";
@@ -12,7 +13,7 @@ interface SearchFormDisplayProps {
   onUpdateClick: () => void;
 }
 
-export const SearchFormDisplay = ({ formData, onUpdateClick }: SearchFormDisplayProps): React.ReactElement => {
+const SearchFormDisplay = ({ formData, onUpdateClick }: SearchFormDisplayProps): React.ReactElement => {
   const [disabled, setDisabled] = useState(false);
 
   return (
@@ -118,3 +119,7 @@ export const SearchFormDisplay = ({ formData, onUpdateClick }: SearchFormDisplay
     </Box>
   );
 };
+
+export default React.memo(SearchFormDisplay, (previous, next) => {
+  return isEqual(previous, next);
+});

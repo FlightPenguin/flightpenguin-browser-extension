@@ -1,5 +1,6 @@
 import { Box, Spinner, Text, Tooltip } from "bumbag";
 import capitalize from "lodash.capitalize";
+import isEqual from "lodash.isequal";
 import React from "react";
 
 import { flightTimeContainerWidth as headerWidth, legendWidth } from "../../constants";
@@ -35,5 +36,5 @@ const TimelineTitle = ({ flightType, loading }: TimelineTitleProps): React.React
 };
 
 export default React.memo(TimelineTitle, (previous, next) => {
-  return previous.loading === next.loading && previous.flightType === next.flightType;
+  return isEqual(previous, next);
 });

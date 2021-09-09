@@ -1,4 +1,5 @@
 import { Box, Text, Tooltip } from "bumbag";
+import isEqual from "lodash.isequal";
 import React from "react";
 
 import { FlightSearchFormData } from "../../../shared/types/FlightSearchFormData";
@@ -21,7 +22,7 @@ const TimelineHeader = ({ formData, flightType, intervals, tzOffset }: TimelineH
   const headerOffset = tzOffset ? 100 : 70;
 
   return (
-    <Box data-name={`${flightType.toLowerCase()}-header`} position="relative" width={`${flightTimeContainerWidth}px`}>
+    <Box className={`${flightType.toLowerCase()}-header`} position="relative" width={`${flightTimeContainerWidth}px`}>
       <Box position="absolute" top={`-${headerOffset}px`}>
         {intervals.map((interval, index) => {
           const time = getHeaderTime(interval);
@@ -42,7 +43,7 @@ const TimelineHeader = ({ formData, flightType, intervals, tzOffset }: TimelineH
           return (
             <Box
               key={`interval-wrapper-${intervalDate.toLocaleDateString("en-US")}-${time}`}
-              data-name="interval"
+              className="interval"
               left={`${startX}px`}
               display="flex"
               flexDirection="column"
@@ -74,7 +75,7 @@ const TimelineHeader = ({ formData, flightType, intervals, tzOffset }: TimelineH
         })}
       </Box>
       <Box
-        data-name={`${flightType.toLowerCase()}-dividers`}
+        className={`${flightType.toLowerCase()}-dividers`}
         position="absolute"
         display="flex"
         flexDirection="row"
@@ -100,10 +101,5 @@ const TimelineHeader = ({ formData, flightType, intervals, tzOffset }: TimelineH
 };
 
 export default React.memo(TimelineHeader, (previous, next) => {
-  return (
-    previous.flightType === next.flightType &&
-    previous.intervals === next.intervals &&
-    previous.tzOffset === next.tzOffset &&
-    previous.formData === next.formData
-  );
+  return isEqual(previous, next);
 });

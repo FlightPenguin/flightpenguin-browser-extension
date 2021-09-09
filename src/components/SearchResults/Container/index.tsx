@@ -9,7 +9,7 @@ import { ProcessedItinerary } from "../../../shared/types/ProcessedItinerary";
 import { containerWidth, flightTimeContainerWidth, legendWidth, sidePaddingWidth } from "../../constants";
 import { FlightSelection } from "../FlightSelection";
 import TimelineHeader from "../Header";
-import { TimelineRow } from "../Row";
+import TimelineRow from "../Row";
 import TimelineTitle from "../Title";
 import _skeletonItineraries from "./skeletonItineraries.json";
 import { getCheapestItinerary } from "./utilities/getCheapestItinerary";

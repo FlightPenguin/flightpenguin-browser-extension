@@ -1,5 +1,7 @@
 import { Box, List, Tag, Text } from "bumbag";
+import isEqual from "lodash.isequal";
 import React from "react";
+import { debug } from "webpack";
 
 import { sendSelectedFlight } from "../../../shared/events";
 import { ProcessedFlightSearchResult } from "../../../shared/types/ProcessedFlightSearchResult";
@@ -27,7 +29,7 @@ interface TimelineRowProps {
   onSelection: (details: FlightSelection) => void;
 }
 
-export const TimelineRow = ({
+const TimelineRow = ({
   itinerary,
   flight,
   flightType,
@@ -175,3 +177,24 @@ export const TimelineRow = ({
     </List.Item>
   );
 };
+
+export default React.memo(TimelineRow, (previous, next) => {
+  return isEqual(
+    {
+      itineraryId: previous.itinerary.id,
+      flightId: previous.flight.id,
+      intervalCount: previous.intervalCount,
+      increment: previous.increment,
+      startHourOffset: previous.startHourOffset,
+      selected: previous.selected,
+    },
+    {
+      itineraryId: next.itinerary.id,
+      flightId: next.flight.id,
+      intervalCount: next.intervalCount,
+      increment: next.increment,
+      startHourOffset: next.startHourOffset,
+      selected: next.selected,
+    },
+  );
+});
