@@ -1,4 +1,5 @@
 import { Badge, Box, List } from "bumbag";
+import isEqual from "lodash.isequal";
 import uniqBy from "lodash.uniqby";
 import React, { useEffect, useState } from "react";
 import FadeIn from "react-fade-in";
@@ -25,7 +26,7 @@ interface TimelimeContainerProps {
   onSelection: (details: FlightSelection) => void;
 }
 
-export const TimelineContainer = ({
+const TimelineContainer = ({
   flightType,
   flights,
   itineraries,
@@ -164,3 +165,22 @@ export const TimelineContainer = ({
     </Box>
   );
 };
+
+export default React.memo(TimelineContainer, (previous, next) => {
+  return isEqual(
+    {
+      flights: previous.flights,
+      itineraries: previous.itineraries,
+      formData: previous.formData,
+      flightType: previous.flightType,
+      loading: previous.loading,
+    },
+    {
+      flights: next.flights,
+      itineraries: next.itineraries,
+      formData: next.formData,
+      flightType: next.flightType,
+      loading: next.loading,
+    },
+  );
+});

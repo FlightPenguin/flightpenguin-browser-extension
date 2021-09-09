@@ -7,7 +7,7 @@ import { sendIndexUnload } from "../../shared/events/sendIndexUnload";
 import { FlightSearchFormData } from "../../shared/types/FlightSearchFormData";
 import { ProcessedFlightSearchResult } from "../../shared/types/ProcessedFlightSearchResult";
 import { ProcessedItinerary } from "../../shared/types/ProcessedItinerary";
-import { TimelineContainer } from "./Container";
+import TimelineContainer from "./Container";
 import { FlightSelection } from "./FlightSelection";
 
 interface SearchResultsProps {
