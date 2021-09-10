@@ -1,10 +1,10 @@
-import { Box, Text, Tooltip } from "bumbag";
+import { Box } from "bumbag";
 import isEqual from "lodash.isequal";
 import React from "react";
 
 import { FlightSearchFormData } from "../../../shared/types/FlightSearchFormData";
-import { getWeekdayName } from "../../../shared/utilities/getWeekdayName";
 import { flightTimeContainerWidth } from "../../constants";
+import { TimeCell } from "./TimeCell";
 import { getFlightInfo } from "./utilities/getFlightInfo";
 import { getHeaderTime } from "./utilities/getHeaderTime";
 
@@ -25,52 +25,22 @@ const TimelineHeader = ({ formData, flightType, intervals, tzOffset }: TimelineH
     <Box className={`${flightType.toLowerCase()}-header`} position="relative" width={`${flightTimeContainerWidth}px`}>
       <Box position="absolute" top={`-${headerOffset}px`}>
         {intervals.map((interval, index) => {
-          const time = getHeaderTime(interval);
-          const offsetTime = getHeaderTime(interval, tzOffset);
-          const isMidnight = time.toUpperCase() === "12 AM";
-
-          if (isMidnight && index !== 0) {
+          if (interval % 24 === 0 && interval !== 0) {
             daysCounter += 1;
           }
 
-          const intervalDate = new Date(
-            startDate.getFullYear(),
-            startDate.getMonth(),
-            startDate.getDay() + daysCounter,
-          );
-          const startX = intervalWidth * index;
-
           return (
-            <Box
-              key={`interval-wrapper-${intervalDate.toLocaleDateString("en-US")}-${time}`}
-              className="interval"
-              left={`${startX}px`}
-              display="flex"
-              flexDirection="column"
-              justifyContent="flex-end"
-              alignX="center"
-              marginLeft="-17px"
-              width="48px"
-              position="absolute"
-            >
-              {isMidnight ? (
-                <Box position="relative" border="default" padding="major-1" borderRadius="4">
-                  <Tooltip content={intervalDate.toLocaleDateString("en-US")} hasArrow placement="right">
-                    <Text fontWeight="700">{getWeekdayName(intervalDate)}</Text>
-                  </Tooltip>
-                </Box>
-              ) : (
-                <Text padding="major-1">&nbsp;</Text>
-              )}
-              <Tooltip content={`Time at ${departureAirportCode}`} hasArrow placement="right">
-                <Text fontWeight={isMidnight ? "700" : "400"}>{time.toLowerCase()}</Text>
-              </Tooltip>
-              {!!tzOffset && (
-                <Tooltip content={`Time at ${arrivalAirportCode}`} hasArrow placement="right">
-                  <Text fontWeight={isMidnight ? "700" : "400"}>{offsetTime.toLowerCase()}</Text>
-                </Tooltip>
-              )}
-            </Box>
+            <TimeCell
+              index={index}
+              interval={interval}
+              intervalWidth={intervalWidth}
+              tzOffset={tzOffset}
+              startDate={startDate}
+              daysCounter={daysCounter}
+              departureAirportCode={departureAirportCode}
+              arrivalAirportCode={arrivalAirportCode}
+              key={`interval-header-${interval}`}
+            />
           );
         })}
       </Box>
