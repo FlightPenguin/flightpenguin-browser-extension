@@ -43,18 +43,26 @@ export const TimeCell = ({
       {isMidnight ? (
         <Box position="relative" border="default" padding="major-1" borderRadius="4">
           <Tooltip content={date.toLocaleDateString("en-US")} hasArrow placement="right">
-            <Text fontWeight="700">{getWeekdayName(date)}</Text>
+            <Text fontWeight="700" tabIndex={-1}>
+              {getWeekdayName(date)}
+            </Text>
           </Tooltip>
         </Box>
       ) : (
-        <Text padding="major-1">&nbsp;</Text>
+        <Text padding="major-1" tabIndex={-1}>
+          &nbsp;
+        </Text>
       )}
       <Tooltip content={`Time at ${departureAirportCode}`} hasArrow placement="right">
-        <Text fontWeight={isMidnight ? "700" : "400"}>{time.toLowerCase()}</Text>
+        <Text fontWeight={isMidnight ? "700" : "400"} tabIndex={-1}>
+          {time.toLowerCase()}
+        </Text>
       </Tooltip>
       {!!tzOffset && (
         <Tooltip content={`Time at ${arrivalAirportCode}`} hasArrow placement="right">
-          <Text fontWeight={isMidnight ? "700" : "400"}>{offsetTime.toLowerCase()}</Text>
+          <Text fontWeight={isMidnight ? "700" : "400"} tabIndex={-1}>
+            {offsetTime.toLowerCase()}
+          </Text>
         </Tooltip>
       )}
     </Box>

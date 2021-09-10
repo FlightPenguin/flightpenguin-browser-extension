@@ -29,7 +29,7 @@ const TimelineTitle = ({ flightType, loading }: TimelineTitleProps): React.React
             content="More flights are loading.  You don't need to wait for all the results to come in before selecting one."
             placement="top"
           >
-            <Spinner paddingLeft="major-2" marginTop="major-2" color="warning" duration="1.2s" />
+            <Spinner paddingLeft="major-2" marginTop="major-2" color="warning" duration="1.2s" tabIndex={-1} />
           </Tooltip>
         )}
       </Box>
