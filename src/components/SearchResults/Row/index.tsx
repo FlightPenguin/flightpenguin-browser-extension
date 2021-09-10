@@ -1,7 +1,6 @@
 import { Box, List, Tag, Text } from "bumbag";
 import isEqual from "lodash.isequal";
 import React from "react";
-import { debug } from "webpack";
 
 import { sendSelectedFlight } from "../../../shared/events";
 import { ProcessedFlightSearchResult } from "../../../shared/types/ProcessedFlightSearchResult";
@@ -54,6 +53,7 @@ const TimelineRow = ({
   );
   const flightPenguinId = flight.id;
   const { left, right } = getSegmentContainerPositions(flightSegments);
+  const intervalWidth = flightTimeContainerWidth / (intervalCount - 1);
 
   return (
     <List.Item
@@ -107,9 +107,7 @@ const TimelineRow = ({
         width="100%"
         alignSelf="normal"
         flex={1}
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
-        zIndex="1"
+        background={`repeating-linear-gradient(to right, #e6e6eb, #e6e6eb 3px, transparent 1px, transparent ${intervalWidth}px)`}
       >
         <Box
           data-name="flight-segments"

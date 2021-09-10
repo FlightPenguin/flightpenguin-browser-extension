@@ -78,21 +78,17 @@ const TimelineContainer = ({
       altitude="400"
       width={`${containerWidth + sidePaddingWidth * 2}px`}
     >
-      <TimelineTitle key="search-title" flightType={flightType} loading={loading} />
-      <Box
-        data-name={`${flightType.toLowerCase()}-container`}
-        display="flex"
-        position="relative"
-        justifyContent="center"
-      >
-        <Box
-          display="flex"
-          position="relative"
-          justifyContent="center"
-          border="default"
-          boxSizing="border-box"
-          flexGrow={1}
-        >
+      <Box display="flex" flexDirection="row">
+        <TimelineTitle key="search-title" flightType={flightType} loading={loading} />
+        <TimelineHeader
+          formData={formData}
+          flightType={flightType}
+          intervals={intervalInfo.intervals}
+          tzOffset={intervalInfo.timezoneOffset}
+        />
+      </Box>
+      <Box data-name={`${flightType.toLowerCase()}-container`} display="flex">
+        <Box className="border-flex-box" display="flex" border="default">
           <List width={`${legendWidth}px`} borderLeft="default">
             {!displayFlights.length &&
               Object.keys(skeletonItineraries).map((itineraryId, index) => {
@@ -147,12 +143,6 @@ const TimelineContainer = ({
               );
             })}
           </List>
-          <TimelineHeader
-            formData={formData}
-            flightType={flightType}
-            intervals={intervalInfo.intervals}
-            tzOffset={intervalInfo.timezoneOffset}
-          />
         </Box>
       </Box>
       {selectedFlightDetails && (

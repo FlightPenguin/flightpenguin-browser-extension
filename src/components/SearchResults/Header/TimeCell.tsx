@@ -16,7 +16,6 @@ interface TimeCellProps {
 }
 
 export const TimeCell = ({
-  index,
   interval,
   intervalWidth,
   tzOffset,
@@ -29,20 +28,17 @@ export const TimeCell = ({
   const offsetTime = getHeaderTime(interval, tzOffset);
   const isMidnight = time.toUpperCase() === "12 AM";
 
-  const startPosition = intervalWidth * index;
   const date = new Date(startDate.getFullYear(), startDate.getMonth(), startDate.getDay() + daysCounter);
 
   return (
     <Box
       className="interval"
-      left={`${startPosition}px`}
       display="flex"
       flexDirection="column"
       justifyContent="flex-end"
       alignX="center"
-      marginLeft="-17px"
-      width="48px"
-      position="absolute"
+      width={`${intervalWidth}px`}
+      position="relative"
     >
       {isMidnight ? (
         <Box position="relative" border="default" padding="major-1" borderRadius="4">

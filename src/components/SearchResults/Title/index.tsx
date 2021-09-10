@@ -3,7 +3,7 @@ import capitalize from "lodash.capitalize";
 import isEqual from "lodash.isequal";
 import React from "react";
 
-import { flightTimeContainerWidth as headerWidth, legendWidth } from "../../constants";
+import { legendWidth } from "../../constants";
 
 interface TimelineTitleProps {
   flightType: "DEPARTURE" | "RETURN";
@@ -12,7 +12,13 @@ interface TimelineTitleProps {
 
 const TimelineTitle = ({ flightType, loading }: TimelineTitleProps): React.ReactElement => {
   return (
-    <Box data-name={`${flightType.toLowerCase()}-container`} display="flex" position="relative" justifyContent="center">
+    <Box
+      className={`${flightType.toLowerCase()}-header-title`}
+      display="flex"
+      justifyContent="flex-end"
+      flexDirection="column"
+      border="1px solid transparent"
+    >
       <Box alignX="left" width={`${legendWidth}px`} flexDirection="row">
         <Text alignX="left" fontWeight="700" fontSize="500">
           {capitalize(flightType)}s
@@ -27,10 +33,6 @@ const TimelineTitle = ({ flightType, loading }: TimelineTitleProps): React.React
           </Tooltip>
         )}
       </Box>
-
-      <Text position="relative" width={`${headerWidth}px`}>
-        &nbsp;
-      </Text>
     </Box>
   );
 };
