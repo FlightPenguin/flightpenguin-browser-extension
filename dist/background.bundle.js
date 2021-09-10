@@ -558,9 +558,9 @@ var ProviderManager = /*#__PURE__*/function () {
           _this8 = this;
 
       this.setFormData(formData);
-      var primaryTabId = this === null || this === void 0 ? void 0 : (_this$primaryTab4 = this.primaryTab) === null || _this$primaryTab4 === void 0 ? void 0 : _this$primaryTab4.id;
+      var primaryWindowId = this === null || this === void 0 ? void 0 : (_this$primaryTab4 = this.primaryTab) === null || _this$primaryTab4 === void 0 ? void 0 : _this$primaryTab4.windowId;
 
-      if (primaryTabId !== undefined && primaryTabId !== null) {
+      if (primaryWindowId !== undefined && primaryWindowId !== null) {
         var promises = this.knownProviders.map(function (provider) {
           var url = providerURLBaseMap[provider](formData); // Open url in a new window.
           // Not a new tab because we can't read results from inactive tabs (browser powers down inactive tabs).
@@ -569,7 +569,7 @@ var ProviderManager = /*#__PURE__*/function () {
         });
         Promise.all(promises).then(function () {
           // update again for chrome on windows, to move results window to foreground
-          chrome.windows.update(primaryTabId, {
+          chrome.windows.update(primaryWindowId, {
             focused: true
           });
         });

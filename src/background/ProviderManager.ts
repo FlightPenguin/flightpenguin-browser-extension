@@ -40,6 +40,7 @@ const providerURLBaseMap: { [key: string]: (formData: FlightSearchFormData) => s
 export class ProviderManager {
   private knownProviders: string[];
   private state: { [key: string]: ProviderState };
+
   private primaryTab: chrome.tabs.Tab | null;
   private itineraries: { [key: string]: Itinerary };
   private itinerariesVersion: number;
@@ -367,8 +368,8 @@ export class ProviderManager {
 
   searchForResults(formData: FlightSearchFormData, windowConfig: WindowConfig): void {
     this.setFormData(formData);
-    const primaryTabId = this?.primaryTab?.id;
-    if (primaryTabId !== undefined && primaryTabId !== null) {
+    const primaryWindowId = this?.primaryTab?.windowId;
+    if (primaryWindowId !== undefined && primaryWindowId !== null) {
       const promises = this.knownProviders.map((provider) => {
         const url = providerURLBaseMap[provider](formData);
         // Open url in a new window.
@@ -378,7 +379,7 @@ export class ProviderManager {
 
       Promise.all(promises).then(() => {
         // update again for chrome on windows, to move results window to foreground
-        chrome.windows.update(primaryTabId, { focused: true });
+        chrome.windows.update(primaryWindowId, { focused: true });
       });
     }
   }
