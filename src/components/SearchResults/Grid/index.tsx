@@ -43,7 +43,7 @@ const TimelineGrid = ({
     const flightPenguinId = getFlightPenguinId(flight);
 
     return (
-      <Box key={key} style={style} role="group" width={`${containerWidth}px`}>
+      <Box key={key} style={style} width={`${containerWidth}px`}>
         <TimelineRow
           flight={flight}
           itinerary={cheapestItinerary}
@@ -66,7 +66,7 @@ const TimelineGrid = ({
   };
 
   return (
-    <BumbagList role="group">
+    <BumbagList>
       <WindowScroller scrollElement={window}>
         {({ height, isScrolling, registerChild, onChildScroll, scrollTop }) => (
           <Box ref={registerChild}>

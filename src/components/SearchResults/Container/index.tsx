@@ -83,7 +83,7 @@ const TimelineContainer = ({
       paddingLeft={`${sidePaddingWidth}px`}
       paddingRight={`${sidePaddingWidth}px`}
       paddingBottom="45px"
-      paddingTop="95px"
+      paddingTop="45px"
       altitude="400"
       width={`${containerWidth + sidePaddingWidth * 2}px`}
     >
