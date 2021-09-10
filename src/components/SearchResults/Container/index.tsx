@@ -21,6 +21,7 @@ interface TimelimeContainerProps {
   formData: FlightSearchFormData;
   loading: boolean;
   onSelection: (details: FlightSelection) => void;
+  onClear: () => void;
 }
 
 const TimelineContainer = ({
@@ -30,6 +31,7 @@ const TimelineContainer = ({
   formData,
   loading,
   onSelection,
+  onClear,
 }: TimelimeContainerProps): React.ReactElement => {
   const [skeletonItineraries, setSkeletonItineraries] = useState<{ [keyof: string]: ProcessedItinerary }>({});
   const [skeletonFlights, setSkeletonFlights] = useState<ProcessedFlightSearchResult[]>([]);
@@ -133,7 +135,15 @@ const TimelineContainer = ({
       </Box>
       {selectedFlightDetails && (
         <Badge isAttached size="large" palette="danger">
-          <Box marginBottom="5px" fontSize={200} cursor="pointer" onClick={() => setSelectedFlightDetails(null)}>
+          <Box
+            marginBottom="5px"
+            fontSize={200}
+            cursor="pointer"
+            onClick={() => {
+              setSelectedFlightDetails(null);
+              onClear();
+            }}
+          >
             x
           </Box>
         </Badge>

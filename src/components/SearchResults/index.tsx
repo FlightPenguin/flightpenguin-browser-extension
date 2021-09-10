@@ -85,11 +85,16 @@ export const SearchResults = ({ formData }: SearchResultsProps): React.ReactElem
             sendHighlightTab(details.flightPenguinId, "");
           }
         }}
+        onClear={() => {
+          setDepartureFlightDetails(null);
+          setFlights({ ...flights, returnFlights: [] });
+          setReturnsComplete(false);
+        }}
       />
 
       {!!departureFlightDetails && (
         <>
-          <Box height="100px" />
+          <Box height="50px" />
           <TimelineContainer
             flightType="RETURN"
             itineraries={flights.itineraries}
@@ -100,6 +105,9 @@ export const SearchResults = ({ formData }: SearchResultsProps): React.ReactElem
               setReturnFlightDetails(details);
 
               sendHighlightTab(departureFlightDetails?.flightPenguinId, details.flightPenguinId);
+            }}
+            onClear={() => {
+              setReturnFlightDetails(null);
             }}
           />
         </>
