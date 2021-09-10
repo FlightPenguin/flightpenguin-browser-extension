@@ -1,3 +1,4 @@
+import { useDebounce } from "@react-hook/debounce";
 import { Box } from "bumbag";
 import { parseISO } from "date-fns";
 import React, { useEffect, useState } from "react";
@@ -15,17 +16,21 @@ interface SearchResultsProps {
 }
 
 export const SearchResults = ({ formData }: SearchResultsProps): React.ReactElement => {
-  const [flights, setFlights] = useState<{
+  const [flights, setFlights] = useDebounce<{
     itineraries: { [keyof: string]: ProcessedItinerary };
     departureFlights: ProcessedFlightSearchResult[];
     returnFlights: ProcessedFlightSearchResult[];
     lastUpdatedAt: Date | null;
-  }>({
-    itineraries: {},
-    departureFlights: [],
-    returnFlights: [],
-    lastUpdatedAt: null, // helper to make sure we ignore out of order updates.
-  });
+  }>(
+    {
+      itineraries: {},
+      departureFlights: [],
+      returnFlights: [],
+      lastUpdatedAt: null, // helper to make sure we ignore out of order updates.
+    },
+    1000,
+    false,
+  );
 
   const [departuresComplete, setDeparturesComplete] = useState(false);
   const [returnsComplete, setReturnsComplete] = useState(false);
