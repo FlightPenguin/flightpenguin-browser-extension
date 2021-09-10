@@ -1,20 +1,17 @@
-import { Badge, Box, List } from "bumbag";
+import { Badge, Box } from "bumbag";
 import isEqual from "lodash.isequal";
 import uniqBy from "lodash.uniqby";
 import React, { useEffect, useState } from "react";
-import FadeIn from "react-fade-in";
 
 import { FlightSearchFormData } from "../../../shared/types/FlightSearchFormData";
 import { ProcessedFlightSearchResult } from "../../../shared/types/ProcessedFlightSearchResult";
 import { ProcessedItinerary } from "../../../shared/types/ProcessedItinerary";
-import { containerWidth, flightTimeContainerWidth, legendWidth, sidePaddingWidth } from "../../constants";
+import { containerWidth, flightTimeContainerWidth, sidePaddingWidth } from "../../constants";
 import { FlightSelection } from "../FlightSelection";
+import TimelineGrid from "../Grid";
 import TimelineHeader from "../Header";
-import TimelineRow from "../Row";
 import TimelineTitle from "../Title";
 import _skeletonItineraries from "./skeletonItineraries.json";
-import { getCheapestItinerary } from "./utilities/getCheapestItinerary";
-import { getFlightPenguinId } from "./utilities/getFlightPenguinId";
 import { getIntervalInfo } from "./utilities/getIntervalInfo";
 
 interface TimelimeContainerProps {
@@ -34,7 +31,8 @@ const TimelineContainer = ({
   loading,
   onSelection,
 }: TimelimeContainerProps): React.ReactElement => {
-  const skeletonItineraries = _skeletonItineraries as { [keyof: string]: ProcessedItinerary };
+  const [skeletonItineraries, setSkeletonItineraries] = useState<{ [keyof: string]: ProcessedItinerary }>({});
+  const [skeletonFlights, setSkeletonFlights] = useState<ProcessedFlightSearchResult[]>([]);
 
   const [selectedFlightDetails, setSelectedFlightDetails] = useState<FlightSelection | null>(null);
   const [displayFlights, setDisplayFlights] = useState<ProcessedFlightSearchResult[]>([]);
@@ -44,6 +42,17 @@ const TimelineContainer = ({
     intervals: number[];
     timezoneOffset: number;
   }>({ startHour: 0, increment: 4, intervals: [0, 4, 8, 12, 16, 20, 24, 28], timezoneOffset: 0 });
+
+  useEffect(() => {
+    const itins = _skeletonItineraries as { [keyof: string]: ProcessedItinerary };
+    setSkeletonItineraries(itins);
+    setSkeletonFlights(
+      Object.keys(_skeletonItineraries).map((itineraryId) => {
+        const itinerary = itins[itineraryId];
+        return flightType === "RETURN" && itinerary.retFlight ? itinerary.retFlight : itinerary.depFlight;
+      }),
+    );
+  }, [_skeletonItineraries]);
 
   useEffect(() => {
     if (selectedFlightDetails) {
@@ -89,60 +98,37 @@ const TimelineContainer = ({
       </Box>
       <Box data-name={`${flightType.toLowerCase()}-container`} display="flex">
         <Box className="border-flex-box" display="flex" border="default">
-          <List width={`${legendWidth}px`} borderLeft="default">
-            {!displayFlights.length &&
-              Object.keys(skeletonItineraries).map((itineraryId, index) => {
-                // Present blurred items as placeholder during load...
-                // eslint-disable-next-line security/detect-object-injection
-                const itinerary = skeletonItineraries[itineraryId];
-                const flight =
-                  flightType === "RETURN" && itinerary.retFlight ? itinerary.retFlight : itinerary.depFlight;
-                return (
-                  <TimelineRow
-                    flight={flight}
-                    itinerary={itinerary}
-                    flightType={flightType}
-                    intervalCount={intervalInfo.intervals.length}
-                    increment={intervalInfo.increment}
-                    startHourOffset={intervalInfo.startHour}
-                    key={`skeleton-itinerary-${index}`}
-                    from={formData.from}
-                    to={formData.to}
-                    index={index}
-                    selected={false}
-                    skeleton={true}
-                    onSelection={() => {}} // eslint-disable-line @typescript-eslint/no-empty-function
-                  />
-                );
-              })}
-            {displayFlights.map((flight, index) => {
-              const flightPenguinId = getFlightPenguinId(flight);
-              const cheapestItinerary = getCheapestItinerary(flight, itineraries);
-              return (
-                <FadeIn transitionDuration={1000} key={`itinerary-${flightPenguinId}`}>
-                  <TimelineRow
-                    flight={flight}
-                    itinerary={cheapestItinerary}
-                    flightType={flightType}
-                    intervalCount={intervalInfo.intervals.length}
-                    increment={intervalInfo.increment}
-                    startHourOffset={intervalInfo.startHour}
-                    key={`itinerary-${flightPenguinId}`}
-                    from={formData.from}
-                    to={formData.to}
-                    index={index}
-                    selected={!!selectedFlightDetails && selectedFlightDetails.flightPenguinId === flight.id}
-                    skeleton={false}
-                    onSelection={(details: FlightSelection) => {
-                      setSelectedFlightDetails(details);
-                      setDisplayFlights([details.flight]);
-                      onSelection(details);
-                    }}
-                  />
-                </FadeIn>
-              );
-            })}
-          </List>
+          {displayFlights.length ? (
+            <TimelineGrid
+              flights={displayFlights}
+              itineraries={itineraries}
+              startHour={intervalInfo.startHour}
+              increment={intervalInfo.increment}
+              intervalCount={intervalInfo.intervals.length}
+              flightType={flightType}
+              formData={formData}
+              skeleton={false}
+              selectedFlight={selectedFlightDetails?.flight}
+              onSelection={(details: FlightSelection) => {
+                setSelectedFlightDetails(details);
+                setDisplayFlights([details.flight]);
+                onSelection(details);
+              }}
+            />
+          ) : (
+            <TimelineGrid
+              flights={skeletonFlights}
+              itineraries={skeletonItineraries}
+              startHour={intervalInfo.startHour}
+              increment={intervalInfo.increment}
+              intervalCount={intervalInfo.intervals.length}
+              flightType={flightType}
+              formData={formData}
+              skeleton={true}
+              selectedFlight={undefined}
+              onSelection={() => {}} // eslint-disable-line @typescript-eslint/no-empty-function
+            />
+          )}
         </Box>
       </Box>
       {selectedFlightDetails && (
