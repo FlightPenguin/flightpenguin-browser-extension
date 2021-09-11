@@ -44,9 +44,9 @@ const scrapeFlights = async () => {
         hasMoreFlights = false;
       } else {
         hasMoreFlights = false;
-        sendScraperComplete("skyscanner", "BOTH");
       }
     }
+    sendScraperComplete("skyscanner", "BOTH");
   } catch (error) {
     window.Sentry.captureException(error);
     if (!totalFlightCount) {

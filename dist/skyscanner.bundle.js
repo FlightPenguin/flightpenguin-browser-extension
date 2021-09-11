@@ -2214,9 +2214,10 @@ var scrapeFlights = /*#__PURE__*/function () {
           hasMoreFlights = false;
         } else {
           hasMoreFlights = false;
-          (0,_shared_events__WEBPACK_IMPORTED_MODULE_1__.sendScraperComplete)("skyscanner", "BOTH");
         }
       }
+
+      (0,_shared_events__WEBPACK_IMPORTED_MODULE_1__.sendScraperComplete)("skyscanner", "BOTH");
     } catch (error) {
       window.Sentry.captureException(error);
 
