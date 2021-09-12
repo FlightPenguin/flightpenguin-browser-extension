@@ -608,7 +608,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 var PROVIDERS_NEEDING_RETURNS = ["expedia", "skiplagged"];
 var PROVIDERS_SUPPORTING_POINTS_SEARCH = ["expedia"];
-var SUPPORTED_PROVIDERS = ["expedia", "southwest", "skyscanner"]; // eslint-disable-next-line @typescript-eslint/no-empty-function
+var SUPPORTED_PROVIDERS = ["expedia"]; // eslint-disable-next-line @typescript-eslint/no-empty-function
 
 var DEFAULT_ON_READY_FUNCTION = function DEFAULT_ON_READY_FUNCTION() {};
 var CabinMap = {
@@ -929,7 +929,8 @@ var handleFlightReturnResultsReceived = function handleFlightReturnResultsReceiv
       existingItineraries = _providerManager$getI.itineraries,
       existingItinerariesVersion = _providerManager$getI.version;
 
-  var existingDepartures = providerManager.getDepartures(); // @ts-ignore
+  var existingDepartures = providerManager.getDepartures(); // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
 
   var _makeItins = (0,_dataModels__WEBPACK_IMPORTED_MODULE_0__.makeItins)(flights, existingDepartures, existingItineraries, providerName, windowId, tabId, true),
       returns = _makeItins.returns,

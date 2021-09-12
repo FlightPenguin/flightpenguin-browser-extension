@@ -67,7 +67,13 @@ const TimelineContainer = ({
   }, [flights, selectedFlightDetails]);
 
   useEffect(() => {
-    if (Object.keys(itineraries).length) {
+    if (
+      Object.keys(itineraries).length &&
+      Object.values(itineraries).some((itinerary) => {
+        const flight = flightType === "RETURN" ? itinerary.retFlight : itinerary.depFlight;
+        return !!flight;
+      })
+    ) {
       const { intervals, increment, startHour } = getIntervalInfo(
         Object.values(itineraries),
         flightType,
