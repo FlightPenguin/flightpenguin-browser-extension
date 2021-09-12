@@ -1,4 +1,4 @@
-export const sendClearSelections = (departureFlightId: string, returnFlightId: string): void => {
+export const sendClearSelections = (): void => {
   chrome.runtime.sendMessage({
     event: "CLEAR_SELECTIONS",
   });

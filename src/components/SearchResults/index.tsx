@@ -4,6 +4,7 @@ import { parseISO } from "date-fns";
 import React, { useEffect, useState } from "react";
 
 import { sendHighlightTab } from "../../shared/events";
+import { sendClearSelections } from "../../shared/events/sendClearSelections";
 import { sendIndexUnload } from "../../shared/events/sendIndexUnload";
 import { FlightSearchFormData } from "../../shared/types/FlightSearchFormData";
 import { ProcessedFlightSearchResult } from "../../shared/types/ProcessedFlightSearchResult";
@@ -86,6 +87,7 @@ export const SearchResults = ({ formData }: SearchResultsProps): React.ReactElem
           }
         }}
         onClear={() => {
+          sendClearSelections();
           setDepartureFlightDetails(null);
           setFlights({ ...flights, returnFlights: [] });
           setReturnsComplete(false);
