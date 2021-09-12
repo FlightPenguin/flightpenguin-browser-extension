@@ -23,6 +23,7 @@ export const handleFlightReturnResultsReceived = (
   const { itineraries: existingItineraries, version: existingItinerariesVersion } = providerManager.getItineraries();
   const existingDepartures = providerManager.getDepartures();
 
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore
   const { returns, itins: itineraries } = makeItins(
     flights,
