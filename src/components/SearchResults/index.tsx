@@ -21,13 +21,11 @@ export const SearchResults = ({ formData }: SearchResultsProps): React.ReactElem
     itineraries: { [keyof: string]: ProcessedItinerary };
     departureFlights: ProcessedFlightSearchResult[];
     returnFlights: ProcessedFlightSearchResult[];
-    lastUpdatedAt: Date | null;
   }>(
     {
       itineraries: {},
       departureFlights: [],
       returnFlights: [],
-      lastUpdatedAt: null, // helper to make sure we ignore out of order updates.
     },
     1000,
     false,
@@ -43,14 +41,11 @@ export const SearchResults = ({ formData }: SearchResultsProps): React.ReactElem
       switch (message.event) {
         case "FLIGHT_RESULTS_FOR_CLIENT":
         case "RETURN_FLIGHTS_FOR_CLIENT":
-          if (!flights.lastUpdatedAt || parseISO(message.flights.updatedAt) > flights.lastUpdatedAt) {
-            setFlights({
-              itineraries: message.flights.itins,
-              departureFlights: message.flights.departureList,
-              returnFlights: message.flights.returnList,
-              lastUpdatedAt: parseISO(message.flights.updatedAt),
-            });
-          }
+          setFlights({
+            itineraries: message.flights.itins,
+            departureFlights: message.flights.departureList,
+            returnFlights: message.flights.returnList,
+          });
           break;
         case "SCRAPING_COMPLETED":
           if (message.searchType === "RETURN") {
@@ -63,7 +58,7 @@ export const SearchResults = ({ formData }: SearchResultsProps): React.ReactElem
           break;
       }
     });
-  }, [flights, setFlights]);
+  }, [setFlights]);
 
   useEffect(() => {
     window.addEventListener("beforeunload", function () {
