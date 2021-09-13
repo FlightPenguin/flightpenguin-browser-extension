@@ -46,7 +46,7 @@ export const handleFlightReturnResultsReceived = (
       event: "RETURN_FLIGHTS_FOR_CLIENT",
       flights: {
         departureList: sortFlights(providerManager.getDepartures(), allItins),
-        returnList: returnList,
+        returnList: providerManager.getReturns(),
         itins: itineraries,
         updatedAt: new Date(),
       },

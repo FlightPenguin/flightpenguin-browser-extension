@@ -608,7 +608,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 var PROVIDERS_NEEDING_RETURNS = ["expedia", "skiplagged"];
 var PROVIDERS_SUPPORTING_POINTS_SEARCH = ["expedia"];
-var SUPPORTED_PROVIDERS = ["expedia"]; // eslint-disable-next-line @typescript-eslint/no-empty-function
+var SUPPORTED_PROVIDERS = ["skiplagged"]; // eslint-disable-next-line @typescript-eslint/no-empty-function
 
 var DEFAULT_ON_READY_FUNCTION = function DEFAULT_ON_READY_FUNCTION() {};
 var CabinMap = {
@@ -742,6 +742,7 @@ var requestNoRoundtripProviderReturns = function requestNoRoundtripProviderRetur
             itin: departureItineraries[departureProviders.indexOf(providerName)]
           });
           providerManager.setTimer(providerName, 10000, function () {
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
             // @ts-ignore
             Sentry.captureException(new Error("Scraper failed for ".concat(providerName, " return flights")), {
               extra: providerManager.getFormData()
@@ -777,7 +778,7 @@ var getRoundtripProviderReturns = function getRoundtripProviderReturns(departure
     event: "RETURN_FLIGHTS_FOR_CLIENT",
     flights: {
       departureList: (0,_dataModels__WEBPACK_IMPORTED_MODULE_0__.sortFlights)(providerManager.getDepartures(), itineraries),
-      returnList: returnList,
+      returnList: providerManager.getReturns(),
       itins: itineraries,
       updatedAt: new Date()
     },
@@ -949,7 +950,7 @@ var handleFlightReturnResultsReceived = function handleFlightReturnResultsReceiv
       event: "RETURN_FLIGHTS_FOR_CLIENT",
       flights: {
         departureList: (0,_dataModels__WEBPACK_IMPORTED_MODULE_0__.sortFlights)(providerManager.getDepartures(), allItins),
-        returnList: returnList,
+        returnList: providerManager.getReturns(),
         itins: itineraries,
         updatedAt: new Date()
       },

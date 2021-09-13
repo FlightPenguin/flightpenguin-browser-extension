@@ -45,6 +45,7 @@ const requestNoRoundtripProviderReturns = (
         });
 
         providerManager.setTimer(providerName, 10000, () => {
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
           // @ts-ignore
           Sentry.captureException(new Error(`Scraper failed for ${providerName} return flights`), {
             extra: providerManager.getFormData(),
@@ -70,7 +71,7 @@ const getRoundtripProviderReturns = (departure: any, providerManager: ProviderMa
     event: "RETURN_FLIGHTS_FOR_CLIENT",
     flights: {
       departureList: sortFlights(providerManager.getDepartures(), itineraries),
-      returnList: returnList,
+      returnList: providerManager.getReturns(),
       itins: itineraries,
       updatedAt: new Date(),
     },
