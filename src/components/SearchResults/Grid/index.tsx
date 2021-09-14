@@ -1,4 +1,4 @@
-import { Box, List as BumbagList } from "bumbag";
+import { Box, List as BumbagList, Text } from "bumbag";
 import React from "react";
 import { List, ListRowRenderer, WindowScroller } from "react-virtualized";
 
@@ -70,7 +70,7 @@ const TimelineGrid = ({
 
   return (
     <BumbagList>
-      <WindowScroller scrollElement={window}>
+      <WindowScroller scrollElement={window} scrollingResetTimeInterval={50}>
         {({ height, isScrolling, registerChild, onChildScroll, scrollTop }) => (
           <Box ref={registerChild}>
             <List
@@ -78,7 +78,7 @@ const TimelineGrid = ({
               height={height}
               isScrolling={isScrolling}
               onScroll={onChildScroll}
-              overscanRowCount={2}
+              overscanRowCount={8}
               rowCount={flights.length}
               rowHeight={80}
               rowRenderer={rowRender}
