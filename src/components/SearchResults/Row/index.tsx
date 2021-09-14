@@ -5,7 +5,7 @@ import React from "react";
 import { sendSelectedFlight } from "../../../shared/events";
 import { ProcessedFlightSearchResult } from "../../../shared/types/ProcessedFlightSearchResult";
 import { ProcessedItinerary } from "../../../shared/types/ProcessedItinerary";
-import { containerWidth, flightTimeContainerWidth, legendWidth } from "../../constants";
+import { containerWidth, flightTimeContainerWidth, legendWidth, PaymentType } from "../../constants";
 import { FlightSelection } from "../FlightSelection";
 import { FlightLegend } from "./FlightLegend";
 import { FlightSegmentBox } from "./FlightSegment";
@@ -22,6 +22,7 @@ interface TimelineRowProps {
   startHourOffset: number;
   from: string;
   to: string;
+  paymentType: PaymentType;
   index: number;
   skeleton: boolean;
   selected: boolean;
@@ -37,6 +38,7 @@ const TimelineRow = ({
   startHourOffset,
   from,
   to,
+  paymentType,
   index,
   selected,
   skeleton,
@@ -98,7 +100,7 @@ const TimelineRow = ({
             }
       }
     >
-      <FlightLegend legendWidth={legendWidth} itinerary={itinerary} flight={flight} />
+      <FlightLegend legendWidth={legendWidth} itinerary={itinerary} flight={flight} paymentType={paymentType} />
       <Box
         data-name={"flight-container"}
         position="relative"

@@ -6,6 +6,7 @@ import { CabinMap } from "../../background/constants";
 import { FlightSearchFormData } from "../../shared/types/FlightSearchFormData";
 import { containerWidth, sidePaddingWidth } from "../constants";
 import { Cabin } from "../icons";
+import { getPrettyRewardsCardName } from "../utilities/forms/getPrettyRewardsCardName";
 import { getStandardizedFormatDate } from "../utilities/forms/getStandardizedFormatDate";
 
 interface SearchFormDisplayProps {
@@ -85,10 +86,18 @@ const SearchFormDisplay = ({ formData, onUpdateClick }: SearchFormDisplayProps):
           </Box>
 
           <Box display="flex" boxSizing="border-box" whiteSpace="nowrap" alignX="center" padding="major-1">
-            <Box display="flex" flexDirection="column" width="100px" paddingLeft="10px" whiteSpace="normal">
-              <Text whiteSpace="normal" width="100px">
+            <Box
+              display="flex"
+              flexDirection="column"
+              width={formData.searchByPoints ? "250px" : "100px"}
+              paddingLeft="10px"
+              whiteSpace="normal"
+            >
+              <Text whiteSpace="normal" width={formData.searchByPoints ? "250px" : "100px"}>
                 <Icon aria-label="Search by" icon="solid-search" marginRight="major-1" />
-                {formData.searchByPoints ? "Points" : "Price"}
+                {formData.searchByPoints && formData.pointsType
+                  ? `${getPrettyRewardsCardName(formData.pointsType)} points`
+                  : "Price"}
               </Text>
             </Box>
           </Box>

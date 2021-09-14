@@ -24,6 +24,7 @@ export const SearchPage = (): React.ReactElement => {
                 cabin: formData?.cabin || "econ",
                 fromDate: getStandardizedFormatDate(formData.fromDate),
                 toDate: getStandardizedFormatDate(formData.toDate),
+                searchByPoints: formData.searchByPoints.toString(),
               }
             }
             onSubmit={(values) => {

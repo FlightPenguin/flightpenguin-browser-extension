@@ -7,6 +7,7 @@ import { FlightSearchFormData } from "../../../shared/types/FlightSearchFormData
 import { ProcessedFlightSearchResult } from "../../../shared/types/ProcessedFlightSearchResult";
 import { ProcessedItinerary } from "../../../shared/types/ProcessedItinerary";
 import { containerWidth } from "../../constants";
+import { getPaymentType } from "../../SearchForm/utilities/getPaymentType";
 import { getCheapestItinerary } from "../Container/utilities/getCheapestItinerary";
 import { getFlightPenguinId } from "../Container/utilities/getFlightPenguinId";
 import { FlightSelection } from "../FlightSelection";
@@ -41,6 +42,7 @@ const TimelineGrid = ({
     const flight = flights[index];
     const cheapestItinerary = getCheapestItinerary(flight, itineraries);
     const flightPenguinId = getFlightPenguinId(flight);
+    const paymentMethod = getPaymentType(formData);
 
     return (
       <Box key={key} style={style} width={`${containerWidth}px`}>
@@ -57,6 +59,7 @@ const TimelineGrid = ({
           index={index}
           selected={!!selectedFlight && selectedFlight.id === flight.id}
           skeleton={skeleton}
+          paymentType={paymentMethod}
           onSelection={(details: FlightSelection) => {
             onSelection(details);
           }}

@@ -3,14 +3,25 @@ import React from "react";
 
 import { ProcessedFlightSearchResult } from "../../../../shared/types/ProcessedFlightSearchResult";
 import { ProcessedItinerary } from "../../../../shared/types/ProcessedItinerary";
+import { PaymentType } from "../../../constants";
+import { getPointsValue } from "../../../utilities/forms/getPointsValue";
 
 interface FlightLegendProps {
   legendWidth: number;
   itinerary: ProcessedItinerary;
   flight: ProcessedFlightSearchResult;
+  paymentType: PaymentType;
 }
 
-export const FlightLegend = ({ flight, itinerary, legendWidth }: FlightLegendProps): React.ReactElement => {
+export const FlightLegend = ({
+  flight,
+  itinerary,
+  legendWidth,
+  paymentType,
+}: FlightLegendProps): React.ReactElement => {
+  const fareValue =
+    paymentType === "CASH" ? `$${itinerary.fareNumber}` : `${getPointsValue(itinerary.fareNumber, paymentType)} pts`;
+
   return (
     <Box
       data-name="flight-legend"
@@ -22,8 +33,8 @@ export const FlightLegend = ({ flight, itinerary, legendWidth }: FlightLegendPro
       padding="major-1"
     >
       <Box data-name="flight-price">
-        <Text fontSize="500" fontWeight="700">
-          ${`${itinerary.fareNumber}`}
+        <Text fontSize={paymentType.toUpperCase() === "CASH" ? "500" : "250"} fontWeight="700">
+          {fareValue}
         </Text>
       </Box>
       <Box
