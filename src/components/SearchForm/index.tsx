@@ -1,13 +1,12 @@
 import { Box, Button, Card, FieldStack, FieldWrapper, Input, RadioGroup, Select, Switch } from "bumbag";
 import { addDays, endOfDay, nextSunday, startOfDay } from "date-fns";
 import { Field as FormikField, Form, Formik } from "formik";
-import capitalize from "lodash.capitalize";
 import React from "react";
 import { boolean, mixed, number, object, string } from "yup";
 
 import { CabinMap } from "../../background/constants";
 import { FlightSearchFormData } from "../../shared/types/FlightSearchFormData";
-import { PointsMap, searchFormWidth } from "../constants";
+import { CardType, PointsMap, searchFormWidth } from "../constants";
 import { getFieldState, getParsedDate, getValidationText } from "../utilities/forms";
 import { disableNonAlphaInput } from "../utilities/forms/disableNonAlphaInput";
 import { getBooleanFromString } from "../utilities/forms/getBooleanFromString";
@@ -112,6 +111,8 @@ export const SearchForm = ({ onSubmit, initialValues = defaultInitialValues }: S
           validateOnChange={false}
           validationSchema={SearchFormSchema}
           onSubmit={(values: FormState) => {
+            const pointsType = values.pointsType ? (values.pointsType as CardType) : undefined;
+
             const cleanValues = {
               ...values,
               from: values.from.toUpperCase(),
@@ -119,6 +120,7 @@ export const SearchForm = ({ onSubmit, initialValues = defaultInitialValues }: S
               to: values.to.toUpperCase(),
               toDate: getChromeFormatDate(values.toDate),
               searchByPoints: getBooleanFromString(values.searchByPoints),
+              pointsType: pointsType,
             };
 
             sendFormDataToBackground(cleanValues);
