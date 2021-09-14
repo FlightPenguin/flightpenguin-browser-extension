@@ -1,4 +1,4 @@
-import { Badge, Box } from "bumbag";
+import { Alert, Badge, Box } from "bumbag";
 import isEqual from "lodash.isequal";
 import uniqBy from "lodash.uniqby";
 import React, { useEffect, useState } from "react";
@@ -83,6 +83,14 @@ const TimelineContainer = ({
       setIntervalInfo({ intervals, increment, startHour, timezoneOffset });
     }
   }, [itineraries]);
+
+  if (!loading && !flights.length) {
+    return (
+      <Alert title="No flights found" type="warning">
+        We were unable to find any flights. Update your search and try again!
+      </Alert>
+    );
+  }
 
   return (
     <Box
