@@ -113,7 +113,7 @@ const TimelineContainer = ({
         />
       </Box>
       <Box data-name={`${flightType.toLowerCase()}-container`} display="flex">
-        <Box className="border-flex-box" display="flex" border="default">
+        <Box className="border-flex-box" display="flex" borderLeft="default">
           {displayFlights.length ? (
             <TimelineGrid
               flights={displayFlights}

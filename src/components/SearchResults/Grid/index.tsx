@@ -84,7 +84,7 @@ const TimelineGrid = ({
               rowRenderer={rowRender}
               scrollTop={scrollTop}
               tabIndex={-1}
-              width={containerWidth}
+              width={containerWidth + 50} // +50 allows time boxen to flow over
             />
           </Box>
         )}
