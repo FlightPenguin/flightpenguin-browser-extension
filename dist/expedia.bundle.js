@@ -403,20 +403,6 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var wait_for_the_element__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! wait-for-the-element */ "./node_modules/wait-for-the-element/wait-for-the-element.js");
 /* harmony import */ var _shared_errors__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../shared/errors */ "./src/shared/errors.ts");
 /* harmony import */ var _getLegDetails__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./getLegDetails */ "./src/expedia/parser/getLegDetails.ts");
-function _slicedToArray(arr, i) { return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _unsupportedIterableToArray(arr, i) || _nonIterableRest(); }
-
-function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
-
-function _iterableToArrayLimit(arr, i) { if (typeof Symbol === "undefined" || !(Symbol.iterator in Object(arr))) return; var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"] != null) _i["return"](); } finally { if (_d) throw _e; } } return _arr; }
-
-function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
-
-function _createForOfIteratorHelper(o, allowArrayLike) { var it; if (typeof Symbol === "undefined" || o[Symbol.iterator] == null) { if (Array.isArray(o) || (it = _unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e2) { throw _e2; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = o[Symbol.iterator](); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e3) { didErr = true; err = _e3; }, f: function f() { try { if (!normalCompletion && it["return"] != null) it["return"](); } finally { if (didErr) throw err; } } }; }
-
-function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
-
-function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
-
 function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
 
 function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
@@ -442,25 +428,9 @@ var getLayovers = /*#__PURE__*/function () {
       throw new _shared_errors__WEBPACK_IMPORTED_MODULE_1__.MissingElementLookupError("Could not find legs in modal");
     }
 
-    var layovers = [];
-
-    var _iterator = _createForOfIteratorHelper(legs.entries()),
-        _step;
-
-    try {
-      for (_iterator.s(); !(_step = _iterator.n()).done;) {
-        var _step$value = _slicedToArray(_step.value, 2),
-            index = _step$value[0],
-            leg = _step$value[1];
-
-        var details = (0,_getLegDetails__WEBPACK_IMPORTED_MODULE_2__.getLegDetails)(leg, index, layovers[layovers.length - 1]);
-        layovers.push(details);
-      }
-    } catch (err) {
-      _iterator.e(err);
-    } finally {
-      _iterator.f();
-    }
+    var layovers = Array.from(legs).map(function (leg, index) {
+      return (0,_getLegDetails__WEBPACK_IMPORTED_MODULE_2__.getLegDetails)(leg, index);
+    });
 
     if (!layovers) {
       throw new _shared_errors__WEBPACK_IMPORTED_MODULE_1__.ParserError("Unable to identify layovers");
@@ -489,7 +459,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /* harmony import */ var _shared_errors__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../shared/errors */ "./src/shared/errors.ts");
 /* harmony import */ var _shared_helpers__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../shared/helpers */ "./src/shared/helpers.js");
-/* harmony import */ var _utilityFunctions__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../utilityFunctions */ "./src/utilityFunctions.js");
+/* harmony import */ var _shared_types_FlightLeg__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../shared/types/FlightLeg */ "./src/shared/types/FlightLeg.ts");
+/* harmony import */ var _utilityFunctions__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../utilityFunctions */ "./src/utilityFunctions.js");
 function _slicedToArray(arr, i) { return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _unsupportedIterableToArray(arr, i) || _nonIterableRest(); }
 
 function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
@@ -505,7 +476,8 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
 
 
 
-var getLegDetails = function getLegDetails(leg, legIndex, previousLegDetails) {
+
+var getLegDetails = function getLegDetails(leg, legIndex) {
   var _leg$children = _slicedToArray(leg.children, 3),
       departure = _leg$children[0],
       details = _leg$children[1],
@@ -513,21 +485,23 @@ var getLegDetails = function getLegDetails(leg, legIndex, previousLegDetails) {
 
   var departureTime = getDepartureTime(departure);
   var arrivalTime = getArrivalTime(arrival);
+  var duration = getDuration(details === null || details === void 0 ? void 0 : details.children[0]);
 
-  if (legIndex > 0 && (0,_utilityFunctions__WEBPACK_IMPORTED_MODULE_2__.isOvernight)(previousLegDetails === null || previousLegDetails === void 0 ? void 0 : previousLegDetails.toTime, departureTime)) {
-    departureTime += "+1"; // layover went to the next day
-  } else if ((0,_utilityFunctions__WEBPACK_IMPORTED_MODULE_2__.isOvernight)(departureTime, arrivalTime)) {
+  if (legIndex > 0 && isOvernight(departureTime, duration)) {
     arrivalTime += "+1"; // overnight flight
-  }
+  } // } else if (isOvernight(arrivalTime, arrivalTime)) {
+  //   arrivalTime += "+1"; // overnight flight
+  // }
 
-  return {
+
+  return new _shared_types_FlightLeg__WEBPACK_IMPORTED_MODULE_2__.FlightLeg({
     fromTime: departureTime,
     toTime: arrivalTime,
     from: getDepartureAirport(departure),
     to: getArrivalAirport(arrival),
     operatingAirline: getOperatingAirline(details === null || details === void 0 ? void 0 : details.children[1]),
-    duration: getDuration(details === null || details === void 0 ? void 0 : details.children[0])
-  };
+    duration: duration
+  });
 };
 
 var getArrivalTime = function getArrivalTime(arrival) {
@@ -562,7 +536,7 @@ var getArrivalAirport = function getArrivalAirport(arrival) {
   if (((_airportCode = airportCode) === null || _airportCode === void 0 ? void 0 : _airportCode.length) !== 3) {
     var _arrival$textContent5;
 
-    airportCode = (_arrival$textContent5 = arrival.textContent) === null || _arrival$textContent5 === void 0 ? void 0 : _arrival$textContent5.split("-")[1]; // no airport, just listing the city
+    airportCode = (_arrival$textContent5 = arrival.textContent) === null || _arrival$textContent5 === void 0 ? void 0 : _arrival$textContent5.split("-")[1].split("Arrives")[0].trim(); // no airport, just listing the city
   }
 
   if (!airportCode) {
@@ -580,7 +554,7 @@ var getDepartureAirport = function getDepartureAirport(departure) {
   if (((_airportCode2 = airportCode) === null || _airportCode2 === void 0 ? void 0 : _airportCode2.length) !== 3) {
     var _departure$textConten5;
 
-    airportCode = (_departure$textConten5 = departure.textContent) === null || _departure$textConten5 === void 0 ? void 0 : _departure$textConten5.split("-")[1]; // no airport, just listing the city
+    airportCode = (_departure$textConten5 = departure.textContent) === null || _departure$textConten5 === void 0 ? void 0 : _departure$textConten5.split("-")[1].split("Arrives")[0].trim(); // no airport, just listing the city
   }
 
   if (!airportCode) {
@@ -613,6 +587,40 @@ var getOperatingAirline = function getOperatingAirline(element) {
   }
 
   return airline;
+};
+
+var isOvernight = function isOvernight(fromTime, duration) {
+  var fromTimeDetails = (0,_utilityFunctions__WEBPACK_IMPORTED_MODULE_3__.getTimeDetails)(fromTime);
+  var durationDetails = parseDuration(duration);
+  var netHours = fromTimeDetails.hours;
+
+  if (fromTimeDetails.minutes + durationDetails.minutes >= 60) {
+    netHours += 1;
+  }
+
+  netHours += durationDetails.hours;
+  return netHours >= 24;
+};
+
+var parseDuration = function parseDuration(rawDuration) {
+  var duration = rawDuration.toLowerCase();
+
+  if (!duration.includes("h")) {
+    return {
+      hours: 0,
+      minutes: Number(duration.split("m")[0].trim())
+    };
+  }
+
+  var _duration$split = duration.split("h"),
+      _duration$split2 = _slicedToArray(_duration$split, 2),
+      rawHours = _duration$split2[0],
+      rawMinutes = _duration$split2[1];
+
+  return {
+    hours: Number(rawHours.trim()),
+    minutes: Number(rawMinutes.split("m")[0].trim())
+  };
 };
 
 /***/ }),
@@ -1482,6 +1490,75 @@ var AirlineMap = {
   }
 };
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (AirlineMap);
+
+/***/ }),
+
+/***/ "./src/shared/types/FlightLeg.ts":
+/*!***************************************!*\
+  !*** ./src/shared/types/FlightLeg.ts ***!
+  \***************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "FlightLeg": () => (/* binding */ FlightLeg)
+/* harmony export */ });
+/* harmony import */ var _utilityFunctions__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../utilityFunctions */ "./src/utilityFunctions.js");
+/* harmony import */ var _nameMaps_airlineMap__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../nameMaps/airlineMap */ "./src/shared/nameMaps/airlineMap.js");
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+
+
+var FlightLeg = /*#__PURE__*/function () {
+  function FlightLeg(_ref) {
+    var fromTime = _ref.fromTime,
+        toTime = _ref.toTime,
+        from = _ref.from,
+        to = _ref.to,
+        operatingAirline = _ref.operatingAirline,
+        duration = _ref.duration;
+
+    _classCallCheck(this, FlightLeg);
+
+    this.fromTime = fromTime;
+    this.fromTimeDetails = this.getTimeDetails(fromTime);
+    this.toTime = toTime;
+    this.toTimeDetails = this.getTimeDetails(toTime);
+    this.from = from;
+    this.to = to;
+    this.operatingAirline = operatingAirline;
+    this.duration = duration;
+    this.operatingAirlineDetails = _nameMaps_airlineMap__WEBPACK_IMPORTED_MODULE_1__.default.getAirlineDetails(operatingAirline);
+  }
+
+  _createClass(FlightLeg, [{
+    key: "getTimeDetails",
+    value: function getTimeDetails(time) {
+      var _convertTimeTo24HourC = (0,_utilityFunctions__WEBPACK_IMPORTED_MODULE_0__.convertTimeTo24HourClock)(time, true),
+          hours = _convertTimeTo24HourC.hours,
+          minutes = _convertTimeTo24HourC.minutes;
+
+      var timeOfDay = time.toLowerCase().includes("pm") ? "pm" : "am";
+      var excessDays = time.match(/(\+\d)/);
+      var displayHours = Number(time.split(":")[0]); // want 12 hour clock
+
+      return {
+        hours: hours,
+        displayHours: displayHours,
+        minutes: minutes,
+        timeOfDay: timeOfDay,
+        excessDays: excessDays ? excessDays[0] : excessDays
+      };
+    }
+  }]);
+
+  return FlightLeg;
+}();
 
 /***/ }),
 

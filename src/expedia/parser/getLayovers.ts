@@ -16,11 +16,9 @@ export const getLayovers = async (modal: Element, timeout = 3000): Promise<Fligh
     throw new MissingElementLookupError("Could not find legs in modal");
   }
 
-  const layovers = [];
-  for (const [index, leg] of legs.entries()) {
-    const details = getLegDetails(leg, index, layovers[layovers.length - 1]);
-    layovers.push(details);
-  }
+  const layovers = Array.from(legs).map((leg, index) => {
+    return getLegDetails(leg, index);
+  });
 
   if (!layovers) {
     throw new ParserError("Unable to identify layovers");
