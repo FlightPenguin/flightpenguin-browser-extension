@@ -518,10 +518,9 @@ var getLegDetails = function getLegDetails(leg, legIndex, previousLegDetails) {
   var departureTime = getDepartureTime(departure); // 9am
 
   var arrivalTime = getArrivalTime(arrival);
-  var duration = getDuration(details === null || details === void 0 ? void 0 : details.children[0]);
 
-  if (isFlightOvernight(departureTime, duration)) {
-    arrivalTime += "+1"; // overnight flight
+  if (isFlightOvernight(departureTime, arrivalTime)) {
+    arrivalTime += "+1";
   }
 
   if (!!previousLegDetails && isLayoverOvernight(previousLegDetails, departureTime)) {
@@ -534,7 +533,7 @@ var getLegDetails = function getLegDetails(leg, legIndex, previousLegDetails) {
     from: getDepartureAirport(departure),
     to: getArrivalAirport(arrival),
     operatingAirline: getOperatingAirline(details === null || details === void 0 ? void 0 : details.children[1]),
-    duration: duration
+    duration: getDuration(details === null || details === void 0 ? void 0 : details.children[0])
   });
 };
 
@@ -601,7 +600,7 @@ var getDepartureAirport = function getDepartureAirport(departure) {
 var getDuration = function getDuration(element) {
   var _element$textContent;
 
-  var duration = element === null || element === void 0 ? void 0 : (_element$textContent = element.textContent) === null || _element$textContent === void 0 ? void 0 : _element$textContent.replace("flight", "");
+  var duration = element === null || element === void 0 ? void 0 : (_element$textContent = element.textContent) === null || _element$textContent === void 0 ? void 0 : _element$textContent.replace("flight", "").trim();
 
   if (!duration) {
     throw new _shared_errors__WEBPACK_IMPORTED_MODULE_0__.MissingFieldParserError("Unable to determine duration time for layover");
@@ -623,38 +622,10 @@ var getOperatingAirline = function getOperatingAirline(element) {
   return airline;
 };
 
-var isFlightOvernight = function isFlightOvernight(fromTime, duration) {
+var isFlightOvernight = function isFlightOvernight(fromTime, toTime) {
   var fromTimeDetails = (0,_utilityFunctions__WEBPACK_IMPORTED_MODULE_3__.getTimeDetails)(fromTime);
-  var durationDetails = parseDuration(duration);
-  var netHours = fromTimeDetails.hours;
-
-  if (fromTimeDetails.minutes + durationDetails.minutes >= 60) {
-    netHours += 1;
-  }
-
-  netHours += durationDetails.hours;
-  return netHours >= 24;
-};
-
-var parseDuration = function parseDuration(rawDuration) {
-  var duration = rawDuration.toLowerCase();
-
-  if (!duration.includes("h")) {
-    return {
-      hours: 0,
-      minutes: Number(duration.split("m")[0].trim())
-    };
-  }
-
-  var _duration$split = duration.split("h"),
-      _duration$split2 = _slicedToArray(_duration$split, 2),
-      rawHours = _duration$split2[0],
-      rawMinutes = _duration$split2[1];
-
-  return {
-    hours: Number(rawHours.trim()),
-    minutes: Number(rawMinutes.split("m")[0].trim())
-  };
+  var toTimeDetails = (0,_utilityFunctions__WEBPACK_IMPORTED_MODULE_3__.getTimeDetails)(toTime);
+  return toTimeDetails.hours % 24 < fromTimeDetails.hours % 24 || toTimeDetails.hours % 24 === fromTimeDetails.hours % 24 && toTimeDetails.minutes <= fromTimeDetails.minutes;
 };
 
 var isLayoverOvernight = function isLayoverOvernight(previousLegDetails, fromTime) {

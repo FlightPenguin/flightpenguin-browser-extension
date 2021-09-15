@@ -1,7 +1,6 @@
 import { MissingFieldParserError } from "../../shared/errors";
 import { standardizeTimeString } from "../../shared/helpers";
 import { FlightLeg } from "../../shared/types/FlightLeg";
-import { FlightTimeDetails } from "../../shared/types/FlightTimeDetails";
 import { getTimeDetails } from "../../utilityFunctions";
 
 export const getLegDetails = (leg: Element, legIndex: number, previousLegDetails?: FlightLeg): FlightLeg => {
@@ -10,10 +9,8 @@ export const getLegDetails = (leg: Element, legIndex: number, previousLegDetails
   let departureTime = getDepartureTime(departure); // 9am
   let arrivalTime = getArrivalTime(arrival);
 
-  const duration = getDuration(details?.children[0]);
-
-  if (isFlightOvernight(departureTime, duration)) {
-    arrivalTime += "+1"; // overnight flight
+  if (isFlightOvernight(departureTime, arrivalTime)) {
+    arrivalTime += "+1";
   }
 
   if (!!previousLegDetails && isLayoverOvernight(previousLegDetails, departureTime)) {
@@ -26,7 +23,7 @@ export const getLegDetails = (leg: Element, legIndex: number, previousLegDetails
     from: getDepartureAirport(departure),
     to: getArrivalAirport(arrival),
     operatingAirline: getOperatingAirline(details?.children[1]),
-    duration: duration,
+    duration: getDuration(details?.children[0]),
   });
 };
 
@@ -80,7 +77,7 @@ const getDepartureAirport = (departure: Element) => {
 };
 
 const getDuration = (element: Element) => {
-  const duration = element?.textContent?.replace("flight", "");
+  const duration = element?.textContent?.replace("flight", "").trim();
 
   if (!duration) {
     throw new MissingFieldParserError("Unable to determine duration time for layover");
@@ -101,25 +98,14 @@ const getOperatingAirline = (element: Element) => {
   return airline;
 };
 
-const isFlightOvernight = (fromTime: string, duration: string): boolean => {
+const isFlightOvernight = (fromTime: string, toTime: string): boolean => {
   const fromTimeDetails = getTimeDetails(fromTime);
-  const durationDetails = parseDuration(duration);
+  const toTimeDetails = getTimeDetails(toTime);
 
-  let netHours = fromTimeDetails.hours;
-  if (fromTimeDetails.minutes + durationDetails.minutes >= 60) {
-    netHours += 1;
-  }
-  netHours += durationDetails.hours;
-  return netHours >= 24;
-};
-
-const parseDuration = (rawDuration: string): { hours: number; minutes: number } => {
-  const duration = rawDuration.toLowerCase();
-  if (!duration.includes("h")) {
-    return { hours: 0, minutes: Number(duration.split("m")[0].trim()) };
-  }
-  const [rawHours, rawMinutes] = duration.split("h");
-  return { hours: Number(rawHours.trim()), minutes: Number(rawMinutes.split("m")[0].trim()) };
+  return (
+    toTimeDetails.hours % 24 < fromTimeDetails.hours % 24 ||
+    (toTimeDetails.hours % 24 === fromTimeDetails.hours % 24 && toTimeDetails.minutes <= fromTimeDetails.minutes)
+  );
 };
 
 const isLayoverOvernight = (previousLegDetails: FlightLeg, fromTime: string): boolean => {
