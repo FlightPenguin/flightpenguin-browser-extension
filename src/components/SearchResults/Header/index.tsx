@@ -6,6 +6,7 @@ import { FlightSearchFormData } from "../../../shared/types/FlightSearchFormData
 import { flightTimeContainerWidth } from "../../constants";
 import { TimeCell } from "./TimeCell";
 import { getFlightInfo } from "./utilities/getFlightInfo";
+import { getFontSize } from "./utilities/getFontSize";
 
 interface TimelineHeaderProps {
   formData: FlightSearchFormData;
@@ -18,6 +19,7 @@ const TimelineHeader = ({ formData, flightType, intervals, tzOffset }: TimelineH
   let daysCounter = 0;
   const intervalWidth = flightTimeContainerWidth / (intervals.length - 1);
   const { startDate, departureAirportCode, arrivalAirportCode } = getFlightInfo(formData, flightType);
+  const timeFontSize = getFontSize(intervals.length);
 
   return (
     <Box
@@ -44,6 +46,7 @@ const TimelineHeader = ({ formData, flightType, intervals, tzOffset }: TimelineH
             daysCounter={daysCounter}
             departureAirportCode={departureAirportCode}
             arrivalAirportCode={arrivalAirportCode}
+            timeFontSize={timeFontSize}
             key={`interval-header-${interval}`}
           />
         );

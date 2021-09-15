@@ -13,6 +13,7 @@ interface TimeCellProps {
   daysCounter: number;
   departureAirportCode: string;
   arrivalAirportCode: string;
+  timeFontSize: string;
 }
 
 export const TimeCell = ({
@@ -21,6 +22,7 @@ export const TimeCell = ({
   tzOffset,
   startDate,
   daysCounter,
+  timeFontSize,
   departureAirportCode,
   arrivalAirportCode,
 }: TimeCellProps) => {
@@ -54,13 +56,13 @@ export const TimeCell = ({
         </Text>
       )}
       <Tooltip content={`Time at ${departureAirportCode}`} hasArrow placement="right">
-        <Text fontWeight={isMidnight ? "700" : "400"} tabIndex={-1}>
+        <Text fontSize={timeFontSize} fontWeight={isMidnight ? "700" : "400"} tabIndex={-1}>
           {time.toLowerCase()}
         </Text>
       </Tooltip>
       {!!tzOffset && (
         <Tooltip content={`Time at ${arrivalAirportCode}`} hasArrow placement="right">
-          <Text fontWeight={isMidnight ? "700" : "400"} tabIndex={-1}>
+          <Text fontSize={timeFontSize} fontWeight={isMidnight ? "700" : "400"} tabIndex={-1}>
             {offsetTime.toLowerCase()}
           </Text>
         </Tooltip>
