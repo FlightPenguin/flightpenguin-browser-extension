@@ -384,10 +384,12 @@ export class ProviderManager {
     }
   }
 
-  sendMessageToIndexPage(message: any): void {
+  sendMessageToIndexPage(message: any, delay = 0): void {
     const primaryTabId = this.getPrimaryTabId();
     if (primaryTabId !== null && primaryTabId !== undefined) {
-      chrome.tabs.sendMessage(primaryTabId, message);
+      setTimeout(() => {
+        chrome.tabs.sendMessage(primaryTabId, message);
+      }, delay);
     }
   }
 }

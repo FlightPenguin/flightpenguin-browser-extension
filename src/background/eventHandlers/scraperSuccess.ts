@@ -10,6 +10,6 @@ export const handleScraperSuccess = (
   providerManager.sendMessageToIndexPage({ event: "SCRAPER_COMPLETE", providerName: providerName, status: "SUCCESS" });
   if (providerManager.isComplete(searchType)) {
     const flightType = searchType === "BOTH" ? "DEPARTURE" : searchType;
-    providerManager.sendMessageToIndexPage({ event: "SCRAPING_COMPLETED", searchType: flightType });
+    providerManager.sendMessageToIndexPage({ event: "SCRAPING_COMPLETED", searchType: flightType }, 3000);
   }
 };

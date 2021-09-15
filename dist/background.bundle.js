@@ -578,10 +578,13 @@ var ProviderManager = /*#__PURE__*/function () {
   }, {
     key: "sendMessageToIndexPage",
     value: function sendMessageToIndexPage(message) {
+      var delay = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 0;
       var primaryTabId = this.getPrimaryTabId();
 
       if (primaryTabId !== null && primaryTabId !== undefined) {
-        chrome.tabs.sendMessage(primaryTabId, message);
+        setTimeout(function () {
+          chrome.tabs.sendMessage(primaryTabId, message);
+        }, delay);
       }
     }
   }]);
@@ -788,7 +791,7 @@ var getRoundtripProviderReturns = function getRoundtripProviderReturns(departure
   providerManager.sendMessageToIndexPage({
     event: "SCRAPING_COMPLETED",
     searchType: "RETURN"
-  });
+  }, 3000);
 };
 
 /***/ }),
@@ -1207,7 +1210,7 @@ var handleScraperFailed = function handleScraperFailed(providerManager, provider
     providerManager.sendMessageToIndexPage({
       event: "SCRAPING_COMPLETED",
       searchType: flightType
-    });
+    }, 3000);
   } // @ts-ignore
 
 
@@ -1243,7 +1246,7 @@ var handleScraperSuccess = function handleScraperSuccess(providerManager, provid
     providerManager.sendMessageToIndexPage({
       event: "SCRAPING_COMPLETED",
       searchType: flightType
-    });
+    }, 3000);
   }
 };
 
