@@ -21,14 +21,14 @@ export const getFlight = async (element: Element): Promise<FlightDetails> => {
   await openLayoverDetailsCollapsible(modal);
   const layovers = hasStops ? await getLayovers(modal) : [];
 
-  return {
+  return new FlightDetails({
     marketingAirline,
     operatingAirline,
     fromTime: departureTime,
     toTime: arrivalTime,
     duration,
     layovers,
-  };
+  });
 };
 
 const getAirlines = (element: Element) => {

@@ -15,10 +15,11 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _shared_errors__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../shared/errors */ "./src/shared/errors.ts");
 /* harmony import */ var _shared_helpers__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../shared/helpers */ "./src/shared/helpers.js");
 /* harmony import */ var _shared_nameMaps_airlineMap__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../shared/nameMaps/airlineMap */ "./src/shared/nameMaps/airlineMap.js");
-/* harmony import */ var _ui_openFlightDetailsModal__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../ui/openFlightDetailsModal */ "./src/expedia/ui/openFlightDetailsModal.ts");
-/* harmony import */ var _ui_openLayoverDetailsCollapsible__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../ui/openLayoverDetailsCollapsible */ "./src/expedia/ui/openLayoverDetailsCollapsible.ts");
-/* harmony import */ var _getFlightDetailsModal__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./getFlightDetailsModal */ "./src/expedia/parser/getFlightDetailsModal.ts");
-/* harmony import */ var _getLayovers__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./getLayovers */ "./src/expedia/parser/getLayovers.ts");
+/* harmony import */ var _shared_types_FlightDetails__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../shared/types/FlightDetails */ "./src/shared/types/FlightDetails.ts");
+/* harmony import */ var _ui_openFlightDetailsModal__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../ui/openFlightDetailsModal */ "./src/expedia/ui/openFlightDetailsModal.ts");
+/* harmony import */ var _ui_openLayoverDetailsCollapsible__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../ui/openLayoverDetailsCollapsible */ "./src/expedia/ui/openLayoverDetailsCollapsible.ts");
+/* harmony import */ var _getFlightDetailsModal__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./getFlightDetailsModal */ "./src/expedia/parser/getFlightDetailsModal.ts");
+/* harmony import */ var _getLayovers__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./getLayovers */ "./src/expedia/parser/getLayovers.ts");
 function _slicedToArray(arr, i) { return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _unsupportedIterableToArray(arr, i) || _nonIterableRest(); }
 
 function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
@@ -34,6 +35,7 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
 function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
 
 function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
+
 
 
 
@@ -59,18 +61,18 @@ var getFlight = /*#__PURE__*/function () {
         duration = _getDurationDetails.duration,
         hasStops = _getDurationDetails.hasStops;
 
-    (0,_ui_openFlightDetailsModal__WEBPACK_IMPORTED_MODULE_3__.openFlightDetailsModal)(element);
-    var modal = yield (0,_getFlightDetailsModal__WEBPACK_IMPORTED_MODULE_5__.getFlightDetailsModal)();
-    yield (0,_ui_openLayoverDetailsCollapsible__WEBPACK_IMPORTED_MODULE_4__.openLayoverDetailsCollapsible)(modal);
-    var layovers = hasStops ? yield (0,_getLayovers__WEBPACK_IMPORTED_MODULE_6__.getLayovers)(modal) : [];
-    return {
+    (0,_ui_openFlightDetailsModal__WEBPACK_IMPORTED_MODULE_4__.openFlightDetailsModal)(element);
+    var modal = yield (0,_getFlightDetailsModal__WEBPACK_IMPORTED_MODULE_6__.getFlightDetailsModal)();
+    yield (0,_ui_openLayoverDetailsCollapsible__WEBPACK_IMPORTED_MODULE_5__.openLayoverDetailsCollapsible)(modal);
+    var layovers = hasStops ? yield (0,_getLayovers__WEBPACK_IMPORTED_MODULE_7__.getLayovers)(modal) : [];
+    return new _shared_types_FlightDetails__WEBPACK_IMPORTED_MODULE_3__.FlightDetails({
       marketingAirline: marketingAirline,
       operatingAirline: operatingAirline,
       fromTime: departureTime,
       toTime: arrivalTime,
       duration: duration,
       layovers: layovers
-    };
+    });
   });
 
   return function getFlight(_x) {
@@ -1490,6 +1492,88 @@ var AirlineMap = {
   }
 };
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (AirlineMap);
+
+/***/ }),
+
+/***/ "./src/shared/types/FlightDetails.ts":
+/*!*******************************************!*\
+  !*** ./src/shared/types/FlightDetails.ts ***!
+  \*******************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "FlightDetails": () => (/* binding */ FlightDetails)
+/* harmony export */ });
+/* harmony import */ var _utilityFunctions__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../utilityFunctions */ "./src/utilityFunctions.js");
+/* harmony import */ var _nameMaps_airlineMap__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../nameMaps/airlineMap */ "./src/shared/nameMaps/airlineMap.js");
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+
+
+var FlightDetails = /*#__PURE__*/function () {
+  function FlightDetails(_ref) {
+    var fromTime = _ref.fromTime,
+        toTime = _ref.toTime,
+        operatingAirline = _ref.operatingAirline,
+        marketingAirline = _ref.marketingAirline,
+        duration = _ref.duration,
+        layovers = _ref.layovers;
+
+    _classCallCheck(this, FlightDetails);
+
+    this.fromTime = fromTime;
+    this.fromTimeDetails = this.getTimeDetails(fromTime);
+    this.toTime = toTime;
+    this.toTimeDetails = this.getTimeDetails(toTime);
+    this.duration = duration;
+    this.operatingAirline = _nameMaps_airlineMap__WEBPACK_IMPORTED_MODULE_1__.default.getAirlineName(operatingAirline);
+    this.operatingAirlineDetails = operatingAirline ? _nameMaps_airlineMap__WEBPACK_IMPORTED_MODULE_1__.default.getAirlineDetails(operatingAirline) : null;
+    this.marketingAirline = _nameMaps_airlineMap__WEBPACK_IMPORTED_MODULE_1__.default.getAirlineName(marketingAirline);
+    this.marketingAirlineDetails = marketingAirline ? _nameMaps_airlineMap__WEBPACK_IMPORTED_MODULE_1__.default.getAirlineDetails(marketingAirline) : null;
+    this.layovers = layovers;
+    this.timezoneOffset = this.getTimezoneOffset();
+    this.id = this.getFlightPenguinId();
+  }
+
+  _createClass(FlightDetails, [{
+    key: "getTimeDetails",
+    value: function getTimeDetails(time) {
+      var _convertTimeTo24HourC = (0,_utilityFunctions__WEBPACK_IMPORTED_MODULE_0__.convertTimeTo24HourClock)(time, true),
+          hours = _convertTimeTo24HourC.hours,
+          minutes = _convertTimeTo24HourC.minutes;
+
+      var timeOfDay = time.toLowerCase().includes("pm") ? "pm" : "am";
+      var excessDays = time.match(/(\+\d)/);
+      var displayHours = Number(time.split(":")[0]); // want 12 hour clock
+
+      return {
+        hours: hours,
+        displayHours: displayHours,
+        minutes: minutes,
+        timeOfDay: timeOfDay,
+        excessDays: excessDays ? excessDays[0] : excessDays
+      };
+    }
+  }, {
+    key: "getFlightPenguinId",
+    value: function getFlightPenguinId() {
+      return "".concat(this.operatingAirline, "-").concat(this.fromTime, "-").concat(this.toTime);
+    }
+  }, {
+    key: "getTimezoneOffset",
+    value: function getTimezoneOffset() {
+      return (0,_utilityFunctions__WEBPACK_IMPORTED_MODULE_0__.getTimezoneOffset)(this.fromTime, this.toTime, this.duration);
+    }
+  }]);
+
+  return FlightDetails;
+}();
 
 /***/ }),
 
