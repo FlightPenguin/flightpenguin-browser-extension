@@ -668,6 +668,88 @@ function getRandomInt(min, max) {
 
 /***/ }),
 
+/***/ "./src/shared/types/FlightDetails.ts":
+/*!*******************************************!*\
+  !*** ./src/shared/types/FlightDetails.ts ***!
+  \*******************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "FlightDetails": () => (/* binding */ FlightDetails)
+/* harmony export */ });
+/* harmony import */ var _utilityFunctions__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../utilityFunctions */ "./src/utilityFunctions.js");
+/* harmony import */ var _nameMaps_airlineMap__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../nameMaps/airlineMap */ "./src/shared/nameMaps/airlineMap.js");
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+
+
+var FlightDetails = /*#__PURE__*/function () {
+  function FlightDetails(_ref) {
+    var fromTime = _ref.fromTime,
+        toTime = _ref.toTime,
+        operatingAirline = _ref.operatingAirline,
+        marketingAirline = _ref.marketingAirline,
+        duration = _ref.duration,
+        layovers = _ref.layovers;
+
+    _classCallCheck(this, FlightDetails);
+
+    this.fromTime = fromTime;
+    this.fromTimeDetails = this.getTimeDetails(fromTime);
+    this.toTime = toTime;
+    this.toTimeDetails = this.getTimeDetails(toTime);
+    this.duration = duration;
+    this.operatingAirline = _nameMaps_airlineMap__WEBPACK_IMPORTED_MODULE_1__.default.getAirlineName(operatingAirline);
+    this.operatingAirlineDetails = operatingAirline ? _nameMaps_airlineMap__WEBPACK_IMPORTED_MODULE_1__.default.getAirlineDetails(operatingAirline) : null;
+    this.marketingAirline = _nameMaps_airlineMap__WEBPACK_IMPORTED_MODULE_1__.default.getAirlineName(marketingAirline);
+    this.marketingAirlineDetails = marketingAirline ? _nameMaps_airlineMap__WEBPACK_IMPORTED_MODULE_1__.default.getAirlineDetails(marketingAirline) : null;
+    this.layovers = layovers;
+    this.timezoneOffset = this.getTimezoneOffset();
+    this.id = this.getFlightPenguinId();
+  }
+
+  _createClass(FlightDetails, [{
+    key: "getTimeDetails",
+    value: function getTimeDetails(time) {
+      var _convertTimeTo24HourC = (0,_utilityFunctions__WEBPACK_IMPORTED_MODULE_0__.convertTimeTo24HourClock)(time, true),
+          hours = _convertTimeTo24HourC.hours,
+          minutes = _convertTimeTo24HourC.minutes;
+
+      var timeOfDay = time.toLowerCase().includes("pm") ? "pm" : "am";
+      var excessDays = time.match(/(\+\d)/);
+      var displayHours = Number(time.split(":")[0]); // want 12 hour clock
+
+      return {
+        hours: hours,
+        displayHours: displayHours,
+        minutes: minutes,
+        timeOfDay: timeOfDay,
+        excessDays: excessDays ? excessDays[0] : excessDays
+      };
+    }
+  }, {
+    key: "getFlightPenguinId",
+    value: function getFlightPenguinId() {
+      return "".concat(this.operatingAirline, "-").concat(this.fromTime, "-").concat(this.toTime);
+    }
+  }, {
+    key: "getTimezoneOffset",
+    value: function getTimezoneOffset() {
+      return (0,_utilityFunctions__WEBPACK_IMPORTED_MODULE_0__.getTimezoneOffset)(this.fromTime, this.toTime, this.duration);
+    }
+  }]);
+
+  return FlightDetails;
+}();
+
+/***/ }),
+
 /***/ "./src/shared/ui/backToSearch.ts":
 /*!***************************************!*\
   !*** ./src/shared/ui/backToSearch.ts ***!
@@ -1009,10 +1091,11 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /* harmony import */ var _shared_errors__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../shared/errors */ "./src/shared/errors.ts");
 /* harmony import */ var _shared_helpers__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../shared/helpers */ "./src/shared/helpers.js");
-/* harmony import */ var _shared_utilities_waitFor__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../shared/utilities/waitFor */ "./src/shared/utilities/waitFor.ts");
-/* harmony import */ var _getAirlines__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./getAirlines */ "./src/skiplagged/parser/getAirlines.ts");
-/* harmony import */ var _getLayovers__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./getLayovers */ "./src/skiplagged/parser/getLayovers.ts");
-/* harmony import */ var _getParsedAirlineName__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./getParsedAirlineName */ "./src/skiplagged/parser/getParsedAirlineName.ts");
+/* harmony import */ var _shared_types_FlightDetails__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../shared/types/FlightDetails */ "./src/shared/types/FlightDetails.ts");
+/* harmony import */ var _shared_utilities_waitFor__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../shared/utilities/waitFor */ "./src/shared/utilities/waitFor.ts");
+/* harmony import */ var _getAirlines__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./getAirlines */ "./src/skiplagged/parser/getAirlines.ts");
+/* harmony import */ var _getLayovers__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./getLayovers */ "./src/skiplagged/parser/getLayovers.ts");
+/* harmony import */ var _getParsedAirlineName__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./getParsedAirlineName */ "./src/skiplagged/parser/getParsedAirlineName.ts");
 function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _unsupportedIterableToArray(arr) || _nonIterableSpread(); }
 
 function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
@@ -1037,6 +1120,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 
 
 
+
 var CONTAINER_SHELL_SELECTOR = "section #trip-list-wrapper";
 var SORT_BUTTON_SELECTOR = "[data-sort='cost']";
 var DURATION_SELECTOR = "span.trip-path-duration";
@@ -1044,8 +1128,8 @@ var TRIP_TIME_SELECTOR = "div[class*='trip-path-point-time']";
 var HAS_STOP_REGEX = /\d{1,2} stops?/i;
 var getFlightDetails = /*#__PURE__*/function () {
   var _ref = _asyncToGenerator(function* (flightCard) {
-    yield (0,_shared_utilities_waitFor__WEBPACK_IMPORTED_MODULE_2__.waitForAppearance)(3000, CONTAINER_SHELL_SELECTOR);
-    yield (0,_shared_utilities_waitFor__WEBPACK_IMPORTED_MODULE_2__.waitForAppearance)(10000, SORT_BUTTON_SELECTOR);
+    yield (0,_shared_utilities_waitFor__WEBPACK_IMPORTED_MODULE_3__.waitForAppearance)(3000, CONTAINER_SHELL_SELECTOR);
+    yield (0,_shared_utilities_waitFor__WEBPACK_IMPORTED_MODULE_3__.waitForAppearance)(10000, SORT_BUTTON_SELECTOR);
     var marketingAirline = getAirlineName(flightCard);
     var fromTime = getDepartureTime(flightCard);
     var toTime = getArrivalTime(flightCard);
@@ -1054,20 +1138,20 @@ var getFlightDetails = /*#__PURE__*/function () {
         duration = _getDurationDetails.duration,
         hasStops = _getDurationDetails.hasStops;
 
-    var layovers = (0,_getLayovers__WEBPACK_IMPORTED_MODULE_4__.getLayovers)(flightCard);
+    var layovers = (0,_getLayovers__WEBPACK_IMPORTED_MODULE_5__.getLayovers)(flightCard);
 
     if (!hasStops) {
       layovers = [];
     }
 
-    return {
+    return new _shared_types_FlightDetails__WEBPACK_IMPORTED_MODULE_2__.FlightDetails({
       marketingAirline: marketingAirline,
       operatingAirline: null,
       layovers: layovers,
       duration: duration,
       fromTime: fromTime,
       toTime: toTime
-    };
+    });
   });
 
   return function getFlightDetails(_x) {
@@ -1099,7 +1183,7 @@ var getDurationDetails = function getDurationDetails(flightCard) {
 
 var getAirlineName = function getAirlineName(flightCard) {
   var airlineNames = new Set();
-  var flightNames = (0,_getAirlines__WEBPACK_IMPORTED_MODULE_3__.getAirlines)(flightCard);
+  var flightNames = (0,_getAirlines__WEBPACK_IMPORTED_MODULE_4__.getAirlines)(flightCard);
 
   var _iterator = _createForOfIteratorHelper(flightNames),
       _step;
@@ -1107,7 +1191,7 @@ var getAirlineName = function getAirlineName(flightCard) {
   try {
     for (_iterator.s(); !(_step = _iterator.n()).done;) {
       var flightName = _step.value;
-      var airlineName = (0,_getParsedAirlineName__WEBPACK_IMPORTED_MODULE_5__.getParsedAirlineName)(flightName);
+      var airlineName = (0,_getParsedAirlineName__WEBPACK_IMPORTED_MODULE_6__.getParsedAirlineName)(flightName);
       airlineNames.add(airlineName);
     }
   } catch (err) {
@@ -2056,6 +2140,205 @@ var selectFlightCard = /*#__PURE__*/function () {
     return _ref.apply(this, arguments);
   };
 }();
+
+/***/ }),
+
+/***/ "./src/utilityFunctions.js":
+/*!*********************************!*\
+  !*** ./src/utilityFunctions.js ***!
+  \*********************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "convertTimeTo24HourClock": () => (/* binding */ convertTimeTo24HourClock),
+/* harmony export */   "convertMinutesTo12HourClock": () => (/* binding */ convertMinutesTo12HourClock),
+/* harmony export */   "convert12HourTimeToMinutes": () => (/* binding */ convert12HourTimeToMinutes),
+/* harmony export */   "getTimezoneOffset": () => (/* binding */ getTimezoneOffset),
+/* harmony export */   "convertDurationToMinutes": () => (/* binding */ convertDurationToMinutes),
+/* harmony export */   "getTimeDetails": () => (/* binding */ getTimeDetails),
+/* harmony export */   "addTimezoneOffset": () => (/* binding */ addTimezoneOffset),
+/* harmony export */   "isOvernight": () => (/* binding */ isOvernight)
+/* harmony export */ });
+function _slicedToArray(arr, i) { return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _unsupportedIterableToArray(arr, i) || _nonIterableRest(); }
+
+function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
+
+function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
+
+function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
+
+function _iterableToArrayLimit(arr, i) { if (typeof Symbol === "undefined" || !(Symbol.iterator in Object(arr))) return; var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"] != null) _i["return"](); } finally { if (_d) throw _e; } } return _arr; }
+
+function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
+
+function convertTimeTo24HourClock(time, addDays) {
+  var timeFormatted = time.toLowerCase();
+
+  var _timeFormatted$split = timeFormatted.split(":"),
+      _timeFormatted$split2 = _slicedToArray(_timeFormatted$split, 2),
+      hours = _timeFormatted$split2[0],
+      minutesAndTimeOfDay = _timeFormatted$split2[1];
+
+  hours = Number(hours);
+  var minutes = Number(minutesAndTimeOfDay.replace(/(pm)|(am)|(\+\d)/g, "").trim());
+
+  if (addDays) {
+    var daysToAdd = time.match(/(\+\d)/);
+
+    if (daysToAdd) {
+      hours += daysToAdd[0].split("+")[1] * 24;
+    }
+  }
+
+  if (timeFormatted.includes("pm") && hours % 12 !== 0) {
+    hours += 12;
+  } else if (timeFormatted.includes("am") && hours % 12 === 0) {
+    hours -= 12;
+  }
+
+  return {
+    hours: hours,
+    minutes: minutes
+  };
+}
+
+function convert12HourTimeToMinutes(time) {
+  var _convertTimeTo24HourC = convertTimeTo24HourClock(time, true),
+      hours = _convertTimeTo24HourC.hours,
+      minutes = _convertTimeTo24HourC.minutes;
+
+  return hours * 60 + minutes;
+}
+
+function addTimezoneOffset(time, tzOffset) {
+  var minutes = convert12HourTimeToMinutes(time);
+  var newTimeInMinutes = minutes - tzOffset;
+  return convertMinutesTo12HourClock(newTimeInMinutes, true);
+}
+
+function convertMinutesTo12HourClock(time, addDay) {
+  var totalMinutes = Math.abs(time);
+  var hours = Math.floor(totalMinutes / 60) % 24;
+  var minutes = totalMinutes % 60;
+  var minuteString = "" + minutes;
+  minuteString = minuteString.padStart(2, "0");
+  var timeString = "";
+
+  if (hours < 12) {
+    if (hours === 0) {
+      timeString += "12";
+    } else {
+      timeString += hours;
+    }
+
+    timeString += ":".concat(minuteString, " AM");
+  } else {
+    if (hours === 12) {
+      timeString += 12;
+    } else {
+      timeString += "".concat(hours - 12);
+    }
+
+    timeString += ":".concat(minuteString, " PM");
+  }
+
+  if (addDay && totalMinutes / 60 > 24) {
+    timeString += "+".concat(Math.floor(totalMinutes / 60 / 24));
+  }
+
+  return timeString;
+}
+
+function convertDurationToMinutes(duration) {
+  // duration looks like 10h 30m
+  var durationHours;
+  var durationRest;
+
+  if (duration.includes("h")) {
+    var _duration$split = duration.split("h");
+
+    var _duration$split2 = _slicedToArray(_duration$split, 2);
+
+    durationHours = _duration$split2[0];
+    durationRest = _duration$split2[1];
+  } else {
+    // less than 1 hour
+    durationHours = 0;
+    durationRest = duration;
+  }
+
+  var durationMinutes = durationRest.trim().split("m")[0] || 0;
+  return Number(durationMinutes) + Number(durationHours) * 60;
+} // calculate timezone offset in minutes
+
+
+function getTimezoneOffset(fromTime, toTime, duration) {
+  var _convertTimeTo24HourC2 = convertTimeTo24HourClock(fromTime),
+      fromHr = _convertTimeTo24HourC2.hours,
+      fromMin = _convertTimeTo24HourC2.minutes;
+
+  var _convertTimeTo24HourC3 = convertTimeTo24HourClock(toTime),
+      toHr = _convertTimeTo24HourC3.hours,
+      toMin = _convertTimeTo24HourC3.minutes;
+
+  var endsNextDay = toTime.match(/(\+\d)/);
+  var startsNextDay = fromTime.match(/(\+\d)/);
+  var startDayOffset = 0;
+  var endDayOffset = 0;
+
+  if (startsNextDay) {
+    var _startsNextDay$0$spli = startsNextDay[0].split("+"),
+        _startsNextDay$0$spli2 = _slicedToArray(_startsNextDay$0$spli, 2),
+        _ = _startsNextDay$0$spli2[0],
+        startDays = _startsNextDay$0$spli2[1];
+
+    startDayOffset += Number(startDays);
+    endDayOffset = startDayOffset;
+  }
+
+  if (endsNextDay) {
+    var _endsNextDay$0$split = endsNextDay[0].split("+"),
+        _endsNextDay$0$split2 = _slicedToArray(_endsNextDay$0$split, 2),
+        _2 = _endsNextDay$0$split2[0],
+        endDays = _endsNextDay$0$split2[1];
+
+    endDayOffset += Number(endDays);
+  }
+
+  var fromTotalMinutes = (fromHr + 24 * startDayOffset) * 60 + fromMin;
+  var toTotalMinutes = (toHr + 24 * endDayOffset) * 60 + toMin;
+  var durationMinutes = convertDurationToMinutes(duration);
+  return durationMinutes - (toTotalMinutes - fromTotalMinutes);
+}
+
+function getTimeDetails(time) {
+  var _convertTimeTo24HourC4 = convertTimeTo24HourClock(time, true),
+      hours = _convertTimeTo24HourC4.hours,
+      minutes = _convertTimeTo24HourC4.minutes;
+
+  var timeOfDay = time.toLowerCase().match(/(pm)|(am)/)[0];
+  var excessDays = time.match(/(\+\d)/);
+  var displayHours = Number(time.split(":")[0]); // want 12 hour clock
+
+  return {
+    hours: hours,
+    displayHours: displayHours,
+    minutes: minutes,
+    timeOfDay: timeOfDay,
+    excessDays: excessDays ? excessDays[0] : excessDays
+  };
+}
+
+function isOvernight(fromTime, toTime) {
+  var MINUTES_PER_DAY = 24 * 60; // return convert12HourTimeToMinutes(fromTime) + convertDurationToMinutes(duration) > MINUTES_PER_DAY;
+  // if fromTime + duration > 24 hour
+
+  return fromTime.toLowerCase().includes("pm") && toTime.toLowerCase().includes("am");
+}
+
+
 
 /***/ }),
 

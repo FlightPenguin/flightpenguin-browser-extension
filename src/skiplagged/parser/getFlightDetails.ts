@@ -28,14 +28,14 @@ export const getFlightDetails = async (flightCard: HTMLElement): Promise<FlightD
     layovers = [];
   }
 
-  return {
+  return new FlightDetails({
     marketingAirline,
     operatingAirline: null,
     layovers,
     duration,
     fromTime,
     toTime,
-  };
+  });
 };
 
 const getDurationDetails = (flightCard: Element) => {
