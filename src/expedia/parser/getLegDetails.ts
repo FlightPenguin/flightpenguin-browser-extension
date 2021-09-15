@@ -1,22 +1,24 @@
 import { MissingFieldParserError } from "../../shared/errors";
 import { standardizeTimeString } from "../../shared/helpers";
 import { FlightLeg } from "../../shared/types/FlightLeg";
+import { FlightTimeDetails } from "../../shared/types/FlightTimeDetails";
 import { getTimeDetails } from "../../utilityFunctions";
 
-export const getLegDetails = (leg: Element, legIndex: number): FlightLeg => {
+export const getLegDetails = (leg: Element, legIndex: number, previousLegDetails?: FlightLeg): FlightLeg => {
   const [departure, details, arrival] = leg.children;
 
-  const departureTime = getDepartureTime(departure);
+  let departureTime = getDepartureTime(departure); // 9am
   let arrivalTime = getArrivalTime(arrival);
 
   const duration = getDuration(details?.children[0]);
 
-  if (legIndex > 0 && isOvernight(departureTime, duration)) {
+  if (isFlightOvernight(departureTime, duration)) {
     arrivalTime += "+1"; // overnight flight
   }
-  // } else if (isOvernight(arrivalTime, arrivalTime)) {
-  //   arrivalTime += "+1"; // overnight flight
-  // }
+
+  if (!!previousLegDetails && isLayoverOvernight(previousLegDetails, departureTime)) {
+    departureTime += "+1";
+  }
 
   return new FlightLeg({
     fromTime: departureTime,
@@ -99,7 +101,7 @@ const getOperatingAirline = (element: Element) => {
   return airline;
 };
 
-const isOvernight = (fromTime: string, duration: string) => {
+const isFlightOvernight = (fromTime: string, duration: string): boolean => {
   const fromTimeDetails = getTimeDetails(fromTime);
   const durationDetails = parseDuration(duration);
 
@@ -118,4 +120,9 @@ const parseDuration = (rawDuration: string): { hours: number; minutes: number } 
   }
   const [rawHours, rawMinutes] = duration.split("h");
   return { hours: Number(rawHours.trim()), minutes: Number(rawMinutes.split("m")[0].trim()) };
+};
+
+const isLayoverOvernight = (previousLegDetails: FlightLeg, fromTime: string): boolean => {
+  const fromTimeDetails = getTimeDetails(fromTime);
+  return previousLegDetails.toTimeDetails.hours % 24 > fromTimeDetails.hours % 24;
 };
