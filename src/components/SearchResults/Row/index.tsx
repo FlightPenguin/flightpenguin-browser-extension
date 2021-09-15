@@ -77,7 +77,7 @@ const TimelineRow = ({
       cursor={skeleton ? "not-allowed" : selected ? "auto" : "pointer"}
       marginBottom="0px"
       backgroundColor={index % 2 === 0 || selected ? "primaryTint" : "white"}
-      minHeight="80px"
+      minHeight="90px"
       filter={skeleton ? `blur(8px)` : ""}
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
@@ -154,7 +154,6 @@ const TimelineRow = ({
           _groupHover={selected ? {} : { visibility: "visible" }}
           _groupFocus={selected ? {} : { visibility: "visible" }}
           backgroundColor="white"
-          marginTop="-8px"
         >
           {flight.fromTime}
         </Tag>
@@ -166,10 +165,9 @@ const TimelineRow = ({
           left={`${right + 27}px`}
           position="absolute"
           visibility={selected ? "visible" : "hidden"}
-          _groupHover={selected ? {} : { visibility: "visible", zIndex: "500" }}
-          _groupFocus={selected ? {} : { visibility: "visible", zIndex: "500" }}
+          _groupHover={selected ? {} : { visibility: "visible" }}
+          _groupFocus={selected ? {} : { visibility: "visible" }}
           backgroundColor="white"
-          marginTop="-8px"
         >
           {flight.toTime}
         </Tag>

@@ -80,11 +80,11 @@ const TimelineGrid = ({
               onScroll={onChildScroll}
               overscanRowCount={8}
               rowCount={flights.length}
-              rowHeight={80}
+              rowHeight={90}
               rowRenderer={rowRender}
               scrollTop={scrollTop}
               tabIndex={-1}
-              width={containerWidth + 50} // +50 allows time boxen to flow over
+              width={containerWidth + 100} // +n allows time boxes to flow over
             />
           </Box>
         )}
