@@ -57,6 +57,14 @@ const TimelineRow = ({
   const { left, right } = getSegmentContainerPositions(flightSegments);
   const intervalWidth = flightTimeContainerWidth / (intervalCount - 1);
 
+  const rowHighlightStyle = selected
+    ? {}
+    : {
+        backgroundColor: "primary200",
+        zIndex: "999",
+      };
+  const showWhenSelected = selected ? "visible" : "hidden";
+
   return (
     <List.Item
       data-name="flight-list-item"
@@ -77,28 +85,15 @@ const TimelineRow = ({
       cursor={skeleton ? "not-allowed" : selected ? "auto" : "pointer"}
       marginBottom="0px"
       backgroundColor={index % 2 === 0 || selected ? "primaryTint" : "white"}
+      borderBottom={index % 2 === 1 ? "default" : "none"}
       minHeight="90px"
       filter={skeleton ? `blur(8px)` : ""}
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
-      _hover={
-        selected
-          ? {}
-          : {
-              backgroundColor: "primary200",
-              zIndex: "999",
-            }
-      }
+      _hover={rowHighlightStyle}
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
-      _focus={
-        selected
-          ? {}
-          : {
-              backgroundColor: "primary200",
-              zIndex: "999",
-            }
-      }
+      _focus={rowHighlightStyle}
     >
       <FlightLegend legendWidth={legendWidth} itinerary={itinerary} flight={flight} paymentType={paymentType} />
       <Box
@@ -127,7 +122,7 @@ const TimelineRow = ({
               alignX="center"
               alignY="top"
               fontSize="100"
-              visibility={selected ? "visible" : "hidden"}
+              visibility={showWhenSelected}
               marginBottom="5px"
               border="1px solid #404040"
               borderWidth="0px 0px 1px 0px"
@@ -150,7 +145,7 @@ const TimelineRow = ({
           left={`${left - 107}px`}
           position="absolute"
           textAlign="right"
-          visibility={selected ? "visible" : "hidden"}
+          visibility={showWhenSelected}
           _groupHover={selected ? {} : { visibility: "visible" }}
           _groupFocus={selected ? {} : { visibility: "visible" }}
           backgroundColor="white"
@@ -164,7 +159,7 @@ const TimelineRow = ({
           data-name="arrival-time"
           left={`${right + 27}px`}
           position="absolute"
-          visibility={selected ? "visible" : "hidden"}
+          visibility={showWhenSelected}
           _groupHover={selected ? {} : { visibility: "visible" }}
           _groupFocus={selected ? {} : { visibility: "visible" }}
           backgroundColor="white"
