@@ -1181,15 +1181,14 @@ var getTimes = function getTimes(legDetailsContainer) {
     throw new _shared_errors__WEBPACK_IMPORTED_MODULE_0__.MissingElementLookupError("Unable to determine times of layover");
   }
 
-  var _timesContainer$query = timesContainer.querySelectorAll("span"),
-      _timesContainer$query2 = _slicedToArray(_timesContainer$query, 3),
-      departureTimeSpan = _timesContainer$query2[0],
-      durationSpan = _timesContainer$query2[1],
-      arrivalTimeSpan = _timesContainer$query2[2];
+  var _timesContainer$child = _slicedToArray(timesContainer.children, 3),
+      departureTimeContainer = _timesContainer$child[0],
+      durationSpan = _timesContainer$child[1],
+      arrivalTimeContainer = _timesContainer$child[2];
 
-  var departureTime = departureTimeSpan.textContent;
+  var departureTime = departureTimeContainer.textContent;
 
-  if (!departureTimeSpan) {
+  if (!departureTimeContainer) {
     throw new _shared_errors__WEBPACK_IMPORTED_MODULE_0__.MissingFieldParserError("Couldn't parse departure time of layover");
   }
 
@@ -1199,7 +1198,7 @@ var getTimes = function getTimes(legDetailsContainer) {
     throw new _shared_errors__WEBPACK_IMPORTED_MODULE_0__.MissingFieldParserError("Couldn't parse duration of layover");
   }
 
-  var arrivalTime = arrivalTimeSpan.textContent;
+  var arrivalTime = arrivalTimeContainer.textContent;
 
   if (!arrivalTime) {
     throw new _shared_errors__WEBPACK_IMPORTED_MODULE_0__.MissingFieldParserError("Couldn't parse arrival time of layover");

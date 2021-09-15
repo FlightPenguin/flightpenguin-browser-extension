@@ -1,6 +1,6 @@
 export const PROVIDERS_NEEDING_RETURNS = ["expedia", "skiplagged"];
 export const PROVIDERS_SUPPORTING_POINTS_SEARCH = ["expedia"];
-export const SUPPORTED_PROVIDERS = ["expedia", "skiplagged", "skyscanner", "southwest"];
+export const SUPPORTED_PROVIDERS = ["skyscanner"];
 
 // eslint-disable-next-line @typescript-eslint/no-empty-function
 export const DEFAULT_ON_READY_FUNCTION = () => {};
