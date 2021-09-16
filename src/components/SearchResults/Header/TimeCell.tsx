@@ -55,17 +55,17 @@ export const TimeCell = ({
           &nbsp;
         </Text>
       )}
-      <Tooltip content={`Time at ${departureAirportCode}`} hasArrow placement="right">
-        <Text fontSize={timeFontSize} fontWeight={isMidnight ? "700" : "400"} tabIndex={-1}>
-          {time.toLowerCase()}
-        </Text>
-      </Tooltip>
+      {/*<Tooltip content={`Time at ${departureAirportCode}`} hasArrow placement="right">*/}
+      <Text fontSize={timeFontSize} fontWeight={isMidnight ? "700" : "400"} tabIndex={-1}>
+        {time.toLowerCase()}
+      </Text>
+      {/*</Tooltip>*/}
       {!!tzOffset && (
-        <Tooltip content={`Time at ${arrivalAirportCode}`} hasArrow placement="right">
-          <Text fontSize={timeFontSize} fontWeight={isMidnight ? "700" : "400"} tabIndex={-1}>
-            {offsetTime.toLowerCase()}
-          </Text>
-        </Tooltip>
+        // <Tooltip content={`Time at ${arrivalAirportCode}`} hasArrow placement="right">
+        <Text fontSize={timeFontSize} fontWeight={isMidnight ? "700" : "400"} tabIndex={-1}>
+          {offsetTime.toLowerCase()}
+        </Text>
+        // </Tooltip>
       )}
     </Box>
   );
