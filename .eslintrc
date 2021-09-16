@@ -24,8 +24,8 @@
     "plugin:@typescript-eslint/recommended"
   ],
   "rules": {
-    "no-console": "error",
-    "simple-import-sort/imports": "error",
+    "no-console": "off",
+    "simple-import-sort/imports": "error"
   },
   "ignorePatterns": ["**/dist/*.js", "webpack.*.js", "webpack.config.ts"]
 }

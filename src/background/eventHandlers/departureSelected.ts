@@ -16,6 +16,7 @@ export const handleDepartureSelected = (providerManager: ProviderManager, depart
   const { itineraries } = providerManager.getItineraries();
   const departureItineraries = departure.itinIds.flatMap((itinId: string) => itineraries[itinId]);
   const departureProviders = departureItineraries.map((itinerary: any) => itinerary.provider);
+  providerManager.setSelectedProviders(departureProviders);
 
   if (hasReturnProviders(departureProviders)) {
     requestNoRoundtripProviderReturns(departure, providerManager, departureProviders, departureItineraries);

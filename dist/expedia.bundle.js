@@ -1051,6 +1051,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "sendFlightsEvent": () => (/* binding */ sendFlightsEvent)
 /* harmony export */ });
 function sendFlightsEvent(providerName, flights) {
+  console.debug("Sending ".concat(flights.length, " departure flights from ").concat(providerName));
   chrome.runtime.sendMessage({
     event: "FLIGHT_RESULTS_RECEIVED",
     flights: flights,
@@ -1114,6 +1115,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "sendReturnFlightsEvent": () => (/* binding */ sendReturnFlightsEvent)
 /* harmony export */ });
 function sendReturnFlightsEvent(providerName, flights) {
+  console.debug("Sending ".concat(flights.length, " return flights from ").concat(providerName));
   chrome.runtime.sendMessage({
     event: "RETURN_FLIGHTS_RECEIVED",
     flights: flights,

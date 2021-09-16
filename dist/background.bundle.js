@@ -134,6 +134,7 @@ var ProviderManager = /*#__PURE__*/function () {
     this.itinerariesVersion = 0;
     this.departures = {};
     this.returns = [];
+    this.selectedProviders = [];
     this.formData = null;
     this.primaryTab = null;
     this.setPrimaryTab();
@@ -183,6 +184,11 @@ var ProviderManager = /*#__PURE__*/function () {
     key: "getFormData",
     value: function getFormData() {
       return this.formData;
+    }
+  }, {
+    key: "setSelectedProviders",
+    value: function setSelectedProviders(providerNames) {
+      this.selectedProviders = providerNames;
     }
   }, {
     key: "setStatus",
@@ -267,7 +273,8 @@ var ProviderManager = /*#__PURE__*/function () {
     value: function isReturnComplete() {
       var _this2 = this;
 
-      return this.knownProviders.every(function (providerName) {
+      var providers = this.selectedProviders.length ? this.selectedProviders : this.knownProviders;
+      return providers.every(function (providerName) {
         return _this2.isProviderReturnComplete(providerName);
       });
     }
@@ -714,6 +721,7 @@ var handleDepartureSelected = function handleDepartureSelected(providerManager, 
   var departureProviders = departureItineraries.map(function (itinerary) {
     return itinerary.provider;
   });
+  providerManager.setSelectedProviders(departureProviders);
 
   if (hasReturnProviders(departureProviders)) {
     requestNoRoundtripProviderReturns(departure, providerManager, departureProviders, departureItineraries);
@@ -845,6 +853,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
 var handleFlightResultsReceived = function handleFlightResultsReceived(providerManager, flights, providerName) {
   if (flights.length === 0) {
+    console.debug("Received flight results... but the list was empty");
     return; // TODO: Enhance
   }
 
@@ -852,15 +861,16 @@ var handleFlightResultsReceived = function handleFlightResultsReceived(providerM
   var tabId = providerManager.getTabId(providerName);
 
   if (windowId === null || windowId === undefined || tabId === null || tabId === undefined) {
-    // TODO: Better handle
-    return;
+    console.debug("No windows available in flight results");
+    return; // TODO: Better handle
   }
 
   var _providerManager$getI = providerManager.getItineraries(),
       existingItineraries = _providerManager$getI.itineraries,
       existingItinerariesVersion = _providerManager$getI.version;
 
-  var existingDepartures = providerManager.getDepartures(); // @ts-ignore
+  var existingDepartures = providerManager.getDepartures(); // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
 
   var _makeItins = (0,_dataModels__WEBPACK_IMPORTED_MODULE_0__.makeItins)(flights, existingDepartures, existingItineraries, providerName, windowId, tabId),
       departures = _makeItins.departures,
@@ -889,6 +899,7 @@ var handleFlightResultsReceived = function handleFlightResultsReceived(providerM
     };
     providerManager.sendMessageToIndexPage(nextMessage);
   } else {
+    console.debug("Retrying processing of received flight results...");
     return handleFlightResultsReceived(providerManager, flights, providerName);
   }
 };
@@ -3024,6 +3035,8 @@ Sentry.init({
 (0,_background_state__WEBPACK_IMPORTED_MODULE_2__.ExtensionOpenedHandler)();
 var providerManager = new _background_ProviderManager__WEBPACK_IMPORTED_MODULE_1__.ProviderManager();
 chrome.runtime.onMessage.addListener(function (message, sender, reply) {
+  console.debug(message);
+
   switch (message.event) {
     case "FORM_DATA_RECEIVED":
       (0,_background_eventHandlers__WEBPACK_IMPORTED_MODULE_0__.handleFormDataReceived)(providerManager, message.formData, message.windowConfig);
@@ -3038,7 +3051,7 @@ chrome.runtime.onMessage.addListener(function (message, sender, reply) {
       break;
 
     case "FAILED_SCRAPER":
-      (0,_background_eventHandlers__WEBPACK_IMPORTED_MODULE_0__.handleScraperFailed)(providerManager, message.providerName, message.formData, message.description, message.searchType);
+      (0,_background_eventHandlers__WEBPACK_IMPORTED_MODULE_0__.handleScraperFailed)(providerManager, message.providerName, message.description, message.searchType);
       break;
 
     case "FLIGHT_RESULTS_RECEIVED":

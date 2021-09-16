@@ -29,6 +29,7 @@ ExtensionOpenedHandler();
 const providerManager = new ProviderManager();
 
 chrome.runtime.onMessage.addListener(function (message, sender, reply) {
+  console.debug(message);
   switch (message.event) {
     case "FORM_DATA_RECEIVED":
       handleFormDataReceived(providerManager, message.formData, message.windowConfig);
@@ -40,13 +41,7 @@ chrome.runtime.onMessage.addListener(function (message, sender, reply) {
       handleScraperSuccess(providerManager, message.providerName, message.searchType);
       break;
     case "FAILED_SCRAPER":
-      handleScraperFailed(
-        providerManager,
-        message.providerName,
-        message.formData,
-        message.description,
-        message.searchType,
-      );
+      handleScraperFailed(providerManager, message.providerName, message.description, message.searchType);
       break;
     case "FLIGHT_RESULTS_RECEIVED":
       handleFlightResultsReceived(providerManager, message.flights, message.provider);

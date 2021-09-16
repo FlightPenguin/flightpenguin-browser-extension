@@ -182,6 +182,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "sendFlightsEvent": () => (/* binding */ sendFlightsEvent)
 /* harmony export */ });
 function sendFlightsEvent(providerName, flights) {
+  console.debug("Sending ".concat(flights.length, " departure flights from ").concat(providerName));
   chrome.runtime.sendMessage({
     event: "FLIGHT_RESULTS_RECEIVED",
     flights: flights,
@@ -245,6 +246,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "sendReturnFlightsEvent": () => (/* binding */ sendReturnFlightsEvent)
 /* harmony export */ });
 function sendReturnFlightsEvent(providerName, flights) {
+  console.debug("Sending ".concat(flights.length, " return flights from ").concat(providerName));
   chrome.runtime.sendMessage({
     event: "RETURN_FLIGHTS_RECEIVED",
     flights: flights,
@@ -2809,32 +2811,46 @@ var returnFlightContainer;
 var returnObserver = null;
 chrome.runtime.onMessage.addListener( /*#__PURE__*/function () {
   var _ref = _asyncToGenerator(function* (message) {
-    var _departureObserver, _departureObserver2, _returnObserver, _departureObserver3, _returnObserver2;
+    var _departureObserver2, _returnObserver, _departureObserver3, _returnObserver2;
 
     switch (message.event) {
       case "BEGIN_PARSING":
-        departureObserver = new _parser_observer__WEBPACK_IMPORTED_MODULE_4__.FlightObserver(null);
-        departureFlightContainer = yield attachObserver(departureObserver, null);
+        try {
+          departureObserver = new _parser_observer__WEBPACK_IMPORTED_MODULE_4__.FlightObserver(null);
+          departureFlightContainer = yield attachObserver(departureObserver, null);
 
-        if (departureFlightContainer) {
-          yield (0,_ui_scrollThroughContainer__WEBPACK_IMPORTED_MODULE_7__.scrollThroughContainer)(departureFlightContainer);
+          if (departureFlightContainer) {
+            yield (0,_ui_scrollThroughContainer__WEBPACK_IMPORTED_MODULE_7__.scrollThroughContainer)(departureFlightContainer);
+          }
+
+          (0,_shared_events__WEBPACK_IMPORTED_MODULE_1__.sendScraperComplete)("skiplagged", "DEPARTURE");
+          departureObserver.endObservation();
+        } catch (error) {
+          window.Sentry.captureException(error);
+          (0,_shared_events__WEBPACK_IMPORTED_MODULE_1__.sendFailedScraper)("skiplagged", error, "DEPARTURE");
         }
 
-        (0,_shared_events__WEBPACK_IMPORTED_MODULE_1__.sendScraperComplete)("skiplagged", "DEPARTURE");
-        departureObserver.endObservation();
         break;
 
       case "GET_RETURN_FLIGHTS":
-        (_departureObserver = departureObserver) === null || _departureObserver === void 0 ? void 0 : _departureObserver.endObservation();
-        (0,_ui_scrollThroughContainer__WEBPACK_IMPORTED_MODULE_7__.stopScrollingNow)();
-        returnObserver = new _parser_observer__WEBPACK_IMPORTED_MODULE_4__.FlightObserver(message.departure);
-        returnFlightContainer = yield attachObserver(returnObserver, getSkiplaggedDepartureId(departureObserver, message.departure.id));
+        try {
+          var _departureObserver;
 
-        if (returnFlightContainer) {
-          yield (0,_ui_scrollThroughContainer__WEBPACK_IMPORTED_MODULE_7__.scrollThroughContainer)(returnFlightContainer);
+          (_departureObserver = departureObserver) === null || _departureObserver === void 0 ? void 0 : _departureObserver.endObservation();
+          (0,_ui_scrollThroughContainer__WEBPACK_IMPORTED_MODULE_7__.stopScrollingNow)();
+          returnObserver = new _parser_observer__WEBPACK_IMPORTED_MODULE_4__.FlightObserver(message.departure);
+          returnFlightContainer = yield attachObserver(returnObserver, getSkiplaggedDepartureId(departureObserver, message.departure.id));
+
+          if (returnFlightContainer) {
+            yield (0,_ui_scrollThroughContainer__WEBPACK_IMPORTED_MODULE_7__.scrollThroughContainer)(returnFlightContainer);
+          }
+
+          (0,_shared_events__WEBPACK_IMPORTED_MODULE_1__.sendScraperComplete)("skiplagged", "RETURN");
+        } catch (error) {
+          window.Sentry.captureException(error);
+          (0,_shared_events__WEBPACK_IMPORTED_MODULE_1__.sendFailedScraper)("skiplagged", error, "RETURN");
         }
 
-        (0,_shared_events__WEBPACK_IMPORTED_MODULE_1__.sendScraperComplete)("skiplagged", "RETURN");
         break;
 
       case "HIGHLIGHT_FLIGHT":
@@ -2867,20 +2883,13 @@ chrome.runtime.onMessage.addListener( /*#__PURE__*/function () {
 
 var attachObserver = /*#__PURE__*/function () {
   var _ref2 = _asyncToGenerator(function* (observer, skiplaggedFlightId) {
-    try {
-      if (skiplaggedFlightId) {
-        yield (0,_ui_selectFlightCard__WEBPACK_IMPORTED_MODULE_8__.selectFlightCard)(skiplaggedFlightId);
-      }
-
-      var flightContainer = yield (0,_parser_getFlightContainer__WEBPACK_IMPORTED_MODULE_3__.getFlightContainer)(!!skiplaggedFlightId);
-      observer.beginObservation(flightContainer);
-      return flightContainer;
-    } catch (error) {
-      window.Sentry.captureException(error);
-      var flightType = skiplaggedFlightId ? "RETURN" : "DEPARTURE";
-      (0,_shared_events__WEBPACK_IMPORTED_MODULE_1__.sendFailedScraper)("skiplagged", error, flightType);
-      return null;
+    if (skiplaggedFlightId) {
+      yield (0,_ui_selectFlightCard__WEBPACK_IMPORTED_MODULE_8__.selectFlightCard)(skiplaggedFlightId);
     }
+
+    var flightContainer = yield (0,_parser_getFlightContainer__WEBPACK_IMPORTED_MODULE_3__.getFlightContainer)(!!skiplaggedFlightId);
+    observer.beginObservation(flightContainer);
+    return flightContainer;
   });
 
   return function attachObserver(_x2, _x3) {

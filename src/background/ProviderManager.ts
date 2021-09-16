@@ -47,6 +47,7 @@ export class ProviderManager {
   private departures: { [key: string]: any };
   private returns: any[];
   private formData: FlightSearchFormData | null;
+  private selectedProviders: string[];
 
   constructor() {
     this.knownProviders = [];
@@ -56,6 +57,7 @@ export class ProviderManager {
     this.itinerariesVersion = 0;
     this.departures = {};
     this.returns = [];
+    this.selectedProviders = [];
 
     this.formData = null;
     this.primaryTab = null;
@@ -94,6 +96,10 @@ export class ProviderManager {
 
   getFormData(): FlightSearchFormData | null {
     return this.formData;
+  }
+
+  setSelectedProviders(providerNames: string[]) {
+    this.selectedProviders = providerNames;
   }
 
   setStatus(providerName: string, status: StatusType, searchType: SearchType) {
@@ -160,7 +166,8 @@ export class ProviderManager {
   }
 
   isReturnComplete(): boolean {
-    return this.knownProviders.every((providerName) => {
+    const providers = this.selectedProviders.length ? this.selectedProviders : this.knownProviders;
+    return providers.every((providerName) => {
       return this.isProviderReturnComplete(providerName);
     });
   }

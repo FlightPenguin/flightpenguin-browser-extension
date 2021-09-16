@@ -8,19 +8,21 @@ export const handleFlightResultsReceived = (
   providerName: string,
 ): undefined | void => {
   if (flights.length === 0) {
+    console.debug("Received flight results... but the list was empty");
     return; // TODO: Enhance
   }
 
   const windowId = providerManager.getWindowId(providerName);
   const tabId = providerManager.getTabId(providerName);
   if (windowId === null || windowId === undefined || tabId === null || tabId === undefined) {
-    // TODO: Better handle
-    return;
+    console.debug("No windows available in flight results");
+    return; // TODO: Better handle
   }
 
   const { itineraries: existingItineraries, version: existingItinerariesVersion } = providerManager.getItineraries();
   const existingDepartures = providerManager.getDepartures();
 
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore
   const { departures, itins: itineraries } = makeItins(
     flights,
@@ -53,6 +55,7 @@ export const handleFlightResultsReceived = (
     };
     providerManager.sendMessageToIndexPage(nextMessage);
   } else {
+    console.debug("Retrying processing of received flight results...");
     return handleFlightResultsReceived(providerManager, flights, providerName);
   }
 };

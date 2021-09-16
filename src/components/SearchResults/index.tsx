@@ -37,6 +37,7 @@ export const SearchResults = ({ formData }: SearchResultsProps): React.ReactElem
 
   useEffect(() => {
     chrome.runtime.onMessage.addListener((message) => {
+      console.debug(message);
       switch (message.event) {
         case "FLIGHT_RESULTS_FOR_CLIENT":
         case "RETURN_FLIGHTS_FOR_CLIENT":
