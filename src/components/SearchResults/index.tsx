@@ -26,8 +26,8 @@ export const SearchResults = ({ formData }: SearchResultsProps): React.ReactElem
       departureFlights: [],
       returnFlights: [],
     },
-    1000,
-    false,
+    500,
+    true,
   );
 
   const [departuresComplete, setDeparturesComplete] = useState(false);
