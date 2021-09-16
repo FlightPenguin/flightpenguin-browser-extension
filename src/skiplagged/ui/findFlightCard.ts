@@ -9,7 +9,7 @@ export const findFlightCard = async (skiplaggedFlightId: string): Promise<HTMLEl
   stopScrollingNow("Searching for flight card");
   await pause(300);
   window.scrollTo({ top: 0, behavior: "smooth" });
-  await pause(1000);
+  await pause(2000);
 
   const flightSelector = `div[id*='"key":"${skiplaggedFlightId}"']`;
   let flightCard = null;

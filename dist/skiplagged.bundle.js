@@ -1899,7 +1899,7 @@ var findFlightCard = /*#__PURE__*/function () {
       top: 0,
       behavior: "smooth"
     });
-    yield (0,_shared_pause__WEBPACK_IMPORTED_MODULE_1__.pause)(1000);
+    yield (0,_shared_pause__WEBPACK_IMPORTED_MODULE_1__.pause)(2000);
     var flightSelector = "div[id*='\"key\":\"".concat(skiplaggedFlightId, "\"']");
     var flightCard = null;
     var lastFlightCard = (0,_scrollThroughContainer__WEBPACK_IMPORTED_MODULE_2__.getLastFlightCard)(document);
