@@ -1,12 +1,12 @@
 import { ParserError } from "../../shared/errors";
 import { pause } from "../../shared/pause";
-import { getLastFlightCard, stopScrollingNow } from "./scrollThroughContainer";
+import { getLastFlightCard, removeScrollingCheck, stopScrollingNow } from "./scrollThroughContainer";
 import { scrollToFlightCard } from "./scrollToFlightCard";
 
 const FLIGHT_CARD_SELECTOR = "div[class='trip']";
 
 export const findFlightCard = async (skiplaggedFlightId: string): Promise<HTMLElement> => {
-  stopScrollingNow();
+  stopScrollingNow("Searching for flight card");
   await pause(300);
   window.scrollTo({ top: 0, behavior: "smooth" });
   await pause(1000);
@@ -27,6 +27,8 @@ export const findFlightCard = async (skiplaggedFlightId: string): Promise<HTMLEl
     await pause(300, 50, 100);
     lastFlightCard = getLastFlightCard(document);
   }
+
+  removeScrollingCheck(null);
   if (flightCard) {
     return flightCard;
   } else {

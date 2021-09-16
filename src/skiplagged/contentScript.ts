@@ -37,7 +37,7 @@ chrome.runtime.onMessage.addListener(async function (message) {
     case "GET_RETURN_FLIGHTS":
       try {
         departureObserver?.endObservation();
-        stopScrollingNow();
+        stopScrollingNow("Departure selected");
 
         returnObserver = new FlightObserver(message.departure);
         returnFlightContainer = await attachObserver(
@@ -55,7 +55,7 @@ chrome.runtime.onMessage.addListener(async function (message) {
 
       break;
     case "HIGHLIGHT_FLIGHT":
-      stopScrollingNow();
+      stopScrollingNow("Highlight flight");
       departureObserver?.endObservation();
       returnObserver?.endObservation();
 
@@ -64,7 +64,7 @@ chrome.runtime.onMessage.addListener(async function (message) {
     case "CLEAR_SELECTION":
       departureObserver?.endObservation();
       returnObserver?.endObservation();
-      stopScrollingNow();
+      stopScrollingNow("Clear selection(s)");
 
       await clearSelection();
       chrome.runtime.sendMessage({ event: "PROVIDER_READY", provider: "skiplagged" });

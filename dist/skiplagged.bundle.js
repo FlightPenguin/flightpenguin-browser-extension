@@ -1893,7 +1893,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 var FLIGHT_CARD_SELECTOR = "div[class='trip']";
 var findFlightCard = /*#__PURE__*/function () {
   var _ref = _asyncToGenerator(function* (skiplaggedFlightId) {
-    (0,_scrollThroughContainer__WEBPACK_IMPORTED_MODULE_2__.stopScrollingNow)();
+    (0,_scrollThroughContainer__WEBPACK_IMPORTED_MODULE_2__.stopScrollingNow)("Searching for flight card");
     yield (0,_shared_pause__WEBPACK_IMPORTED_MODULE_1__.pause)(300);
     window.scrollTo({
       top: 0,
@@ -1918,6 +1918,8 @@ var findFlightCard = /*#__PURE__*/function () {
       yield (0,_shared_pause__WEBPACK_IMPORTED_MODULE_1__.pause)(300, 50, 100);
       lastFlightCard = (0,_scrollThroughContainer__WEBPACK_IMPORTED_MODULE_2__.getLastFlightCard)(document);
     }
+
+    (0,_scrollThroughContainer__WEBPACK_IMPORTED_MODULE_2__.removeScrollingCheck)(null);
 
     if (flightCard) {
       return flightCard;
@@ -2010,10 +2012,12 @@ var scrollThroughContainer = /*#__PURE__*/function () {
     yield (0,_shared_utilities_waitFor__WEBPACK_IMPORTED_MODULE_1__.waitForDisappearance)(45000, PROGRESS_SELECTOR);
     yield (0,_shared_utilities_waitFor__WEBPACK_IMPORTED_MODULE_1__.waitForAppearance)(45000, FLIGHT_CARD_SELECTOR, container);
     removeScrollingCheck(null);
+    yield (0,_shared_pause__WEBPACK_IMPORTED_MODULE_0__.pause)(150);
     var startTime = new Date().getTime();
 
     while (getTimeSinceStart(startTime) < 60000) {
-      if (stopScrollingCheck(true)) {
+      if (stopScrollingCheck(false)) {
+        console.debug("Stop scrolling requested...");
         break;
       }
 
@@ -2033,7 +2037,7 @@ var progressiveScrollingOnce = /*#__PURE__*/function () {
       top: 0,
       behavior: "smooth"
     });
-    yield (0,_shared_pause__WEBPACK_IMPORTED_MODULE_0__.pause)(1000, 100, 200);
+    yield (0,_shared_pause__WEBPACK_IMPORTED_MODULE_0__.pause)(2000, 100, 300);
     var lastFlightCard = getLastFlightCard(flightContainer);
     var batchLastFlightCard = null;
 
@@ -2050,7 +2054,7 @@ var progressiveScrollingOnce = /*#__PURE__*/function () {
         break;
       }
 
-      yield (0,_shared_pause__WEBPACK_IMPORTED_MODULE_0__.pause)(300, 50, 100);
+      yield (0,_shared_pause__WEBPACK_IMPORTED_MODULE_0__.pause)(500, 50, 100);
       lastFlightCard = getLastFlightCard(flightContainer);
     }
   });
@@ -2069,6 +2073,10 @@ var stopScrollingCheck = function stopScrollingCheck(remove) {
   var div = document.querySelector(STOP_SCROLLING_SELECTOR);
   var stopScrolling = !!div;
 
+  if (stopScrolling) {
+    console.debug("Stopping scrolling because ".concat(div.getAttribute("data-reason")));
+  }
+
   if (stopScrolling && remove) {
     removeScrollingCheck(div);
   }
@@ -2076,9 +2084,14 @@ var stopScrollingCheck = function stopScrollingCheck(remove) {
   return stopScrolling;
 };
 
-var stopScrollingNow = function stopScrollingNow() {
+var stopScrollingNow = function stopScrollingNow(reason) {
   var div = document.createElement("div");
   div.id = STOP_SCROLLING_ID;
+
+  if (reason) {
+    div.setAttribute("data-reason", reason);
+  }
+
   document.body.appendChild(div);
 };
 var removeScrollingCheck = function removeScrollingCheck(div) {
@@ -2837,7 +2850,7 @@ chrome.runtime.onMessage.addListener( /*#__PURE__*/function () {
           var _departureObserver;
 
           (_departureObserver = departureObserver) === null || _departureObserver === void 0 ? void 0 : _departureObserver.endObservation();
-          (0,_ui_scrollThroughContainer__WEBPACK_IMPORTED_MODULE_7__.stopScrollingNow)();
+          (0,_ui_scrollThroughContainer__WEBPACK_IMPORTED_MODULE_7__.stopScrollingNow)("Departure selected");
           returnObserver = new _parser_observer__WEBPACK_IMPORTED_MODULE_4__.FlightObserver(message.departure);
           returnFlightContainer = yield attachObserver(returnObserver, getSkiplaggedDepartureId(departureObserver, message.departure.id));
 
@@ -2854,7 +2867,7 @@ chrome.runtime.onMessage.addListener( /*#__PURE__*/function () {
         break;
 
       case "HIGHLIGHT_FLIGHT":
-        (0,_ui_scrollThroughContainer__WEBPACK_IMPORTED_MODULE_7__.stopScrollingNow)();
+        (0,_ui_scrollThroughContainer__WEBPACK_IMPORTED_MODULE_7__.stopScrollingNow)("Highlight flight");
         (_departureObserver2 = departureObserver) === null || _departureObserver2 === void 0 ? void 0 : _departureObserver2.endObservation();
         (_returnObserver = returnObserver) === null || _returnObserver === void 0 ? void 0 : _returnObserver.endObservation();
         yield highlightFlight(message.selectedDepartureId, departureObserver, message.selectedReturnId, returnObserver);
@@ -2863,7 +2876,7 @@ chrome.runtime.onMessage.addListener( /*#__PURE__*/function () {
       case "CLEAR_SELECTION":
         (_departureObserver3 = departureObserver) === null || _departureObserver3 === void 0 ? void 0 : _departureObserver3.endObservation();
         (_returnObserver2 = returnObserver) === null || _returnObserver2 === void 0 ? void 0 : _returnObserver2.endObservation();
-        (0,_ui_scrollThroughContainer__WEBPACK_IMPORTED_MODULE_7__.stopScrollingNow)();
+        (0,_ui_scrollThroughContainer__WEBPACK_IMPORTED_MODULE_7__.stopScrollingNow)("Clear selection(s)");
         yield (0,_ui_clearSelection__WEBPACK_IMPORTED_MODULE_5__.clearSelection)();
         chrome.runtime.sendMessage({
           event: "PROVIDER_READY",
