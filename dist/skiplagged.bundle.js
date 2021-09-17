@@ -1010,10 +1010,12 @@ var getFlightContainer = /*#__PURE__*/function () {
     var container = flightType === "DEPARTURE" ? departureContainer : returnContainer;
 
     if (!container) {
+      yield (0,_shared_pause__WEBPACK_IMPORTED_MODULE_2__.pause)(60000);
       throw new _shared_errors__WEBPACK_IMPORTED_MODULE_0__.MissingElementLookupError("Unable to locate ".concat(flightType.toLowerCase(), " container"));
     }
 
     if (!(0,_shared_utilities_isVisible__WEBPACK_IMPORTED_MODULE_3__.isVisible)(container)) {
+      yield (0,_shared_pause__WEBPACK_IMPORTED_MODULE_2__.pause)(60000);
       throw new _shared_errors__WEBPACK_IMPORTED_MODULE_0__.ParserError("Flight container is not visible");
     }
 
@@ -2139,16 +2141,28 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "selectFlightCard": () => (/* binding */ selectFlightCard)
 /* harmony export */ });
-/* harmony import */ var _findFlightCard__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./findFlightCard */ "./src/skiplagged/ui/findFlightCard.ts");
+/* harmony import */ var _shared_pause__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../shared/pause */ "./src/shared/pause.ts");
+/* harmony import */ var _shared_utilities_waitFor__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../shared/utilities/waitFor */ "./src/shared/utilities/waitFor.ts");
+/* harmony import */ var _findFlightCard__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./findFlightCard */ "./src/skiplagged/ui/findFlightCard.ts");
 function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
 
 function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
 
 
+
+
+var FLIGHT_CARD_SELECTOR = "div.selected-trip";
+var LOADING_SPINNER_SELECTOR = "div.spinner-title";
+var NO_FLIGHTS_SELECTOR = ".trip-list-empty button[type='submit']";
 var selectFlightCard = /*#__PURE__*/function () {
   var _ref = _asyncToGenerator(function* (skiplaggedId) {
-    var flightCard = yield (0,_findFlightCard__WEBPACK_IMPORTED_MODULE_0__.findFlightCard)(skiplaggedId);
-    flightCard.click();
+    var flightCard = yield (0,_findFlightCard__WEBPACK_IMPORTED_MODULE_2__.findFlightCard)(skiplaggedId);
+    yield (0,_shared_pause__WEBPACK_IMPORTED_MODULE_0__.pause)(500);
+    var button = flightCard.querySelector("button");
+    button.click();
+    yield (0,_shared_utilities_waitFor__WEBPACK_IMPORTED_MODULE_1__.waitForAppearance)(45000, FLIGHT_CARD_SELECTOR);
+    yield (0,_shared_utilities_waitFor__WEBPACK_IMPORTED_MODULE_1__.waitForDisappearance)(45000, LOADING_SPINNER_SELECTOR);
+    yield (0,_shared_utilities_waitFor__WEBPACK_IMPORTED_MODULE_1__.waitForDisappearance)(10000, NO_FLIGHTS_SELECTOR);
   });
 
   return function selectFlightCard(_x) {
@@ -2825,6 +2839,8 @@ var returnObserver = null;
 chrome.runtime.onMessage.addListener( /*#__PURE__*/function () {
   var _ref = _asyncToGenerator(function* (message) {
     var _departureObserver2, _returnObserver, _departureObserver3, _returnObserver2;
+
+    console.log(message);
 
     switch (message.event) {
       case "BEGIN_PARSING":

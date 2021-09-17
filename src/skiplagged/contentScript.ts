@@ -19,6 +19,7 @@ let returnFlightContainer: HTMLElement | null;
 let returnObserver: FlightObserver | null = null;
 
 chrome.runtime.onMessage.addListener(async function (message) {
+  console.log(message);
   switch (message.event) {
     case "BEGIN_PARSING":
       try {
