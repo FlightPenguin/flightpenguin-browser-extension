@@ -1,5 +1,6 @@
 import { ProcessedFlightSearchResult } from "../../shared/types/ProcessedFlightSearchResult";
 import { WindowConfig } from "../../shared/types/WindowConfig";
+import { FlightMap } from "../../skiplagged/parser/constants";
 import { ProviderManager } from "../ProviderManager";
 
 export const handleReloadOnDepartureSelected = (
@@ -7,6 +8,7 @@ export const handleReloadOnDepartureSelected = (
   providerName: string,
   targetUrl: string,
   departure: ProcessedFlightSearchResult,
+  departureMap: FlightMap,
 ): void => {
   const targetTabId = providerManager.getTabId(providerName);
   if (!targetTabId) {
@@ -24,6 +26,6 @@ export const handleReloadOnDepartureSelected = (
   providerManager.createWindow(targetUrl, providerName, windowConfig, {
     event: "BEGIN_PARSING_RETURNS",
     departure: departure,
+    departureMap: departureMap,
   });
-  console.log(departure);
 };

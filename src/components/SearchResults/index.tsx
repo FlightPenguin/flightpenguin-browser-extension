@@ -1,5 +1,5 @@
 import { useDebounce } from "@react-hook/debounce";
-import { Box, useDisclosureState } from "bumbag";
+import { Box } from "bumbag";
 import React, { useEffect, useState } from "react";
 
 import { sendHighlightTab } from "../../shared/events";

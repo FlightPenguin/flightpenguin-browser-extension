@@ -42,7 +42,11 @@ chrome.runtime.onMessage.addListener(async function (message) {
         departureObserver?.endObservation();
         stopScrollingNow();
 
-        await reloadForDeparture(getSkiplaggedDepartureId(departureObserver, message.departure.id), message.departure);
+        await reloadForDeparture(
+          getSkiplaggedDepartureId(departureObserver, message.departure.id),
+          message.departure,
+          departureObserver?.getFlightMap() || {},
+        );
       } catch (error) {
         window.Sentry.captureException(error);
         sendFailedScraper("skiplagged", error, "RETURN");
@@ -54,6 +58,9 @@ chrome.runtime.onMessage.addListener(async function (message) {
         // handling post-reload
         departureObserver?.endObservation();
         returnObserver?.endObservation();
+
+        departureObserver = new FlightObserver(null);
+        departureObserver.addNewFlightsToMap(message.departureMap);
 
         returnObserver = new FlightObserver(message.departure);
         returnFlightContainer = await attachObserver(returnObserver, true);

@@ -72,7 +72,13 @@ chrome.runtime.onMessage.addListener(function (message, sender, reply) {
       handleIndexUnloaded(providerManager);
       break;
     case "RELOAD_SELECTED_DEPARTURE":
-      handleReloadOnDepartureSelected(providerManager, message.providerName, message.targetUrl, message.departure);
+      handleReloadOnDepartureSelected(
+        providerManager,
+        message.providerName,
+        message.targetUrl,
+        message.departure,
+        message.departureMap,
+      );
       break;
     default:
       window.Sentry.captureException(new Error(message));

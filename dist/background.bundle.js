@@ -620,10 +620,7 @@ __webpack_require__.r(__webpack_exports__);
 var PROVIDERS_NEEDING_RETURNS = ["expedia", "skiplagged"];
 var PROVIDERS_SUPPORTING_POINTS_SEARCH = ["expedia"];
 var SUPPORTED_PROVIDERS = [// force expansion
-// "expedia",
-"skiplagged" // "skyscanner",
-// "southwest"
-]; // eslint-disable-next-line @typescript-eslint/no-empty-function
+"expedia", "skiplagged", "skyscanner", "southwest"]; // eslint-disable-next-line @typescript-eslint/no-empty-function
 
 var DEFAULT_ON_READY_FUNCTION = function DEFAULT_ON_READY_FUNCTION() {};
 var CabinMap = {
@@ -1215,7 +1212,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "handleReloadOnDepartureSelected": () => (/* binding */ handleReloadOnDepartureSelected)
 /* harmony export */ });
-var handleReloadOnDepartureSelected = function handleReloadOnDepartureSelected(providerManager, providerName, targetUrl, departure) {
+var handleReloadOnDepartureSelected = function handleReloadOnDepartureSelected(providerManager, providerName, targetUrl, departure, departureMap) {
   var targetTabId = providerManager.getTabId(providerName);
 
   if (!targetTabId) {
@@ -1231,9 +1228,9 @@ var handleReloadOnDepartureSelected = function handleReloadOnDepartureSelected(p
   providerManager.closeWindow(providerName);
   providerManager.createWindow(targetUrl, providerName, windowConfig, {
     event: "BEGIN_PARSING_RETURNS",
-    departure: departure
+    departure: departure,
+    departureMap: departureMap
   });
-  console.log(departure);
 };
 
 /***/ }),
@@ -3133,7 +3130,7 @@ chrome.runtime.onMessage.addListener(function (message, sender, reply) {
       break;
 
     case "RELOAD_SELECTED_DEPARTURE":
-      (0,_background_eventHandlers__WEBPACK_IMPORTED_MODULE_0__.handleReloadOnDepartureSelected)(providerManager, message.providerName, message.targetUrl, message.departure);
+      (0,_background_eventHandlers__WEBPACK_IMPORTED_MODULE_0__.handleReloadOnDepartureSelected)(providerManager, message.providerName, message.targetUrl, message.departure, message.departureMap);
       break;
 
     default:

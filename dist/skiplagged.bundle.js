@@ -1614,6 +1614,11 @@ var FlightObserver = /*#__PURE__*/function () {
     value: function endObservation() {
       this.observer.disconnect();
     }
+  }, {
+    key: "getFlightMap",
+    value: function getFlightMap() {
+      return this.flightMap;
+    }
   }]);
 
   return FlightObserver;
@@ -1917,7 +1922,7 @@ var findFlightCard = /*#__PURE__*/function () {
       var flightCards = document.querySelectorAll(FLIGHT_CARD_SELECTOR);
       batchLastFlightCard = Array.from(flightCards).slice(-1)[0];
       (0,_scrollToFlightCard__WEBPACK_IMPORTED_MODULE_3__.scrollToFlightCard)(batchLastFlightCard);
-      yield (0,_shared_pause__WEBPACK_IMPORTED_MODULE_1__.pause)(300, 50, 100);
+      yield (0,_shared_pause__WEBPACK_IMPORTED_MODULE_1__.pause)(750, 150, 200);
       lastFlightCard = (0,_scrollThroughContainer__WEBPACK_IMPORTED_MODULE_2__.getLastFlightCard)(document);
     }
 
@@ -2001,7 +2006,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 
 
 var reloadForDeparture = /*#__PURE__*/function () {
-  var _ref = _asyncToGenerator(function* (skiplaggedId, departure) {
+  var _ref = _asyncToGenerator(function* (skiplaggedId, departure, departureMap) {
     var flightCard = yield (0,_findFlightCard__WEBPACK_IMPORTED_MODULE_1__.findFlightCard)(skiplaggedId);
     var flights = getFlightAbbreviations(flightCard);
     var newUrl = getNewUrl(flights);
@@ -2010,11 +2015,12 @@ var reloadForDeparture = /*#__PURE__*/function () {
       providerName: "skiplagged",
       targetUrl: newUrl,
       departureId: skiplaggedId,
-      departure: departure
+      departure: departure,
+      departureMap: departureMap
     });
   });
 
-  return function reloadForDeparture(_x, _x2) {
+  return function reloadForDeparture(_x, _x2, _x3) {
     return _ref.apply(this, arguments);
   };
 }();
@@ -2875,7 +2881,7 @@ var returnFlightContainer;
 var returnObserver = null;
 chrome.runtime.onMessage.addListener( /*#__PURE__*/function () {
   var _ref = _asyncToGenerator(function* (message) {
-    var _departureObserver3, _returnObserver2, _departureObserver4, _returnObserver3;
+    var _departureObserver4, _returnObserver2, _departureObserver5, _returnObserver3;
 
     console.log(message);
 
@@ -2901,11 +2907,11 @@ chrome.runtime.onMessage.addListener( /*#__PURE__*/function () {
       case "GET_RETURN_FLIGHTS":
         // this will parse the card and reload the page... firing off a message indicating what to do...
         try {
-          var _departureObserver;
+          var _departureObserver, _departureObserver2;
 
           (_departureObserver = departureObserver) === null || _departureObserver === void 0 ? void 0 : _departureObserver.endObservation();
           (0,_ui_scrollThroughContainer__WEBPACK_IMPORTED_MODULE_8__.stopScrollingNow)();
-          yield (0,_ui_reloadForDeparture__WEBPACK_IMPORTED_MODULE_7__.reloadForDeparture)(getSkiplaggedDepartureId(departureObserver, message.departure.id), message.departure);
+          yield (0,_ui_reloadForDeparture__WEBPACK_IMPORTED_MODULE_7__.reloadForDeparture)(getSkiplaggedDepartureId(departureObserver, message.departure.id), message.departure, ((_departureObserver2 = departureObserver) === null || _departureObserver2 === void 0 ? void 0 : _departureObserver2.getFlightMap()) || {});
         } catch (error) {
           window.Sentry.captureException(error);
           (0,_shared_events__WEBPACK_IMPORTED_MODULE_1__.sendFailedScraper)("skiplagged", error, "RETURN");
@@ -2915,11 +2921,13 @@ chrome.runtime.onMessage.addListener( /*#__PURE__*/function () {
 
       case "BEGIN_PARSING_RETURNS":
         try {
-          var _departureObserver2, _returnObserver;
+          var _departureObserver3, _returnObserver;
 
           // handling post-reload
-          (_departureObserver2 = departureObserver) === null || _departureObserver2 === void 0 ? void 0 : _departureObserver2.endObservation();
+          (_departureObserver3 = departureObserver) === null || _departureObserver3 === void 0 ? void 0 : _departureObserver3.endObservation();
           (_returnObserver = returnObserver) === null || _returnObserver === void 0 ? void 0 : _returnObserver.endObservation();
+          departureObserver = new _parser_observer__WEBPACK_IMPORTED_MODULE_4__.FlightObserver(null);
+          departureObserver.addNewFlightsToMap(message.departureMap);
           returnObserver = new _parser_observer__WEBPACK_IMPORTED_MODULE_4__.FlightObserver(message.departure);
           returnFlightContainer = yield attachObserver(returnObserver, true);
 
@@ -2938,13 +2946,13 @@ chrome.runtime.onMessage.addListener( /*#__PURE__*/function () {
 
       case "HIGHLIGHT_FLIGHT":
         (0,_ui_scrollThroughContainer__WEBPACK_IMPORTED_MODULE_8__.stopScrollingNow)("Highlight flight");
-        (_departureObserver3 = departureObserver) === null || _departureObserver3 === void 0 ? void 0 : _departureObserver3.endObservation();
+        (_departureObserver4 = departureObserver) === null || _departureObserver4 === void 0 ? void 0 : _departureObserver4.endObservation();
         (_returnObserver2 = returnObserver) === null || _returnObserver2 === void 0 ? void 0 : _returnObserver2.endObservation();
         yield highlightFlight(message.selectedDepartureId, departureObserver, message.selectedReturnId, returnObserver);
         break;
 
       case "CLEAR_SELECTION":
-        (_departureObserver4 = departureObserver) === null || _departureObserver4 === void 0 ? void 0 : _departureObserver4.endObservation();
+        (_departureObserver5 = departureObserver) === null || _departureObserver5 === void 0 ? void 0 : _departureObserver5.endObservation();
         (_returnObserver3 = returnObserver) === null || _returnObserver3 === void 0 ? void 0 : _returnObserver3.endObservation();
         (0,_ui_scrollThroughContainer__WEBPACK_IMPORTED_MODULE_8__.stopScrollingNow)("Clear selection(s)");
         yield (0,_ui_clearSelection__WEBPACK_IMPORTED_MODULE_5__.clearSelection)();

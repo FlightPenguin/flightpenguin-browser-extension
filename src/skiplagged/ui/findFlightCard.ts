@@ -24,7 +24,7 @@ export const findFlightCard = async (skiplaggedFlightId: string): Promise<HTMLEl
     const flightCards = document.querySelectorAll(FLIGHT_CARD_SELECTOR) as NodeListOf<HTMLElement>;
     batchLastFlightCard = Array.from(flightCards).slice(-1)[0];
     scrollToFlightCard(batchLastFlightCard);
-    await pause(300, 50, 100);
+    await pause(750, 150, 200);
     lastFlightCard = getLastFlightCard(document);
   }
 

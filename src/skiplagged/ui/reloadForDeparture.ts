@@ -1,10 +1,12 @@
 import { MissingElementLookupError, MissingFieldParserError } from "../../shared/errors";
 import { ProcessedFlightSearchResult } from "../../shared/types/ProcessedFlightSearchResult";
+import { FlightMap } from "../parser/constants";
 import { findFlightCard } from "./findFlightCard";
 
 export const reloadForDeparture = async (
   skiplaggedId: string,
   departure: ProcessedFlightSearchResult,
+  departureMap: FlightMap,
 ): Promise<void> => {
   const flightCard = (await findFlightCard(skiplaggedId)) as HTMLElement;
   const flights = getFlightAbbreviations(flightCard);
@@ -15,6 +17,7 @@ export const reloadForDeparture = async (
     targetUrl: newUrl,
     departureId: skiplaggedId,
     departure: departure,
+    departureMap: departureMap,
   });
 };
 
