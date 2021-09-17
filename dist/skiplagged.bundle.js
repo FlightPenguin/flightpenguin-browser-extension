@@ -1059,14 +1059,14 @@ var waitForLoad = /*#__PURE__*/function () {
     yield (0,_shared_utilities_waitFor__WEBPACK_IMPORTED_MODULE_4__.waitForAppearance)(3000, CONTAINER_SHELL_SELECTOR);
     yield (0,_shared_utilities_waitFor__WEBPACK_IMPORTED_MODULE_4__.waitForAppearance)(3000, FLIGHT_CARDS_CONTAINER_SELECTOR);
     yield (0,_shared_utilities_waitFor__WEBPACK_IMPORTED_MODULE_4__.waitForAppearance)(10000, SORT_BUTTON_SELECTOR);
-
-    if (selectedFlight) {
-      yield (0,_shared_utilities_waitFor__WEBPACK_IMPORTED_MODULE_4__.waitForAppearance)(3000, RETURN_HEADER_SELECTOR);
-      yield (0,_shared_pause__WEBPACK_IMPORTED_MODULE_2__.pause)(500);
-    }
-
     yield (0,_shared_utilities_waitFor__WEBPACK_IMPORTED_MODULE_4__.waitForDisappearance)(15000, LOADING_SELECTOR);
     yield (0,_shared_utilities_waitFor__WEBPACK_IMPORTED_MODULE_4__.waitForAppearance)(15000, FLIGHT_CARD_SELECTOR);
+
+    if (selectedFlight) {
+      yield (0,_shared_utilities_waitFor__WEBPACK_IMPORTED_MODULE_4__.waitForAppearance)(10000, RETURN_HEADER_SELECTOR);
+      yield (0,_shared_pause__WEBPACK_IMPORTED_MODULE_2__.pause)(250);
+    }
+
     (0,_ui_disableHiddenCitySearches__WEBPACK_IMPORTED_MODULE_5__.disableHiddenCitySearches)();
 
     if (isNoResults(selectedFlight)) {
@@ -1981,6 +1981,85 @@ var clearExistingSelections = function clearExistingSelections() {
 
 /***/ }),
 
+/***/ "./src/skiplagged/ui/reloadForDeparture.ts":
+/*!*************************************************!*\
+  !*** ./src/skiplagged/ui/reloadForDeparture.ts ***!
+  \*************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "reloadForDeparture": () => (/* binding */ reloadForDeparture)
+/* harmony export */ });
+/* harmony import */ var _shared_errors__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../shared/errors */ "./src/shared/errors.ts");
+/* harmony import */ var _findFlightCard__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./findFlightCard */ "./src/skiplagged/ui/findFlightCard.ts");
+function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
+
+function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
+
+
+
+var reloadForDeparture = /*#__PURE__*/function () {
+  var _ref = _asyncToGenerator(function* (skiplaggedId, departure) {
+    var flightCard = yield (0,_findFlightCard__WEBPACK_IMPORTED_MODULE_1__.findFlightCard)(skiplaggedId);
+    var flights = getFlightAbbreviations(flightCard);
+    var newUrl = getNewUrl(flights);
+    chrome.runtime.sendMessage({
+      event: "RELOAD_SELECTED_DEPARTURE",
+      providerName: "skiplagged",
+      targetUrl: newUrl,
+      departureId: skiplaggedId,
+      departure: departure
+    });
+  });
+
+  return function reloadForDeparture(_x, _x2) {
+    return _ref.apply(this, arguments);
+  };
+}();
+
+var getFlightAbbreviations = function getFlightAbbreviations(flightCard) {
+  var _airlinesContainer$da;
+
+  var airlinesContainer = flightCard.querySelector("span.airlines");
+
+  if (!airlinesContainer) {
+    throw new _shared_errors__WEBPACK_IMPORTED_MODULE_0__.MissingElementLookupError("Unable to locate airlines container in flight card");
+  }
+
+  var originalTitle = (_airlinesContainer$da = airlinesContainer.dataset) === null || _airlinesContainer$da === void 0 ? void 0 : _airlinesContainer$da.originalTitle;
+
+  if (!originalTitle) {
+    throw new _shared_errors__WEBPACK_IMPORTED_MODULE_0__.MissingFieldParserError("Unable to parse original title of flight card airlines");
+  }
+
+  var parser = new DOMParser();
+  var airlinesDoc = parser.parseFromString(originalTitle, "text/html");
+  var containers = airlinesDoc.querySelectorAll("span");
+  var flights = Array.from(containers).map(function (container) {
+    var _container$textConten;
+
+    var img = container.querySelector("img");
+
+    if (!img) {
+      throw new _shared_errors__WEBPACK_IMPORTED_MODULE_0__.MissingElementLookupError("Unable to locate airline image in parsed document");
+    }
+
+    var airlineAbbreviation = img.src.split("/").slice(-1)[0].split(".")[0];
+    var airlineNumber = (_container$textConten = container.textContent) === null || _container$textConten === void 0 ? void 0 : _container$textConten.split(/\s+/).slice(-1)[0];
+    return "".concat(airlineAbbreviation).concat(airlineNumber);
+  });
+  return flights.join("-");
+};
+
+var getNewUrl = function getNewUrl(flights) {
+  var currentUrl = window.location.href.split("#")[0];
+  return "".concat(currentUrl, "#trip=").concat(flights);
+};
+
+/***/ }),
+
 /***/ "./src/skiplagged/ui/scrollThroughContainer.ts":
 /*!*****************************************************!*\
   !*** ./src/skiplagged/ui/scrollThroughContainer.ts ***!
@@ -2127,48 +2206,6 @@ var scrollToFlightCard = function scrollToFlightCard(flightCard) {
     behavior: "smooth"
   });
 };
-
-/***/ }),
-
-/***/ "./src/skiplagged/ui/selectFlightCard.ts":
-/*!***********************************************!*\
-  !*** ./src/skiplagged/ui/selectFlightCard.ts ***!
-  \***********************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "selectFlightCard": () => (/* binding */ selectFlightCard)
-/* harmony export */ });
-/* harmony import */ var _shared_pause__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../shared/pause */ "./src/shared/pause.ts");
-/* harmony import */ var _shared_utilities_waitFor__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../shared/utilities/waitFor */ "./src/shared/utilities/waitFor.ts");
-/* harmony import */ var _findFlightCard__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./findFlightCard */ "./src/skiplagged/ui/findFlightCard.ts");
-function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
-
-function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
-
-
-
-
-var FLIGHT_CARD_SELECTOR = "div.selected-trip";
-var LOADING_SPINNER_SELECTOR = "div.spinner-title";
-var NO_FLIGHTS_SELECTOR = ".trip-list-empty button[type='submit']";
-var selectFlightCard = /*#__PURE__*/function () {
-  var _ref = _asyncToGenerator(function* (skiplaggedId) {
-    var flightCard = yield (0,_findFlightCard__WEBPACK_IMPORTED_MODULE_2__.findFlightCard)(skiplaggedId);
-    yield (0,_shared_pause__WEBPACK_IMPORTED_MODULE_0__.pause)(500);
-    var button = flightCard.querySelector("button");
-    button.click();
-    yield (0,_shared_utilities_waitFor__WEBPACK_IMPORTED_MODULE_1__.waitForAppearance)(45000, FLIGHT_CARD_SELECTOR);
-    yield (0,_shared_utilities_waitFor__WEBPACK_IMPORTED_MODULE_1__.waitForDisappearance)(45000, LOADING_SPINNER_SELECTOR);
-    yield (0,_shared_utilities_waitFor__WEBPACK_IMPORTED_MODULE_1__.waitForDisappearance)(10000, NO_FLIGHTS_SELECTOR);
-  });
-
-  return function selectFlightCard(_x) {
-    return _ref.apply(this, arguments);
-  };
-}();
 
 /***/ }),
 
@@ -2814,16 +2851,16 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _parser_observer__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./parser/observer */ "./src/skiplagged/parser/observer.ts");
 /* harmony import */ var _ui_clearSelection__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./ui/clearSelection */ "./src/skiplagged/ui/clearSelection.ts");
 /* harmony import */ var _ui_highlightFlightCard__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./ui/highlightFlightCard */ "./src/skiplagged/ui/highlightFlightCard.ts");
-/* harmony import */ var _ui_scrollThroughContainer__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./ui/scrollThroughContainer */ "./src/skiplagged/ui/scrollThroughContainer.ts");
-/* harmony import */ var _ui_selectFlightCard__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./ui/selectFlightCard */ "./src/skiplagged/ui/selectFlightCard.ts");
+/* harmony import */ var _ui_reloadForDeparture__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./ui/reloadForDeparture */ "./src/skiplagged/ui/reloadForDeparture.ts");
+/* harmony import */ var _ui_scrollThroughContainer__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./ui/scrollThroughContainer */ "./src/skiplagged/ui/scrollThroughContainer.ts");
 function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
 
 function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
 
-
 window.Sentry.init({
   dsn: "https://d7f3363dd3774a64ad700b4523bcb789@o407795.ingest.sentry.io/5277451"
 });
+
 
 
 
@@ -2838,7 +2875,7 @@ var returnFlightContainer;
 var returnObserver = null;
 chrome.runtime.onMessage.addListener( /*#__PURE__*/function () {
   var _ref = _asyncToGenerator(function* (message) {
-    var _departureObserver2, _returnObserver, _departureObserver3, _returnObserver2;
+    var _departureObserver3, _returnObserver2, _departureObserver4, _returnObserver3;
 
     console.log(message);
 
@@ -2846,10 +2883,10 @@ chrome.runtime.onMessage.addListener( /*#__PURE__*/function () {
       case "BEGIN_PARSING":
         try {
           departureObserver = new _parser_observer__WEBPACK_IMPORTED_MODULE_4__.FlightObserver(null);
-          departureFlightContainer = yield attachObserver(departureObserver, null);
+          departureFlightContainer = yield attachObserver(departureObserver, false);
 
           if (departureFlightContainer) {
-            yield (0,_ui_scrollThroughContainer__WEBPACK_IMPORTED_MODULE_7__.scrollThroughContainer)(departureFlightContainer);
+            yield (0,_ui_scrollThroughContainer__WEBPACK_IMPORTED_MODULE_8__.scrollThroughContainer)(departureFlightContainer);
           }
 
           (0,_shared_events__WEBPACK_IMPORTED_MODULE_1__.sendScraperComplete)("skiplagged", "DEPARTURE");
@@ -2862,19 +2899,13 @@ chrome.runtime.onMessage.addListener( /*#__PURE__*/function () {
         break;
 
       case "GET_RETURN_FLIGHTS":
+        // this will parse the card and reload the page... firing off a message indicating what to do...
         try {
           var _departureObserver;
 
           (_departureObserver = departureObserver) === null || _departureObserver === void 0 ? void 0 : _departureObserver.endObservation();
-          (0,_ui_scrollThroughContainer__WEBPACK_IMPORTED_MODULE_7__.stopScrollingNow)("Departure selected");
-          returnObserver = new _parser_observer__WEBPACK_IMPORTED_MODULE_4__.FlightObserver(message.departure);
-          returnFlightContainer = yield attachObserver(returnObserver, getSkiplaggedDepartureId(departureObserver, message.departure.id));
-
-          if (returnFlightContainer) {
-            yield (0,_ui_scrollThroughContainer__WEBPACK_IMPORTED_MODULE_7__.scrollThroughContainer)(returnFlightContainer);
-          }
-
-          (0,_shared_events__WEBPACK_IMPORTED_MODULE_1__.sendScraperComplete)("skiplagged", "RETURN");
+          (0,_ui_scrollThroughContainer__WEBPACK_IMPORTED_MODULE_8__.stopScrollingNow)();
+          yield (0,_ui_reloadForDeparture__WEBPACK_IMPORTED_MODULE_7__.reloadForDeparture)(getSkiplaggedDepartureId(departureObserver, message.departure.id), message.departure);
         } catch (error) {
           window.Sentry.captureException(error);
           (0,_shared_events__WEBPACK_IMPORTED_MODULE_1__.sendFailedScraper)("skiplagged", error, "RETURN");
@@ -2882,17 +2913,40 @@ chrome.runtime.onMessage.addListener( /*#__PURE__*/function () {
 
         break;
 
+      case "BEGIN_PARSING_RETURNS":
+        try {
+          var _departureObserver2, _returnObserver;
+
+          // handling post-reload
+          (_departureObserver2 = departureObserver) === null || _departureObserver2 === void 0 ? void 0 : _departureObserver2.endObservation();
+          (_returnObserver = returnObserver) === null || _returnObserver === void 0 ? void 0 : _returnObserver.endObservation();
+          returnObserver = new _parser_observer__WEBPACK_IMPORTED_MODULE_4__.FlightObserver(message.departure);
+          returnFlightContainer = yield attachObserver(returnObserver, true);
+
+          if (returnFlightContainer) {
+            yield (0,_ui_scrollThroughContainer__WEBPACK_IMPORTED_MODULE_8__.scrollThroughContainer)(returnFlightContainer);
+          }
+
+          (0,_shared_events__WEBPACK_IMPORTED_MODULE_1__.sendScraperComplete)("skiplagged", "RETURN");
+        } catch (error) {
+          console.log(error);
+          window.Sentry.captureException(error);
+          (0,_shared_events__WEBPACK_IMPORTED_MODULE_1__.sendFailedScraper)("skiplagged", error, "RETURN");
+        }
+
+        break;
+
       case "HIGHLIGHT_FLIGHT":
-        (0,_ui_scrollThroughContainer__WEBPACK_IMPORTED_MODULE_7__.stopScrollingNow)("Highlight flight");
-        (_departureObserver2 = departureObserver) === null || _departureObserver2 === void 0 ? void 0 : _departureObserver2.endObservation();
-        (_returnObserver = returnObserver) === null || _returnObserver === void 0 ? void 0 : _returnObserver.endObservation();
+        (0,_ui_scrollThroughContainer__WEBPACK_IMPORTED_MODULE_8__.stopScrollingNow)("Highlight flight");
+        (_departureObserver3 = departureObserver) === null || _departureObserver3 === void 0 ? void 0 : _departureObserver3.endObservation();
+        (_returnObserver2 = returnObserver) === null || _returnObserver2 === void 0 ? void 0 : _returnObserver2.endObservation();
         yield highlightFlight(message.selectedDepartureId, departureObserver, message.selectedReturnId, returnObserver);
         break;
 
       case "CLEAR_SELECTION":
-        (_departureObserver3 = departureObserver) === null || _departureObserver3 === void 0 ? void 0 : _departureObserver3.endObservation();
-        (_returnObserver2 = returnObserver) === null || _returnObserver2 === void 0 ? void 0 : _returnObserver2.endObservation();
-        (0,_ui_scrollThroughContainer__WEBPACK_IMPORTED_MODULE_7__.stopScrollingNow)("Clear selection(s)");
+        (_departureObserver4 = departureObserver) === null || _departureObserver4 === void 0 ? void 0 : _departureObserver4.endObservation();
+        (_returnObserver3 = returnObserver) === null || _returnObserver3 === void 0 ? void 0 : _returnObserver3.endObservation();
+        (0,_ui_scrollThroughContainer__WEBPACK_IMPORTED_MODULE_8__.stopScrollingNow)("Clear selection(s)");
         yield (0,_ui_clearSelection__WEBPACK_IMPORTED_MODULE_5__.clearSelection)();
         chrome.runtime.sendMessage({
           event: "PROVIDER_READY",
@@ -2911,12 +2965,8 @@ chrome.runtime.onMessage.addListener( /*#__PURE__*/function () {
 }());
 
 var attachObserver = /*#__PURE__*/function () {
-  var _ref2 = _asyncToGenerator(function* (observer, skiplaggedFlightId) {
-    if (skiplaggedFlightId) {
-      yield (0,_ui_selectFlightCard__WEBPACK_IMPORTED_MODULE_8__.selectFlightCard)(skiplaggedFlightId);
-    }
-
-    var flightContainer = yield (0,_parser_getFlightContainer__WEBPACK_IMPORTED_MODULE_3__.getFlightContainer)(!!skiplaggedFlightId);
+  var _ref2 = _asyncToGenerator(function* (observer, returnFlight) {
+    var flightContainer = yield (0,_parser_getFlightContainer__WEBPACK_IMPORTED_MODULE_3__.getFlightContainer)(returnFlight);
     observer.beginObservation(flightContainer);
     return flightContainer;
   });

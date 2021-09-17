@@ -72,12 +72,12 @@ const waitForLoad = async (selectedFlight: boolean) => {
   await waitForAppearance(3000, CONTAINER_SHELL_SELECTOR);
   await waitForAppearance(3000, FLIGHT_CARDS_CONTAINER_SELECTOR);
   await waitForAppearance(10000, SORT_BUTTON_SELECTOR);
-  if (selectedFlight) {
-    await waitForAppearance(3000, RETURN_HEADER_SELECTOR);
-    await pause(500);
-  }
   await waitForDisappearance(15000, LOADING_SELECTOR);
   await waitForAppearance(15000, FLIGHT_CARD_SELECTOR);
+  if (selectedFlight) {
+    await waitForAppearance(10000, RETURN_HEADER_SELECTOR);
+    await pause(250);
+  }
 
   disableHiddenCitySearches();
 

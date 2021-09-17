@@ -493,7 +493,7 @@ var ProviderManager = /*#__PURE__*/function () {
     }
   }, {
     key: "createWindow",
-    value: function createWindow(url, provider, windowConfig, formData) {
+    value: function createWindow(url, provider, windowConfig, message) {
       var height = windowConfig.height,
           width = windowConfig.width,
           left = windowConfig.left,
@@ -522,10 +522,7 @@ var ProviderManager = /*#__PURE__*/function () {
               chrome.tabs.onUpdated.addListener(function listener(tabId, info) {
                 if (info.status === "complete" && tabId === that.getTabId(provider)) {
                   chrome.tabs.onUpdated.removeListener(listener);
-                  chrome.tabs.sendMessage(tabId, {
-                    event: "BEGIN_PARSING",
-                    formData: formData
-                  });
+                  chrome.tabs.sendMessage(tabId, message);
                   resolve();
                 }
               });
@@ -566,13 +563,17 @@ var ProviderManager = /*#__PURE__*/function () {
 
       this.setFormData(formData);
       var primaryWindowId = this === null || this === void 0 ? void 0 : (_this$primaryTab4 = this.primaryTab) === null || _this$primaryTab4 === void 0 ? void 0 : _this$primaryTab4.windowId;
+      var message = {
+        event: "BEGIN_PARSING",
+        formData: formData
+      };
 
       if (primaryWindowId !== undefined && primaryWindowId !== null) {
         var promises = this.knownProviders.map(function (provider) {
           var url = providerURLBaseMap[provider](formData); // Open url in a new window.
           // Not a new tab because we can't read results from inactive tabs (browser powers down inactive tabs).
 
-          return _this8.createWindow(url, provider, windowConfig, formData);
+          return _this8.createWindow(url, provider, windowConfig, message);
         });
         Promise.all(promises).then(function () {
           // update again for chrome on windows, to move results window to foreground
@@ -618,7 +619,11 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 var PROVIDERS_NEEDING_RETURNS = ["expedia", "skiplagged"];
 var PROVIDERS_SUPPORTING_POINTS_SEARCH = ["expedia"];
-var SUPPORTED_PROVIDERS = ["expedia", "skiplagged", "skyscanner", "southwest"]; // eslint-disable-next-line @typescript-eslint/no-empty-function
+var SUPPORTED_PROVIDERS = [// force expansion
+// "expedia",
+"skiplagged" // "skyscanner",
+// "southwest"
+]; // eslint-disable-next-line @typescript-eslint/no-empty-function
 
 var DEFAULT_ON_READY_FUNCTION = function DEFAULT_ON_READY_FUNCTION() {};
 var CabinMap = {
@@ -1099,8 +1104,9 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "handleIndexUnloaded": () => (/* reexport safe */ _indexUnloaded__WEBPACK_IMPORTED_MODULE_8__.handleIndexUnloaded),
 /* harmony export */   "handleNoFlightsFound": () => (/* reexport safe */ _noFlightsFound__WEBPACK_IMPORTED_MODULE_9__.handleNoFlightsFound),
 /* harmony export */   "handleProviderReady": () => (/* reexport safe */ _providerReady__WEBPACK_IMPORTED_MODULE_10__.handleProviderReady),
-/* harmony export */   "handleScraperFailed": () => (/* reexport safe */ _scraperFailed__WEBPACK_IMPORTED_MODULE_11__.handleScraperFailed),
-/* harmony export */   "handleScraperSuccess": () => (/* reexport safe */ _scraperSuccess__WEBPACK_IMPORTED_MODULE_12__.handleScraperSuccess)
+/* harmony export */   "handleReloadOnDepartureSelected": () => (/* reexport safe */ _reloadOnDepartureSelected__WEBPACK_IMPORTED_MODULE_11__.handleReloadOnDepartureSelected),
+/* harmony export */   "handleScraperFailed": () => (/* reexport safe */ _scraperFailed__WEBPACK_IMPORTED_MODULE_12__.handleScraperFailed),
+/* harmony export */   "handleScraperSuccess": () => (/* reexport safe */ _scraperSuccess__WEBPACK_IMPORTED_MODULE_13__.handleScraperSuccess)
 /* harmony export */ });
 /* harmony import */ var _clearSelections__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./clearSelections */ "./src/background/eventHandlers/clearSelections.ts");
 /* harmony import */ var _departureSelected__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./departureSelected */ "./src/background/eventHandlers/departureSelected.ts");
@@ -1113,8 +1119,10 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _indexUnloaded__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./indexUnloaded */ "./src/background/eventHandlers/indexUnloaded.ts");
 /* harmony import */ var _noFlightsFound__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./noFlightsFound */ "./src/background/eventHandlers/noFlightsFound.ts");
 /* harmony import */ var _providerReady__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ./providerReady */ "./src/background/eventHandlers/providerReady.ts");
-/* harmony import */ var _scraperFailed__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ./scraperFailed */ "./src/background/eventHandlers/scraperFailed.ts");
-/* harmony import */ var _scraperSuccess__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! ./scraperSuccess */ "./src/background/eventHandlers/scraperSuccess.ts");
+/* harmony import */ var _reloadOnDepartureSelected__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ./reloadOnDepartureSelected */ "./src/background/eventHandlers/reloadOnDepartureSelected.ts");
+/* harmony import */ var _scraperFailed__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! ./scraperFailed */ "./src/background/eventHandlers/scraperFailed.ts");
+/* harmony import */ var _scraperSuccess__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! ./scraperSuccess */ "./src/background/eventHandlers/scraperSuccess.ts");
+
 
 
 
@@ -1192,6 +1200,40 @@ var handleProviderReady = function handleProviderReady(providerManager, provider
   var onReadyFunction = providerManager.getOnReady(providerName);
   onReadyFunction();
   providerManager.setOnReady(providerName, _constants__WEBPACK_IMPORTED_MODULE_0__.DEFAULT_ON_READY_FUNCTION);
+};
+
+/***/ }),
+
+/***/ "./src/background/eventHandlers/reloadOnDepartureSelected.ts":
+/*!*******************************************************************!*\
+  !*** ./src/background/eventHandlers/reloadOnDepartureSelected.ts ***!
+  \*******************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "handleReloadOnDepartureSelected": () => (/* binding */ handleReloadOnDepartureSelected)
+/* harmony export */ });
+var handleReloadOnDepartureSelected = function handleReloadOnDepartureSelected(providerManager, providerName, targetUrl, departure) {
+  var targetTabId = providerManager.getTabId(providerName);
+
+  if (!targetTabId) {
+    throw new Error("Unable to extract tab for ".concat(providerName));
+  }
+
+  var windowConfig = {
+    height: window.outerHeight,
+    width: window.outerWidth,
+    left: window.screenX,
+    top: window.screenY
+  };
+  providerManager.closeWindow(providerName);
+  providerManager.createWindow(targetUrl, providerName, windowConfig, {
+    event: "BEGIN_PARSING_RETURNS",
+    departure: departure
+  });
+  console.log(departure);
 };
 
 /***/ }),
@@ -3088,6 +3130,10 @@ chrome.runtime.onMessage.addListener(function (message, sender, reply) {
 
     case "INDEX_UNLOAD":
       (0,_background_eventHandlers__WEBPACK_IMPORTED_MODULE_0__.handleIndexUnloaded)(providerManager);
+      break;
+
+    case "RELOAD_SELECTED_DEPARTURE":
+      (0,_background_eventHandlers__WEBPACK_IMPORTED_MODULE_0__.handleReloadOnDepartureSelected)(providerManager, message.providerName, message.targetUrl, message.departure);
       break;
 
     default:

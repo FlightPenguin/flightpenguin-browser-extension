@@ -9,5 +9,6 @@ export * from "./highlightTab";
 export * from "./indexUnloaded";
 export * from "./noFlightsFound";
 export * from "./providerReady";
+export * from "./reloadOnDepartureSelected";
 export * from "./scraperFailed";
 export * from "./scraperSuccess";

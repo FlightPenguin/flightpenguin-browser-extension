@@ -328,12 +328,7 @@ export class ProviderManager {
     });
   }
 
-  createWindow(
-    url: string,
-    provider: string,
-    windowConfig: WindowConfig,
-    formData: FlightSearchFormData,
-  ): Promise<void> {
+  createWindow(url: string, provider: string, windowConfig: WindowConfig, message: any): Promise<void> {
     const { height, width, left, top } = windowConfig;
     // eslint-disable-next-line @typescript-eslint/no-this-alias
     const that = this;
@@ -349,7 +344,7 @@ export class ProviderManager {
           chrome.tabs.onUpdated.addListener(function listener(tabId, info) {
             if (info.status === "complete" && tabId === that.getTabId(provider)) {
               chrome.tabs.onUpdated.removeListener(listener);
-              chrome.tabs.sendMessage(tabId, { event: "BEGIN_PARSING", formData });
+              chrome.tabs.sendMessage(tabId, message);
               resolve();
             }
           });
@@ -376,12 +371,13 @@ export class ProviderManager {
   searchForResults(formData: FlightSearchFormData, windowConfig: WindowConfig): void {
     this.setFormData(formData);
     const primaryWindowId = this?.primaryTab?.windowId;
+    const message = { event: "BEGIN_PARSING", formData };
     if (primaryWindowId !== undefined && primaryWindowId !== null) {
       const promises = this.knownProviders.map((provider) => {
         const url = providerURLBaseMap[provider](formData);
         // Open url in a new window.
         // Not a new tab because we can't read results from inactive tabs (browser powers down inactive tabs).
-        return this.createWindow(url, provider, windowConfig, formData);
+        return this.createWindow(url, provider, windowConfig, message);
       });
 
       Promise.all(promises).then(() => {
