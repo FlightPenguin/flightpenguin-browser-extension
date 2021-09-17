@@ -89,7 +89,7 @@ export const SearchResults = ({ formData }: SearchResultsProps): React.ReactElem
         }}
       />
 
-      {!!departureFlightDetails && (
+      {!!departureFlightDetails && formData.roundtrip && (
         <>
           <Box height="50px" />
           <TimelineContainer
