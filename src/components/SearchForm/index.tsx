@@ -142,7 +142,11 @@ export const SearchForm = ({ onSubmit, initialValues = defaultInitialValues }: S
                       after={<Input.Icon icon="solid-plane-departure" fontSize="300" color="black" />}
                       autoComplete="off"
                       hasFieldWrapper={true}
-                      onChange={formik.handleChange}
+                      onChange={(event: Event) => {
+                        const target = event.target as HTMLInputElement;
+                        target.placeholder = "";
+                        return formik.handleChange(event);
+                      }}
                       onBlur={(event: Event) => {
                         const target = event.target as HTMLInputElement;
                         target.placeholder = "";
@@ -169,7 +173,11 @@ export const SearchForm = ({ onSubmit, initialValues = defaultInitialValues }: S
                       after={<Input.Icon icon="solid-plane-arrival" fontSize="300" color="black" />}
                       autoComplete="off"
                       hasFieldWrapper={true}
-                      onChange={formik.handleChange}
+                      onChange={(event: Event) => {
+                        const target = event.target as HTMLInputElement;
+                        target.placeholder = "";
+                        return formik.handleChange(event);
+                      }}
                       // eslint-disable-next-line sonarjs/no-identical-functions
                       onBlur={(event: Event) => {
                         const target = event.target as HTMLInputElement;
