@@ -1,1 +1,172 @@
-(()=>{function e(e,n){return function(e){if(Array.isArray(e))return e}(e)||function(e,t){if("undefined"==typeof Symbol||!(Symbol.iterator in Object(e)))return;var n=[],r=!0,a=!1,o=void 0;try{for(var c,i=e[Symbol.iterator]();!(r=(c=i.next()).done)&&(n.push(c.value),!t||n.length!==t);r=!0);}catch(e){a=!0,o=e}finally{try{r||null==i.return||i.return()}finally{if(a)throw o}}return n}(e,n)||function(e,n){if(!e)return;if("string"==typeof e)return t(e,n);var r=Object.prototype.toString.call(e).slice(8,-1);"Object"===r&&e.constructor&&(r=e.constructor.name);if("Map"===r||"Set"===r)return Array.from(e);if("Arguments"===r||/^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(r))return t(e,n)}(e,n)||function(){throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.")}()}function t(e,t){(null==t||t>e.length)&&(t=e.length);for(var n=0,r=new Array(t);n<t;n++)r[n]=e[n];return r}Sentry.init({dsn:"https://d7f3363dd3774a64ad700b4523bcb789@o407795.ingest.sentry.io/5277451"});var n,r,a,o,c,i;n=window,r=document,a="script",o="ga",n.GoogleAnalyticsObject=o,n.ga=n.ga||function(){(n.ga.q=n.ga.q||[]).push(arguments)},n.ga.l=1*new Date,c=r.createElement(a),i=r.getElementsByTagName(a)[0],c.async=1,c.src="https://www.google-analytics.com/analytics.js",i.parentNode.insertBefore(c,i),ga("create","UA-164337457-1","auto"),ga("set","checkProtocolTask",(function(){})),ga("set","transport","beacon"),ga("require","displayfeatures"),ga("send","pageview","/popup.html");var u=new Date,l=[u.getFullYear(),"".concat(u.getMonth()+1).padStart(2,"0"),"".concat(u.getDate()).padStart(2,"0")].join("-"),d=document.querySelector("#fromDateInput"),s=document.querySelector("#toDateInput");d.min=l,d.value=l,s.min=l;var g=document.querySelector("#roundtrip");function m(){document.getElementById("search-button").disabled=!1,document.querySelectorAll("fieldset").forEach((function(e){return e.disabled=!1})),document.getElementById("ellipsis").style.display="none",document.getElementById("search-button-text").textContent="Search"}g.checked="true",s.required=!0,g.addEventListener("change",(function(e){var t=document.getElementById("toDate");e.target.checked?(t.style.display=null,s.required=!0):(t.style.display="none",s.required=!1)})),document.querySelectorAll("input[type=text]").forEach((function(e){e.addEventListener("input",(function(e){"Exa"===e.target.value&&(e.target.value=e.target.list.textContent.trim())}))})),document.querySelectorAll("input[type='radio']").forEach((function(e){e.addEventListener("change",(function(e){"points"===e.target.value?document.getElementById("chase").classList.remove("hide"):document.getElementById("chase").classList.add("hide")}))})),d.addEventListener("change",(function(e){document.querySelector("#toDateInput").min=e.target.value})),document.querySelector("form#search").addEventListener("submit",(function(t){t.preventDefault();for(var n={from:t.target.from.value,to:t.target.to.value,cabin:t.target.cabin.value,fromDate:t.target.fromDate.value,toDate:t.target.toDate?t.target.toDate.value:"",numPax:Number(t.target.numPax.value),roundtrip:t.target.roundtrip.checked,searchByPoints:t.target.points.checked,searchByPrice:t.target.price.checked,pointsValue:t.target.points.checked?t.target.chase.value:null},r=0,a=Object.entries(n);r<a.length;r++){var o=e(a[r],2),c=o[0],i=o[1];ga("send",{hitType:"event",eventCategory:"search form",eventAction:c,eventLabel:i})}document.getElementById("search-button").disabled=!0,document.querySelectorAll("fieldset").forEach((function(e){return e.disabled=!0})),document.getElementById("ellipsis").style.display="flex",document.getElementById("search-button-text").textContent="Searching",document.querySelector(".validation-error").textContent="";var u={height:window.outerHeight,width:window.outerWidth,left:window.screenX,top:window.screenY};chrome.runtime.sendMessage({event:"FORM_DATA_RECEIVED",formData:n,windowConfig:u})})),chrome.runtime.onMessage.addListener((function(e){switch(e.event){case"NO_FLIGHTS_FOUND_CLIENT":m(),document.querySelector(".validation-error").textContent="Sorry, no results were found for those dates and locations.";break;case"FAILED_SCRAPER_CLIENT":m(),document.querySelector(".validation-error").textContent="Sorry, something happened, please try searching again.",ga("send",{hitType:"event",eventCategory:"failed scraper",eventAction:e.source,eventLabel:e.description})}}))})();
+/******/ (() => { // webpackBootstrap
+var __webpack_exports__ = {};
+/*!***************************!*\
+  !*** ./src/searchForm.js ***!
+  \***************************/
+function _slicedToArray(arr, i) { return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _unsupportedIterableToArray(arr, i) || _nonIterableRest(); }
+
+function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
+
+function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
+
+function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
+
+function _iterableToArrayLimit(arr, i) { if (typeof Symbol === "undefined" || !(Symbol.iterator in Object(arr))) return; var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"] != null) _i["return"](); } finally { if (_d) throw _e; } } return _arr; }
+
+function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
+
+Sentry.init({
+  dsn: "https://d7f3363dd3774a64ad700b4523bcb789@o407795.ingest.sentry.io/5277451"
+});
+var GA_TRACKING_ID = "164337457-1";
+
+(function (i, s, o, g, r, a, m) {
+  i["GoogleAnalyticsObject"] = r;
+  i[r] = i[r] || function () {
+    (i[r].q = i[r].q || []).push(arguments);
+  }, i[r].l = 1 * new Date();
+  a = s.createElement(o), m = s.getElementsByTagName(o)[0];
+  a.async = 1;
+  a.src = g;
+  m.parentNode.insertBefore(a, m);
+})(window, document, "script", "https://www.google-analytics.com/analytics.js", "ga"); // Note: https protocol here
+
+
+ga("create", "UA-" + GA_TRACKING_ID, "auto"); // Enter your GA identifier
+
+ga("set", "checkProtocolTask", function () {}); // Removes failing protocol check. @see: http://stackoverflow.com/a/22152353/1958200
+
+ga("set", "transport", "beacon");
+ga("require", "displayfeatures");
+ga("send", "pageview", "/popup.html"); // Specify the virtual path
+
+var today = new Date();
+var todayString = [today.getFullYear(), "".concat(today.getMonth() + 1).padStart(2, "0"), "".concat(today.getDate()).padStart(2, "0")].join("-");
+var fromDateInput = document.querySelector("#fromDateInput");
+var toDateInput = document.querySelector("#toDateInput");
+fromDateInput.min = todayString;
+fromDateInput.value = todayString;
+toDateInput.min = todayString;
+var roundtripElement = document.querySelector("#roundtrip");
+roundtripElement.checked = "true";
+toDateInput.required = true;
+roundtripElement.addEventListener("change", function (e) {
+  var toDateLabel = document.getElementById("toDate");
+
+  if (e.target.checked) {
+    toDateLabel.style.display = null;
+    toDateInput.required = true;
+  } else {
+    toDateLabel.style.display = "none";
+    toDateInput.required = false;
+  }
+});
+document.querySelectorAll("input[type=text]").forEach(function (el) {
+  el.addEventListener("input", function (e) {
+    if (e.target.value === "Exa") {
+      e.target.value = e.target.list.textContent.trim();
+    }
+  });
+});
+document.querySelectorAll("input[type='radio']").forEach(function (el) {
+  el.addEventListener("change", function (e) {
+    if (e.target.value === "points") {
+      document.getElementById("chase").classList.remove("hide");
+    } else {
+      document.getElementById("chase").classList.add("hide");
+    }
+  });
+});
+fromDateInput.addEventListener("change", function (e) {
+  var toDate = document.querySelector("#toDateInput");
+  toDate.min = e.target.value;
+});
+document.querySelector("form#search").addEventListener("submit", function (e) {
+  e.preventDefault();
+  var formData = {
+    from: e.target.from.value,
+    to: e.target.to.value,
+    cabin: e.target.cabin.value,
+    fromDate: e.target.fromDate.value,
+    toDate: e.target.toDate ? e.target.toDate.value : "",
+    numPax: Number(e.target.numPax.value),
+    roundtrip: e.target.roundtrip.checked,
+    searchByPoints: e.target.points.checked,
+    searchByPrice: e.target.price.checked,
+    pointsValue: e.target.points.checked ? e.target.chase.value : null
+  };
+
+  for (var _i = 0, _Object$entries = Object.entries(formData); _i < _Object$entries.length; _i++) {
+    var _Object$entries$_i = _slicedToArray(_Object$entries[_i], 2),
+        eventAction = _Object$entries$_i[0],
+        eventLabel = _Object$entries$_i[1];
+
+    ga("send", {
+      hitType: "event",
+      eventCategory: "search form",
+      eventAction: eventAction,
+      eventLabel: eventLabel
+    });
+  }
+
+  setFormLoading();
+  var windowConfig = {
+    height: window.outerHeight,
+    width: window.outerWidth,
+    left: window.screenX,
+    top: window.screenY
+  };
+  chrome.runtime.sendMessage({
+    event: "FORM_DATA_RECEIVED",
+    formData: formData,
+    windowConfig: windowConfig
+  });
+});
+
+function setFormLoading() {
+  document.getElementById("search-button").disabled = true;
+  document.querySelectorAll("fieldset").forEach(function (el) {
+    return el.disabled = true;
+  });
+  document.getElementById("ellipsis").style.display = "flex";
+  document.getElementById("search-button-text").textContent = "Searching";
+  document.querySelector(".validation-error").textContent = "";
+}
+
+function setFormReady() {
+  document.getElementById("search-button").disabled = false;
+  document.querySelectorAll("fieldset").forEach(function (el) {
+    return el.disabled = false;
+  });
+  document.getElementById("ellipsis").style.display = "none";
+  document.getElementById("search-button-text").textContent = "Search";
+}
+
+chrome.runtime.onMessage.addListener(function (message) {
+  console.log(message.event, message);
+
+  switch (message.event) {
+    case "NO_FLIGHTS_FOUND_CLIENT":
+      // update messaging on form
+      // undisable form
+      setFormReady();
+      document.querySelector(".validation-error").textContent = "Sorry, no results were found for those dates and locations.";
+      break;
+
+    case "FAILED_SCRAPER_CLIENT":
+      setFormReady();
+      document.querySelector(".validation-error").textContent = "Sorry, something happened, please try searching again.";
+      ga("send", {
+        hitType: "event",
+        eventCategory: "failed scraper",
+        eventAction: message.source,
+        eventLabel: message.description
+      });
+      break;
+
+    default:
+      break;
+  }
+});
+/******/ })()
+;

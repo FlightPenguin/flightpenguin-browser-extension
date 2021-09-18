@@ -1,15 +1,23 @@
+import { FlightType } from "../../background/constants";
+import { MissingElementLookupError } from "../../shared/errors";
+import { sendNoFlightsEvent } from "../../shared/events";
 import { pause } from "../../shared/pause";
+import { isVisible } from "../../shared/utilities/isVisible";
 import { waitForAppearance, waitForDisappearance } from "../../shared/utilities/waitFor";
+import { disableHiddenCitySearches } from "./disableHiddenCitySearches";
 import { scrollToFlightCard } from "./scrollToFlightCard";
 
+const CONTAINER_SHELL_SELECTOR = "section #trip-list-wrapper";
+const SORT_BUTTON_SELECTOR = "[data-sort='cost']";
+const NO_RESULTS_SELECTOR = ".trip-list-empty";
 const FLIGHT_CARD_SELECTOR = "div[class='trip']";
-const PROGRESS_SELECTOR = ".ui-mprogress";
+const LOADING_SELECTOR = "div.spinner-title";
 const STOP_SCROLLING_ID = "stop-scrolling";
 const STOP_SCROLLING_SELECTOR = `div#${STOP_SCROLLING_ID}`;
+const RETURN_HEADER_SELECTOR = ".trip-return-header";
 
-export const scrollThroughContainer = async (container: HTMLElement): Promise<void> => {
-  await waitForDisappearance(45000, PROGRESS_SELECTOR);
-  await waitForAppearance(45000, FLIGHT_CARD_SELECTOR, container);
+export const scrollThroughContainer = async (container: HTMLElement, flightType: FlightType): Promise<void> => {
+  await waitForFlightLoad(container, flightType);
   removeScrollingCheck(null);
   await pause(150);
 
@@ -80,4 +88,33 @@ export const removeScrollingCheck = (div: HTMLElement | null): void => {
 
 export const getLastFlightCard = (container: HTMLElement | Document): HTMLElement => {
   return Array.from(container.querySelectorAll(FLIGHT_CARD_SELECTOR)).slice(-1)[0] as HTMLElement;
+};
+
+const waitForFlightLoad = async (container: HTMLElement, flightType: FlightType) => {
+  await waitForAppearance(3000, CONTAINER_SHELL_SELECTOR);
+  await waitForAppearance(10000, SORT_BUTTON_SELECTOR);
+  await waitForDisappearance(15000, LOADING_SELECTOR);
+  await waitForAppearance(15000, FLIGHT_CARD_SELECTOR, container);
+  if (flightType === "RETURN") {
+    await waitForAppearance(10000, RETURN_HEADER_SELECTOR);
+    await pause(250);
+  }
+
+  disableHiddenCitySearches();
+
+  if (isNoResults(flightType)) {
+    sendNoFlightsEvent("skiplagged", flightType);
+  }
+};
+
+const isNoResults = (flightType: FlightType) => {
+  const noResultsDiv = document.querySelector(NO_RESULTS_SELECTOR) as HTMLDivElement;
+  if (!noResultsDiv) {
+    if (flightType === "RETURN") {
+      return false;
+    }
+    throw new MissingElementLookupError("Unable to find the no results container");
+  }
+
+  return isVisible(noResultsDiv);
 };

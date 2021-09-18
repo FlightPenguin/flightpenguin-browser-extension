@@ -26,7 +26,7 @@ chrome.runtime.onMessage.addListener(async function (message) {
 
         departureFlightContainer = await attachObserver(departureObserver, false);
         if (departureFlightContainer) {
-          await scrollThroughContainer(departureFlightContainer);
+          await scrollThroughContainer(departureFlightContainer, "DEPARTURE");
         }
 
         sendScraperComplete("skiplagged", "DEPARTURE");
@@ -65,7 +65,7 @@ chrome.runtime.onMessage.addListener(async function (message) {
         returnObserver = new FlightObserver(message.departure);
         returnFlightContainer = await attachObserver(returnObserver, true);
         if (returnFlightContainer) {
-          await scrollThroughContainer(returnFlightContainer);
+          await scrollThroughContainer(returnFlightContainer, "RETURN");
         }
         sendScraperComplete("skiplagged", "RETURN");
       } catch (error) {
