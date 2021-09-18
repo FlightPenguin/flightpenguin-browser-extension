@@ -1,6 +1,6 @@
 import { Box, List, Tag, Text } from "bumbag";
 import isEqual from "lodash.isequal";
-import React from "react";
+import React, { useEffect, useState } from "react";
 
 import { sendSelectedFlight } from "../../../shared/events";
 import { ProcessedFlightSearchResult } from "../../../shared/types/ProcessedFlightSearchResult";
@@ -44,6 +44,28 @@ const TimelineRow = ({
   skeleton,
   onSelection,
 }: TimelineRowProps): React.ReactElement => {
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    setLoading(false);
+  }, [setLoading]);
+
+  const backgroundColor = index % 2 === 0 || selected ? "primaryTint" : "white";
+  const bottomBorder = index % 2 === 1 ? "default" : "none";
+
+  if (loading) {
+    return (
+      <List.Item
+        width={`${containerWidth}px`}
+        alignX="center"
+        alignY="center"
+        minHeight="90px"
+        backgroundColor={backgroundColor}
+        borderBottom={bottomBorder}
+      />
+    );
+  }
+
   const flightSegments = getFlightSegments(
     flight,
     from,
@@ -64,6 +86,7 @@ const TimelineRow = ({
         zIndex: "999",
       };
   const showWhenSelected = selected ? "visible" : "hidden";
+  const skeletonBlur = skeleton ? `blur(8px)` : "";
 
   return (
     <List.Item
@@ -72,7 +95,6 @@ const TimelineRow = ({
       alignX="center"
       display="flex"
       tabIndex={0}
-      key={flightPenguinId}
       width={`${containerWidth}px`}
       onClick={() => {
         if (skeleton || selected) {
@@ -84,10 +106,10 @@ const TimelineRow = ({
       role="group"
       cursor={skeleton ? "not-allowed" : selected ? "auto" : "pointer"}
       marginBottom="0px"
-      backgroundColor={index % 2 === 0 || selected ? "primaryTint" : "white"}
-      borderBottom={index % 2 === 1 ? "default" : "none"}
+      backgroundColor={backgroundColor}
+      borderBottom={bottomBorder}
       minHeight="90px"
-      filter={skeleton ? `blur(8px)` : ""}
+      filter={skeletonBlur}
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
       _hover={rowHighlightStyle}
