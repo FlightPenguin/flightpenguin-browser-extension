@@ -6,14 +6,22 @@ import { WindowConfig } from "../shared/types/WindowConfig";
 import { getUrl as getSkiplaggedUrl } from "../skiplagged/mappings/getUrl";
 import { getUrl as getSkyscannerUrl } from "../skyscanner/mappings/getUrl";
 import { getUrl as getSouthwestUrl } from "../southwest/mappings/getUrl";
-import { DEFAULT_ON_READY_FUNCTION, PROVIDERS_SUPPORTING_POINTS_SEARCH, SUPPORTED_PROVIDERS } from "./constants";
+import {
+  DEFAULT_ON_READY_FUNCTION,
+  FlightType,
+  PROVIDERS_SUPPORTING_POINTS_SEARCH,
+  SearchType,
+  SUPPORTED_PROVIDERS,
+} from "./constants";
 import { isExtensionOpen } from "./state";
 
+type StatusType = "PENDING" | "PARTIAL_RETURN_CONTINUING" | "FAILED" | "SUCCESS";
+
 interface ProviderState {
-  status: "PENDING" | "PARTIAL_RETURN_CONTINUING" | "FAILED" | "SUCCESS";
+  departureStatus: StatusType;
+  returnStatus: StatusType;
   tab?: chrome.tabs.Tab;
   window?: chrome.windows.Window;
-  flightCount: number;
   ready: boolean;
   onReady: () => void;
   timer: ReturnType<typeof setTimeout> | null;
@@ -32,12 +40,14 @@ const providerURLBaseMap: { [key: string]: (formData: FlightSearchFormData) => s
 export class ProviderManager {
   private knownProviders: string[];
   private state: { [key: string]: ProviderState };
+
   private primaryTab: chrome.tabs.Tab | null;
   private itineraries: { [key: string]: Itinerary };
   private itinerariesVersion: number;
   private departures: { [key: string]: any };
   private returns: any[];
   private formData: FlightSearchFormData | null;
+  private selectedProviders: string[];
 
   constructor() {
     this.knownProviders = [];
@@ -47,6 +57,7 @@ export class ProviderManager {
     this.itinerariesVersion = 0;
     this.departures = {};
     this.returns = [];
+    this.selectedProviders = [];
 
     this.formData = null;
     this.primaryTab = null;
@@ -87,50 +98,111 @@ export class ProviderManager {
     return this.formData;
   }
 
-  setPending(providerName: string): void {
-    this.state[providerName]["status"] = "PENDING";
-    this.setFlightCount(providerName, 0);
+  setSelectedProviders(providerNames: string[]) {
+    this.selectedProviders = providerNames;
   }
 
-  setFailed(providerName: string, flightCount = 0): void {
-    this.state[providerName]["status"] = "FAILED";
-    this.setFlightCount(providerName, flightCount);
+  setStatus(providerName: string, status: StatusType, searchType: SearchType) {
+    if (searchType === "DEPARTURE") {
+      this.state[providerName]["departureStatus"] = status;
+    } else if (searchType === "RETURN") {
+      this.state[providerName]["returnStatus"] = status;
+    } else {
+      this.state[providerName]["departureStatus"] = status;
+      this.state[providerName]["returnStatus"] = status;
+    }
   }
 
-  setSuccessful(providerName: string, flightCount: number): void {
-    this.state[providerName]["status"] = "SUCCESS";
-    this.setFlightCount(providerName, flightCount);
+  setPending(providerName: string, searchType: SearchType): void {
+    this.setStatus(providerName, "PENDING", searchType);
   }
 
-  setPartialReturn(providerName: string, flightCountBatchSize: number): number {
-    this.state[providerName]["status"] = "PARTIAL_RETURN_CONTINUING";
-    const currentCount = this.getFlightCount(providerName);
-    return currentCount + flightCountBatchSize;
+  setFailed(providerName: string, searchType: SearchType): void {
+    this.setStatus(providerName, "FAILED", searchType);
   }
 
-  getStatus(providerName: string): string | undefined {
-    return this.state[providerName]["status"];
+  setSuccessful(providerName: string, searchType: SearchType): void {
+    this.setStatus(providerName, "SUCCESS", searchType);
   }
 
-  isProviderComplete(providerName: string): boolean {
-    const status = this.getStatus(providerName);
+  setPartialReturn(providerName: string, searchType: SearchType): void {
+    let status;
+    if (searchType === "BOTH") {
+      status = this.getStatus(providerName, "DEPARTURE") && this.getStatus(providerName, "RETURN");
+    } else {
+      status = this.getStatus(providerName, searchType);
+    }
+    if (!status || !terminalStates.includes(status)) {
+      this.setStatus(providerName, "PARTIAL_RETURN_CONTINUING", searchType);
+    }
+  }
+
+  getStatus(providerName: string, searchType: FlightType): StatusType | undefined {
+    return searchType === "DEPARTURE" ? this.getDepartureStatus(providerName) : this.getReturnStatus(providerName);
+  }
+
+  getDepartureStatus(providerName: string): StatusType | undefined {
+    return this.state[providerName]["departureStatus"];
+  }
+
+  getReturnStatus(providerName: string): StatusType | undefined {
+    return this.state[providerName]["returnStatus"];
+  }
+
+  isProviderDepartureComplete(providerName: string): boolean {
+    const status = this.getDepartureStatus(providerName);
     return status ? terminalStates.includes(status) : false;
   }
 
-  isComplete(): boolean {
+  isProviderReturnComplete(providerName: string): boolean {
+    const status = this.getReturnStatus(providerName);
+    return status ? terminalStates.includes(status) : false;
+  }
+
+  isDepartureComplete(): boolean {
     return this.knownProviders.every((providerName) => {
-      this.isProviderComplete(providerName);
+      return this.isProviderDepartureComplete(providerName);
     });
   }
 
-  isProviderSuccessful(providerName: string): boolean {
-    const status = this.getStatus(providerName);
+  isReturnComplete(): boolean {
+    const providers = this.selectedProviders.length ? this.selectedProviders : this.knownProviders;
+    return providers.every((providerName) => {
+      return this.isProviderReturnComplete(providerName);
+    });
+  }
+
+  isComplete(searchType: SearchType): boolean {
+    let status;
+    if (searchType === "BOTH") {
+      status = this.isDepartureComplete() && this.isReturnComplete();
+    } else if (searchType === "DEPARTURE") {
+      status = this.isDepartureComplete();
+    } else {
+      status = this.isReturnComplete();
+    }
+    return status;
+  }
+
+  isProviderDepartureSuccessful(providerName: string): boolean {
+    const status = this.getDepartureStatus(providerName);
     return status ? successStates.includes(status) : false;
   }
 
-  isSuccessful(): boolean {
+  isProviderReturnSuccessful(providerName: string): boolean {
+    const status = this.getReturnStatus(providerName);
+    return status ? successStates.includes(status) : false;
+  }
+
+  isDepartureSuccessful(): boolean {
     return this.knownProviders.every((providerName) => {
-      this.isProviderSuccessful(providerName);
+      this.isProviderDepartureSuccessful(providerName);
+    });
+  }
+
+  isReturnSuccessful(): boolean {
+    return this.knownProviders.every((providerName) => {
+      this.isProviderReturnSuccessful(providerName);
     });
   }
 
@@ -174,14 +246,6 @@ export class ProviderManager {
     this.returns = returns;
   }
 
-  setFlightCount(providerName: string, flightCount: number): void {
-    this.state[providerName]["flightCount"] = flightCount;
-  }
-
-  getFlightCount(providerName: string): number {
-    return this.state[providerName]["flightCount"];
-  }
-
   setReady(providerName: string, value: boolean): void {
     this.state[providerName].ready = value;
   }
@@ -201,8 +265,8 @@ export class ProviderManager {
   setDefault(): void {
     this.knownProviders.forEach((providerName) => {
       this.state[providerName] = {
-        status: "PENDING",
-        flightCount: 0,
+        departureStatus: "PENDING",
+        returnStatus: "PENDING",
         ready: true,
         onReady: DEFAULT_ON_READY_FUNCTION,
         timer: null,
@@ -264,12 +328,7 @@ export class ProviderManager {
     });
   }
 
-  createWindow(
-    url: string,
-    provider: string,
-    windowConfig: WindowConfig,
-    formData: FlightSearchFormData,
-  ): Promise<void> {
+  createWindow(url: string, provider: string, windowConfig: WindowConfig, message: any): Promise<void> {
     const { height, width, left, top } = windowConfig;
     // eslint-disable-next-line @typescript-eslint/no-this-alias
     const that = this;
@@ -285,7 +344,7 @@ export class ProviderManager {
           chrome.tabs.onUpdated.addListener(function listener(tabId, info) {
             if (info.status === "complete" && tabId === that.getTabId(provider)) {
               chrome.tabs.onUpdated.removeListener(listener);
-              chrome.tabs.sendMessage(tabId, { event: "BEGIN_PARSING", formData });
+              chrome.tabs.sendMessage(tabId, message);
               resolve();
             }
           });
@@ -311,37 +370,29 @@ export class ProviderManager {
 
   searchForResults(formData: FlightSearchFormData, windowConfig: WindowConfig): void {
     this.setFormData(formData);
-    const primaryTabId = this?.primaryTab?.id;
-    if (primaryTabId !== undefined && primaryTabId !== null) {
+    const primaryWindowId = this?.primaryTab?.windowId;
+    const message = { event: "BEGIN_PARSING", formData };
+    if (primaryWindowId !== undefined && primaryWindowId !== null) {
       const promises = this.knownProviders.map((provider) => {
         const url = providerURLBaseMap[provider](formData);
         // Open url in a new window.
         // Not a new tab because we can't read results from inactive tabs (browser powers down inactive tabs).
-        return this.createWindow(url, provider, windowConfig, formData);
+        return this.createWindow(url, provider, windowConfig, message);
       });
 
       Promise.all(promises).then(() => {
         // update again for chrome on windows, to move results window to foreground
-        chrome.windows.update(primaryTabId, { focused: true });
+        chrome.windows.update(primaryWindowId, { focused: true });
       });
     }
   }
 
-  getTotalFlightCount(): number | null {
-    if (!this.isComplete()) {
-      return null;
-    }
-    let total = 0;
-    this.knownProviders.forEach((providerName) => {
-      total += this.getFlightCount(providerName);
-    });
-    return total;
-  }
-
-  sendMessageToIndexPage(message: any): void {
+  sendMessageToIndexPage(message: any, delay = 0): void {
     const primaryTabId = this.getPrimaryTabId();
     if (primaryTabId !== null && primaryTabId !== undefined) {
-      chrome.tabs.sendMessage(primaryTabId, message);
+      setTimeout(() => {
+        chrome.tabs.sendMessage(primaryTabId, message);
+      }, delay);
     }
   }
 }

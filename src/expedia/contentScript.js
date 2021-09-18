@@ -4,7 +4,13 @@ window.Sentry.init({
   dsn: "https://d7f3363dd3774a64ad700b4523bcb789@o407795.ingest.sentry.io/5277451",
 });
 
-import { sendFailedScraper, sendFlightsEvent, sendReturnFlightsEvent } from "../shared/events";
+import {
+  sendFailedScraper,
+  sendFlightsEvent,
+  sendNoFlightsEvent,
+  sendReturnFlightsEvent,
+  sendScraperComplete,
+} from "../shared/events";
 import { getFlights } from "./parser/getFlights";
 import { highlightFlightCard } from "./ui/highlightFlightCard";
 import { selectReturnFlight } from "./ui/selectReturnFlight";
@@ -33,10 +39,15 @@ chrome.runtime.onMessage.addListener(async function (message) {
 const scrapeDepartureFlights = async () => {
   try {
     const flights = await getFlights(null);
-    sendFlightsEvent("expedia", flights);
+    if (flights) {
+      sendFlightsEvent("expedia", flights);
+      sendScraperComplete("expedia", "DEPARTURE");
+    } else {
+      sendNoFlightsEvent("expedia", "DEPARTURE");
+    }
   } catch (error) {
     window.Sentry.captureException(error);
-    sendFailedScraper("expedia", error);
+    sendFailedScraper("expedia", error, "DEPARTURE");
   }
 };
 
@@ -44,9 +55,14 @@ const scrapeReturnFlights = async (departure) => {
   await selectReturnFlight(departure);
   try {
     const flights = await getFlights(departure);
-    sendReturnFlightsEvent("expedia", flights);
+    if (flights) {
+      sendReturnFlightsEvent("expedia", flights);
+      sendScraperComplete("expedia", "RETURN");
+    } else {
+      sendNoFlightsEvent("expedia", "RETURN");
+    }
   } catch (error) {
     window.Sentry.captureException(error);
-    sendFailedScraper("expedia", error);
+    sendFailedScraper("expedia", error, "RETURN");
   }
 };

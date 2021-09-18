@@ -21,8 +21,16 @@
   "devDependencies": {
     "@babel/core": "^7.13.10",
     "@babel/preset-env": "^7.13.10",
+    "@babel/preset-react": "^7.14.5",
     "@babel/preset-typescript": "^7.15.0",
     "@types/chrome": "0.0.147",
+    "@types/lodash.capitalize": "^4.2.6",
+    "@types/lodash.isequal": "^4.5.5",
+    "@types/lodash.uniqby": "^4.7.6",
+    "@types/pluralize": "0.0.29",
+    "@types/react": "^17.0.19",
+    "@types/react-dom": "^17.0.9",
+    "@types/react-virtualized": "^9.21.13",
     "@types/terser-webpack-plugin": "^5.0.4",
     "@typescript-eslint/eslint-plugin": "^4.29.1",
     "@typescript-eslint/parser": "^4.29.1",
@@ -44,10 +52,22 @@
     "webpack-cli": "^4.5.0"
   },
   "dependencies": {
-    "bumbag": "^2.2.1",
+    "@fortawesome/free-regular-svg-icons": "^5.15.4",
+    "@react-hook/debounce": "^4.0.0",
+    "bumbag": "^2.6.0",
+    "date-fns": "^2.23.0",
+    "formik": "^2.2.9",
+    "lodash.capitalize": "^4.2.1",
+    "lodash.isequal": "^4.5.0",
+    "lodash.uniqby": "^4.7.0",
+    "pluralize": "^8.0.0",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
-    "wait-for-the-element": "^4.0.0"
+    "react-fade-in": "^2.0.1",
+    "react-icons": "^4.2.0",
+    "react-virtualized": "^9.22.3",
+    "wait-for-the-element": "^4.0.0",
+    "yup": "^0.32.9"
   },
   "lint-staged": {
     "*.{js,jsx,ts,tsx}": [

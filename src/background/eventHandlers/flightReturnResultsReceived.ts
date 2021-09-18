@@ -1,12 +1,12 @@
 import { makeItins, sortFlights } from "../../dataModels";
-import { Flight } from "../../shared/types/Flight";
+import { UnprocessedFlightSearchResult } from "../../shared/types/UnprocessedFlightSearchResult";
 import { ProviderManager } from "../ProviderManager";
 
 export const handleFlightReturnResultsReceived = (
   providerManager: ProviderManager,
-  flights: Flight[],
+  flights: UnprocessedFlightSearchResult[],
   providerName: string,
-): any => {
+): undefined | void => {
   // for providers that show returns separate from departures,
   // and only once you select a departure.
   if (flights.length === 0) {
@@ -23,6 +23,7 @@ export const handleFlightReturnResultsReceived = (
   const { itineraries: existingItineraries, version: existingItinerariesVersion } = providerManager.getItineraries();
   const existingDepartures = providerManager.getDepartures();
 
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore
   const { returns, itins: itineraries } = makeItins(
     flights,
@@ -37,15 +38,19 @@ export const handleFlightReturnResultsReceived = (
   const allItins = { ...existingItineraries, ...itineraries };
   const setSuccessful = providerManager.setItineraries(allItins, existingItinerariesVersion);
   if (setSuccessful) {
+    providerManager.setPartialReturn(providerName, "RETURN");
     const returnList = sortFlights(Object.values(returns), allItins); // TODO dedup returns
     providerManager.addReturns(returnList);
 
     const nextMessage = {
       event: "RETURN_FLIGHTS_FOR_CLIENT",
       flights: {
+        departureList: sortFlights(providerManager.getDepartures(), allItins),
         returnList: providerManager.getReturns(),
         itins: itineraries,
+        updatedAt: new Date(),
       },
+      formData: providerManager.getFormData(),
     };
 
     providerManager.sendMessageToIndexPage(nextMessage);

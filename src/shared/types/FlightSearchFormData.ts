@@ -1,3 +1,5 @@
+import { CardType } from "../../components/constants";
+
 export interface FlightSearchFormData {
   from: string;
   to: string;
@@ -7,4 +9,5 @@ export interface FlightSearchFormData {
   roundtrip: boolean;
   cabin?: "econ" | "prem_econ" | "business" | "first";
   searchByPoints: boolean;
+  pointsType: CardType | undefined;
 }

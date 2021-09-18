@@ -22,6 +22,7 @@ It does not contain all elements at run, despite them being pulled from a GQL en
 In fact, many updates occur as the best price is retrieved from different providers.
 It does delete the top as you scroll down, so care is needed to not duplicate.
  */
+
   await waitForLoad(selectedFlight);
   const flightType = selectedFlight ? "RETURN" : "DEPARTURE";
   const [departureContainer, returnContainer] = document.querySelectorAll(
@@ -29,10 +30,12 @@ It does delete the top as you scroll down, so care is needed to not duplicate.
   ) as NodeListOf<HTMLElement>;
   const container = flightType === "DEPARTURE" ? departureContainer : returnContainer;
   if (!container) {
+    await pause(60000);
     throw new MissingElementLookupError(`Unable to locate ${flightType.toLowerCase()} container`);
   }
 
   if (!isVisible(container)) {
+    await pause(60000);
     throw new ParserError("Flight container is not visible");
   }
 
@@ -69,16 +72,17 @@ const waitForLoad = async (selectedFlight: boolean) => {
   await waitForAppearance(3000, CONTAINER_SHELL_SELECTOR);
   await waitForAppearance(3000, FLIGHT_CARDS_CONTAINER_SELECTOR);
   await waitForAppearance(10000, SORT_BUTTON_SELECTOR);
-  if (selectedFlight) {
-    await waitForAppearance(3000, RETURN_HEADER_SELECTOR);
-    await pause(500);
-  }
   await waitForDisappearance(15000, LOADING_SELECTOR);
   await waitForAppearance(15000, FLIGHT_CARD_SELECTOR);
+  if (selectedFlight) {
+    await waitForAppearance(10000, RETURN_HEADER_SELECTOR);
+    await pause(250);
+  }
 
   disableHiddenCitySearches();
 
   if (isNoResults(selectedFlight)) {
-    sendNoFlightsEvent("skiplagged");
+    const searchType = selectedFlight ? "RETURN" : "DEPARTURE";
+    sendNoFlightsEvent("skiplagged", searchType);
   }
 };

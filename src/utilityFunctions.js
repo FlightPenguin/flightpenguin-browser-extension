@@ -2,9 +2,7 @@ function convertTimeTo24HourClock(time, addDays) {
   let timeFormatted = time.toLowerCase();
   let [hours, minutesAndTimeOfDay] = timeFormatted.split(":");
   hours = Number(hours);
-  let minutes = Number(
-    minutesAndTimeOfDay.replace(/(pm)|(am)|(\+\d)/g, "").trim()
-  );
+  let minutes = Number(minutesAndTimeOfDay.replace(/(pm)|(am)|(\+\d)/g, "").trim());
   if (addDays) {
     const daysToAdd = time.match(/(\+\d)/);
     if (daysToAdd) {
@@ -74,9 +72,7 @@ function convertDurationToMinutes(duration) {
     durationRest = duration;
   }
   let durationMinutes = durationRest.trim().split("m")[0] || 0;
-  let durationTotalMinutes =
-    Number(durationMinutes) + Number(durationHours) * 60;
-  return durationTotalMinutes;
+  return Number(durationMinutes) + Number(durationHours) * 60;
 }
 // calculate timezone offset in minutes
 function getTimezoneOffset(fromTime, toTime, duration) {
@@ -126,7 +122,7 @@ function isOvernight(fromTime, toTime) {
   const MINUTES_PER_DAY = 24 * 60;
   // return convert12HourTimeToMinutes(fromTime) + convertDurationToMinutes(duration) > MINUTES_PER_DAY;
   // if fromTime + duration > 24 hour
-  return fromTime.toLowerCase().includes('pm') && toTime.toLowerCase().includes('am');
+  return fromTime.toLowerCase().includes("pm") && toTime.toLowerCase().includes("am");
 }
 
 export {

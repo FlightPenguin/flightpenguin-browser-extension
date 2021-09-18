@@ -16,7 +16,9 @@ import {
   handleIndexUnloaded,
   handleNoFlightsFound,
   handleProviderReady,
+  handleReloadOnDepartureSelected,
   handleScraperFailed,
+  handleScraperSuccess,
 } from "./background/eventHandlers";
 import { ProviderManager } from "./background/ProviderManager";
 import { ExtensionInstalledHandler, ExtensionOpenedHandler, ExtensionUninstalledHandler } from "./background/state";
@@ -28,15 +30,19 @@ ExtensionOpenedHandler();
 const providerManager = new ProviderManager();
 
 chrome.runtime.onMessage.addListener(function (message, sender, reply) {
+  console.debug(message);
   switch (message.event) {
     case "FORM_DATA_RECEIVED":
       handleFormDataReceived(providerManager, message.formData, message.windowConfig);
       break;
     case "NO_FLIGHTS_FOUND":
-      handleNoFlightsFound(providerManager, message.provider);
+      handleNoFlightsFound(providerManager, message.provider, message.searchType);
+      break;
+    case "SUCCESSFUL_SCRAPER":
+      handleScraperSuccess(providerManager, message.providerName, message.searchType);
       break;
     case "FAILED_SCRAPER":
-      handleScraperFailed(providerManager, message.source, message.formData, message.description);
+      handleScraperFailed(providerManager, message.providerName, message.description, message.searchType);
       break;
     case "FLIGHT_RESULTS_RECEIVED":
       handleFlightResultsReceived(providerManager, message.flights, message.provider);
@@ -64,6 +70,15 @@ chrome.runtime.onMessage.addListener(function (message, sender, reply) {
       break;
     case "INDEX_UNLOAD":
       handleIndexUnloaded(providerManager);
+      break;
+    case "RELOAD_SELECTED_DEPARTURE":
+      handleReloadOnDepartureSelected(
+        providerManager,
+        message.providerName,
+        message.targetUrl,
+        message.departure,
+        message.departureMap,
+      );
       break;
     default:
       window.Sentry.captureException(new Error(message));

@@ -1,3 +1,17 @@
+import capitalize from "lodash.capitalize";
+
+const cleanAlaskaAirlinesOperatingName = (airlineName) => {
+  const alaskaRegex = /^(?<airline>[\s\w]*)\s+as\s+(?<dbaPart1>alaska)(?<dbaPart2>[a-z]{1,20})$/i;
+  let cleanedName = airlineName;
+  if (alaskaRegex.test(cleanedName)) {
+    const nameGroups = cleanedName.match(alaskaRegex);
+    cleanedName = `${nameGroups.groups.airline} as ${nameGroups.groups.dbaPart1} ${capitalize(
+      nameGroups.groups.dbaPart2,
+    )}`;
+  }
+  return cleanedName;
+};
+
 const AirlineMap = {
   airlineDetailsMap: {
     "American Airlines": { display: "American", color: "#C5423E", code: "AA" },
@@ -71,16 +85,18 @@ const AirlineMap = {
     if (!airlineName || typeof airlineName !== "string") {
       return;
     }
-    let formattedAirlineName = airlineName.trim();
+    let formattedAirlineName = airlineName.trim().replace(/\s+/g, " ");
+    formattedAirlineName = cleanAlaskaAirlinesOperatingName(formattedAirlineName);
     const airlineDetails = this.airlineDetailsMap[formattedAirlineName];
     if (airlineDetails) {
       formattedAirlineName = airlineDetails.display;
     }
+
     return formattedAirlineName;
   },
   getAirlineDetails: function (airlineName) {
-    let formattedAirlineName = airlineName.trim();
-
+    let formattedAirlineName = airlineName.trim().replace(/\s+/g, " ");
+    formattedAirlineName = cleanAlaskaAirlinesOperatingName(formattedAirlineName);
     return (
       this.airlineDetailsMap[formattedAirlineName] || {
         display: formattedAirlineName,

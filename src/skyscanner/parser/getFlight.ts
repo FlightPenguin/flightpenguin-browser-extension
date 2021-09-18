@@ -1,7 +1,7 @@
 import { MissingElementLookupError, MissingFieldParserError } from "../../shared/errors";
 import { standardizeTimeString } from "../../shared/helpers";
 import AirlineMap from "../../shared/nameMaps/airlineMap";
-import { Flight } from "../../shared/types/Flight";
+import { UnprocessedFlightSearchResult } from "../../shared/types/UnprocessedFlightSearchResult";
 import { getLayovers } from "./getLayovers";
 
 const FARE_SELECTOR =
@@ -14,7 +14,7 @@ const DURATION_CONTAINER_SELECTOR = "span[class*='Duration_duration']";
 
 const STOP_REGEX = /\d{1,2} stop/;
 
-export const getFlight = async (flightCard: HTMLElement): Promise<Flight> => {
+export const getFlight = async (flightCard: HTMLElement): Promise<UnprocessedFlightSearchResult> => {
   const fare = getFare(flightCard);
 
   const { departureLayovers, returnLayovers } = isNonstop(flightCard)
@@ -29,7 +29,7 @@ export const getFlight = async (flightCard: HTMLElement): Promise<Flight> => {
     departureFlight: { ...departureFlight, layovers: departureLayovers },
     returnFlight: { ...returnFlight, layovers: returnLayovers },
     fare,
-  } as Flight;
+  } as UnprocessedFlightSearchResult;
 };
 
 const setFlightCardVisited = (flightCard: HTMLElement) => {

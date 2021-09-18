@@ -16,6 +16,7 @@ export const handleDepartureSelected = (providerManager: ProviderManager, depart
   const { itineraries } = providerManager.getItineraries();
   const departureItineraries = departure.itinIds.flatMap((itinId: string) => itineraries[itinId]);
   const departureProviders = departureItineraries.map((itinerary: any) => itinerary.provider);
+  providerManager.setSelectedProviders(departureProviders);
 
   if (hasReturnProviders(departureProviders)) {
     requestNoRoundtripProviderReturns(departure, providerManager, departureProviders, departureItineraries);
@@ -45,6 +46,7 @@ const requestNoRoundtripProviderReturns = (
         });
 
         providerManager.setTimer(providerName, 10000, () => {
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
           // @ts-ignore
           Sentry.captureException(new Error(`Scraper failed for ${providerName} return flights`), {
             extra: providerManager.getFormData(),
@@ -64,9 +66,18 @@ const requestNoRoundtripProviderReturns = (
 const getRoundtripProviderReturns = (departure: any, providerManager: ProviderManager) => {
   const { itineraries } = providerManager.getItineraries();
   const returnList = sortFlights(findReturnFlights(departure, itineraries), itineraries);
+  providerManager.addReturns(returnList);
+
   const message = {
     event: "RETURN_FLIGHTS_FOR_CLIENT",
-    flights: { returnList },
+    flights: {
+      departureList: sortFlights(providerManager.getDepartures(), itineraries),
+      returnList: providerManager.getReturns(),
+      itins: itineraries,
+      updatedAt: new Date(),
+    },
+    formData: providerManager.getFormData(),
   };
   providerManager.sendMessageToIndexPage(message);
+  providerManager.sendMessageToIndexPage({ event: "SCRAPING_COMPLETED", searchType: "RETURN" }, 3000);
 };

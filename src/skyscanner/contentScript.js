@@ -4,7 +4,7 @@ window.Sentry.init({
   dsn: "https://d7f3363dd3774a64ad700b4523bcb789@o407795.ingest.sentry.io/5277451",
 });
 
-import { sendFailedScraper, sendFlightsEvent, sendNoFlightsEvent } from "../shared/events";
+import { sendFailedScraper, sendFlightsEvent, sendNoFlightsEvent, sendScraperComplete } from "../shared/events";
 import { getUnsentFlights } from "./parser/getUnsentFlights";
 import { closePopupModal } from "./ui/closePopupModal";
 import { getMoreResults } from "./ui/getMoreResults";
@@ -40,16 +40,17 @@ const scrapeFlights = async () => {
         totalFlightCount += unsentFlights.length;
         await getMoreResults();
       } else if (totalFlightCount === 0) {
-        sendNoFlightsEvent("skyscanner");
+        sendNoFlightsEvent("skyscanner", "BOTH");
         hasMoreFlights = false;
       } else {
         hasMoreFlights = false;
       }
     }
+    sendScraperComplete("skyscanner", "BOTH");
   } catch (error) {
     window.Sentry.captureException(error);
     if (!totalFlightCount) {
-      sendFailedScraper("skyscanner", error);
+      sendFailedScraper("skyscanner", error, "BOTH");
     }
   }
 };

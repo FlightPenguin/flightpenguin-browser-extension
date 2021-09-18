@@ -1,28 +1,30 @@
 import { MissingFieldParserError } from "../../shared/errors";
 import { standardizeTimeString } from "../../shared/helpers";
 import { FlightLeg } from "../../shared/types/FlightLeg";
-import { isOvernight } from "../../utilityFunctions";
+import { getTimeDetails } from "../../utilityFunctions";
 
 export const getLegDetails = (leg: Element, legIndex: number, previousLegDetails?: FlightLeg): FlightLeg => {
   const [departure, details, arrival] = leg.children;
 
-  let departureTime = getDepartureTime(departure);
+  let departureTime = getDepartureTime(departure); // 9am
   let arrivalTime = getArrivalTime(arrival);
 
-  if (legIndex > 0 && isOvernight(previousLegDetails?.toTime, departureTime)) {
-    departureTime += "+1"; // layover went to the next day
-  } else if (isOvernight(departureTime, arrivalTime)) {
-    arrivalTime += "+1"; // overnight flight
+  if (isFlightOvernight(departureTime, arrivalTime)) {
+    arrivalTime += "+1";
   }
 
-  return {
+  if (!!previousLegDetails && isLayoverOvernight(previousLegDetails, departureTime)) {
+    departureTime += "+1";
+  }
+
+  return new FlightLeg({
     fromTime: departureTime,
     toTime: arrivalTime,
     from: getDepartureAirport(departure),
     to: getArrivalAirport(arrival),
     operatingAirline: getOperatingAirline(details?.children[1]),
     duration: getDuration(details?.children[0]),
-  };
+  });
 };
 
 const getArrivalTime = (arrival: Element) => {
@@ -49,7 +51,7 @@ const getArrivalAirport = (arrival: Element) => {
     arrival.textContent?.indexOf(")"),
   );
   if (airportCode?.length !== 3) {
-    airportCode = arrival.textContent?.split("-")[1]; // no airport, just listing the city
+    airportCode = arrival.textContent?.split("-")[1].split("Arrives")[0].trim(); // no airport, just listing the city
   }
 
   if (!airportCode) {
@@ -63,8 +65,9 @@ const getDepartureAirport = (departure: Element) => {
     departure.textContent?.indexOf("(") + 1,
     departure.textContent?.indexOf(")"),
   );
+
   if (airportCode?.length !== 3) {
-    airportCode = departure.textContent?.split("-")[1]; // no airport, just listing the city
+    airportCode = departure.textContent?.split("-")[1].split("Arrives")[0].trim(); // no airport, just listing the city
   }
 
   if (!airportCode) {
@@ -74,7 +77,7 @@ const getDepartureAirport = (departure: Element) => {
 };
 
 const getDuration = (element: Element) => {
-  const duration = element?.textContent?.replace("flight", "");
+  const duration = element?.textContent?.replace("flight", "").trim();
 
   if (!duration) {
     throw new MissingFieldParserError("Unable to determine duration time for layover");
@@ -93,4 +96,19 @@ const getOperatingAirline = (element: Element) => {
     throw new MissingFieldParserError("Unable to determine operating airline for layover");
   }
   return airline;
+};
+
+const isFlightOvernight = (fromTime: string, toTime: string): boolean => {
+  const fromTimeDetails = getTimeDetails(fromTime);
+  const toTimeDetails = getTimeDetails(toTime);
+
+  return (
+    toTimeDetails.hours % 24 < fromTimeDetails.hours % 24 ||
+    (toTimeDetails.hours % 24 === fromTimeDetails.hours % 24 && toTimeDetails.minutes <= fromTimeDetails.minutes)
+  );
+};
+
+const isLayoverOvernight = (previousLegDetails: FlightLeg, fromTime: string): boolean => {
+  const fromTimeDetails = getTimeDetails(fromTime);
+  return previousLegDetails.toTimeDetails.hours % 24 > fromTimeDetails.hours % 24;
 };

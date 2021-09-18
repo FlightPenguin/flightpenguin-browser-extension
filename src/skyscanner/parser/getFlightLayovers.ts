@@ -66,10 +66,10 @@ const getTimes = (legDetailsContainer: HTMLElement) => {
     throw new MissingElementLookupError("Unable to determine times of layover");
   }
 
-  const [departureTimeSpan, durationSpan, arrivalTimeSpan] = timesContainer.querySelectorAll("span");
+  const [departureTimeContainer, durationSpan, arrivalTimeContainer] = timesContainer.children;
 
-  const departureTime = departureTimeSpan.textContent;
-  if (!departureTimeSpan) {
+  const departureTime = departureTimeContainer.textContent;
+  if (!departureTimeContainer) {
     throw new MissingFieldParserError("Couldn't parse departure time of layover");
   }
 
@@ -78,7 +78,7 @@ const getTimes = (legDetailsContainer: HTMLElement) => {
     throw new MissingFieldParserError("Couldn't parse duration of layover");
   }
 
-  const arrivalTime = arrivalTimeSpan.textContent;
+  const arrivalTime = arrivalTimeContainer.textContent;
   if (!arrivalTime) {
     throw new MissingFieldParserError("Couldn't parse arrival time of layover");
   }

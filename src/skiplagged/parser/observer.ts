@@ -45,4 +45,8 @@ export class FlightObserver {
   endObservation(): void {
     this.observer.disconnect();
   }
+
+  getFlightMap(): FlightMap {
+    return this.flightMap;
+  }
 }
