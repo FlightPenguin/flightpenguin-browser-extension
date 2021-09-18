@@ -57,7 +57,7 @@ export const development: Configuration = {
     ...defaultEntry,
   },
   output: baseOutput,
-  plugins: basePlugins,
+  plugins: [...basePlugins, new DefinePlugin({ "process.env.EXTENSION_ENV": "development" })],
   resolve: baseResolve,
   devtool: false,
   module: {
@@ -71,7 +71,7 @@ export const production: Configuration = {
   entry: { ...defaultEntry },
   output: baseOutput,
   devtool: false,
-  plugins: [...basePlugins],
+  plugins: [...basePlugins, new DefinePlugin({ "process.env.EXTENSION_ENV": "production" })],
   module: {
     rules: getModuleRules({ mode: "production" }),
   },
