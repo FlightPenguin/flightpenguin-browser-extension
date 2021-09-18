@@ -1,9 +1,12 @@
-export const PROVIDERS_NEEDING_RETURNS = ["expedia", "skiplagged"];
+export const PROVIDERS_NEEDING_RETURNS = [
+  "expedia",
+  // "skiplagged"
+];
 export const PROVIDERS_SUPPORTING_POINTS_SEARCH = ["expedia"];
 export const SUPPORTED_PROVIDERS = [
   // force expansion
   "expedia",
-  "skiplagged",
+  // "skiplagged",
   "skyscanner",
   "southwest",
 ];
