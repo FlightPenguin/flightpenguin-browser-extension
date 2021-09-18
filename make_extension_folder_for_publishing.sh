@@ -49,7 +49,7 @@ build() {
     exit 89
   fi
 
-  devtools_count=$(grep -c manifest.json)
+  devtools_count=$(grep -c devtools manifest.json)
   if [ ${uncommitted_file_count} -ne 0 ]; then
     echo "ERROR: No building with react-devtools listener in manifest"
     exit 81
