@@ -1742,6 +1742,10 @@ var clearSelection = /*#__PURE__*/function () {
     var flightCard = getSelectedFlightCard();
     flightCard.click();
     yield waitForLoad();
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth"
+    });
   });
 
   return function clearSelection() {

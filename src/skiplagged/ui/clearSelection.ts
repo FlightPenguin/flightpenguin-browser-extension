@@ -16,6 +16,7 @@ export const clearSelection = async (): Promise<void> => {
   flightCard.click();
 
   await waitForLoad();
+  window.scrollTo({ top: 0, behavior: "smooth" });
 };
 
 const isSelectingReturnFlight = (): boolean => {
