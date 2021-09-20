@@ -22,7 +22,7 @@ chrome.runtime.onMessage.addListener(async function (message) {
   switch (message.event) {
     case "BEGIN_PARSING":
       departureObserver = new FlightObserver(null);
-      departureFlightContainer = await attachObserver(departureObserver, null);
+      departureFlightContainer = await attachObserver(departureObserver, false);
       if (departureFlightContainer) {
         await scrollThroughContainer(departureFlightContainer);
       }
@@ -34,10 +34,8 @@ chrome.runtime.onMessage.addListener(async function (message) {
       stopScrollingNow();
 
       returnObserver = new FlightObserver(message.departure);
-      returnFlightContainer = await attachObserver(
-        returnObserver,
-        getSkiplaggedDepartureId(departureObserver, message.departure.id),
-      );
+      returnFlightContainer = await attachObserver(returnObserver, true);
+      await selectFlightCard(getSkiplaggedDepartureId(departureObserver, message.departure.id));
       if (returnFlightContainer) {
         await scrollThroughContainer(returnFlightContainer);
       }
@@ -63,20 +61,14 @@ chrome.runtime.onMessage.addListener(async function (message) {
   }
 });
 
-const attachObserver = async (
-  observer: FlightObserver,
-  skiplaggedFlightId: string | null,
-): Promise<HTMLElement | null> => {
+const attachObserver = async (observer: FlightObserver, selectedFlight: boolean): Promise<HTMLElement | null> => {
   try {
-    if (skiplaggedFlightId) {
-      await selectFlightCard(skiplaggedFlightId);
-    }
-    const flightContainer = await getFlightContainer(!!skiplaggedFlightId);
+    const flightContainer = await getFlightContainer(!!selectedFlight);
     observer.beginObservation(flightContainer);
     return flightContainer;
   } catch (error) {
     window.Sentry.captureException(error);
-    const flightType = skiplaggedFlightId ? "RETURN" : "DEPARTURE";
+    const flightType = selectedFlight ? "RETURN" : "DEPARTURE";
     sendFailedScraper("skiplagged", error, flightType);
     return null;
   }
