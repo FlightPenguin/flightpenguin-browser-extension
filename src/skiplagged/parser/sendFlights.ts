@@ -30,14 +30,12 @@ export const sendFlights = async (
     flightCard.dataset.fpid = flightPenguinId;
     flightCard.dataset.visited = "true";
 
-    if (!shouldSkipFlight(flightPenguinId, skiplaggedShortId, flightMap)) {
-      flights.push({
-        departureFlight,
-        returnFlight,
-        fare,
-      });
-      newlyVisitedIds[flightPenguinId] = { skiplaggedId: skiplaggedShortId, lastUpdatedAt: new Date() };
-    }
+    flights.push({
+      departureFlight,
+      returnFlight,
+      fare,
+    });
+    newlyVisitedIds[flightPenguinId] = { skiplaggedId: skiplaggedShortId, lastUpdatedAt: new Date() };
   }
 
   const sendFlightsFunc = selectedFlight ? sendReturnFlightsEvent : sendFlightsEvent;
@@ -54,14 +52,6 @@ const shouldSkipCard = (flightCard: HTMLElement) => {
     Array.from(flightCard.classList).includes("skip-trip") ||
     denyListTerms.some((term) => flightCard.textContent?.includes(term))
   );
-};
-
-const shouldSkipFlight = (flightPenguinId: string, skiplaggedShortId: string, map: FlightMap) => {
-  const currentlyKnownId = map[flightPenguinId];
-  if (currentlyKnownId && currentlyKnownId["skiplaggedId"] === skiplaggedShortId) {
-    return true;
-  }
-  return false;
 };
 
 const getFlightDatasetId = (flight: FlightDetails) => {

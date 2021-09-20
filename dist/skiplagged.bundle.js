@@ -1659,18 +1659,15 @@ var sendFlights = /*#__PURE__*/function () {
         var skiplaggedShortId = getFlightCardShortId(flightCard);
         flightCard.dataset.fpid = flightPenguinId;
         flightCard.dataset.visited = "true";
-
-        if (!shouldSkipFlight(flightPenguinId, skiplaggedShortId, flightMap)) {
-          flights.push({
-            departureFlight: departureFlight,
-            returnFlight: returnFlight,
-            fare: fare
-          });
-          newlyVisitedIds[flightPenguinId] = {
-            skiplaggedId: skiplaggedShortId,
-            lastUpdatedAt: new Date()
-          };
-        }
+        flights.push({
+          departureFlight: departureFlight,
+          returnFlight: returnFlight,
+          fare: fare
+        });
+        newlyVisitedIds[flightPenguinId] = {
+          skiplaggedId: skiplaggedShortId,
+          lastUpdatedAt: new Date()
+        };
       }
     } catch (err) {
       _iterator.e(err);
@@ -1699,16 +1696,6 @@ var shouldSkipCard = function shouldSkipCard(flightCard) {
 
     return (_flightCard$textConte = flightCard.textContent) === null || _flightCard$textConte === void 0 ? void 0 : _flightCard$textConte.includes(term);
   });
-};
-
-var shouldSkipFlight = function shouldSkipFlight(flightPenguinId, skiplaggedShortId, map) {
-  var currentlyKnownId = map[flightPenguinId];
-
-  if (currentlyKnownId && currentlyKnownId["skiplaggedId"] === skiplaggedShortId) {
-    return true;
-  }
-
-  return false;
 };
 
 var getFlightDatasetId = function getFlightDatasetId(flight) {
