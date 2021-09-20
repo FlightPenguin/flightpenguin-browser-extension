@@ -1786,34 +1786,6 @@ var waitForLoad = /*#__PURE__*/function () {
 
 /***/ }),
 
-/***/ "./src/skiplagged/ui/disableHiddenCitySearches.ts":
-/*!********************************************************!*\
-  !*** ./src/skiplagged/ui/disableHiddenCitySearches.ts ***!
-  \********************************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "disableHiddenCitySearches": () => (/* binding */ disableHiddenCitySearches)
-/* harmony export */ });
-var STANDARD_SELECTOR = "input[data-name='standard']";
-var disableHiddenCitySearches = function disableHiddenCitySearches() {
-  var input = document.querySelector(STANDARD_SELECTOR);
-
-  if (input) {
-    var _input$parentElement;
-
-    var only = (_input$parentElement = input.parentElement) === null || _input$parentElement === void 0 ? void 0 : _input$parentElement.querySelector(".only");
-
-    if (only) {
-      only.click();
-    }
-  }
-};
-
-/***/ }),
-
 /***/ "./src/skiplagged/ui/findFlightCard.ts":
 /*!*********************************************!*\
   !*** ./src/skiplagged/ui/findFlightCard.ts ***!
@@ -1926,86 +1898,6 @@ var clearExistingSelections = function clearExistingSelections() {
 
 /***/ }),
 
-/***/ "./src/skiplagged/ui/reloadForDeparture.ts":
-/*!*************************************************!*\
-  !*** ./src/skiplagged/ui/reloadForDeparture.ts ***!
-  \*************************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "reloadForDeparture": () => (/* binding */ reloadForDeparture)
-/* harmony export */ });
-/* harmony import */ var _shared_errors__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../shared/errors */ "./src/shared/errors.ts");
-/* harmony import */ var _findFlightCard__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./findFlightCard */ "./src/skiplagged/ui/findFlightCard.ts");
-function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
-
-function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
-
-
-
-var reloadForDeparture = /*#__PURE__*/function () {
-  var _ref = _asyncToGenerator(function* (skiplaggedId, departure, departureMap) {
-    var flightCard = yield (0,_findFlightCard__WEBPACK_IMPORTED_MODULE_1__.findFlightCard)(skiplaggedId);
-    var flights = getFlightAbbreviations(flightCard);
-    var newUrl = getNewUrl(flights);
-    chrome.runtime.sendMessage({
-      event: "RELOAD_SELECTED_DEPARTURE",
-      providerName: "skiplagged",
-      targetUrl: newUrl,
-      departureId: skiplaggedId,
-      departure: departure,
-      departureMap: departureMap
-    });
-  });
-
-  return function reloadForDeparture(_x, _x2, _x3) {
-    return _ref.apply(this, arguments);
-  };
-}();
-
-var getFlightAbbreviations = function getFlightAbbreviations(flightCard) {
-  var _airlinesContainer$da;
-
-  var airlinesContainer = flightCard.querySelector("span.airlines");
-
-  if (!airlinesContainer) {
-    throw new _shared_errors__WEBPACK_IMPORTED_MODULE_0__.MissingElementLookupError("Unable to locate airlines container in flight card");
-  }
-
-  var originalTitle = (_airlinesContainer$da = airlinesContainer.dataset) === null || _airlinesContainer$da === void 0 ? void 0 : _airlinesContainer$da.originalTitle;
-
-  if (!originalTitle) {
-    throw new _shared_errors__WEBPACK_IMPORTED_MODULE_0__.MissingFieldParserError("Unable to parse original title of flight card airlines");
-  }
-
-  var parser = new DOMParser();
-  var airlinesDoc = parser.parseFromString(originalTitle, "text/html");
-  var containers = airlinesDoc.querySelectorAll("span");
-  var flights = Array.from(containers).map(function (container) {
-    var _container$textConten;
-
-    var img = container.querySelector("img");
-
-    if (!img) {
-      throw new _shared_errors__WEBPACK_IMPORTED_MODULE_0__.MissingElementLookupError("Unable to locate airline image in parsed document");
-    }
-
-    var airlineAbbreviation = img.src.split("/").slice(-1)[0].split(".")[0];
-    var airlineNumber = (_container$textConten = container.textContent) === null || _container$textConten === void 0 ? void 0 : _container$textConten.split(/\s+/).slice(-1)[0];
-    return "".concat(airlineAbbreviation).concat(airlineNumber);
-  });
-  return flights.join("-");
-};
-
-var getNewUrl = function getNewUrl(flights) {
-  var currentUrl = window.location.href.split("#")[0];
-  return "".concat(currentUrl, "#trip=").concat(flights);
-};
-
-/***/ }),
-
 /***/ "./src/skiplagged/ui/scrollThroughContainer.ts":
 /*!*****************************************************!*\
   !*** ./src/skiplagged/ui/scrollThroughContainer.ts ***!
@@ -2020,13 +1912,9 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "removeScrollingCheck": () => (/* binding */ removeScrollingCheck),
 /* harmony export */   "getLastFlightCard": () => (/* binding */ getLastFlightCard)
 /* harmony export */ });
-/* harmony import */ var _shared_errors__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../shared/errors */ "./src/shared/errors.ts");
-/* harmony import */ var _shared_events__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../shared/events */ "./src/shared/events/index.ts");
-/* harmony import */ var _shared_pause__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../shared/pause */ "./src/shared/pause.ts");
-/* harmony import */ var _shared_utilities_isVisible__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../shared/utilities/isVisible */ "./src/shared/utilities/isVisible.ts");
-/* harmony import */ var _shared_utilities_waitFor__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../../shared/utilities/waitFor */ "./src/shared/utilities/waitFor.ts");
-/* harmony import */ var _disableHiddenCitySearches__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./disableHiddenCitySearches */ "./src/skiplagged/ui/disableHiddenCitySearches.ts");
-/* harmony import */ var _scrollToFlightCard__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./scrollToFlightCard */ "./src/skiplagged/ui/scrollToFlightCard.ts");
+/* harmony import */ var _shared_pause__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../shared/pause */ "./src/shared/pause.ts");
+/* harmony import */ var _shared_utilities_waitFor__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../shared/utilities/waitFor */ "./src/shared/utilities/waitFor.ts");
+/* harmony import */ var _scrollToFlightCard__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./scrollToFlightCard */ "./src/skiplagged/ui/scrollToFlightCard.ts");
 function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
 
 function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
@@ -2034,37 +1922,28 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 
 
 
-
-
-
-
-var CONTAINER_SHELL_SELECTOR = "section #trip-list-wrapper";
-var SORT_BUTTON_SELECTOR = "[data-sort='cost']";
-var NO_RESULTS_SELECTOR = ".trip-list-empty";
 var FLIGHT_CARD_SELECTOR = "div[class='trip']";
-var LOADING_SELECTOR = "div.spinner-title";
+var PROGRESS_SELECTOR = ".ui-mprogress";
 var STOP_SCROLLING_ID = "stop-scrolling";
 var STOP_SCROLLING_SELECTOR = "div#".concat(STOP_SCROLLING_ID);
-var RETURN_HEADER_SELECTOR = ".trip-return-header";
 var scrollThroughContainer = /*#__PURE__*/function () {
-  var _ref = _asyncToGenerator(function* (container, flightType) {
-    yield waitForFlightLoad(container, flightType);
+  var _ref = _asyncToGenerator(function* (container) {
+    yield (0,_shared_utilities_waitFor__WEBPACK_IMPORTED_MODULE_1__.waitForDisappearance)(45000, PROGRESS_SELECTOR);
+    yield (0,_shared_utilities_waitFor__WEBPACK_IMPORTED_MODULE_1__.waitForAppearance)(45000, FLIGHT_CARD_SELECTOR, container);
     removeScrollingCheck(null);
-    yield (0,_shared_pause__WEBPACK_IMPORTED_MODULE_2__.pause)(150);
     var startTime = new Date().getTime();
 
     while (getTimeSinceStart(startTime) < 60000) {
-      if (stopScrollingCheck(false)) {
-        console.debug("Stop scrolling requested...");
+      if (stopScrollingCheck(true)) {
         break;
       }
 
       yield progressiveScrollingOnce(container);
-      yield (0,_shared_pause__WEBPACK_IMPORTED_MODULE_2__.pause)(300, 100, 200);
+      yield (0,_shared_pause__WEBPACK_IMPORTED_MODULE_0__.pause)(300, 100, 200);
     }
   });
 
-  return function scrollThroughContainer(_x, _x2) {
+  return function scrollThroughContainer(_x) {
     return _ref.apply(this, arguments);
   };
 }();
@@ -2075,7 +1954,7 @@ var progressiveScrollingOnce = /*#__PURE__*/function () {
       top: 0,
       behavior: "smooth"
     });
-    yield (0,_shared_pause__WEBPACK_IMPORTED_MODULE_2__.pause)(2000, 100, 300);
+    yield (0,_shared_pause__WEBPACK_IMPORTED_MODULE_0__.pause)(1000, 100, 200);
     var lastFlightCard = getLastFlightCard(flightContainer);
     var batchLastFlightCard = null;
 
@@ -2086,18 +1965,18 @@ var progressiveScrollingOnce = /*#__PURE__*/function () {
 
       var flightCards = flightContainer.querySelectorAll(FLIGHT_CARD_SELECTOR);
       batchLastFlightCard = Array.from(flightCards).slice(-1)[0];
-      (0,_scrollToFlightCard__WEBPACK_IMPORTED_MODULE_6__.scrollToFlightCard)(batchLastFlightCard);
+      (0,_scrollToFlightCard__WEBPACK_IMPORTED_MODULE_2__.scrollToFlightCard)(batchLastFlightCard);
 
       if (stopScrollingCheck(false)) {
         break;
       }
 
-      yield (0,_shared_pause__WEBPACK_IMPORTED_MODULE_2__.pause)(500, 50, 100);
+      yield (0,_shared_pause__WEBPACK_IMPORTED_MODULE_0__.pause)(300, 50, 100);
       lastFlightCard = getLastFlightCard(flightContainer);
     }
   });
 
-  return function progressiveScrollingOnce(_x3) {
+  return function progressiveScrollingOnce(_x2) {
     return _ref2.apply(this, arguments);
   };
 }();
@@ -2111,10 +1990,6 @@ var stopScrollingCheck = function stopScrollingCheck(remove) {
   var div = document.querySelector(STOP_SCROLLING_SELECTOR);
   var stopScrolling = !!div;
 
-  if (stopScrolling) {
-    console.debug("Stopping scrolling because ".concat(div.getAttribute("data-reason")));
-  }
-
   if (stopScrolling && remove) {
     removeScrollingCheck(div);
   }
@@ -2122,14 +1997,9 @@ var stopScrollingCheck = function stopScrollingCheck(remove) {
   return stopScrolling;
 };
 
-var stopScrollingNow = function stopScrollingNow(reason) {
+var stopScrollingNow = function stopScrollingNow() {
   var div = document.createElement("div");
   div.id = STOP_SCROLLING_ID;
-
-  if (reason) {
-    div.setAttribute("data-reason", reason);
-  }
-
   document.body.appendChild(div);
 };
 var removeScrollingCheck = function removeScrollingCheck(div) {
@@ -2141,44 +2011,6 @@ var removeScrollingCheck = function removeScrollingCheck(div) {
 };
 var getLastFlightCard = function getLastFlightCard(container) {
   return Array.from(container.querySelectorAll(FLIGHT_CARD_SELECTOR)).slice(-1)[0];
-};
-
-var waitForFlightLoad = /*#__PURE__*/function () {
-  var _ref3 = _asyncToGenerator(function* (container, flightType) {
-    yield (0,_shared_utilities_waitFor__WEBPACK_IMPORTED_MODULE_4__.waitForAppearance)(3000, CONTAINER_SHELL_SELECTOR);
-    yield (0,_shared_utilities_waitFor__WEBPACK_IMPORTED_MODULE_4__.waitForAppearance)(10000, SORT_BUTTON_SELECTOR);
-    yield (0,_shared_utilities_waitFor__WEBPACK_IMPORTED_MODULE_4__.waitForDisappearance)(15000, LOADING_SELECTOR);
-    yield (0,_shared_utilities_waitFor__WEBPACK_IMPORTED_MODULE_4__.waitForAppearance)(15000, FLIGHT_CARD_SELECTOR, container);
-
-    if (flightType === "RETURN") {
-      yield (0,_shared_utilities_waitFor__WEBPACK_IMPORTED_MODULE_4__.waitForAppearance)(10000, RETURN_HEADER_SELECTOR);
-      yield (0,_shared_pause__WEBPACK_IMPORTED_MODULE_2__.pause)(250);
-    }
-
-    (0,_disableHiddenCitySearches__WEBPACK_IMPORTED_MODULE_5__.disableHiddenCitySearches)();
-
-    if (isNoResults(flightType)) {
-      (0,_shared_events__WEBPACK_IMPORTED_MODULE_1__.sendNoFlightsEvent)("skiplagged", flightType);
-    }
-  });
-
-  return function waitForFlightLoad(_x4, _x5) {
-    return _ref3.apply(this, arguments);
-  };
-}();
-
-var isNoResults = function isNoResults(flightType) {
-  var noResultsDiv = document.querySelector(NO_RESULTS_SELECTOR);
-
-  if (!noResultsDiv) {
-    if (flightType === "RETURN") {
-      return false;
-    }
-
-    throw new _shared_errors__WEBPACK_IMPORTED_MODULE_0__.MissingElementLookupError("Unable to find the no results container");
-  }
-
-  return (0,_shared_utilities_isVisible__WEBPACK_IMPORTED_MODULE_3__.isVisible)(noResultsDiv);
 };
 
 /***/ }),
@@ -2201,6 +2033,36 @@ var scrollToFlightCard = function scrollToFlightCard(flightCard) {
     behavior: "smooth"
   });
 };
+
+/***/ }),
+
+/***/ "./src/skiplagged/ui/selectFlightCard.ts":
+/*!***********************************************!*\
+  !*** ./src/skiplagged/ui/selectFlightCard.ts ***!
+  \***********************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "selectFlightCard": () => (/* binding */ selectFlightCard)
+/* harmony export */ });
+/* harmony import */ var _findFlightCard__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./findFlightCard */ "./src/skiplagged/ui/findFlightCard.ts");
+function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
+
+function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
+
+
+var selectFlightCard = /*#__PURE__*/function () {
+  var _ref = _asyncToGenerator(function* (skiplaggedId) {
+    var flightCard = yield (0,_findFlightCard__WEBPACK_IMPORTED_MODULE_0__.findFlightCard)(skiplaggedId);
+    flightCard.click();
+  });
+
+  return function selectFlightCard(_x) {
+    return _ref.apply(this, arguments);
+  };
+}();
 
 /***/ }),
 
@@ -2846,16 +2708,16 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _parser_observer__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./parser/observer */ "./src/skiplagged/parser/observer.ts");
 /* harmony import */ var _ui_clearSelection__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./ui/clearSelection */ "./src/skiplagged/ui/clearSelection.ts");
 /* harmony import */ var _ui_highlightFlightCard__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./ui/highlightFlightCard */ "./src/skiplagged/ui/highlightFlightCard.ts");
-/* harmony import */ var _ui_reloadForDeparture__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./ui/reloadForDeparture */ "./src/skiplagged/ui/reloadForDeparture.ts");
-/* harmony import */ var _ui_scrollThroughContainer__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./ui/scrollThroughContainer */ "./src/skiplagged/ui/scrollThroughContainer.ts");
+/* harmony import */ var _ui_scrollThroughContainer__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./ui/scrollThroughContainer */ "./src/skiplagged/ui/scrollThroughContainer.ts");
+/* harmony import */ var _ui_selectFlightCard__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./ui/selectFlightCard */ "./src/skiplagged/ui/selectFlightCard.ts");
 function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
 
 function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
 
+
 window.Sentry.init({
   dsn: "https://d7f3363dd3774a64ad700b4523bcb789@o407795.ingest.sentry.io/5277451"
 });
-
 
 
 
@@ -2870,80 +2732,45 @@ var returnFlightContainer;
 var returnObserver = null;
 chrome.runtime.onMessage.addListener( /*#__PURE__*/function () {
   var _ref = _asyncToGenerator(function* (message) {
-    var _departureObserver4, _returnObserver2, _departureObserver5, _returnObserver3;
-
-    console.log(message);
+    var _departureObserver, _departureObserver2, _returnObserver, _departureObserver3, _returnObserver2;
 
     switch (message.event) {
       case "BEGIN_PARSING":
-        try {
-          departureObserver = new _parser_observer__WEBPACK_IMPORTED_MODULE_4__.FlightObserver(null);
-          departureFlightContainer = yield attachObserver(departureObserver, false);
+        departureObserver = new _parser_observer__WEBPACK_IMPORTED_MODULE_4__.FlightObserver(null);
+        departureFlightContainer = yield attachObserver(departureObserver, null);
 
-          if (departureFlightContainer) {
-            yield (0,_ui_scrollThroughContainer__WEBPACK_IMPORTED_MODULE_8__.scrollThroughContainer)(departureFlightContainer, "DEPARTURE");
-          }
-
-          (0,_shared_events__WEBPACK_IMPORTED_MODULE_1__.sendScraperComplete)("skiplagged", "DEPARTURE");
-          departureObserver.endObservation();
-        } catch (error) {
-          window.Sentry.captureException(error);
-          (0,_shared_events__WEBPACK_IMPORTED_MODULE_1__.sendFailedScraper)("skiplagged", error, "DEPARTURE");
+        if (departureFlightContainer) {
+          yield (0,_ui_scrollThroughContainer__WEBPACK_IMPORTED_MODULE_7__.scrollThroughContainer)(departureFlightContainer);
         }
 
+        (0,_shared_events__WEBPACK_IMPORTED_MODULE_1__.sendScraperComplete)("skiplagged", "DEPARTURE");
+        departureObserver.endObservation();
         break;
 
       case "GET_RETURN_FLIGHTS":
-        // this will parse the card and reload the page... firing off a message indicating what to do...
-        try {
-          var _departureObserver, _departureObserver2;
+        (_departureObserver = departureObserver) === null || _departureObserver === void 0 ? void 0 : _departureObserver.endObservation();
+        (0,_ui_scrollThroughContainer__WEBPACK_IMPORTED_MODULE_7__.stopScrollingNow)();
+        returnObserver = new _parser_observer__WEBPACK_IMPORTED_MODULE_4__.FlightObserver(message.departure);
+        returnFlightContainer = yield attachObserver(returnObserver, getSkiplaggedDepartureId(departureObserver, message.departure.id));
 
-          (_departureObserver = departureObserver) === null || _departureObserver === void 0 ? void 0 : _departureObserver.endObservation();
-          (0,_ui_scrollThroughContainer__WEBPACK_IMPORTED_MODULE_8__.stopScrollingNow)();
-          yield (0,_ui_reloadForDeparture__WEBPACK_IMPORTED_MODULE_7__.reloadForDeparture)(getSkiplaggedDepartureId(departureObserver, message.departure.id), message.departure, ((_departureObserver2 = departureObserver) === null || _departureObserver2 === void 0 ? void 0 : _departureObserver2.getFlightMap()) || {});
-        } catch (error) {
-          window.Sentry.captureException(error);
-          (0,_shared_events__WEBPACK_IMPORTED_MODULE_1__.sendFailedScraper)("skiplagged", error, "RETURN");
+        if (returnFlightContainer) {
+          yield (0,_ui_scrollThroughContainer__WEBPACK_IMPORTED_MODULE_7__.scrollThroughContainer)(returnFlightContainer);
         }
 
-        break;
-
-      case "BEGIN_PARSING_RETURNS":
-        try {
-          var _departureObserver3, _returnObserver;
-
-          // handling post-reload
-          (_departureObserver3 = departureObserver) === null || _departureObserver3 === void 0 ? void 0 : _departureObserver3.endObservation();
-          (_returnObserver = returnObserver) === null || _returnObserver === void 0 ? void 0 : _returnObserver.endObservation();
-          departureObserver = new _parser_observer__WEBPACK_IMPORTED_MODULE_4__.FlightObserver(null);
-          departureObserver.addNewFlightsToMap(message.departureMap);
-          returnObserver = new _parser_observer__WEBPACK_IMPORTED_MODULE_4__.FlightObserver(message.departure);
-          returnFlightContainer = yield attachObserver(returnObserver, true);
-
-          if (returnFlightContainer) {
-            yield (0,_ui_scrollThroughContainer__WEBPACK_IMPORTED_MODULE_8__.scrollThroughContainer)(returnFlightContainer, "RETURN");
-          }
-
-          (0,_shared_events__WEBPACK_IMPORTED_MODULE_1__.sendScraperComplete)("skiplagged", "RETURN");
-        } catch (error) {
-          console.log(error);
-          window.Sentry.captureException(error);
-          (0,_shared_events__WEBPACK_IMPORTED_MODULE_1__.sendFailedScraper)("skiplagged", error, "RETURN");
-        }
-
+        (0,_shared_events__WEBPACK_IMPORTED_MODULE_1__.sendScraperComplete)("skiplagged", "RETURN");
         break;
 
       case "HIGHLIGHT_FLIGHT":
-        (0,_ui_scrollThroughContainer__WEBPACK_IMPORTED_MODULE_8__.stopScrollingNow)("Highlight flight");
-        (_departureObserver4 = departureObserver) === null || _departureObserver4 === void 0 ? void 0 : _departureObserver4.endObservation();
-        (_returnObserver2 = returnObserver) === null || _returnObserver2 === void 0 ? void 0 : _returnObserver2.endObservation();
+        (0,_ui_scrollThroughContainer__WEBPACK_IMPORTED_MODULE_7__.stopScrollingNow)();
+        (_departureObserver2 = departureObserver) === null || _departureObserver2 === void 0 ? void 0 : _departureObserver2.endObservation();
+        (_returnObserver = returnObserver) === null || _returnObserver === void 0 ? void 0 : _returnObserver.endObservation();
         yield highlightFlight(message.selectedDepartureId, departureObserver, message.selectedReturnId, returnObserver);
         break;
 
       case "CLEAR_SELECTION":
-        (_departureObserver5 = departureObserver) === null || _departureObserver5 === void 0 ? void 0 : _departureObserver5.endObservation();
-        (_returnObserver3 = returnObserver) === null || _returnObserver3 === void 0 ? void 0 : _returnObserver3.endObservation();
-        (0,_ui_scrollThroughContainer__WEBPACK_IMPORTED_MODULE_8__.stopScrollingNow)("Clear selection(s)");
+        (_departureObserver3 = departureObserver) === null || _departureObserver3 === void 0 ? void 0 : _departureObserver3.endObservation();
+        (_returnObserver2 = returnObserver) === null || _returnObserver2 === void 0 ? void 0 : _returnObserver2.endObservation();
+        (0,_ui_scrollThroughContainer__WEBPACK_IMPORTED_MODULE_7__.stopScrollingNow)();
         yield (0,_ui_clearSelection__WEBPACK_IMPORTED_MODULE_5__.clearSelection)();
         chrome.runtime.sendMessage({
           event: "PROVIDER_READY",
@@ -2962,10 +2789,21 @@ chrome.runtime.onMessage.addListener( /*#__PURE__*/function () {
 }());
 
 var attachObserver = /*#__PURE__*/function () {
-  var _ref2 = _asyncToGenerator(function* (observer, returnFlight) {
-    var flightContainer = yield (0,_parser_getFlightContainer__WEBPACK_IMPORTED_MODULE_3__.getFlightContainer)(returnFlight);
-    observer.beginObservation(flightContainer);
-    return flightContainer;
+  var _ref2 = _asyncToGenerator(function* (observer, skiplaggedFlightId) {
+    try {
+      if (skiplaggedFlightId) {
+        yield (0,_ui_selectFlightCard__WEBPACK_IMPORTED_MODULE_8__.selectFlightCard)(skiplaggedFlightId);
+      }
+
+      var flightContainer = yield (0,_parser_getFlightContainer__WEBPACK_IMPORTED_MODULE_3__.getFlightContainer)(!!skiplaggedFlightId);
+      observer.beginObservation(flightContainer);
+      return flightContainer;
+    } catch (error) {
+      window.Sentry.captureException(error);
+      var flightType = skiplaggedFlightId ? "RETURN" : "DEPARTURE";
+      (0,_shared_events__WEBPACK_IMPORTED_MODULE_1__.sendFailedScraper)("skiplagged", error, flightType);
+      return null;
+    }
   });
 
   return function attachObserver(_x2, _x3) {
