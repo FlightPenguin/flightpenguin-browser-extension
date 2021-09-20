@@ -50,7 +50,10 @@ export const sendFlights = async (
 
 const shouldSkipCard = (flightCard: HTMLElement) => {
   const denyListTerms = ["bargain fare", "special fare", "after booking"];
-  return denyListTerms.some((term) => flightCard.textContent?.includes(term));
+  return (
+    Array.from(flightCard.classList).includes("skip-trip") ||
+    denyListTerms.some((term) => flightCard.textContent?.includes(term))
+  );
 };
 
 const shouldSkipFlight = (flightPenguinId: string, skiplaggedShortId: string, map: FlightMap) => {

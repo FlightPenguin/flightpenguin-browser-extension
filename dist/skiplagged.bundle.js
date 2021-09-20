@@ -1694,7 +1694,7 @@ var sendFlights = /*#__PURE__*/function () {
 
 var shouldSkipCard = function shouldSkipCard(flightCard) {
   var denyListTerms = ["bargain fare", "special fare", "after booking"];
-  return denyListTerms.some(function (term) {
+  return Array.from(flightCard.classList).includes("skip-trip") || denyListTerms.some(function (term) {
     var _flightCard$textConte;
 
     return (_flightCard$textConte = flightCard.textContent) === null || _flightCard$textConte === void 0 ? void 0 : _flightCard$textConte.includes(term);
