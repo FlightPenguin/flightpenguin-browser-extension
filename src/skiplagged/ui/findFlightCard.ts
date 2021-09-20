@@ -6,7 +6,7 @@ import { scrollToFlightCard } from "./scrollToFlightCard";
 const FLIGHT_CARD_SELECTOR = "div[class='trip']";
 
 export const findFlightCard = async (skiplaggedFlightId: string): Promise<HTMLElement> => {
-  stopScrollingNow("Searching for flight card");
+  await stopScrollingNow("Searching for flight card");
   await pause(300);
   window.scrollTo({ top: 0, behavior: "smooth" });
   await pause(2000);

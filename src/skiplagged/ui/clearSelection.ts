@@ -1,7 +1,9 @@
 import { MissingElementLookupError } from "../../shared/errors";
 import { pause } from "../../shared/pause";
 import { isVisible } from "../../shared/utilities/isVisible";
+import { waitForDisappearance, waitForInvisible } from "../../shared/utilities/waitFor";
 import { clearExistingSelections } from "./highlightFlightCard";
+import { removeScrollingCheck } from "./scrollThroughContainer";
 
 const RETURN_HEADER_SELECTOR = ".trip-return-header";
 const SELECTED_FLIGHT_CARD_SELECTOR = ".selected-trip";
@@ -16,6 +18,8 @@ export const clearSelection = async (): Promise<void> => {
   flightCard.click();
 
   await waitForLoad();
+  await removeScrollingCheck(null);
+
   window.scrollTo({ top: 0, behavior: "smooth" });
 };
 
@@ -38,6 +42,5 @@ const getSelectedFlightCard = (): HTMLElement => {
 };
 
 const waitForLoad = async () => {
-  // not much in the way of appearance/disappearance...
-  await pause(500);
+  await waitForInvisible(5000, SELECTED_FLIGHT_CARD_SELECTOR);
 };

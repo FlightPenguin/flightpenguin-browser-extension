@@ -842,13 +842,16 @@ var isVisible = function isVisible(element) {
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "waitForDisappearance": () => (/* binding */ waitForDisappearance),
-/* harmony export */   "waitForAppearance": () => (/* binding */ waitForAppearance)
+/* harmony export */   "waitForAppearance": () => (/* binding */ waitForAppearance),
+/* harmony export */   "waitForInvisible": () => (/* binding */ waitForInvisible)
 /* harmony export */ });
 /* harmony import */ var wait_for_the_element__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! wait-for-the-element */ "./node_modules/wait-for-the-element/wait-for-the-element.js");
 /* harmony import */ var _errors__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../errors */ "./src/shared/errors.ts");
+/* harmony import */ var _isVisible__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./isVisible */ "./src/shared/utilities/isVisible.ts");
 function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
 
 function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
+
 
 
 
@@ -859,6 +862,7 @@ var waitForDisappearance = /*#__PURE__*/function () {
     if (doc.querySelector(selector)) {
       var loadingIndicator = yield (0,wait_for_the_element__WEBPACK_IMPORTED_MODULE_0__.waitForTheElementToDisappear)(selector, {
         timeout: loadingTimeout,
+        // @ts-ignore
         scope: doc
       });
 
@@ -895,6 +899,33 @@ var waitForAppearance = /*#__PURE__*/function () {
 
   return function waitForAppearance() {
     return _ref2.apply(this, arguments);
+  };
+}();
+var waitForInvisible = /*#__PURE__*/function () {
+  var _ref3 = _asyncToGenerator(function* () {
+    var disappearanceTimeout = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 5000;
+    var selector = arguments.length > 1 ? arguments[1] : undefined;
+    var doc = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : window.document;
+    var visible = true;
+    var startTime = new Date();
+
+    while (visible && startTime.valueOf() - new Date().valueOf() < disappearanceTimeout) {
+      var selectedElement = doc.querySelector(selector);
+
+      if (!selectedElement) {
+        visible = false;
+      }
+
+      visible = (0,_isVisible__WEBPACK_IMPORTED_MODULE_2__.isVisible)(selectedElement);
+    }
+
+    if (visible) {
+      throw new _errors__WEBPACK_IMPORTED_MODULE_1__.LoadingTimeoutParserError("Took longer than ".concat(disappearanceTimeout, " to make ").concat(selector, " disappear"));
+    }
+  });
+
+  return function waitForInvisible() {
+    return _ref3.apply(this, arguments);
   };
 }();
 
@@ -1718,12 +1749,14 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "clearSelection": () => (/* binding */ clearSelection)
 /* harmony export */ });
 /* harmony import */ var _shared_errors__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../shared/errors */ "./src/shared/errors.ts");
-/* harmony import */ var _shared_pause__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../shared/pause */ "./src/shared/pause.ts");
-/* harmony import */ var _shared_utilities_isVisible__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../shared/utilities/isVisible */ "./src/shared/utilities/isVisible.ts");
+/* harmony import */ var _shared_utilities_isVisible__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../shared/utilities/isVisible */ "./src/shared/utilities/isVisible.ts");
+/* harmony import */ var _shared_utilities_waitFor__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../shared/utilities/waitFor */ "./src/shared/utilities/waitFor.ts");
 /* harmony import */ var _highlightFlightCard__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./highlightFlightCard */ "./src/skiplagged/ui/highlightFlightCard.ts");
+/* harmony import */ var _scrollThroughContainer__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./scrollThroughContainer */ "./src/skiplagged/ui/scrollThroughContainer.ts");
 function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
 
 function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
+
 
 
 
@@ -1742,6 +1775,7 @@ var clearSelection = /*#__PURE__*/function () {
     var flightCard = getSelectedFlightCard();
     flightCard.click();
     yield waitForLoad();
+    yield (0,_scrollThroughContainer__WEBPACK_IMPORTED_MODULE_4__.removeScrollingCheck)(null);
     window.scrollTo({
       top: 0,
       behavior: "smooth"
@@ -1760,7 +1794,7 @@ var isSelectingReturnFlight = function isSelectingReturnFlight() {
     throw new _shared_errors__WEBPACK_IMPORTED_MODULE_0__.MissingElementLookupError("Unable to locate return header");
   }
 
-  return (0,_shared_utilities_isVisible__WEBPACK_IMPORTED_MODULE_2__.isVisible)(returnHeader);
+  return (0,_shared_utilities_isVisible__WEBPACK_IMPORTED_MODULE_1__.isVisible)(returnHeader);
 };
 
 var getSelectedFlightCard = function getSelectedFlightCard() {
@@ -1775,8 +1809,7 @@ var getSelectedFlightCard = function getSelectedFlightCard() {
 
 var waitForLoad = /*#__PURE__*/function () {
   var _ref2 = _asyncToGenerator(function* () {
-    // not much in the way of appearance/disappearance...
-    yield (0,_shared_pause__WEBPACK_IMPORTED_MODULE_1__.pause)(500);
+    yield (0,_shared_utilities_waitFor__WEBPACK_IMPORTED_MODULE_2__.waitForInvisible)(5000, SELECTED_FLIGHT_CARD_SELECTOR);
   });
 
   return function waitForLoad() {
@@ -1812,7 +1845,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 var FLIGHT_CARD_SELECTOR = "div[class='trip']";
 var findFlightCard = /*#__PURE__*/function () {
   var _ref = _asyncToGenerator(function* (skiplaggedFlightId) {
-    (0,_scrollThroughContainer__WEBPACK_IMPORTED_MODULE_2__.stopScrollingNow)("Searching for flight card");
+    yield (0,_scrollThroughContainer__WEBPACK_IMPORTED_MODULE_2__.stopScrollingNow)("Searching for flight card");
     yield (0,_shared_pause__WEBPACK_IMPORTED_MODULE_1__.pause)(300);
     window.scrollTo({
       top: 0,
@@ -1934,7 +1967,7 @@ var scrollThroughContainer = /*#__PURE__*/function () {
     var startTime = new Date().getTime();
 
     while (getTimeSinceStart(startTime) < 60000) {
-      if (stopScrollingCheck(true)) {
+      if (yield stopScrollingCheck(true)) {
         break;
       }
 
@@ -1959,7 +1992,7 @@ var progressiveScrollingOnce = /*#__PURE__*/function () {
     var batchLastFlightCard = null;
 
     while (lastFlightCard !== batchLastFlightCard) {
-      if (stopScrollingCheck(false)) {
+      if (yield stopScrollingCheck(false)) {
         break;
       }
 
@@ -1967,7 +2000,7 @@ var progressiveScrollingOnce = /*#__PURE__*/function () {
       batchLastFlightCard = Array.from(flightCards).slice(-1)[0];
       (0,_scrollToFlightCard__WEBPACK_IMPORTED_MODULE_2__.scrollToFlightCard)(batchLastFlightCard);
 
-      if (stopScrollingCheck(false)) {
+      if (yield stopScrollingCheck(false)) {
         break;
       }
 
@@ -1986,29 +2019,48 @@ var getTimeSinceStart = function getTimeSinceStart(startTime) {
   return currentTime - startTime;
 };
 
-var stopScrollingCheck = function stopScrollingCheck(remove) {
-  var div = document.querySelector(STOP_SCROLLING_SELECTOR);
-  var stopScrolling = !!div;
+var stopScrollingCheck = /*#__PURE__*/function () {
+  var _ref3 = _asyncToGenerator(function* (remove) {
+    var div = document.querySelector(STOP_SCROLLING_SELECTOR);
+    var stopScrolling = !!div;
 
-  if (stopScrolling && remove) {
-    removeScrollingCheck(div);
-  }
+    if (stopScrolling) {
+      console.debug("Stopping scrolling due to ".concat(div.dataset.reason));
+    }
 
-  return stopScrolling;
-};
+    if (stopScrolling && remove) {
+      yield removeScrollingCheck(div);
+    }
 
-var stopScrollingNow = function stopScrollingNow() {
+    return stopScrolling;
+  });
+
+  return function stopScrollingCheck(_x3) {
+    return _ref3.apply(this, arguments);
+  };
+}();
+
+var stopScrollingNow = function stopScrollingNow(reason) {
   var div = document.createElement("div");
   div.id = STOP_SCROLLING_ID;
+  div.dataset.reason = reason;
   document.body.appendChild(div);
 };
-var removeScrollingCheck = function removeScrollingCheck(div) {
-  var element = div ? div : document.querySelector(STOP_SCROLLING_SELECTOR);
+var removeScrollingCheck = /*#__PURE__*/function () {
+  var _ref4 = _asyncToGenerator(function* (div) {
+    var element = div ? div : document.querySelector(STOP_SCROLLING_SELECTOR);
 
-  if (element) {
-    element.remove();
-  }
-};
+    if (element) {
+      element.remove();
+    }
+
+    yield (0,_shared_utilities_waitFor__WEBPACK_IMPORTED_MODULE_1__.waitForDisappearance)(5000, STOP_SCROLLING_SELECTOR);
+  });
+
+  return function removeScrollingCheck(_x4) {
+    return _ref4.apply(this, arguments);
+  };
+}();
 var getLastFlightCard = function getLastFlightCard(container) {
   return Array.from(container.querySelectorAll(FLIGHT_CARD_SELECTOR)).slice(-1)[0];
 };
@@ -2732,51 +2784,83 @@ var returnFlightContainer;
 var returnObserver = null;
 chrome.runtime.onMessage.addListener( /*#__PURE__*/function () {
   var _ref = _asyncToGenerator(function* (message) {
-    var _departureObserver, _departureObserver2, _returnObserver, _departureObserver3, _returnObserver2;
+    console.debug(message);
 
     switch (message.event) {
       case "BEGIN_PARSING":
-        departureObserver = new _parser_observer__WEBPACK_IMPORTED_MODULE_4__.FlightObserver(null);
-        departureFlightContainer = yield attachObserver(departureObserver, false);
+        try {
+          departureObserver = new _parser_observer__WEBPACK_IMPORTED_MODULE_4__.FlightObserver(null);
+          departureFlightContainer = yield attachObserver(departureObserver, false);
 
-        if (departureFlightContainer) {
-          yield (0,_ui_scrollThroughContainer__WEBPACK_IMPORTED_MODULE_7__.scrollThroughContainer)(departureFlightContainer);
+          if (departureFlightContainer) {
+            yield (0,_ui_scrollThroughContainer__WEBPACK_IMPORTED_MODULE_7__.scrollThroughContainer)(departureFlightContainer);
+          }
+
+          (0,_shared_events__WEBPACK_IMPORTED_MODULE_1__.sendScraperComplete)("skiplagged", "DEPARTURE");
+          departureObserver.endObservation();
+        } catch (error) {
+          console.error(error);
+          window.Sentry.captureException(error);
+          (0,_shared_events__WEBPACK_IMPORTED_MODULE_1__.sendFailedScraper)("skiplagged", error, "DEPARTURE");
         }
 
-        (0,_shared_events__WEBPACK_IMPORTED_MODULE_1__.sendScraperComplete)("skiplagged", "DEPARTURE");
-        departureObserver.endObservation();
         break;
 
       case "GET_RETURN_FLIGHTS":
-        (_departureObserver = departureObserver) === null || _departureObserver === void 0 ? void 0 : _departureObserver.endObservation();
-        (0,_ui_scrollThroughContainer__WEBPACK_IMPORTED_MODULE_7__.stopScrollingNow)();
-        returnObserver = new _parser_observer__WEBPACK_IMPORTED_MODULE_4__.FlightObserver(message.departure);
-        returnFlightContainer = yield attachObserver(returnObserver, true);
-        yield (0,_ui_selectFlightCard__WEBPACK_IMPORTED_MODULE_8__.selectFlightCard)(getSkiplaggedDepartureId(departureObserver, message.departure.id));
+        try {
+          var _departureObserver;
 
-        if (returnFlightContainer) {
-          yield (0,_ui_scrollThroughContainer__WEBPACK_IMPORTED_MODULE_7__.scrollThroughContainer)(returnFlightContainer);
+          (_departureObserver = departureObserver) === null || _departureObserver === void 0 ? void 0 : _departureObserver.endObservation();
+          yield (0,_ui_scrollThroughContainer__WEBPACK_IMPORTED_MODULE_7__.stopScrollingNow)("Return flight selected");
+          returnObserver = new _parser_observer__WEBPACK_IMPORTED_MODULE_4__.FlightObserver(message.departure);
+          returnFlightContainer = yield attachObserver(returnObserver, true);
+          yield (0,_ui_selectFlightCard__WEBPACK_IMPORTED_MODULE_8__.selectFlightCard)(getSkiplaggedDepartureId(departureObserver, message.departure.id));
+
+          if (returnFlightContainer) {
+            yield (0,_ui_scrollThroughContainer__WEBPACK_IMPORTED_MODULE_7__.scrollThroughContainer)(returnFlightContainer);
+          }
+
+          (0,_shared_events__WEBPACK_IMPORTED_MODULE_1__.sendScraperComplete)("skiplagged", "RETURN");
+        } catch (error) {
+          console.error(error);
+          window.Sentry.captureException(error);
+          (0,_shared_events__WEBPACK_IMPORTED_MODULE_1__.sendFailedScraper)("skiplagged", error, "RETURN");
         }
 
-        (0,_shared_events__WEBPACK_IMPORTED_MODULE_1__.sendScraperComplete)("skiplagged", "RETURN");
         break;
 
       case "HIGHLIGHT_FLIGHT":
-        (0,_ui_scrollThroughContainer__WEBPACK_IMPORTED_MODULE_7__.stopScrollingNow)();
-        (_departureObserver2 = departureObserver) === null || _departureObserver2 === void 0 ? void 0 : _departureObserver2.endObservation();
-        (_returnObserver = returnObserver) === null || _returnObserver === void 0 ? void 0 : _returnObserver.endObservation();
-        yield highlightFlight(message.selectedDepartureId, departureObserver, message.selectedReturnId, returnObserver);
+        try {
+          var _departureObserver2, _returnObserver;
+
+          yield (0,_ui_scrollThroughContainer__WEBPACK_IMPORTED_MODULE_7__.stopScrollingNow)("Flight selection");
+          (_departureObserver2 = departureObserver) === null || _departureObserver2 === void 0 ? void 0 : _departureObserver2.endObservation();
+          (_returnObserver = returnObserver) === null || _returnObserver === void 0 ? void 0 : _returnObserver.endObservation();
+          yield highlightFlight(message.selectedDepartureId, departureObserver, message.selectedReturnId, returnObserver);
+        } catch (error) {
+          console.error(error);
+          window.Sentry.captureException(error);
+        }
+
         break;
 
       case "CLEAR_SELECTION":
-        (_departureObserver3 = departureObserver) === null || _departureObserver3 === void 0 ? void 0 : _departureObserver3.endObservation();
-        (_returnObserver2 = returnObserver) === null || _returnObserver2 === void 0 ? void 0 : _returnObserver2.endObservation();
-        (0,_ui_scrollThroughContainer__WEBPACK_IMPORTED_MODULE_7__.stopScrollingNow)();
-        yield (0,_ui_clearSelection__WEBPACK_IMPORTED_MODULE_5__.clearSelection)();
-        chrome.runtime.sendMessage({
-          event: "PROVIDER_READY",
-          provider: "skiplagged"
-        });
+        try {
+          var _departureObserver3, _returnObserver2;
+
+          (_departureObserver3 = departureObserver) === null || _departureObserver3 === void 0 ? void 0 : _departureObserver3.endObservation();
+          (_returnObserver2 = returnObserver) === null || _returnObserver2 === void 0 ? void 0 : _returnObserver2.endObservation();
+          yield (0,_ui_scrollThroughContainer__WEBPACK_IMPORTED_MODULE_7__.stopScrollingNow)("Clear selection");
+          yield (0,_ui_clearSelection__WEBPACK_IMPORTED_MODULE_5__.clearSelection)();
+          chrome.runtime.sendMessage({
+            event: "PROVIDER_READY",
+            provider: "skiplagged"
+          });
+        } catch (error) {
+          console.error(error);
+          window.Sentry.captureException(error);
+        }
+
         break;
 
       default:
@@ -2791,16 +2875,9 @@ chrome.runtime.onMessage.addListener( /*#__PURE__*/function () {
 
 var attachObserver = /*#__PURE__*/function () {
   var _ref2 = _asyncToGenerator(function* (observer, selectedFlight) {
-    try {
-      var flightContainer = yield (0,_parser_getFlightContainer__WEBPACK_IMPORTED_MODULE_3__.getFlightContainer)(!!selectedFlight);
-      observer.beginObservation(flightContainer);
-      return flightContainer;
-    } catch (error) {
-      window.Sentry.captureException(error);
-      var flightType = selectedFlight ? "RETURN" : "DEPARTURE";
-      (0,_shared_events__WEBPACK_IMPORTED_MODULE_1__.sendFailedScraper)("skiplagged", error, flightType);
-      return null;
-    }
+    var flightContainer = yield (0,_parser_getFlightContainer__WEBPACK_IMPORTED_MODULE_3__.getFlightContainer)(!!selectedFlight);
+    observer.beginObservation(flightContainer);
+    return flightContainer;
   });
 
   return function attachObserver(_x2, _x3) {
@@ -2811,24 +2888,17 @@ var attachObserver = /*#__PURE__*/function () {
 var highlightFlight = /*#__PURE__*/function () {
   var _ref3 = _asyncToGenerator(function* (flightPenguinDepartureId, departureObserver, flightPenguinReturnId, returnObserver) {
     (0,_shared_ui_backToSearch__WEBPACK_IMPORTED_MODULE_2__.addBackToSearchButton)();
+    var flightId;
 
-    try {
-      var flightId;
-
-      if (flightPenguinReturnId) {
-        flightId = returnObserver === null || returnObserver === void 0 ? void 0 : returnObserver.getSkiplaggedId(flightPenguinReturnId);
-      } else if (flightPenguinDepartureId) {
-        flightId = departureObserver === null || departureObserver === void 0 ? void 0 : departureObserver.getSkiplaggedId(flightPenguinDepartureId);
-      } else {
-        throw new _shared_errors__WEBPACK_IMPORTED_MODULE_0__.ParserError("highlighting without a flight...");
-      }
-
-      yield (0,_ui_highlightFlightCard__WEBPACK_IMPORTED_MODULE_6__.highlightFlightCard)(flightId || "");
-    } catch (error) {
-      window.Sentry.captureException(error);
-      var flightType = flightPenguinReturnId ? "RETURN" : "DEPARTURE";
-      (0,_shared_events__WEBPACK_IMPORTED_MODULE_1__.sendFailedScraper)("skiplagged", error, flightType);
+    if (flightPenguinReturnId) {
+      flightId = returnObserver === null || returnObserver === void 0 ? void 0 : returnObserver.getSkiplaggedId(flightPenguinReturnId);
+    } else if (flightPenguinDepartureId) {
+      flightId = departureObserver === null || departureObserver === void 0 ? void 0 : departureObserver.getSkiplaggedId(flightPenguinDepartureId);
+    } else {
+      throw new _shared_errors__WEBPACK_IMPORTED_MODULE_0__.ParserError("highlighting without a flight...");
     }
+
+    yield (0,_ui_highlightFlightCard__WEBPACK_IMPORTED_MODULE_6__.highlightFlightCard)(flightId || "");
   });
 
   return function highlightFlight(_x4, _x5, _x6, _x7) {

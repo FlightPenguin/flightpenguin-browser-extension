@@ -803,6 +803,23 @@ var findMatchingDOMNode = function findMatchingDOMNode(list, id) {
 
 /***/ }),
 
+/***/ "./src/shared/utilities/isVisible.ts":
+/*!*******************************************!*\
+  !*** ./src/shared/utilities/isVisible.ts ***!
+  \*******************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "isVisible": () => (/* binding */ isVisible)
+/* harmony export */ });
+var isVisible = function isVisible(element) {
+  return element.offsetWidth > 0 && element.offsetHeight > 0;
+};
+
+/***/ }),
+
 /***/ "./src/shared/utilities/waitFor.ts":
 /*!*****************************************!*\
   !*** ./src/shared/utilities/waitFor.ts ***!
@@ -813,13 +830,16 @@ var findMatchingDOMNode = function findMatchingDOMNode(list, id) {
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "waitForDisappearance": () => (/* binding */ waitForDisappearance),
-/* harmony export */   "waitForAppearance": () => (/* binding */ waitForAppearance)
+/* harmony export */   "waitForAppearance": () => (/* binding */ waitForAppearance),
+/* harmony export */   "waitForInvisible": () => (/* binding */ waitForInvisible)
 /* harmony export */ });
 /* harmony import */ var wait_for_the_element__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! wait-for-the-element */ "./node_modules/wait-for-the-element/wait-for-the-element.js");
 /* harmony import */ var _errors__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../errors */ "./src/shared/errors.ts");
+/* harmony import */ var _isVisible__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./isVisible */ "./src/shared/utilities/isVisible.ts");
 function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
 
 function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
+
 
 
 
@@ -830,6 +850,7 @@ var waitForDisappearance = /*#__PURE__*/function () {
     if (doc.querySelector(selector)) {
       var loadingIndicator = yield (0,wait_for_the_element__WEBPACK_IMPORTED_MODULE_0__.waitForTheElementToDisappear)(selector, {
         timeout: loadingTimeout,
+        // @ts-ignore
         scope: doc
       });
 
@@ -866,6 +887,33 @@ var waitForAppearance = /*#__PURE__*/function () {
 
   return function waitForAppearance() {
     return _ref2.apply(this, arguments);
+  };
+}();
+var waitForInvisible = /*#__PURE__*/function () {
+  var _ref3 = _asyncToGenerator(function* () {
+    var disappearanceTimeout = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 5000;
+    var selector = arguments.length > 1 ? arguments[1] : undefined;
+    var doc = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : window.document;
+    var visible = true;
+    var startTime = new Date();
+
+    while (visible && startTime.valueOf() - new Date().valueOf() < disappearanceTimeout) {
+      var selectedElement = doc.querySelector(selector);
+
+      if (!selectedElement) {
+        visible = false;
+      }
+
+      visible = (0,_isVisible__WEBPACK_IMPORTED_MODULE_2__.isVisible)(selectedElement);
+    }
+
+    if (visible) {
+      throw new _errors__WEBPACK_IMPORTED_MODULE_1__.LoadingTimeoutParserError("Took longer than ".concat(disappearanceTimeout, " to make ").concat(selector, " disappear"));
+    }
+  });
+
+  return function waitForInvisible() {
+    return _ref3.apply(this, arguments);
   };
 }();
 

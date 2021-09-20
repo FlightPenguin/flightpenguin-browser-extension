@@ -14,7 +14,7 @@ export const scrollThroughContainer = async (container: HTMLElement): Promise<vo
 
   const startTime = new Date().getTime();
   while (getTimeSinceStart(startTime) < 60000) {
-    if (stopScrollingCheck(true)) {
+    if (await stopScrollingCheck(true)) {
       break;
     }
     await progressiveScrollingOnce(container);
@@ -29,13 +29,13 @@ const progressiveScrollingOnce = async (flightContainer: HTMLElement): Promise<v
   let lastFlightCard = getLastFlightCard(flightContainer);
   let batchLastFlightCard = null;
   while (lastFlightCard !== batchLastFlightCard) {
-    if (stopScrollingCheck(false)) {
+    if (await stopScrollingCheck(false)) {
       break;
     }
     const flightCards = flightContainer.querySelectorAll(FLIGHT_CARD_SELECTOR) as NodeListOf<HTMLElement>;
     batchLastFlightCard = Array.from(flightCards).slice(-1)[0];
     scrollToFlightCard(batchLastFlightCard);
-    if (stopScrollingCheck(false)) {
+    if (await stopScrollingCheck(false)) {
       break;
     }
     await pause(300, 50, 100);
@@ -48,26 +48,33 @@ const getTimeSinceStart = (startTime: number) => {
   return currentTime - startTime;
 };
 
-const stopScrollingCheck = (remove: boolean): boolean => {
+const stopScrollingCheck = async (remove: boolean): Promise<boolean> => {
   const div = document.querySelector(STOP_SCROLLING_SELECTOR) as HTMLDivElement;
   const stopScrolling = !!div;
+
+  if (stopScrolling) {
+    console.debug(`Stopping scrolling due to ${div.dataset.reason}`);
+  }
+
   if (stopScrolling && remove) {
-    removeScrollingCheck(div);
+    await removeScrollingCheck(div);
   }
   return stopScrolling;
 };
 
-export const stopScrollingNow = (): void => {
+export const stopScrollingNow = (reason: string): void => {
   const div = document.createElement("div");
   div.id = STOP_SCROLLING_ID;
+  div.dataset.reason = reason;
   document.body.appendChild(div);
 };
 
-export const removeScrollingCheck = (div: HTMLElement | null): void => {
+export const removeScrollingCheck = async (div: HTMLElement | null): Promise<void> => {
   const element = div ? div : (document.querySelector(STOP_SCROLLING_SELECTOR) as HTMLDivElement);
   if (element) {
     element.remove();
   }
+  await waitForDisappearance(5000, STOP_SCROLLING_SELECTOR);
 };
 
 export const getLastFlightCard = (container: HTMLElement | Document): HTMLElement => {
