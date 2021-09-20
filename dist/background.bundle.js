@@ -1106,9 +1106,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "handleIndexUnloaded": () => (/* reexport safe */ _indexUnloaded__WEBPACK_IMPORTED_MODULE_8__.handleIndexUnloaded),
 /* harmony export */   "handleNoFlightsFound": () => (/* reexport safe */ _noFlightsFound__WEBPACK_IMPORTED_MODULE_9__.handleNoFlightsFound),
 /* harmony export */   "handleProviderReady": () => (/* reexport safe */ _providerReady__WEBPACK_IMPORTED_MODULE_10__.handleProviderReady),
-/* harmony export */   "handleReloadOnDepartureSelected": () => (/* reexport safe */ _reloadOnDepartureSelected__WEBPACK_IMPORTED_MODULE_11__.handleReloadOnDepartureSelected),
-/* harmony export */   "handleScraperFailed": () => (/* reexport safe */ _scraperFailed__WEBPACK_IMPORTED_MODULE_12__.handleScraperFailed),
-/* harmony export */   "handleScraperSuccess": () => (/* reexport safe */ _scraperSuccess__WEBPACK_IMPORTED_MODULE_13__.handleScraperSuccess)
+/* harmony export */   "handleScraperFailed": () => (/* reexport safe */ _scraperFailed__WEBPACK_IMPORTED_MODULE_11__.handleScraperFailed),
+/* harmony export */   "handleScraperSuccess": () => (/* reexport safe */ _scraperSuccess__WEBPACK_IMPORTED_MODULE_12__.handleScraperSuccess)
 /* harmony export */ });
 /* harmony import */ var _clearSelections__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./clearSelections */ "./src/background/eventHandlers/clearSelections.ts");
 /* harmony import */ var _departureSelected__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./departureSelected */ "./src/background/eventHandlers/departureSelected.ts");
@@ -1121,10 +1120,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _indexUnloaded__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./indexUnloaded */ "./src/background/eventHandlers/indexUnloaded.ts");
 /* harmony import */ var _noFlightsFound__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./noFlightsFound */ "./src/background/eventHandlers/noFlightsFound.ts");
 /* harmony import */ var _providerReady__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ./providerReady */ "./src/background/eventHandlers/providerReady.ts");
-/* harmony import */ var _reloadOnDepartureSelected__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ./reloadOnDepartureSelected */ "./src/background/eventHandlers/reloadOnDepartureSelected.ts");
-/* harmony import */ var _scraperFailed__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! ./scraperFailed */ "./src/background/eventHandlers/scraperFailed.ts");
-/* harmony import */ var _scraperSuccess__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! ./scraperSuccess */ "./src/background/eventHandlers/scraperSuccess.ts");
-
+/* harmony import */ var _scraperFailed__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ./scraperFailed */ "./src/background/eventHandlers/scraperFailed.ts");
+/* harmony import */ var _scraperSuccess__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! ./scraperSuccess */ "./src/background/eventHandlers/scraperSuccess.ts");
 
 
 
@@ -1202,40 +1199,6 @@ var handleProviderReady = function handleProviderReady(providerManager, provider
   var onReadyFunction = providerManager.getOnReady(providerName);
   onReadyFunction();
   providerManager.setOnReady(providerName, _constants__WEBPACK_IMPORTED_MODULE_0__.DEFAULT_ON_READY_FUNCTION);
-};
-
-/***/ }),
-
-/***/ "./src/background/eventHandlers/reloadOnDepartureSelected.ts":
-/*!*******************************************************************!*\
-  !*** ./src/background/eventHandlers/reloadOnDepartureSelected.ts ***!
-  \*******************************************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "handleReloadOnDepartureSelected": () => (/* binding */ handleReloadOnDepartureSelected)
-/* harmony export */ });
-var handleReloadOnDepartureSelected = function handleReloadOnDepartureSelected(providerManager, providerName, targetUrl, departure, departureMap) {
-  var targetTabId = providerManager.getTabId(providerName);
-
-  if (!targetTabId) {
-    throw new Error("Unable to extract tab for ".concat(providerName));
-  }
-
-  var windowConfig = {
-    height: window.outerHeight,
-    width: window.outerWidth,
-    left: window.screenX,
-    top: window.screenY
-  };
-  providerManager.closeWindow(providerName);
-  providerManager.createWindow(targetUrl, providerName, windowConfig, {
-    event: "BEGIN_PARSING_RETURNS",
-    departure: departure,
-    departureMap: departureMap
-  });
 };
 
 /***/ }),
@@ -3132,10 +3095,6 @@ chrome.runtime.onMessage.addListener(function (message, sender, reply) {
 
     case "INDEX_UNLOAD":
       (0,_background_eventHandlers__WEBPACK_IMPORTED_MODULE_0__.handleIndexUnloaded)(providerManager);
-      break;
-
-    case "RELOAD_SELECTED_DEPARTURE":
-      (0,_background_eventHandlers__WEBPACK_IMPORTED_MODULE_0__.handleReloadOnDepartureSelected)(providerManager, message.providerName, message.targetUrl, message.departure, message.departureMap);
       break;
 
     default:

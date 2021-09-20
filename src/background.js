@@ -16,7 +16,6 @@ import {
   handleIndexUnloaded,
   handleNoFlightsFound,
   handleProviderReady,
-  handleReloadOnDepartureSelected,
   handleScraperFailed,
   handleScraperSuccess,
 } from "./background/eventHandlers";
@@ -70,15 +69,6 @@ chrome.runtime.onMessage.addListener(function (message, sender, reply) {
       break;
     case "INDEX_UNLOAD":
       handleIndexUnloaded(providerManager);
-      break;
-    case "RELOAD_SELECTED_DEPARTURE":
-      handleReloadOnDepartureSelected(
-        providerManager,
-        message.providerName,
-        message.targetUrl,
-        message.departure,
-        message.departureMap,
-      );
       break;
     default:
       window.Sentry.captureException(new Error(message));
