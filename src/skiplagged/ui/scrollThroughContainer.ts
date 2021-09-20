@@ -18,13 +18,13 @@ export const scrollThroughContainer = async (container: HTMLElement): Promise<vo
       break;
     }
     await progressiveScrollingOnce(container);
-    await pause(300, 100, 200);
+    await pause(500);
   }
 };
 
 const progressiveScrollingOnce = async (flightContainer: HTMLElement): Promise<void> => {
   window.scrollTo({ top: 0, behavior: "smooth" });
-  await pause(1000, 100, 200);
+  await pause(1250);
 
   let lastFlightCard = getLastFlightCard(flightContainer);
   let batchLastFlightCard = null;
@@ -38,7 +38,7 @@ const progressiveScrollingOnce = async (flightContainer: HTMLElement): Promise<v
     if (await stopScrollingCheck(false)) {
       break;
     }
-    await pause(300, 50, 100);
+    await pause(750);
     lastFlightCard = getLastFlightCard(flightContainer);
   }
 };

@@ -1833,7 +1833,6 @@ var FLIGHT_CARD_SELECTOR = "div[class='trip']";
 var findFlightCard = /*#__PURE__*/function () {
   var _ref = _asyncToGenerator(function* (skiplaggedFlightId) {
     yield (0,_scrollThroughContainer__WEBPACK_IMPORTED_MODULE_2__.stopScrollingNow)("Searching for flight card");
-    yield (0,_shared_pause__WEBPACK_IMPORTED_MODULE_1__.pause)(300);
     window.scrollTo({
       top: 0,
       behavior: "smooth"
@@ -1959,7 +1958,7 @@ var scrollThroughContainer = /*#__PURE__*/function () {
       }
 
       yield progressiveScrollingOnce(container);
-      yield (0,_shared_pause__WEBPACK_IMPORTED_MODULE_0__.pause)(300, 100, 200);
+      yield (0,_shared_pause__WEBPACK_IMPORTED_MODULE_0__.pause)(500);
     }
   });
 
@@ -1974,7 +1973,7 @@ var progressiveScrollingOnce = /*#__PURE__*/function () {
       top: 0,
       behavior: "smooth"
     });
-    yield (0,_shared_pause__WEBPACK_IMPORTED_MODULE_0__.pause)(1000, 100, 200);
+    yield (0,_shared_pause__WEBPACK_IMPORTED_MODULE_0__.pause)(1250);
     var lastFlightCard = getLastFlightCard(flightContainer);
     var batchLastFlightCard = null;
 
@@ -1991,7 +1990,7 @@ var progressiveScrollingOnce = /*#__PURE__*/function () {
         break;
       }
 
-      yield (0,_shared_pause__WEBPACK_IMPORTED_MODULE_0__.pause)(300, 50, 100);
+      yield (0,_shared_pause__WEBPACK_IMPORTED_MODULE_0__.pause)(750);
       lastFlightCard = getLastFlightCard(flightContainer);
     }
   });
