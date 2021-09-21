@@ -1,4 +1,5 @@
 import { Box, Text, Tooltip } from "bumbag";
+import { addDays } from "date-fns";
 import React from "react";
 
 import { getWeekdayName } from "../../../shared/utilities/getWeekdayName";
@@ -30,7 +31,7 @@ export const TimeCell = ({
   const offsetTime = getHeaderTime(interval, tzOffset);
   const isMidnight = time.toUpperCase() === "12 AM";
 
-  const date = new Date(startDate.getFullYear(), startDate.getMonth(), startDate.getDay() + daysCounter);
+  const date = addDays(startDate, daysCounter);
 
   return (
     <Box

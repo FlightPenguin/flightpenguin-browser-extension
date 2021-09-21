@@ -1,3 +1,5 @@
+import { parse } from "date-fns";
+
 import { FlightSearchFormData } from "../../../../shared/types/FlightSearchFormData";
 
 export const getFlightInfo = (formData: FlightSearchFormData, flightType: "DEPARTURE" | "RETURN") => {
@@ -14,9 +16,8 @@ export const getFlightInfo = (formData: FlightSearchFormData, flightType: "DEPAR
     arrivalAirportCode = formData.from;
   }
 
-  const [year, month, day] = startDate.split("-").map((date: string) => Number(date));
   return {
-    startDate: new Date(year, month, day),
+    startDate: parse(startDate, "yyyy-MM-dd", new Date()),
     departureAirportCode,
     arrivalAirportCode,
   };
