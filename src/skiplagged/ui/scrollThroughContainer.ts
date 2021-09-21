@@ -11,36 +11,34 @@ export const scrollThroughContainer = async (container: HTMLElement): Promise<vo
   await waitForDisappearance(45000, PROGRESS_SELECTOR);
   await waitForAppearance(45000, FLIGHT_CARD_SELECTOR, container);
   removeScrollingCheck(null);
-  await pause(150);
 
   const startTime = new Date().getTime();
   while (getTimeSinceStart(startTime) < 60000) {
-    if (stopScrollingCheck(false)) {
-      console.debug("Stop scrolling requested...");
+    if (await stopScrollingCheck(true)) {
       break;
     }
     await progressiveScrollingOnce(container);
-    await pause(300, 100, 200);
+    await pause(500);
   }
 };
 
 const progressiveScrollingOnce = async (flightContainer: HTMLElement): Promise<void> => {
   window.scrollTo({ top: 0, behavior: "smooth" });
-  await pause(2000, 100, 300);
+  await pause(1250);
 
   let lastFlightCard = getLastFlightCard(flightContainer);
   let batchLastFlightCard = null;
   while (lastFlightCard !== batchLastFlightCard) {
-    if (stopScrollingCheck(false)) {
+    if (await stopScrollingCheck(false)) {
       break;
     }
     const flightCards = flightContainer.querySelectorAll(FLIGHT_CARD_SELECTOR) as NodeListOf<HTMLElement>;
     batchLastFlightCard = Array.from(flightCards).slice(-1)[0];
     scrollToFlightCard(batchLastFlightCard);
-    if (stopScrollingCheck(false)) {
+    if (await stopScrollingCheck(false)) {
       break;
     }
-    await pause(500, 50, 100);
+    await pause(750);
     lastFlightCard = getLastFlightCard(flightContainer);
   }
 };
@@ -50,32 +48,33 @@ const getTimeSinceStart = (startTime: number) => {
   return currentTime - startTime;
 };
 
-const stopScrollingCheck = (remove: boolean): boolean => {
+const stopScrollingCheck = async (remove: boolean): Promise<boolean> => {
   const div = document.querySelector(STOP_SCROLLING_SELECTOR) as HTMLDivElement;
   const stopScrolling = !!div;
+
   if (stopScrolling) {
-    console.debug(`Stopping scrolling because ${div.getAttribute("data-reason")}`);
+    console.debug(`Stopping scrolling due to ${div.dataset.reason}`);
   }
+
   if (stopScrolling && remove) {
-    removeScrollingCheck(div);
+    await removeScrollingCheck(div);
   }
   return stopScrolling;
 };
 
-export const stopScrollingNow = (reason?: string): void => {
+export const stopScrollingNow = (reason: string): void => {
   const div = document.createElement("div");
   div.id = STOP_SCROLLING_ID;
-  if (reason) {
-    div.setAttribute("data-reason", reason);
-  }
+  div.dataset.reason = reason;
   document.body.appendChild(div);
 };
 
-export const removeScrollingCheck = (div: HTMLElement | null): void => {
+export const removeScrollingCheck = async (div: HTMLElement | null): Promise<void> => {
   const element = div ? div : (document.querySelector(STOP_SCROLLING_SELECTOR) as HTMLDivElement);
   if (element) {
     element.remove();
   }
+  await waitForDisappearance(5000, STOP_SCROLLING_SELECTOR);
 };
 
 export const getLastFlightCard = (container: HTMLElement | Document): HTMLElement => {
