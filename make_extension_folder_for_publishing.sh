@@ -79,6 +79,12 @@ if [ ${VERSION_COUNT} -ne 1 ]; then
   exit 4
 fi
 
+VERSION_COUNT=$(grep -c "\"process.env.VERSION\": \"${VERSION}\"," webpack.config.ts)
+if [ ${VERSION_COUNT} -ne 1 ]; then
+  echo "ERROR: Update webpack file to match version ${VERSION}"
+  exit 4
+fi
+
 build
 
 PACKAGE_NAME="flightpenguin_ext_${VERSION}"
