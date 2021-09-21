@@ -15,10 +15,13 @@ import { getFlights } from "./parser/getFlights";
 import { highlightFlightCard } from "./ui/highlightFlightCard";
 import { selectReturnFlight } from "./ui/selectReturnFlight";
 
+let formData;
+
 chrome.runtime.onMessage.addListener(async function (message) {
   switch (message.event) {
     case "BEGIN_PARSING":
-      await scrapeDepartureFlights();
+      formData = message.formData;
+      await scrapeDepartureFlights(formData);
       break;
     case "GET_RETURN_FLIGHTS":
       await scrapeReturnFlights(message.departure);
@@ -36,9 +39,9 @@ chrome.runtime.onMessage.addListener(async function (message) {
   }
 });
 
-const scrapeDepartureFlights = async () => {
+const scrapeDepartureFlights = async (formData) => {
   try {
-    const flights = await getFlights(null);
+    const flights = await getFlights(null, 30000, formData);
     if (flights) {
       sendFlightsEvent("expedia", flights);
       sendScraperComplete("expedia", "DEPARTURE");

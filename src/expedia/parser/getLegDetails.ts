@@ -1,20 +1,31 @@
+import { addDays, addYears, parse } from "date-fns";
+
 import { MissingFieldParserError } from "../../shared/errors";
 import { standardizeTimeString } from "../../shared/helpers";
 import { FlightLeg } from "../../shared/types/FlightLeg";
+import { FlightSearchFormData } from "../../shared/types/FlightSearchFormData";
 import { getTimeDetails } from "../../utilityFunctions";
 
-export const getLegDetails = (leg: Element, legIndex: number, previousLegDetails?: FlightLeg): FlightLeg => {
+export const getLegDetails = (
+  leg: Element,
+  legIndex: number,
+  formData: FlightSearchFormData,
+  previousLegDetails?: FlightLeg,
+): FlightLeg => {
+  const legDepartureDate = getLegDepartureDate(previousLegDetails, formData.fromDate);
+
   const [departure, details, arrival] = leg.children;
 
   let departureTime = getDepartureTime(departure); // 9am
-  let arrivalTime = getArrivalTime(arrival);
-
-  if (isFlightOvernight(departureTime, arrivalTime)) {
-    arrivalTime += "+1";
-  }
+  let arrivalTime = getArrivalTime(arrival, legDepartureDate);
 
   if (!!previousLegDetails && isLayoverOvernight(previousLegDetails, departureTime)) {
     departureTime += "+1";
+    if (arrivalTime.includes("+")) {
+      const tokens = arrivalTime.split("+");
+      const excessDays = Number(tokens[1]) - 1;
+      arrivalTime = `${tokens[0]}+${excessDays}`;
+    }
   }
 
   return new FlightLeg({
@@ -27,13 +38,31 @@ export const getLegDetails = (leg: Element, legIndex: number, previousLegDetails
   });
 };
 
-const getArrivalTime = (arrival: Element) => {
-  const time = arrival.textContent?.split(" - ")[0].toLowerCase().replace("arrival", "");
+const getArrivalTime = (arrival: Element, legDepartureDate: Date): string => {
+  let time = arrival.textContent?.split(" - ")[0].toLowerCase().replace("arrival", "");
 
   if (!time) {
     throw new MissingFieldParserError("Unable to determine arrival time for layover");
   }
-  return standardizeTimeString(time);
+  time = standardizeTimeString(time);
+
+  if (arrival.textContent?.toLowerCase().includes("arrives")) {
+    const rawArrivalDate = arrival.textContent
+      .split(/Arrives/i)
+      .slice(-1)[0]
+      .trim();
+
+    let arrivalDate = parse(rawArrivalDate, "EEE, MMM d", new Date());
+    if (arrivalDate < legDepartureDate) {
+      arrivalDate = addYears(arrivalDate, 1);
+    }
+
+    const dateDiff = Math.floor((arrivalDate.valueOf() - legDepartureDate.valueOf()) / 86400000);
+    if (dateDiff) {
+      time += `+${dateDiff}`;
+    }
+  }
+  return time as string;
 };
 
 const getDepartureTime = (departure: Element) => {
@@ -98,17 +127,16 @@ const getOperatingAirline = (element: Element) => {
   return airline;
 };
 
-const isFlightOvernight = (fromTime: string, toTime: string): boolean => {
-  const fromTimeDetails = getTimeDetails(fromTime);
-  const toTimeDetails = getTimeDetails(toTime);
-
-  return (
-    toTimeDetails.hours % 24 < fromTimeDetails.hours % 24 ||
-    (toTimeDetails.hours % 24 === fromTimeDetails.hours % 24 && toTimeDetails.minutes <= fromTimeDetails.minutes)
-  );
-};
-
 const isLayoverOvernight = (previousLegDetails: FlightLeg, fromTime: string): boolean => {
   const fromTimeDetails = getTimeDetails(fromTime);
   return previousLegDetails.toTimeDetails.hours % 24 > fromTimeDetails.hours % 24;
+};
+
+const getLegDepartureDate = (previousLegDetails: FlightLeg | undefined, departureDate: string): Date => {
+  const tripDepartureDate = parse(departureDate, "yyyy-MM-dd", new Date());
+  if (!previousLegDetails) {
+    return tripDepartureDate;
+  }
+  const excessDays = Number(previousLegDetails.toTimeDetails.excessDays || "0");
+  return addDays(tripDepartureDate, excessDays);
 };

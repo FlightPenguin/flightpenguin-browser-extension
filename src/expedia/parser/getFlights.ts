@@ -2,6 +2,7 @@ import { waitForTheElementToDisappear } from "wait-for-the-element";
 
 import { LoadingTimeoutParserError, MissingElementLookupError } from "../../shared/errors";
 import { FlightDetails } from "../../shared/types/FlightDetails";
+import { FlightSearchFormData } from "../../shared/types/FlightSearchFormData";
 import { UnprocessedFlightSearchResult } from "../../shared/types/UnprocessedFlightSearchResult";
 import { waitForAppearance, waitForDisappearance } from "../../shared/utilities/waitFor";
 import { closeFlightDetailsModal } from "../ui/closeFlightDetailsModal";
@@ -22,6 +23,7 @@ const LIST_CARD_FARE_SELECTOR = ".uitk-price-subtext";
 export const getFlights = async (
   selectedFlight = null,
   loadingTimeout = 30_000,
+  formData: FlightSearchFormData,
 ): Promise<UnprocessedFlightSearchResult[]> => {
   // beware - make sure you're on the right page before waiting for elements to go away...
   await waitForAppearance(30000, CONTAINER_SHELL_SELECTOR);
@@ -47,7 +49,7 @@ export const getFlights = async (
       continue;
     }
 
-    const flight = await getFlight(flightCard);
+    const flight = await getFlight(flightCard, formData);
 
     let departureFlight = null;
     let returnFlight = null;

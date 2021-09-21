@@ -2,11 +2,16 @@ import { waitForTheElement } from "wait-for-the-element";
 
 import { MissingElementLookupError, ParserError } from "../../shared/errors";
 import { FlightLeg } from "../../shared/types/FlightLeg";
+import { FlightSearchFormData } from "../../shared/types/FlightSearchFormData";
 import { getLegDetails } from "./getLegDetails";
 
 const LEG_SELECTOR = "[data-test-id^='journey-section']";
 
-export const getLayovers = async (modal: Element, timeout = 3000): Promise<FlightLeg[]> => {
+export const getLayovers = async (
+  modal: Element,
+  timeout = 3000,
+  formData: FlightSearchFormData,
+): Promise<FlightLeg[]> => {
   const firstLeg = await waitForTheElement(LEG_SELECTOR, { timeout });
   if (!firstLeg) {
     throw new MissingElementLookupError(`Could not find ${LEG_SELECTOR} in modal after ${timeout} ms`);
@@ -18,7 +23,7 @@ export const getLayovers = async (modal: Element, timeout = 3000): Promise<Fligh
 
   const layovers = [];
   for (const [index, leg] of legs.entries()) {
-    const details = getLegDetails(leg, index, layovers[layovers.length - 1]);
+    const details = getLegDetails(leg, index, formData, layovers[layovers.length - 1]);
     layovers.push(details);
   }
 
