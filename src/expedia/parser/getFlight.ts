@@ -12,7 +12,11 @@ const AIRLINE_SELECTOR = "[data-test-id='flight-operated']";
 const ARRIVAL_TIME_SELECTOR = "[data-test-id='arrival-time']";
 const DURATION_SELECTOR = "[data-test-id='journey-duration']";
 
-export const getFlight = async (element: Element, formData: FlightSearchFormData): Promise<FlightDetails> => {
+export const getFlight = async (
+  element: Element,
+  formData: FlightSearchFormData,
+  isReturn: boolean,
+): Promise<FlightDetails> => {
   const { marketingAirline, operatingAirline } = getAirlines(element);
   const { departureTime, arrivalTime } = getFlightTimes(element);
   const { duration, hasStops } = getDurationDetails(element);
@@ -20,7 +24,7 @@ export const getFlight = async (element: Element, formData: FlightSearchFormData
   openFlightDetailsModal(element);
   const modal = await getFlightDetailsModal();
   await openLayoverDetailsCollapsible(modal);
-  const layovers = hasStops ? await getLayovers(modal, 3000, formData) : [];
+  const layovers = hasStops ? await getLayovers(modal, 3000, formData, isReturn) : [];
 
   return new FlightDetails({
     marketingAirline,

@@ -1,1 +1,2905 @@
-(()=>{var t={1633:(t,e,r)=>{var n="[object Symbol]",o="\\u0300-\\u036f\\ufe20-\\ufe23",i="[\\ud800-\\udfff]",u="["+o+"\\u20d0-\\u20f0]",a="\\ud83c[\\udffb-\\udfff]",l="[^\\ud800-\\udfff]",c="(?:\\ud83c[\\udde6-\\uddff]){2}",f="[\\ud800-\\udbff][\\udc00-\\udfff]",s="(?:"+u+"|"+a+")"+"?",d="[\\ufe0e\\ufe0f]?",p=d+s+("(?:\\u200d(?:"+[l,c,f].join("|")+")"+d+s+")*"),y="(?:"+[l+u+"?",u,c,f,i].join("|")+")",v=RegExp(a+"(?="+a+")|"+y+p,"g"),h=RegExp("[\\u200d\\ud800-\\udfff\\u0300-\\u036f\\ufe20-\\ufe23\\u20d0-\\u20f0\\ufe0e\\ufe0f]"),m="object"==typeof r.g&&r.g&&r.g.Object===Object&&r.g,b="object"==typeof self&&self&&self.Object===Object&&self,g=m||b||Function("return this")();function w(t){return h.test(t)}function A(t){return w(t)?function(t){return t.match(v)||[]}(t):function(t){return t.split("")}(t)}var F=Object.prototype.toString,S=g.Symbol,D=S?S.prototype:void 0,E=D?D.toString:void 0;function x(t){if("string"==typeof t)return t;if(function(t){return"symbol"==typeof t||function(t){return!!t&&"object"==typeof t}(t)&&F.call(t)==n}(t))return E?E.call(t):"";var e=t+"";return"0"==e&&1/t==-Infinity?"-0":e}function C(t,e,r){var n=t.length;return r=void 0===r?n:r,!e&&r>=n?t:function(t,e,r){var n=-1,o=t.length;e<0&&(e=-e>o?0:o+e),(r=r>o?o:r)<0&&(r+=o),o=e>r?0:r-e>>>0,e>>>=0;for(var i=Array(o);++n<o;)i[n]=t[n+e];return i}(t,e,r)}function O(t){return null==t?"":x(t)}var T,j=(T="toUpperCase",function(t){var e=w(t=O(t))?A(t):void 0,r=e?e[0]:t.charAt(0),n=e?C(e,1).join(""):t.slice(1);return r[T]()+n});t.exports=function(t){return j(O(t).toLowerCase())}}},e={};function r(n){if(e[n])return e[n].exports;var o=e[n]={exports:{}};return t[n](o,o.exports,r),o.exports}r.n=t=>{var e=t&&t.__esModule?()=>t.default:()=>t;return r.d(e,{a:e}),e},r.d=(t,e)=>{for(var n in e)r.o(e,n)&&!r.o(t,n)&&Object.defineProperty(t,n,{enumerable:!0,get:e[n]})},r.g=function(){if("object"==typeof globalThis)return globalThis;try{return this||new Function("return this")()}catch(t){if("object"==typeof window)return window}}(),r.o=(t,e)=>Object.prototype.hasOwnProperty.call(t,e),(()=>{"use strict";function t(e){return(t="function"==typeof Symbol&&"symbol"==typeof Symbol.iterator?function(t){return typeof t}:function(t){return t&&"function"==typeof Symbol&&t.constructor===Symbol&&t!==Symbol.prototype?"symbol":typeof t})(e)}function e(t,e){if(!(t instanceof e))throw new TypeError("Cannot call a class as a function")}function n(t,e){if("function"!=typeof e&&null!==e)throw new TypeError("Super expression must either be null or a function");t.prototype=Object.create(e&&e.prototype,{constructor:{value:t,writable:!0,configurable:!0}}),e&&c(t,e)}function o(t){var e=l();return function(){var r,n=f(t);if(e){var o=f(this).constructor;r=Reflect.construct(n,arguments,o)}else r=n.apply(this,arguments);return i(this,r)}}function i(e,r){return!r||"object"!==t(r)&&"function"!=typeof r?function(t){if(void 0===t)throw new ReferenceError("this hasn't been initialised - super() hasn't been called");return t}(e):r}function u(t){var e="function"==typeof Map?new Map:void 0;return(u=function(t){if(null===t||(r=t,-1===Function.toString.call(r).indexOf("[native code]")))return t;var r;if("function"!=typeof t)throw new TypeError("Super expression must either be null or a function");if(void 0!==e){if(e.has(t))return e.get(t);e.set(t,n)}function n(){return a(t,arguments,f(this).constructor)}return n.prototype=Object.create(t.prototype,{constructor:{value:n,enumerable:!1,writable:!0,configurable:!0}}),c(n,t)})(t)}function a(t,e,r){return(a=l()?Reflect.construct:function(t,e,r){var n=[null];n.push.apply(n,e);var o=new(Function.bind.apply(t,n));return r&&c(o,r.prototype),o}).apply(null,arguments)}function l(){if("undefined"==typeof Reflect||!Reflect.construct)return!1;if(Reflect.construct.sham)return!1;if("function"==typeof Proxy)return!0;try{return Boolean.prototype.valueOf.call(Reflect.construct(Boolean,[],(function(){}))),!0}catch(t){return!1}}function c(t,e){return(c=Object.setPrototypeOf||function(t,e){return t.__proto__=e,t})(t,e)}function f(t){return(f=Object.setPrototypeOf?Object.getPrototypeOf:function(t){return t.__proto__||Object.getPrototypeOf(t)})(t)}var s=function(t){n(i,t);var r=o(i);function i(t){return e(this,i),r.call(this,t)}return i}(function(t){n(i,t);var r=o(i);function i(t){var n;return e(this,i),(n=r.call(this)).message=t,n.stack=(new Error).stack,n.name=n.constructor.name,n}return i}(u(Error))),d=function(t){n(i,t);var r=o(i);function i(t){return e(this,i),r.call(this,t)}return i}(s),p=function(t){n(i,t);var r=o(i);function i(t){return e(this,i),r.call(this,t)}return i}(s),y=function(t){n(i,t);var r=o(i);function i(t){return e(this,i),r.call(this,t)}return i}(s);function v(t,e){chrome.runtime.sendMessage({event:"SUCCESSFUL_SCRAPER",searchType:e,providerName:t})}function h(t,e,r){chrome.runtime.sendMessage({event:"FAILED_SCRAPER",searchType:r,providerName:t,description:"".concat(e.name," ").concat(e.message)})}function m(){chrome.runtime.sendMessage({event:"FOCUS_WEBPAGE"})}function b(){var t=arguments.length>0&&void 0!==arguments[0]?arguments[0]:1e4,e=arguments.length>1&&void 0!==arguments[1]?arguments[1]:0,r=arguments.length>2&&void 0!==arguments[2]?arguments[2]:0,n=0;return e&&r&&(n+=g(e,r)),new Promise((function(e){setTimeout(e,t+n)}))}function g(t,e){return t=Math.ceil(t),e=Math.floor(e),Math.floor(Math.random()*(e-t+1))+t}function w(t,e){return function(t){if(Array.isArray(t))return t}(t)||function(t,e){var r=null==t?null:"undefined"!=typeof Symbol&&t[Symbol.iterator]||t["@@iterator"];if(null!=r){var n,o,i=[],u=!0,a=!1;try{for(r=r.call(t);!(u=(n=r.next()).done)&&(i.push(n.value),!e||i.length!==e);u=!0);}catch(t){a=!0,o=t}finally{try{u||null==r.return||r.return()}finally{if(a)throw o}}return i}}(t,e)||A(t,e)||function(){throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.")}()}function A(t,e){if(t){if("string"==typeof t)return F(t,e);var r=Object.prototype.toString.call(t).slice(8,-1);return"Object"===r&&t.constructor&&(r=t.constructor.name),"Map"===r||"Set"===r?Array.from(t):"Arguments"===r||/^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(r)?F(t,e):void 0}}function F(t,e){(null==e||e>t.length)&&(e=t.length);for(var r=0,n=new Array(e);r<e;r++)n[r]=t[r];return n}var S=/\.(?:(?:[\x2D0-9A-Z_a-z\x80-\uD7FF\uE000-\uFFFF]|[\uD800-\uDBFF](?![\uDC00-\uDFFF])|(?:[^\uD800-\uDBFF]|^)[\uDC00-\uDFFF])|\\(?:[\0-\t\x0B\f\x0E-\u2027\u202A-\uD7FF\uE000-\uFFFF]|[\uD800-\uDBFF][\uDC00-\uDFFF]|[\uD800-\uDBFF](?![\uDC00-\uDFFF])|(?:[^\uD800-\uDBFF]|^)[\uDC00-\uDFFF]))+/,D=/#(?:(?:[\x2D0-9A-Z_a-z\x80-\uD7FF\uE000-\uFFFF]|[\uD800-\uDBFF](?![\uDC00-\uDFFF])|(?:[^\uD800-\uDBFF]|^)[\uDC00-\uDFFF])|\\(?:[\0-\t\x0B\f\x0E-\u2027\u202A-\uD7FF\uE000-\uFFFF]|[\uD800-\uDBFF][\uDC00-\uDFFF]|[\uD800-\uDBFF](?![\uDC00-\uDFFF])|(?:[^\uD800-\uDBFF]|^)[\uDC00-\uDFFF]))+/,E=/\[[\t-\r \xA0\u1680\u2000-\u200A\u2028\u2029\u202F\u205F\u3000\uFEFF]*((?:(?:\*|[\x2D0-9A-Z_a-z]*)\|)?(?:(?:[\x2D0-9A-Z_a-z\x80-\uD7FF\uE000-\uFFFF]|[\uD800-\uDBFF](?![\uDC00-\uDFFF])|(?:[^\uD800-\uDBFF]|^)[\uDC00-\uDFFF])+))/g,x={};function C(t){var e=x[t];if(e)return e;e=x[t]={attributes:!0,subtree:!0,childList:!0};var r,n=[],o=function(t,e){var r="undefined"!=typeof Symbol&&t[Symbol.iterator]||t["@@iterator"];if(!r){if(Array.isArray(t)||(r=A(t))){r&&(t=r);var n=0,o=function(){};return{s:o,n:function(){return n>=t.length?{done:!0}:{done:!1,value:t[n++]}},e:function(t){throw t},f:o}}throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.")}var i,u=!0,a=!1;return{s:function(){r=r.call(t)},n:function(){var t=r.next();return u=t.done,t},e:function(t){a=!0,i=t},f:function(){try{u||null==r.return||r.return()}finally{if(a)throw i}}}}(t.matchAll(E));try{for(o.s();!(r=o.n()).done;){var i=w(r.value,2)[1];if(i.startsWith("*")||i.startsWith("|"))return e;n.push(i.replace("|",":"))}}catch(t){o.e(t)}finally{o.f()}return S.test(t)&&n.push("class"),D.test(t)&&n.push("id"),0===n.length?e.attributes=!1:e.attributeFilter=n,e}function O(t){var e=arguments.length>1&&void 0!==arguments[1]?arguments[1]:{},r=e.timeout,n=void 0===r?2500:r,o=e.scope,i=void 0===o?document:o;return new Promise((function(e){var r=i.querySelector(t);if(null===r){var o=null,u=new MutationObserver((function(){var r=i.querySelector(t);null!==r&&(clearTimeout(o),u.disconnect(),e(r))}));u.observe(i,C(t)),o=setTimeout((function(){u.disconnect(),e(null)}),n)}else e(r)}))}function T(t){var e=arguments.length>1&&void 0!==arguments[1]?arguments[1]:{},r=e.timeout,n=void 0===r?2500:r,o=e.scope,i=void 0===o?document:o;return new Promise((function(e){var r=null;if(null!==i.querySelector(t)){var o=new MutationObserver((function(){null===i.querySelector(t)&&(clearTimeout(r),o.disconnect(),e(!0))}));o.observe(i,C(t)),r=setTimeout((function(){o.disconnect(),e(!1)}),n)}else e(!0)}))}var j=function(t){return t.offsetWidth>0&&t.offsetHeight>0};function I(t,e,r,n,o,i,u){try{var a=t[i](u),l=a.value}catch(t){return void r(t)}a.done?e(l):Promise.resolve(l).then(n,o)}function k(t){return function(){var e=this,r=arguments;return new Promise((function(n,o){var i=t.apply(e,r);function u(t){I(i,n,o,u,a,"next",t)}function a(t){I(i,n,o,u,a,"throw",t)}u(void 0)}))}}var P=function(){var t=k((function*(t,e){var r=arguments.length>2&&void 0!==arguments[2]?arguments[2]:window.document;if(r.querySelector(e)){var n=yield T(e,{timeout:t,scope:r});if(!n)throw new d("Took longer than ".concat(t," ms to make the loading indicator (").concat(e,") disappear"))}}));return function(e,r){return t.apply(this,arguments)}}(),U=function(){var t=k((function*(){var t=arguments.length>0&&void 0!==arguments[0]?arguments[0]:3e3,e=arguments.length>1?arguments[1]:void 0,r=arguments.length>2&&void 0!==arguments[2]?arguments[2]:window.document,n=r.querySelector(e);if(!n&&!(n=yield O(e,{timeout:t,scope:r})))throw new d("Render of ".concat(e," failed to complete in ").concat(t));return n}));return function(){return t.apply(this,arguments)}}(),R=function(){var t=k((function*(){for(var t=arguments.length>0&&void 0!==arguments[0]?arguments[0]:5e3,e=arguments.length>1?arguments[1]:void 0,r=arguments.length>2&&void 0!==arguments[2]?arguments[2]:window.document,n=!0,o=new Date;n&&o.valueOf()-(new Date).valueOf()<t;){var i=r.querySelector(e);i||(n=!1),n=j(i)}if(n)throw new d("Took longer than ".concat(t," to make ").concat(e," disappear"))}));return function(){return t.apply(this,arguments)}}();function B(t,e){return function(t){if(Array.isArray(t))return t}(t)||function(t,e){if("undefined"==typeof Symbol||!(Symbol.iterator in Object(t)))return;var r=[],n=!0,o=!1,i=void 0;try{for(var u,a=t[Symbol.iterator]();!(n=(u=a.next()).done)&&(r.push(u.value),!e||r.length!==e);n=!0);}catch(t){o=!0,i=t}finally{try{n||null==a.return||a.return()}finally{if(o)throw i}}return r}(t,e)||function(t,e){if(!t)return;if("string"==typeof t)return M(t,e);var r=Object.prototype.toString.call(t).slice(8,-1);"Object"===r&&t.constructor&&(r=t.constructor.name);if("Map"===r||"Set"===r)return Array.from(t);if("Arguments"===r||/^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(r))return M(t,e)}(t,e)||function(){throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.")}()}function M(t,e){(null==e||e>t.length)&&(e=t.length);for(var r=0,n=new Array(e);r<e;r++)n[r]=t[r];return n}function _(t,e,r,n,o,i,u){try{var a=t[i](u),l=a.value}catch(t){return void r(t)}a.done?e(l):Promise.resolve(l).then(n,o)}var N=".trip-list",L=function(){var t,e=(t=function*(t){U(45e3,N);var e=t?"RETURN":"DEPARTURE",r=B(document.querySelectorAll(N),2),n=r[0],o=r[1],i=t?o:n;if(!i)throw yield b(6e4),new y("Unable to locate ".concat(e.toLowerCase()," container"));var u=i.querySelector(".infinite-trip-list");if(!u)throw new y("Unable to locate infinite scroll container for ".concat(e.toLowerCase()));var a=u.children[0];if(!a)throw new y("Unable to locate infinite scroll container child for ".concat(e.toLowerCase()));return a},function(){var e=this,r=arguments;return new Promise((function(n,o){var i=t.apply(e,r);function u(t){_(i,n,o,u,a,"next",t)}function a(t){_(i,n,o,u,a,"throw",t)}u(void 0)}))});return function(t){return e.apply(this,arguments)}}();function q(t,e){chrome.runtime.sendMessage({event:"RETURN_FLIGHTS_RECEIVED",flights:e,provider:t})}function H(t,e){chrome.runtime.sendMessage({event:"FLIGHT_RESULTS_RECEIVED",flights:e,provider:t})}var W=function(t){return t.toLowerCase().replace(" ","").trim()};function $(t,e){return function(t){if(Array.isArray(t))return t}(t)||function(t,e){if("undefined"==typeof Symbol||!(Symbol.iterator in Object(t)))return;var r=[],n=!0,o=!1,i=void 0;try{for(var u,a=t[Symbol.iterator]();!(n=(u=a.next()).done)&&(r.push(u.value),!e||r.length!==e);n=!0);}catch(t){o=!0,i=t}finally{try{n||null==a.return||a.return()}finally{if(o)throw i}}return r}(t,e)||function(t,e){if(!t)return;if("string"==typeof t)return z(t,e);var r=Object.prototype.toString.call(t).slice(8,-1);"Object"===r&&t.constructor&&(r=t.constructor.name);if("Map"===r||"Set"===r)return Array.from(t);if("Arguments"===r||/^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(r))return z(t,e)}(t,e)||function(){throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.")}()}function z(t,e){(null==e||e>t.length)&&(e=t.length);for(var r=0,n=new Array(e);r<e;r++)n[r]=t[r];return n}function G(t,e){var r=t.toLowerCase(),n=$(r.split(":"),2),o=n[0],i=n[1];o=Number(o);var u=Number(i.replace(/(pm)|(am)|(\+\d)/g,"").trim());if(e){var a=t.match(/(\+\d)/);a&&(o+=24*a[0].split("+")[1])}return r.includes("pm")&&o%12!=0?o+=12:r.includes("am")&&o%12==0&&(o-=12),{hours:o,minutes:u}}function K(t,e,r){var n=G(t),o=n.hours,i=n.minutes,u=G(e),a=u.hours,l=u.minutes,c=e.match(/(\+\d)/),f=t.match(/(\+\d)/),s=0,d=0;if(f){var p=$(f[0].split("+"),2),y=(p[0],p[1]);d=s+=Number(y)}if(c){var v=$(c[0].split("+"),2),h=(v[0],v[1]);d+=Number(h)}var m=60*(o+24*s)+i,b=60*(a+24*d)+l;return function(t){var e,r;if(t.includes("h")){var n=$(t.split("h"),2);e=n[0],r=n[1]}else e=0,r=t;var o=r.trim().split("m")[0]||0;return Number(o)+60*Number(e)}(r)-(b-m)}var Z=r(1633),J=r.n(Z);function V(t){return(V="function"==typeof Symbol&&"symbol"==typeof Symbol.iterator?function(t){return typeof t}:function(t){return t&&"function"==typeof Symbol&&t.constructor===Symbol&&t!==Symbol.prototype?"symbol":typeof t})(t)}function Q(t,e){Q=function(t,e){return new i(t,void 0,e)};var r=X(RegExp),n=RegExp.prototype,o=new WeakMap;function i(t,e,n){var i=r.call(this,t,e);return o.set(i,n||o.get(t)),i}function u(t,e){var r=o.get(e);return Object.keys(r).reduce((function(e,n){return e[n]=t[r[n]],e}),Object.create(null))}return Y(i,r),i.prototype.exec=function(t){var e=n.exec.call(this,t);return e&&(e.groups=u(e,this)),e},i.prototype[Symbol.replace]=function(t,e){if("string"==typeof e){var r=o.get(this);return n[Symbol.replace].call(this,t,e.replace(/\$<([^>]+)>/g,(function(t,e){return"$"+r[e]})))}if("function"==typeof e){var i=this;return n[Symbol.replace].call(this,t,(function(){var t=[];return t.push.apply(t,arguments),"object"!==V(t[t.length-1])&&t.push(u(t,i)),e.apply(this,t)}))}return n[Symbol.replace].call(this,t,e)},Q.apply(this,arguments)}function Y(t,e){if("function"!=typeof e&&null!==e)throw new TypeError("Super expression must either be null or a function");t.prototype=Object.create(e&&e.prototype,{constructor:{value:t,writable:!0,configurable:!0}}),e&&rt(t,e)}function X(t){var e="function"==typeof Map?new Map:void 0;return(X=function(t){if(null===t||(r=t,-1===Function.toString.call(r).indexOf("[native code]")))return t;var r;if("function"!=typeof t)throw new TypeError("Super expression must either be null or a function");if(void 0!==e){if(e.has(t))return e.get(t);e.set(t,n)}function n(){return tt(t,arguments,nt(this).constructor)}return n.prototype=Object.create(t.prototype,{constructor:{value:n,enumerable:!1,writable:!0,configurable:!0}}),rt(n,t)})(t)}function tt(t,e,r){return(tt=et()?Reflect.construct:function(t,e,r){var n=[null];n.push.apply(n,e);var o=new(Function.bind.apply(t,n));return r&&rt(o,r.prototype),o}).apply(null,arguments)}function et(){if("undefined"==typeof Reflect||!Reflect.construct)return!1;if(Reflect.construct.sham)return!1;if("function"==typeof Proxy)return!0;try{return Boolean.prototype.valueOf.call(Reflect.construct(Boolean,[],(function(){}))),!0}catch(t){return!1}}function rt(t,e){return(rt=Object.setPrototypeOf||function(t,e){return t.__proto__=e,t})(t,e)}function nt(t){return(nt=Object.setPrototypeOf?Object.getPrototypeOf:function(t){return t.__proto__||Object.getPrototypeOf(t)})(t)}var ot=function(t){var e=Q(/^([\t-\r 0-9A-Z_a-z\xA0\u1680\u2000-\u200A\u2028\u2029\u202F\u205F\u3000\uFEFF]*)[\t-\r \xA0\u1680\u2000-\u200A\u2028\u2029\u202F\u205F\u3000\uFEFF]+as[\t-\r \xA0\u1680\u2000-\u200A\u2028\u2029\u202F\u205F\u3000\uFEFF]+(alaska)([a-z]{1,20})$/i,{airline:1,dbaPart1:2,dbaPart2:3}),r=t;if(e.test(r)){var n=r.match(e);r="".concat(n.groups.airline," as ").concat(n.groups.dbaPart1," ").concat(J()(n.groups.dbaPart2))}return r};const it={airlineDetailsMap:{"American Airlines":{display:"American",color:"#C5423E",code:"AA"},American:{display:"American",color:"#C5423E",code:"AA"},Delta:{display:"Delta",color:"#EE722E",code:"DL"},"Delta Air Lines":{display:"Delta",color:"#EE722E",code:"DL"},"Southwest Airlines":{display:"Southwest",color:"#F6C04D",code:"WN"},Southwest:{display:"Southwest",color:"#F6C04D",code:"WN"},United:{display:"United",color:"#235EA6",code:"UA"},"United Airlines":{display:"United",color:"#235EA6",code:"UA"},"Air Canada":{display:"Air Canada",color:"#E53222",code:"AC"},Alaska:{display:"Alaska",color:"#51172C",code:"AS"},"Alaska Airlines":{display:"Alaska",color:"#51172C",code:"AS"},jetBlue:{display:"jetBlue",color:"#5F90C8",code:"B6"},"JetBlue Airways":{display:"jetBlue",color:"#5F90C8",code:"B6"},Spirit:{display:"Spirit",color:"#BBB140",code:"NK"},"Spirit Airlines":{display:"Spirit",color:"#BBB140",code:"NK"},WestJet:{display:"WestJet",color:"#4BA89C",code:"WS"},Aeromexico:{display:"Aeromexico",color:"#000000",code:"AM"},Frontier:{display:"Frontier",color:"#378055",code:"F9"},"Frontier Airlines":{display:"Frontier",color:"#378055",code:"F9"},Interjet:{display:"Interjet",color:"#A8A8A8",code:"4O"},"Hawaiian Airlines":{display:"Hawaiian",color:"#4D388A",code:"HA"},"Sun Country":{display:"Sun Country",color:"#D79A71",code:"SY"},"Sun Country Airlines":{display:"Sun Country",color:"#D79A71",code:"SY"},"Porter Airlines":{display:"Porter",color:"#0F2B53",code:"PD"},"China Southern Airlines":{display:"China Southern",color:"#93ACCA",code:"CZ"},Lufthansa:{display:"Lufthansa",color:"#EFB95D",code:"LH"},SWISS:{display:"Swiss",color:"#D42D21",code:"LX"},"China Eastern Airlines":{display:"China Eastern",color:"#A9545F",code:"MU"},"British Airways":{display:"British",color:"#EA8E8C",code:"BA"},Iberia:{display:"Iberia",color:"#D05653",code:"IB"},"Air China":{display:"Air China",color:"#DF524B",code:"CA"},"Emirates Airlines":{display:"Emirates",color:"#CF534F",code:"EK"},"KLM-Royal Dutch Airlines":{display:"KLM",color:"#44A0DC",code:"KL"},"Air France":{display:"Air France",color:"#DB3832",code:"AF"},"Turkish Airlines":{display:"Turkish",color:"#DB3832",code:"TK"},"Cathay Pacific":{display:"Cathay",color:"#2A645A",code:"CX"},"Cathay Dragon":{display:"Cathay",color:"#2A645A",code:"CX"},"EVA Airways":{display:"EVA",color:"#6F9F64",code:"BR"},"China Airlines":{display:"China Airlines",color:"#DAABB1",code:"CI"},"ANA Airlines":{display:"ANA",color:"#254897",code:"NH"},"Japan Airlines":{display:"Japan Airlines",color:"#E56E69",code:"JL"},"Air India":{display:"Air India",color:"#D47346",code:"AI"},"Air India Limited":{display:"Air India",color:"#D47346",code:"AI"},"Qantas Airways":{display:"Qantas",color:"#E34538",code:"QF"},"Singapore Airlines":{display:"Singapore",color:"#EFA952",code:"SQ"},"ANA (All Nippon Airways)":{display:"ANA",color:"#0f4a8d"}},getAirlineName:function(t){if(t&&"string"==typeof t){var e=t.trim().replace(/\s+/g," ");e=ot(e);var r=this.airlineDetailsMap[e];return r&&(e=r.display),e}},getAirlineDetails:function(t){var e=t.trim().replace(/\s+/g," ");return e=ot(e),this.airlineDetailsMap[e]||{display:e,color:"#DFCCFB"}}};function ut(t,e){for(var r=0;r<e.length;r++){var n=e[r];n.enumerable=n.enumerable||!1,n.configurable=!0,"value"in n&&(n.writable=!0),Object.defineProperty(t,n.key,n)}}var at=function(){function t(e){var r=e.fromTime,n=e.toTime,o=e.operatingAirline,i=e.marketingAirline,u=e.duration,a=e.layovers;!function(t,e){if(!(t instanceof e))throw new TypeError("Cannot call a class as a function")}(this,t),this.fromTime=r,this.fromTimeDetails=this.getTimeDetails(r),this.toTime=n,this.toTimeDetails=this.getTimeDetails(n),this.duration=u,this.operatingAirline=it.getAirlineName(o),this.operatingAirlineDetails=o?it.getAirlineDetails(o):null,this.marketingAirline=it.getAirlineName(i),this.marketingAirlineDetails=i?it.getAirlineDetails(i):null,this.layovers=a,this.timezoneOffset=this.getTimezoneOffset(),this.id=this.getFlightPenguinId()}var e,r,n;return e=t,(r=[{key:"getTimeDetails",value:function(t){var e=G(t,!0),r=e.hours,n=e.minutes,o=t.toLowerCase().includes("pm")?"pm":"am",i=t.match(/(\+\d)/);return{hours:r,displayHours:Number(t.split(":")[0]),minutes:n,timeOfDay:o,excessDays:i?i[0]:i}}},{key:"getFlightPenguinId",value:function(){return"".concat(this.operatingAirline,"-").concat(this.fromTime,"-").concat(this.toTime)}},{key:"getTimezoneOffset",value:function(){return K(this.fromTime,this.toTime,this.duration)}}])&&ut(e.prototype,r),n&&ut(e,n),t}(),lt=function(t){var e,r=t.querySelector("span.airlines");if(!r)throw new y("Unable to find airline tooltip container");var n=null===(e=r.dataset)||void 0===e?void 0:e.originalTitle;if(!n)throw new p("Unable to find original title of tooltip");var o=(new DOMParser).parseFromString(n,"text/html").querySelectorAll("span");if(!o)throw new p("Unable to find span in tooltip");return Array.from(o).map((function(t){return t.textContent||""}))};function ct(t){return(ct="function"==typeof Symbol&&"symbol"==typeof Symbol.iterator?function(t){return typeof t}:function(t){return t&&"function"==typeof Symbol&&t.constructor===Symbol&&t!==Symbol.prototype?"symbol":typeof t})(t)}function ft(t,e){ft=function(t,e){return new i(t,void 0,e)};var r=dt(RegExp),n=RegExp.prototype,o=new WeakMap;function i(t,e,n){var i=r.call(this,t,e);return o.set(i,n||o.get(t)),i}function u(t,e){var r=o.get(e);return Object.keys(r).reduce((function(e,n){return e[n]=t[r[n]],e}),Object.create(null))}return st(i,r),i.prototype.exec=function(t){var e=n.exec.call(this,t);return e&&(e.groups=u(e,this)),e},i.prototype[Symbol.replace]=function(t,e){if("string"==typeof e){var r=o.get(this);return n[Symbol.replace].call(this,t,e.replace(/\$<([^>]+)>/g,(function(t,e){return"$"+r[e]})))}if("function"==typeof e){var i=this;return n[Symbol.replace].call(this,t,(function(){var t=[];return t.push.apply(t,arguments),"object"!==ct(t[t.length-1])&&t.push(u(t,i)),e.apply(this,t)}))}return n[Symbol.replace].call(this,t,e)},ft.apply(this,arguments)}function st(t,e){if("function"!=typeof e&&null!==e)throw new TypeError("Super expression must either be null or a function");t.prototype=Object.create(e&&e.prototype,{constructor:{value:t,writable:!0,configurable:!0}}),e&&vt(t,e)}function dt(t){var e="function"==typeof Map?new Map:void 0;return(dt=function(t){if(null===t||(r=t,-1===Function.toString.call(r).indexOf("[native code]")))return t;var r;if("function"!=typeof t)throw new TypeError("Super expression must either be null or a function");if(void 0!==e){if(e.has(t))return e.get(t);e.set(t,n)}function n(){return pt(t,arguments,ht(this).constructor)}return n.prototype=Object.create(t.prototype,{constructor:{value:n,enumerable:!1,writable:!0,configurable:!0}}),vt(n,t)})(t)}function pt(t,e,r){return(pt=yt()?Reflect.construct:function(t,e,r){var n=[null];n.push.apply(n,e);var o=new(Function.bind.apply(t,n));return r&&vt(o,r.prototype),o}).apply(null,arguments)}function yt(){if("undefined"==typeof Reflect||!Reflect.construct)return!1;if(Reflect.construct.sham)return!1;if("function"==typeof Proxy)return!0;try{return Boolean.prototype.valueOf.call(Reflect.construct(Boolean,[],(function(){}))),!0}catch(t){return!1}}function vt(t,e){return(vt=Object.setPrototypeOf||function(t,e){return t.__proto__=e,t})(t,e)}function ht(t){return(ht=Object.setPrototypeOf?Object.getPrototypeOf:function(t){return t.__proto__||Object.getPrototypeOf(t)})(t)}var mt=ft(/^([ A-Za-z]*)[\t-\r \xA0\u1680\u2000-\u200A\u2028\u2029\u202F\u205F\u3000\uFEFF]*([Ff]light)[\t-\r \xA0\u1680\u2000-\u200A\u2028\u2029\u202F\u205F\u3000\uFEFF]*([0-9]*)$/,{Airline:1,Flight:2,Number:3}),bt=function(t){var e,r,n,o=null===(e=t.match(mt))||void 0===e||null===(r=e.groups)||void 0===r||null===(n=r.Airline)||void 0===n?void 0:n.trim();if(!o)throw new s("Unable to extract airline name from ".concat(t));var i=it.getAirlineName(o);if(!i)throw new s("Unable to extract airline name from airline map");return i};function gt(t,e){var r;if("undefined"==typeof Symbol||null==t[Symbol.iterator]){if(Array.isArray(t)||(r=function(t,e){if(!t)return;if("string"==typeof t)return wt(t,e);var r=Object.prototype.toString.call(t).slice(8,-1);"Object"===r&&t.constructor&&(r=t.constructor.name);if("Map"===r||"Set"===r)return Array.from(t);if("Arguments"===r||/^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(r))return wt(t,e)}(t))||e&&t&&"number"==typeof t.length){r&&(t=r);var n=0,o=function(){};return{s:o,n:function(){return n>=t.length?{done:!0}:{done:!1,value:t[n++]}},e:function(t){throw t},f:o}}throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.")}var i,u=!0,a=!1;return{s:function(){r=t[Symbol.iterator]()},n:function(){var t=r.next();return u=t.done,t},e:function(t){a=!0,i=t},f:function(){try{u||null==r.return||r.return()}finally{if(a)throw i}}}}function wt(t,e){(null==e||e>t.length)&&(e=t.length);for(var r=0,n=new Array(e);r<e;r++)n[r]=t[r];return n}var At=/trip-path-point\b/,Ft=/trip-path-spacer\b/,St=function(t,e){var r,n=t.querySelector("div[class*='trip-path-point-time']");if(!n)throw new y("Unable to determine waypoint time");var o=n.textContent;if(!o)throw new p("Unable to extract time");var i=parseInt((null===(r=n.dataset)||void 0===r?void 0:r.diffDays)||"0");return i&&i>e&&(o+="+".concat(i-e)),{time:W(o),dateDifference:i}},Dt=function(t){var e=t.querySelector("span[class='airport-code']");if(!e)throw new y("Unable to determine waypoint airport");var r=e.textContent;if(!r)throw new p("Unable to extract airport code");return r},Et=function(t){var e=t.querySelector(".trip-path-spacer-label");if(!e)throw new y("Unable to determine spacer duration");var r=e.textContent;if(!r)throw new p("Unable to extract duration");return r.trim()};function xt(t){return function(t){if(Array.isArray(t))return Ot(t)}(t)||function(t){if("undefined"!=typeof Symbol&&Symbol.iterator in Object(t))return Array.from(t)}(t)||Ct(t)||function(){throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.")}()}function Ct(t,e){if(t){if("string"==typeof t)return Ot(t,e);var r=Object.prototype.toString.call(t).slice(8,-1);return"Object"===r&&t.constructor&&(r=t.constructor.name),"Map"===r||"Set"===r?Array.from(t):"Arguments"===r||/^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(r)?Ot(t,e):void 0}}function Ot(t,e){(null==e||e>t.length)&&(e=t.length);for(var r=0,n=new Array(e);r<e;r++)n[r]=t[r];return n}function Tt(t,e,r,n,o,i,u){try{var a=t[i](u),l=a.value}catch(t){return void r(t)}a.done?e(l):Promise.resolve(l).then(n,o)}var jt="div[class*='trip-path-point-time']",It=/\d{1,2} stops?/i,kt=function(){var t,e=(t=function*(t){yield U(3e3,"section #trip-list-wrapper"),yield U(1e4,"[data-sort='cost']");var e=Ut(t),r=Rt(t),n=Bt(t),o=Pt(t),i=o.duration,u=o.hasStops,a=function(t){var e=t.querySelector("div.trip-path");if(!e)throw new y("Unable to lookup trip container");var r=e.querySelectorAll(".trip-path-point, .trip-path-spacer");if(!r)throw new y("Unable to lookup trip components");var n,o=lt(t),i=[],u={},a=0,l=!1,c=gt(r);try{for(c.s();!(n=c.n()).done;){var f=n.value;if(l)l=!1;else{var d=f.getAttribute("class")||"";switch(!0){case At.test(d):if(u.from){u.to=Dt(f);var p=St(f,a),v=p.time,h=p.dateDifference;u.toTime=v,a=h,i.push(u),u={},l=!0}else{u.from=Dt(f);var m=St(f,a),b=m.time,g=m.dateDifference;u.fromTime=b,a=g}break;case Ft.test(d):u.duration=Et(f),u.operatingAirline=bt(o[i.length]);break;default:throw new s("Unknown case option ".concat(f.getAttribute("class")))}}}}catch(t){c.e(t)}finally{c.f()}if(!i)throw new s("Unable to identify layovers");return i}(t);return u||(a=[]),new at({marketingAirline:e,operatingAirline:null,layovers:a,duration:i,fromTime:r,toTime:n})},function(){var e=this,r=arguments;return new Promise((function(n,o){var i=t.apply(e,r);function u(t){Tt(i,n,o,u,a,"next",t)}function a(t){Tt(i,n,o,u,a,"throw",t)}u(void 0)}))});return function(t){return e.apply(this,arguments)}}(),Pt=function(t){var e,r,n=t.querySelector("span.trip-path-duration");if(!n)throw new y("Unable to lookup flight duration time");var o=null===(e=n.textContent)||void 0===e?void 0:e.split("|")[0].trim(),i=It.test((null===(r=n.textContent)||void 0===r?void 0:r.split("|")[1].trim())||"");if(!o)throw new p("Unable to determine duration time for flight");return{duration:o,hasStops:i}},Ut=function(t){var e,r=new Set,n=function(t,e){var r;if("undefined"==typeof Symbol||null==t[Symbol.iterator]){if(Array.isArray(t)||(r=Ct(t))||e&&t&&"number"==typeof t.length){r&&(t=r);var n=0,o=function(){};return{s:o,n:function(){return n>=t.length?{done:!0}:{done:!1,value:t[n++]}},e:function(t){throw t},f:o}}throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.")}var i,u=!0,a=!1;return{s:function(){r=t[Symbol.iterator]()},n:function(){var t=r.next();return u=t.done,t},e:function(t){a=!0,i=t},f:function(){try{u||null==r.return||r.return()}finally{if(a)throw i}}}}(lt(t));try{for(n.s();!(e=n.n()).done;){var o=e.value,i=bt(o);r.add(i)}}catch(t){n.e(t)}finally{n.f()}return 1===r.size?xt(r)[0]:"Multiple airlines"},Rt=function(t){var e,r=t.querySelector(jt);if(!r)throw new y("Unable to determine departure time");var n=r.textContent;if(!n)throw new p("Unable to extract departure time");var o=parseInt((null===(e=r.dataset)||void 0===e?void 0:e.diffDays)||"0");return o&&(n+="+".concat(o)),W(n)},Bt=function(t){var e,r=t.querySelectorAll(jt);if(!r)throw new y("Unable to find time elements");var n=Array.from(r).slice(-1)[0];if(!n)throw new y("Unable to find arrival time");var o=n.textContent;if(!o)throw new p("Unable to extract arrival time");var i=parseInt((null===(e=n.dataset)||void 0===e?void 0:e.diffDays)||"0");return i&&(o+="+".concat(i)),W(o)};function Mt(t,e){return function(t){if(Array.isArray(t))return t}(t)||function(t,e){if("undefined"==typeof Symbol||!(Symbol.iterator in Object(t)))return;var r=[],n=!0,o=!1,i=void 0;try{for(var u,a=t[Symbol.iterator]();!(n=(u=a.next()).done)&&(r.push(u.value),!e||r.length!==e);n=!0);}catch(t){o=!0,i=t}finally{try{n||null==a.return||a.return()}finally{if(o)throw i}}return r}(t,e)||Nt(t,e)||function(){throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.")}()}function _t(t,e){var r;if("undefined"==typeof Symbol||null==t[Symbol.iterator]){if(Array.isArray(t)||(r=Nt(t))||e&&t&&"number"==typeof t.length){r&&(t=r);var n=0,o=function(){};return{s:o,n:function(){return n>=t.length?{done:!0}:{done:!1,value:t[n++]}},e:function(t){throw t},f:o}}throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.")}var i,u=!0,a=!1;return{s:function(){r=t[Symbol.iterator]()},n:function(){var t=r.next();return u=t.done,t},e:function(t){a=!0,i=t},f:function(){try{u||null==r.return||r.return()}finally{if(a)throw i}}}}function Nt(t,e){if(t){if("string"==typeof t)return Lt(t,e);var r=Object.prototype.toString.call(t).slice(8,-1);return"Object"===r&&t.constructor&&(r=t.constructor.name),"Map"===r||"Set"===r?Array.from(t):"Arguments"===r||/^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(r)?Lt(t,e):void 0}}function Lt(t,e){(null==e||e>t.length)&&(e=t.length);for(var r=0,n=new Array(e);r<e;r++)n[r]=t[r];return n}function qt(t,e,r,n,o,i,u){try{var a=t[i](u),l=a.value}catch(t){return void r(t)}a.done?e(l):Promise.resolve(l).then(n,o)}var Ht=function(){var t,e=(t=function*(t,e){var r,n=arguments.length>2&&void 0!==arguments[2]?arguments[2]:null,o=[],i={},u=_t(t);try{for(u.s();!(r=u.n()).done;){var a=r.value,l=a;if(!Wt(l)){var c=yield kt(l),f=n?[n,c]:[c,null],s=Mt(f,2),d=s[0],p=s[1],y=zt(l),v=$t(c),h=Gt(l);l.dataset.fpid=v,l.dataset.visited="true",o.push({departureFlight:d,returnFlight:p,fare:y}),i[v]={skiplaggedId:h,lastUpdatedAt:new Date}}}}catch(t){u.e(t)}finally{u.f()}var m=n?q:H;return o.length&&m("skiplagged",o),i},function(){var e=this,r=arguments;return new Promise((function(n,o){var i=t.apply(e,r);function u(t){qt(i,n,o,u,a,"next",t)}function a(t){qt(i,n,o,u,a,"throw",t)}u(void 0)}))});return function(t,r){return e.apply(this,arguments)}}(),Wt=function(t){return Array.from(t.classList).includes("skip-trip")||["bargain fare","special fare","after booking"].some((function(e){var r;return null===(r=t.textContent)||void 0===r?void 0:r.includes(e)}))},$t=function(t){return[t.fromTime,t.toTime,t.marketingAirline].join("-")},zt=function(t){var e=t.querySelector("div.trip-cost");if(!e)throw new y("Unable to find fare wrapper");var r=e.querySelector("p");if(!r)throw new y("Unable to find fare container");return r.textContent},Gt=function(t){return t.id.split('"key":')[1].split(",")[0].replace(/\W/g,"").trim()};function Kt(t,e){var r;if("undefined"==typeof Symbol||null==t[Symbol.iterator]){if(Array.isArray(t)||(r=function(t,e){if(!t)return;if("string"==typeof t)return Zt(t,e);var r=Object.prototype.toString.call(t).slice(8,-1);"Object"===r&&t.constructor&&(r=t.constructor.name);if("Map"===r||"Set"===r)return Array.from(t);if("Arguments"===r||/^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(r))return Zt(t,e)}(t))||e&&t&&"number"==typeof t.length){r&&(t=r);var n=0,o=function(){};return{s:o,n:function(){return n>=t.length?{done:!0}:{done:!1,value:t[n++]}},e:function(t){throw t},f:o}}throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.")}var i,u=!0,a=!1;return{s:function(){r=t[Symbol.iterator]()},n:function(){var t=r.next();return u=t.done,t},e:function(t){a=!0,i=t},f:function(){try{u||null==r.return||r.return()}finally{if(a)throw i}}}}function Zt(t,e){(null==e||e>t.length)&&(e=t.length);for(var r=0,n=new Array(e);r<e;r++)n[r]=t[r];return n}function Jt(t,e,r,n,o,i,u){try{var a=t[i](u),l=a.value}catch(t){return void r(t)}a.done?e(l):Promise.resolve(l).then(n,o)}function Vt(t){return function(){var e=this,r=arguments;return new Promise((function(n,o){var i=t.apply(e,r);function u(t){Jt(i,n,o,u,a,"next",t)}function a(t){Jt(i,n,o,u,a,"throw",t)}u(void 0)}))}}function Qt(t,e){if(!(t instanceof e))throw new TypeError("Cannot call a class as a function")}function Yt(t,e){for(var r=0;r<e.length;r++){var n=e[r];n.enumerable=n.enumerable||!1,n.configurable=!0,"value"in n&&(n.writable=!0),Object.defineProperty(t,n.key,n)}}var Xt=function(){function t(){var e=arguments.length>0&&void 0!==arguments[0]?arguments[0]:null;Qt(this,t),this.flightMap={};var r=this;this.observer=new MutationObserver(function(){var t=Vt((function*(t){var n,o=[],i=Kt(t);try{for(i.s();!(n=i.n()).done;){var u=n.value;o=o.concat(Array.from(u.addedNodes))}}catch(t){i.e(t)}finally{i.f()}var a=yield Ht(o,r.flightMap,e);r.addNewFlightsToMap(a)}));return function(e){return t.apply(this,arguments)}}())}var e,r,n;return e=t,(r=[{key:"addNewFlightsToMap",value:function(t){for(var e in t){var r=t[e],n=r.skiplaggedId,o=r.lastUpdatedAt,i=this.flightMap[e];i?i.skiplaggedId!==n&&o>i.lastUpdatedAt&&(this.flightMap[e]={skiplaggedId:n,lastUpdatedAt:o}):this.flightMap[e]={skiplaggedId:n,lastUpdatedAt:o}}}},{key:"getSkiplaggedId",value:function(t){return this.flightMap[t].skiplaggedId}},{key:"beginObservation",value:function(t){this.observer.observe(t,{childList:!0})}},{key:"endObservation",value:function(){this.observer.disconnect()}},{key:"getFlightMap",value:function(){return this.flightMap}}])&&Yt(e.prototype,r),n&&Yt(e,n),t}(),te=function(t){var e=window.pageYOffset+t.getBoundingClientRect().top-window.innerHeight/2;window.scrollTo({top:e,behavior:"smooth"})};function ee(t,e,r,n,o,i,u){try{var a=t[i](u),l=a.value}catch(t){return void r(t)}a.done?e(l):Promise.resolve(l).then(n,o)}function re(t){return function(){var e=this,r=arguments;return new Promise((function(n,o){var i=t.apply(e,r);function u(t){ee(i,n,o,u,a,"next",t)}function a(t){ee(i,n,o,u,a,"throw",t)}u(void 0)}))}}var ne="div[class='trip']",oe="stop-scrolling",ie="div#".concat(oe),ue=function(){var t=re((function*(t){yield P(45e3,".ui-mprogress"),yield U(45e3,ne,t),se(null);for(var e=(new Date).getTime();le(e)<6e4&&!(yield ce(!0));)yield ae(t),yield b(500)}));return function(e){return t.apply(this,arguments)}}(),ae=function(){var t=re((function*(t){window.scrollTo({top:0,behavior:"smooth"}),yield b(1250);for(var e=de(t),r=null;e!==r&&!(yield ce(!1));){var n=t.querySelectorAll(ne);if(r=Array.from(n).slice(-1)[0],te(r),yield ce(!1))break;yield b(750),e=de(t)}}));return function(e){return t.apply(this,arguments)}}(),le=function(t){return(new Date).getTime()-t},ce=function(){var t=re((function*(t){var e=document.querySelector(ie),r=!!e;return r&&t&&(yield se(e)),r}));return function(e){return t.apply(this,arguments)}}(),fe=function(t){var e=document.createElement("div");e.id=oe,e.dataset.reason=t,document.body.appendChild(e)},se=function(){var t=re((function*(t){var e=t||document.querySelector(ie);e&&e.remove(),yield P(5e3,ie)}));return function(e){return t.apply(this,arguments)}}(),de=function(t){return Array.from(t.querySelectorAll(ne)).slice(-1)[0]};function pe(t,e,r,n,o,i,u){try{var a=t[i](u),l=a.value}catch(t){return void r(t)}a.done?e(l):Promise.resolve(l).then(n,o)}var ye=function(){var t,e=(t=function*(t){yield fe("Searching for flight card"),window.scrollTo({top:0,behavior:"smooth"}),yield b(2e3);for(var e='div[id*=\'"key":"'.concat(t,"\"']"),r=null,n=de(document),o=null;n!==o&&!(r=document.querySelector(e));){var i=document.querySelectorAll("div[class='trip']");o=Array.from(i).slice(-1)[0],te(o),yield b(750,150,200),n=de(document)}if(se(null),r)return r;throw new s("Could not find flight card")},function(){var e=this,r=arguments;return new Promise((function(n,o){var i=t.apply(e,r);function u(t){pe(i,n,o,u,a,"next",t)}function a(t){pe(i,n,o,u,a,"throw",t)}u(void 0)}))});return function(t){return e.apply(this,arguments)}}();function ve(t,e,r,n,o,i,u){try{var a=t[i](u),l=a.value}catch(t){return void r(t)}a.done?e(l):Promise.resolve(l).then(n,o)}var he=function(){var t,e=(t=function*(t){me();var e,r=yield ye(t);(e=r).style.border="10px solid #f2554b",e.style.borderRadius="6px",e.style.paddingTop="25px",e.style.paddingBottom="25px",e.dataset.selected="true",te(r)},function(){var e=this,r=arguments;return new Promise((function(n,o){var i=t.apply(e,r);function u(t){ve(i,n,o,u,a,"next",t)}function a(t){ve(i,n,o,u,a,"throw",t)}u(void 0)}))});return function(t){return e.apply(this,arguments)}}(),me=function(){var t,e=document.querySelector("[data-selected='true']");e&&((t=e).dataset.selected="false",t.style.border="",t.style.paddingTop="0px",t.style.paddingBottom="0px",t.style.borderRadius="0px")};function be(t,e,r,n,o,i,u){try{var a=t[i](u),l=a.value}catch(t){return void r(t)}a.done?e(l):Promise.resolve(l).then(n,o)}function ge(t){return function(){var e=this,r=arguments;return new Promise((function(n,o){var i=t.apply(e,r);function u(t){be(i,n,o,u,a,"next",t)}function a(t){be(i,n,o,u,a,"throw",t)}u(void 0)}))}}var we=".selected-trip",Ae=function(){var t=ge((function*(){(me(),Fe())&&(Se().click(),yield De(),yield se(null),window.scrollTo({top:0,behavior:"smooth"}))}));return function(){return t.apply(this,arguments)}}(),Fe=function(){var t=document.querySelector(".trip-return-header");if(!t)throw new y("Unable to locate return header");return j(t)},Se=function(){var t=document.querySelector(we);if(!t)throw new y("Unable to selected departure flight card");return t},De=function(){var t=ge((function*(){yield R(5e3,we)}));return function(){return t.apply(this,arguments)}}();function Ee(t,e,r,n,o,i,u){try{var a=t[i](u),l=a.value}catch(t){return void r(t)}a.done?e(l):Promise.resolve(l).then(n,o)}var xe,Ce=function(){var t,e=(t=function*(t){(yield ye(t)).click()},function(){var e=this,r=arguments;return new Promise((function(n,o){var i=t.apply(e,r);function u(t){Ee(i,n,o,u,a,"next",t)}function a(t){Ee(i,n,o,u,a,"throw",t)}u(void 0)}))});return function(t){return e.apply(this,arguments)}}();function Oe(t,e,r,n,o,i,u){try{var a=t[i](u),l=a.value}catch(t){return void r(t)}a.done?e(l):Promise.resolve(l).then(n,o)}function Te(t){return function(){var e=this,r=arguments;return new Promise((function(n,o){var i=t.apply(e,r);function u(t){Oe(i,n,o,u,a,"next",t)}function a(t){Oe(i,n,o,u,a,"throw",t)}u(void 0)}))}}window.Sentry.init({dsn:"https://d7f3363dd3774a64ad700b4523bcb789@o407795.ingest.sentry.io/5277451"});var je,Ie=null,ke=null;chrome.runtime.onMessage.addListener(function(){var t=Te((function*(t){switch(t.event){case"BEGIN_PARSING":try{Ie=new Xt(null),(xe=yield Pe(Ie,!1))&&(yield ue(xe)),v("skiplagged","DEPARTURE"),Ie.endObservation()}catch(t){window.Sentry.captureException(t),h("skiplagged",t,"DEPARTURE")}break;case"GET_RETURN_FLIGHTS":try{var e;null===(e=Ie)||void 0===e||e.endObservation(),yield fe("Return flight selected"),ke=new Xt(t.departure),je=yield Pe(ke,!0),yield Ce(Re(Ie,t.departure.id)),je&&(yield ue(je)),v("skiplagged","RETURN")}catch(t){window.Sentry.captureException(t),h("skiplagged",t,"RETURN")}break;case"HIGHLIGHT_FLIGHT":try{var r,n;yield fe("Flight selection"),null===(r=Ie)||void 0===r||r.endObservation(),null===(n=ke)||void 0===n||n.endObservation(),yield Ue(t.selectedDepartureId,Ie,t.selectedReturnId,ke)}catch(t){window.Sentry.captureException(t)}break;case"CLEAR_SELECTION":try{var o,i;null===(o=Ie)||void 0===o||o.endObservation(),null===(i=ke)||void 0===i||i.endObservation(),yield fe("Clear selection"),yield Ae(),chrome.runtime.sendMessage({event:"PROVIDER_READY",provider:"skiplagged"})}catch(t){window.Sentry.captureException(t)}}}));return function(e){return t.apply(this,arguments)}}());var Pe=function(){var t=Te((function*(t,e){var r=yield L(!!e);return t.beginObservation(r),r}));return function(e,r){return t.apply(this,arguments)}}(),Ue=function(){var t=Te((function*(t,e,r,n){var o;if(function(){var t=arguments.length>0&&void 0!==arguments[0]?arguments[0]:"#back-to-search";if(!document.querySelector(t)){var e=document.createElement("button");e.id="back-to-search",e.textContent="Return to FlightPenguin",e.title="Click to return to FlightPenguin and keep browsing.",e.addEventListener("click",m),document.body.append(e)}}(),r)o=null==n?void 0:n.getSkiplaggedId(r);else{if(!t)throw new s("highlighting without a flight...");o=null==e?void 0:e.getSkiplaggedId(t)}yield he(o||"")}));return function(e,r,n,o){return t.apply(this,arguments)}}(),Re=function(t,e){if(t)return t.getSkiplaggedId(e);throw new s("Departure observer not initialized...")}})()})();
+/******/ (() => { // webpackBootstrap
+/******/ 	var __webpack_modules__ = ({
+
+/***/ "./src/shared/errors.ts":
+/*!******************************!*\
+  !*** ./src/shared/errors.ts ***!
+  \******************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "ParserError": () => (/* binding */ ParserError),
+/* harmony export */   "LoadingTimeoutParserError": () => (/* binding */ LoadingTimeoutParserError),
+/* harmony export */   "MissingFieldParserError": () => (/* binding */ MissingFieldParserError),
+/* harmony export */   "MissingElementLookupError": () => (/* binding */ MissingElementLookupError)
+/* harmony export */ });
+function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
+
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
+
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function _wrapNativeSuper(Class) { var _cache = typeof Map === "function" ? new Map() : undefined; _wrapNativeSuper = function _wrapNativeSuper(Class) { if (Class === null || !_isNativeFunction(Class)) return Class; if (typeof Class !== "function") { throw new TypeError("Super expression must either be null or a function"); } if (typeof _cache !== "undefined") { if (_cache.has(Class)) return _cache.get(Class); _cache.set(Class, Wrapper); } function Wrapper() { return _construct(Class, arguments, _getPrototypeOf(this).constructor); } Wrapper.prototype = Object.create(Class.prototype, { constructor: { value: Wrapper, enumerable: false, writable: true, configurable: true } }); return _setPrototypeOf(Wrapper, Class); }; return _wrapNativeSuper(Class); }
+
+function _construct(Parent, args, Class) { if (_isNativeReflectConstruct()) { _construct = Reflect.construct; } else { _construct = function _construct(Parent, args, Class) { var a = [null]; a.push.apply(a, args); var Constructor = Function.bind.apply(Parent, a); var instance = new Constructor(); if (Class) _setPrototypeOf(instance, Class.prototype); return instance; }; } return _construct.apply(null, arguments); }
+
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
+
+function _isNativeFunction(fn) { return Function.toString.call(fn).indexOf("[native code]") !== -1; }
+
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+
+var ExtendableError = /*#__PURE__*/function (_Error) {
+  _inherits(ExtendableError, _Error);
+
+  var _super = _createSuper(ExtendableError);
+
+  function ExtendableError(message) {
+    var _this;
+
+    _classCallCheck(this, ExtendableError);
+
+    _this = _super.call(this);
+    _this.message = message;
+    _this.stack = new Error().stack;
+    _this.name = _this.constructor.name;
+    return _this;
+  }
+
+  return ExtendableError;
+}( /*#__PURE__*/_wrapNativeSuper(Error));
+
+var ParserError = /*#__PURE__*/function (_ExtendableError) {
+  _inherits(ParserError, _ExtendableError);
+
+  var _super2 = _createSuper(ParserError);
+
+  function ParserError(message) {
+    _classCallCheck(this, ParserError);
+
+    return _super2.call(this, message);
+  }
+
+  return ParserError;
+}(ExtendableError);
+var LoadingTimeoutParserError = /*#__PURE__*/function (_ParserError) {
+  _inherits(LoadingTimeoutParserError, _ParserError);
+
+  var _super3 = _createSuper(LoadingTimeoutParserError);
+
+  function LoadingTimeoutParserError(message) {
+    _classCallCheck(this, LoadingTimeoutParserError);
+
+    return _super3.call(this, message);
+  }
+
+  return LoadingTimeoutParserError;
+}(ParserError);
+var MissingFieldParserError = /*#__PURE__*/function (_ParserError2) {
+  _inherits(MissingFieldParserError, _ParserError2);
+
+  var _super4 = _createSuper(MissingFieldParserError);
+
+  function MissingFieldParserError(message) {
+    _classCallCheck(this, MissingFieldParserError);
+
+    return _super4.call(this, message);
+  }
+
+  return MissingFieldParserError;
+}(ParserError);
+var MissingElementLookupError = /*#__PURE__*/function (_ParserError3) {
+  _inherits(MissingElementLookupError, _ParserError3);
+
+  var _super5 = _createSuper(MissingElementLookupError);
+
+  function MissingElementLookupError(message) {
+    _classCallCheck(this, MissingElementLookupError);
+
+    return _super5.call(this, message);
+  }
+
+  return MissingElementLookupError;
+}(ParserError);
+
+/***/ }),
+
+/***/ "./src/shared/events/index.ts":
+/*!************************************!*\
+  !*** ./src/shared/events/index.ts ***!
+  \************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "sendFailedScraper": () => (/* reexport safe */ _sendFailedScraper__WEBPACK_IMPORTED_MODULE_0__.sendFailedScraper),
+/* harmony export */   "sendFlightsEvent": () => (/* reexport safe */ _sendFlights__WEBPACK_IMPORTED_MODULE_1__.sendFlightsEvent),
+/* harmony export */   "sendNoFlightsEvent": () => (/* reexport safe */ _sendNoFlights__WEBPACK_IMPORTED_MODULE_2__.sendNoFlightsEvent),
+/* harmony export */   "sendReturnFlightsEvent": () => (/* reexport safe */ _sendReturnFlights__WEBPACK_IMPORTED_MODULE_3__.sendReturnFlightsEvent),
+/* harmony export */   "sendSelectedFlight": () => (/* reexport safe */ _sendSelectedFlight__WEBPACK_IMPORTED_MODULE_4__.sendSelectedFlight),
+/* harmony export */   "sendHighlightTab": () => (/* reexport safe */ _sendHighlightTab__WEBPACK_IMPORTED_MODULE_5__.sendHighlightTab),
+/* harmony export */   "sendScraperComplete": () => (/* reexport safe */ _sendScraperComplete__WEBPACK_IMPORTED_MODULE_6__.sendScraperComplete)
+/* harmony export */ });
+/* harmony import */ var _sendFailedScraper__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./sendFailedScraper */ "./src/shared/events/sendFailedScraper.ts");
+/* harmony import */ var _sendFlights__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./sendFlights */ "./src/shared/events/sendFlights.ts");
+/* harmony import */ var _sendNoFlights__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./sendNoFlights */ "./src/shared/events/sendNoFlights.ts");
+/* harmony import */ var _sendReturnFlights__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./sendReturnFlights */ "./src/shared/events/sendReturnFlights.ts");
+/* harmony import */ var _sendSelectedFlight__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./sendSelectedFlight */ "./src/shared/events/sendSelectedFlight.ts");
+/* harmony import */ var _sendHighlightTab__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./sendHighlightTab */ "./src/shared/events/sendHighlightTab.ts");
+/* harmony import */ var _sendScraperComplete__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./sendScraperComplete */ "./src/shared/events/sendScraperComplete.ts");
+
+
+
+
+
+
+
+
+/***/ }),
+
+/***/ "./src/shared/events/sendFailedScraper.ts":
+/*!************************************************!*\
+  !*** ./src/shared/events/sendFailedScraper.ts ***!
+  \************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "sendFailedScraper": () => (/* binding */ sendFailedScraper)
+/* harmony export */ });
+function sendFailedScraper(providerName, error, searchType) {
+  chrome.runtime.sendMessage({
+    event: "FAILED_SCRAPER",
+    searchType: searchType,
+    providerName: providerName,
+    description: "".concat(error.name, " ").concat(error.message)
+  });
+}
+
+/***/ }),
+
+/***/ "./src/shared/events/sendFlights.ts":
+/*!******************************************!*\
+  !*** ./src/shared/events/sendFlights.ts ***!
+  \******************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "sendFlightsEvent": () => (/* binding */ sendFlightsEvent)
+/* harmony export */ });
+function sendFlightsEvent(providerName, flights) {
+  console.debug("Sending ".concat(flights.length, " departure flights from ").concat(providerName));
+  chrome.runtime.sendMessage({
+    event: "FLIGHT_RESULTS_RECEIVED",
+    flights: flights,
+    provider: providerName
+  });
+}
+
+/***/ }),
+
+/***/ "./src/shared/events/sendHighlightTab.ts":
+/*!***********************************************!*\
+  !*** ./src/shared/events/sendHighlightTab.ts ***!
+  \***********************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "sendHighlightTab": () => (/* binding */ sendHighlightTab)
+/* harmony export */ });
+var sendHighlightTab = function sendHighlightTab(departureFlightId, returnFlightId) {
+  chrome.runtime.sendMessage({
+    event: "HIGHLIGHT_TAB",
+    selectedDepartureId: departureFlightId,
+    selectedReturnId: returnFlightId
+  });
+};
+
+/***/ }),
+
+/***/ "./src/shared/events/sendNoFlights.ts":
+/*!********************************************!*\
+  !*** ./src/shared/events/sendNoFlights.ts ***!
+  \********************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "sendNoFlightsEvent": () => (/* binding */ sendNoFlightsEvent)
+/* harmony export */ });
+function sendNoFlightsEvent(providerName, searchType) {
+  chrome.runtime.sendMessage({
+    event: "NO_FLIGHTS_FOUND",
+    provider: providerName,
+    searchType: searchType
+  });
+}
+
+/***/ }),
+
+/***/ "./src/shared/events/sendReturnFlights.ts":
+/*!************************************************!*\
+  !*** ./src/shared/events/sendReturnFlights.ts ***!
+  \************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "sendReturnFlightsEvent": () => (/* binding */ sendReturnFlightsEvent)
+/* harmony export */ });
+function sendReturnFlightsEvent(providerName, flights) {
+  console.debug("Sending ".concat(flights.length, " return flights from ").concat(providerName));
+  chrome.runtime.sendMessage({
+    event: "RETURN_FLIGHTS_RECEIVED",
+    flights: flights,
+    provider: providerName
+  });
+}
+
+/***/ }),
+
+/***/ "./src/shared/events/sendScraperComplete.ts":
+/*!**************************************************!*\
+  !*** ./src/shared/events/sendScraperComplete.ts ***!
+  \**************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "sendScraperComplete": () => (/* binding */ sendScraperComplete)
+/* harmony export */ });
+function sendScraperComplete(providerName, searchType) {
+  chrome.runtime.sendMessage({
+    event: "SUCCESSFUL_SCRAPER",
+    searchType: searchType,
+    providerName: providerName
+  });
+}
+
+/***/ }),
+
+/***/ "./src/shared/events/sendSelectedFlight.ts":
+/*!*************************************************!*\
+  !*** ./src/shared/events/sendSelectedFlight.ts ***!
+  \*************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "sendSelectedFlight": () => (/* binding */ sendSelectedFlight)
+/* harmony export */ });
+var sendSelectedFlight = function sendSelectedFlight(flightType, flightId) {
+  if (flightType === "DEPARTURE") {
+    chrome.runtime.sendMessage({
+      event: "".concat(flightType.toUpperCase(), "_SELECTED"),
+      departureId: flightId
+    });
+  }
+};
+
+/***/ }),
+
+/***/ "./src/shared/helpers.js":
+/*!*******************************!*\
+  !*** ./src/shared/helpers.js ***!
+  \*******************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "standardizeTimeString": () => (/* binding */ standardizeTimeString)
+/* harmony export */ });
+var standardizeTimeString = function standardizeTimeString(time) {
+  return time.toLowerCase().replace(" ", "").trim();
+};
+
+
+
+/***/ }),
+
+/***/ "./src/shared/nameMaps/airlineMap.js":
+/*!*******************************************!*\
+  !*** ./src/shared/nameMaps/airlineMap.js ***!
+  \*******************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var lodash_capitalize__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! lodash.capitalize */ "./node_modules/lodash.capitalize/index.js");
+/* harmony import */ var lodash_capitalize__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(lodash_capitalize__WEBPACK_IMPORTED_MODULE_0__);
+function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+
+function _wrapRegExp(re, groups) { _wrapRegExp = function _wrapRegExp(re, groups) { return new BabelRegExp(re, undefined, groups); }; var _RegExp = _wrapNativeSuper(RegExp); var _super = RegExp.prototype; var _groups = new WeakMap(); function BabelRegExp(re, flags, groups) { var _this = _RegExp.call(this, re, flags); _groups.set(_this, groups || _groups.get(re)); return _this; } _inherits(BabelRegExp, _RegExp); BabelRegExp.prototype.exec = function (str) { var result = _super.exec.call(this, str); if (result) result.groups = buildGroups(result, this); return result; }; BabelRegExp.prototype[Symbol.replace] = function (str, substitution) { if (typeof substitution === "string") { var groups = _groups.get(this); return _super[Symbol.replace].call(this, str, substitution.replace(/\$<([^>]+)>/g, function (_, name) { return "$" + groups[name]; })); } else if (typeof substitution === "function") { var _this = this; return _super[Symbol.replace].call(this, str, function () { var args = []; args.push.apply(args, arguments); if (_typeof(args[args.length - 1]) !== "object") { args.push(buildGroups(args, _this)); } return substitution.apply(this, args); }); } else { return _super[Symbol.replace].call(this, str, substitution); } }; function buildGroups(result, re) { var g = _groups.get(re); return Object.keys(g).reduce(function (groups, name) { groups[name] = result[g[name]]; return groups; }, Object.create(null)); } return _wrapRegExp.apply(this, arguments); }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
+
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
+
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function _wrapNativeSuper(Class) { var _cache = typeof Map === "function" ? new Map() : undefined; _wrapNativeSuper = function _wrapNativeSuper(Class) { if (Class === null || !_isNativeFunction(Class)) return Class; if (typeof Class !== "function") { throw new TypeError("Super expression must either be null or a function"); } if (typeof _cache !== "undefined") { if (_cache.has(Class)) return _cache.get(Class); _cache.set(Class, Wrapper); } function Wrapper() { return _construct(Class, arguments, _getPrototypeOf(this).constructor); } Wrapper.prototype = Object.create(Class.prototype, { constructor: { value: Wrapper, enumerable: false, writable: true, configurable: true } }); return _setPrototypeOf(Wrapper, Class); }; return _wrapNativeSuper(Class); }
+
+function _construct(Parent, args, Class) { if (_isNativeReflectConstruct()) { _construct = Reflect.construct; } else { _construct = function _construct(Parent, args, Class) { var a = [null]; a.push.apply(a, args); var Constructor = Function.bind.apply(Parent, a); var instance = new Constructor(); if (Class) _setPrototypeOf(instance, Class.prototype); return instance; }; } return _construct.apply(null, arguments); }
+
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
+
+function _isNativeFunction(fn) { return Function.toString.call(fn).indexOf("[native code]") !== -1; }
+
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+
+
+
+var cleanAlaskaAirlinesOperatingName = function cleanAlaskaAirlinesOperatingName(airlineName) {
+  var alaskaRegex = /*#__PURE__*/_wrapRegExp(/^([\t-\r 0-9A-Z_a-z\xA0\u1680\u2000-\u200A\u2028\u2029\u202F\u205F\u3000\uFEFF]*)[\t-\r \xA0\u1680\u2000-\u200A\u2028\u2029\u202F\u205F\u3000\uFEFF]+as[\t-\r \xA0\u1680\u2000-\u200A\u2028\u2029\u202F\u205F\u3000\uFEFF]+(alaska)([a-z]{1,20})$/i, {
+    airline: 1,
+    dbaPart1: 2,
+    dbaPart2: 3
+  });
+
+  var cleanedName = airlineName;
+
+  if (alaskaRegex.test(cleanedName)) {
+    var nameGroups = cleanedName.match(alaskaRegex);
+    cleanedName = "".concat(nameGroups.groups.airline, " as ").concat(nameGroups.groups.dbaPart1, " ").concat(lodash_capitalize__WEBPACK_IMPORTED_MODULE_0___default()(nameGroups.groups.dbaPart2));
+  }
+
+  return cleanedName;
+};
+
+var AirlineMap = {
+  airlineDetailsMap: {
+    "American Airlines": {
+      display: "American",
+      color: "#C5423E",
+      code: "AA"
+    },
+    American: {
+      display: "American",
+      color: "#C5423E",
+      code: "AA"
+    },
+    Delta: {
+      display: "Delta",
+      color: "#EE722E",
+      code: "DL"
+    },
+    "Delta Air Lines": {
+      display: "Delta",
+      color: "#EE722E",
+      code: "DL"
+    },
+    "Southwest Airlines": {
+      display: "Southwest",
+      color: "#F6C04D",
+      code: "WN"
+    },
+    Southwest: {
+      display: "Southwest",
+      color: "#F6C04D",
+      code: "WN"
+    },
+    United: {
+      display: "United",
+      color: "#235EA6",
+      code: "UA"
+    },
+    "United Airlines": {
+      display: "United",
+      color: "#235EA6",
+      code: "UA"
+    },
+    "Air Canada": {
+      display: "Air Canada",
+      color: "#E53222",
+      code: "AC"
+    },
+    Alaska: {
+      display: "Alaska",
+      color: "#51172C",
+      code: "AS"
+    },
+    "Alaska Airlines": {
+      display: "Alaska",
+      color: "#51172C",
+      code: "AS"
+    },
+    jetBlue: {
+      display: "jetBlue",
+      color: "#5F90C8",
+      code: "B6"
+    },
+    "JetBlue Airways": {
+      display: "jetBlue",
+      color: "#5F90C8",
+      code: "B6"
+    },
+    Spirit: {
+      display: "Spirit",
+      color: "#BBB140",
+      code: "NK"
+    },
+    "Spirit Airlines": {
+      display: "Spirit",
+      color: "#BBB140",
+      code: "NK"
+    },
+    WestJet: {
+      display: "WestJet",
+      color: "#4BA89C",
+      code: "WS"
+    },
+    Aeromexico: {
+      display: "Aeromexico",
+      color: "#000000",
+      code: "AM"
+    },
+    Frontier: {
+      display: "Frontier",
+      color: "#378055",
+      code: "F9"
+    },
+    "Frontier Airlines": {
+      display: "Frontier",
+      color: "#378055",
+      code: "F9"
+    },
+    // "Volaris": { display: "Volaris", color: "#84417B", code: "Y4" }, // Seems like Priceline doeesn't show Volaris
+    Interjet: {
+      display: "Interjet",
+      color: "#A8A8A8",
+      code: "4O"
+    },
+    // "Allegiant": { display: "Allegiant", color: "#CAB83D", code: "G4" }, // Seems like Priceline doesn't show Allegiant
+    "Hawaiian Airlines": {
+      display: "Hawaiian",
+      color: "#4D388A",
+      code: "HA"
+    },
+    // "VivaAerobus": { display: "VivaAerobus", color: "", code: "" }, // Seems like Priceline doesn't show VivaAerobus
+    "Sun Country": {
+      display: "Sun Country",
+      color: "#D79A71",
+      code: "SY"
+    },
+    "Sun Country Airlines": {
+      display: "Sun Country",
+      color: "#D79A71",
+      code: "SY"
+    },
+    "Porter Airlines": {
+      display: "Porter",
+      color: "#0F2B53",
+      code: "PD"
+    },
+    // "Ryanair": {display: "Ryanair", color: "#ECC954", code: "FR" }, // Seems like Priceline doesn't show Ryanair
+    "China Southern Airlines": {
+      display: "China Southern",
+      color: "#93ACCA",
+      code: "CZ"
+    },
+    Lufthansa: {
+      display: "Lufthansa",
+      color: "#EFB95D",
+      code: "LH"
+    },
+    SWISS: {
+      display: "Swiss",
+      color: "#D42D21",
+      code: "LX"
+    },
+    "China Eastern Airlines": {
+      display: "China Eastern",
+      color: "#A9545F",
+      code: "MU"
+    },
+    "British Airways": {
+      display: "British",
+      color: "#EA8E8C",
+      code: "BA"
+    },
+    Iberia: {
+      display: "Iberia",
+      color: "#D05653",
+      code: "IB"
+    },
+    "Air China": {
+      display: "Air China",
+      color: "#DF524B",
+      code: "CA"
+    },
+    "Emirates Airlines": {
+      display: "Emirates",
+      color: "#CF534F",
+      code: "EK"
+    },
+    "KLM-Royal Dutch Airlines": {
+      display: "KLM",
+      color: "#44A0DC",
+      code: "KL"
+    },
+    "Air France": {
+      display: "Air France",
+      color: "#DB3832",
+      code: "AF"
+    },
+    "Turkish Airlines": {
+      display: "Turkish",
+      color: "#DB3832",
+      code: "TK"
+    },
+    "Cathay Pacific": {
+      display: "Cathay",
+      color: "#2A645A",
+      code: "CX"
+    },
+    "Cathay Dragon": {
+      display: "Cathay",
+      color: "#2A645A",
+      code: "CX"
+    },
+    "EVA Airways": {
+      display: "EVA",
+      color: "#6F9F64",
+      code: "BR"
+    },
+    "China Airlines": {
+      display: "China Airlines",
+      color: "#DAABB1",
+      code: "CI"
+    },
+    "ANA Airlines": {
+      display: "ANA",
+      color: "#254897",
+      code: "NH"
+    },
+    "Japan Airlines": {
+      display: "Japan Airlines",
+      color: "#E56E69",
+      code: "JL"
+    },
+    "Air India": {
+      display: "Air India",
+      color: "#D47346",
+      code: "AI"
+    },
+    "Air India Limited": {
+      display: "Air India",
+      color: "#D47346",
+      code: "AI"
+    },
+    "Qantas Airways": {
+      display: "Qantas",
+      color: "#E34538",
+      code: "QF"
+    },
+    "Singapore Airlines": {
+      display: "Singapore",
+      color: "#EFA952",
+      code: "SQ"
+    },
+    "ANA (All Nippon Airways)": {
+      display: "ANA",
+      color: "#0f4a8d"
+    }
+  },
+  getAirlineName: function getAirlineName(airlineName) {
+    if (!airlineName || typeof airlineName !== "string") {
+      return;
+    }
+
+    var formattedAirlineName = airlineName.trim().replace(/\s+/g, " ");
+    formattedAirlineName = cleanAlaskaAirlinesOperatingName(formattedAirlineName);
+    var airlineDetails = this.airlineDetailsMap[formattedAirlineName];
+
+    if (airlineDetails) {
+      formattedAirlineName = airlineDetails.display;
+    }
+
+    return formattedAirlineName;
+  },
+  getAirlineDetails: function getAirlineDetails(airlineName) {
+    var formattedAirlineName = airlineName.trim().replace(/\s+/g, " ");
+    formattedAirlineName = cleanAlaskaAirlinesOperatingName(formattedAirlineName);
+    return this.airlineDetailsMap[formattedAirlineName] || {
+      display: formattedAirlineName,
+      color: "#DFCCFB"
+    };
+  }
+};
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (AirlineMap);
+
+/***/ }),
+
+/***/ "./src/shared/pause.ts":
+/*!*****************************!*\
+  !*** ./src/shared/pause.ts ***!
+  \*****************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "pause": () => (/* binding */ pause)
+/* harmony export */ });
+function pause() {
+  var timeout = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 10000;
+  var jitterMin = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 0;
+  var jitterMax = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 0;
+  var jitter = 0;
+
+  if (jitterMin && jitterMax) {
+    jitter += getRandomInt(jitterMin, jitterMax);
+  }
+
+  return new Promise(function (resolve) {
+    setTimeout(resolve, timeout + jitter);
+  });
+}
+
+function getRandomInt(min, max) {
+  min = Math.ceil(min);
+  max = Math.floor(max);
+  return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+/***/ }),
+
+/***/ "./src/shared/types/FlightDetails.ts":
+/*!*******************************************!*\
+  !*** ./src/shared/types/FlightDetails.ts ***!
+  \*******************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "FlightDetails": () => (/* binding */ FlightDetails)
+/* harmony export */ });
+/* harmony import */ var _utilityFunctions__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../utilityFunctions */ "./src/utilityFunctions.js");
+/* harmony import */ var _nameMaps_airlineMap__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../nameMaps/airlineMap */ "./src/shared/nameMaps/airlineMap.js");
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+
+
+var FlightDetails = /*#__PURE__*/function () {
+  function FlightDetails(_ref) {
+    var fromTime = _ref.fromTime,
+        toTime = _ref.toTime,
+        operatingAirline = _ref.operatingAirline,
+        marketingAirline = _ref.marketingAirline,
+        duration = _ref.duration,
+        layovers = _ref.layovers;
+
+    _classCallCheck(this, FlightDetails);
+
+    this.fromTime = fromTime;
+    this.fromTimeDetails = this.getTimeDetails(fromTime);
+    this.toTime = toTime;
+    this.toTimeDetails = this.getTimeDetails(toTime);
+    this.duration = duration;
+    this.operatingAirline = _nameMaps_airlineMap__WEBPACK_IMPORTED_MODULE_1__.default.getAirlineName(operatingAirline);
+    this.operatingAirlineDetails = operatingAirline ? _nameMaps_airlineMap__WEBPACK_IMPORTED_MODULE_1__.default.getAirlineDetails(operatingAirline) : null;
+    this.marketingAirline = _nameMaps_airlineMap__WEBPACK_IMPORTED_MODULE_1__.default.getAirlineName(marketingAirline);
+    this.marketingAirlineDetails = marketingAirline ? _nameMaps_airlineMap__WEBPACK_IMPORTED_MODULE_1__.default.getAirlineDetails(marketingAirline) : null;
+    this.layovers = layovers;
+    this.timezoneOffset = this.getTimezoneOffset();
+    this.id = this.getFlightPenguinId();
+  }
+
+  _createClass(FlightDetails, [{
+    key: "getTimeDetails",
+    value: function getTimeDetails(time) {
+      var _convertTimeTo24HourC = (0,_utilityFunctions__WEBPACK_IMPORTED_MODULE_0__.convertTimeTo24HourClock)(time, true),
+          hours = _convertTimeTo24HourC.hours,
+          minutes = _convertTimeTo24HourC.minutes;
+
+      var timeOfDay = time.toLowerCase().includes("pm") ? "pm" : "am";
+      var excessDays = time.match(/(\+\d)/);
+      var displayHours = Number(time.split(":")[0]); // want 12 hour clock
+
+      return {
+        hours: hours,
+        displayHours: displayHours,
+        minutes: minutes,
+        timeOfDay: timeOfDay,
+        excessDays: excessDays ? excessDays[0] : excessDays
+      };
+    }
+  }, {
+    key: "getFlightPenguinId",
+    value: function getFlightPenguinId() {
+      return "".concat(this.operatingAirline, "-").concat(this.fromTime, "-").concat(this.toTime);
+    }
+  }, {
+    key: "getTimezoneOffset",
+    value: function getTimezoneOffset() {
+      return (0,_utilityFunctions__WEBPACK_IMPORTED_MODULE_0__.getTimezoneOffset)(this.fromTime, this.toTime, this.duration);
+    }
+  }]);
+
+  return FlightDetails;
+}();
+
+/***/ }),
+
+/***/ "./src/shared/ui/backToSearch.ts":
+/*!***************************************!*\
+  !*** ./src/shared/ui/backToSearch.ts ***!
+  \***************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "addBackToSearchButton": () => (/* binding */ addBackToSearchButton)
+/* harmony export */ });
+var addBackToSearchButton = function addBackToSearchButton() {
+  var backToSearchSelector = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : "#back-to-search";
+
+  if (document.querySelector(backToSearchSelector)) {
+    return;
+  }
+
+  var button = document.createElement("button");
+  button.id = "back-to-search";
+  button.textContent = "Return to FlightPenguin";
+  button.title = "Click to return to FlightPenguin and keep browsing.";
+  button.addEventListener("click", handleBackToSearchButtonClick);
+  document.body.append(button);
+};
+
+function handleBackToSearchButtonClick() {
+  chrome.runtime.sendMessage({
+    event: "FOCUS_WEBPAGE"
+  });
+}
+
+/***/ }),
+
+/***/ "./src/shared/ui/manageSelectionHighlights.ts":
+/*!****************************************************!*\
+  !*** ./src/shared/ui/manageSelectionHighlights.ts ***!
+  \****************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "highlightSelectedElement": () => (/* binding */ highlightSelectedElement),
+/* harmony export */   "clearHighlightFromElement": () => (/* binding */ clearHighlightFromElement)
+/* harmony export */ });
+var highlightSelectedElement = function highlightSelectedElement(element) {
+  element.style.border = "10px solid #f2554b";
+  element.style.borderRadius = "6px";
+  element.style.paddingTop = "25px";
+  element.style.paddingBottom = "25px";
+  element.dataset.selected = "true";
+};
+var clearHighlightFromElement = function clearHighlightFromElement(element) {
+  element.dataset.selected = "false";
+  element.style.border = "";
+  element.style.paddingTop = "0px";
+  element.style.paddingBottom = "0px";
+  element.style.borderRadius = "0px";
+};
+
+/***/ }),
+
+/***/ "./src/shared/utilities/isVisible.ts":
+/*!*******************************************!*\
+  !*** ./src/shared/utilities/isVisible.ts ***!
+  \*******************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "isVisible": () => (/* binding */ isVisible)
+/* harmony export */ });
+var isVisible = function isVisible(element) {
+  return element.offsetWidth > 0 && element.offsetHeight > 0;
+};
+
+/***/ }),
+
+/***/ "./src/shared/utilities/waitFor.ts":
+/*!*****************************************!*\
+  !*** ./src/shared/utilities/waitFor.ts ***!
+  \*****************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "waitForDisappearance": () => (/* binding */ waitForDisappearance),
+/* harmony export */   "waitForAppearance": () => (/* binding */ waitForAppearance),
+/* harmony export */   "waitForInvisible": () => (/* binding */ waitForInvisible)
+/* harmony export */ });
+/* harmony import */ var wait_for_the_element__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! wait-for-the-element */ "./node_modules/wait-for-the-element/wait-for-the-element.js");
+/* harmony import */ var _errors__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../errors */ "./src/shared/errors.ts");
+/* harmony import */ var _isVisible__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./isVisible */ "./src/shared/utilities/isVisible.ts");
+function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
+
+function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
+
+
+
+
+var waitForDisappearance = /*#__PURE__*/function () {
+  var _ref = _asyncToGenerator(function* (loadingTimeout, selector) {
+    var doc = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : window.document;
+
+    if (doc.querySelector(selector)) {
+      var loadingIndicator = yield (0,wait_for_the_element__WEBPACK_IMPORTED_MODULE_0__.waitForTheElementToDisappear)(selector, {
+        timeout: loadingTimeout,
+        // @ts-ignore
+        scope: doc
+      });
+
+      if (!loadingIndicator) {
+        throw new _errors__WEBPACK_IMPORTED_MODULE_1__.LoadingTimeoutParserError("Took longer than ".concat(loadingTimeout, " ms to make the loading indicator (").concat(selector, ") disappear"));
+      }
+    }
+  });
+
+  return function waitForDisappearance(_x, _x2) {
+    return _ref.apply(this, arguments);
+  };
+}();
+var waitForAppearance = /*#__PURE__*/function () {
+  var _ref2 = _asyncToGenerator(function* () {
+    var loadingTimeout = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 3000;
+    var selector = arguments.length > 1 ? arguments[1] : undefined;
+    var doc = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : window.document;
+    var container = doc.querySelector(selector);
+
+    if (!container) {
+      container = yield (0,wait_for_the_element__WEBPACK_IMPORTED_MODULE_0__.waitForTheElement)(selector, {
+        timeout: loadingTimeout,
+        scope: doc
+      });
+
+      if (!container) {
+        throw new _errors__WEBPACK_IMPORTED_MODULE_1__.LoadingTimeoutParserError("Render of ".concat(selector, " failed to complete in ").concat(loadingTimeout));
+      }
+    }
+
+    return container;
+  });
+
+  return function waitForAppearance() {
+    return _ref2.apply(this, arguments);
+  };
+}();
+var waitForInvisible = /*#__PURE__*/function () {
+  var _ref3 = _asyncToGenerator(function* () {
+    var disappearanceTimeout = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 5000;
+    var selector = arguments.length > 1 ? arguments[1] : undefined;
+    var doc = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : window.document;
+    var visible = true;
+    var startTime = new Date();
+
+    while (visible && startTime.valueOf() - new Date().valueOf() < disappearanceTimeout) {
+      var selectedElement = doc.querySelector(selector);
+
+      if (!selectedElement) {
+        visible = false;
+      }
+
+      visible = (0,_isVisible__WEBPACK_IMPORTED_MODULE_2__.isVisible)(selectedElement);
+    }
+
+    if (visible) {
+      throw new _errors__WEBPACK_IMPORTED_MODULE_1__.LoadingTimeoutParserError("Took longer than ".concat(disappearanceTimeout, " to make ").concat(selector, " disappear"));
+    }
+  });
+
+  return function waitForInvisible() {
+    return _ref3.apply(this, arguments);
+  };
+}();
+
+/***/ }),
+
+/***/ "./src/skiplagged/parser/getAirlines.ts":
+/*!**********************************************!*\
+  !*** ./src/skiplagged/parser/getAirlines.ts ***!
+  \**********************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "getAirlines": () => (/* binding */ getAirlines)
+/* harmony export */ });
+/* harmony import */ var _shared_errors__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../shared/errors */ "./src/shared/errors.ts");
+
+var TRIP_AIRLINES_SELECTOR = "span.airlines";
+var getAirlines = function getAirlines(flightCard) {
+  var _airlineTooltipContai;
+
+  var airlineTooltipContainer = flightCard.querySelector(TRIP_AIRLINES_SELECTOR);
+
+  if (!airlineTooltipContainer) {
+    throw new _shared_errors__WEBPACK_IMPORTED_MODULE_0__.MissingElementLookupError("Unable to find airline tooltip container");
+  }
+
+  var unparsedHtml = (_airlineTooltipContai = airlineTooltipContainer.dataset) === null || _airlineTooltipContai === void 0 ? void 0 : _airlineTooltipContai.originalTitle;
+
+  if (!unparsedHtml) {
+    throw new _shared_errors__WEBPACK_IMPORTED_MODULE_0__.MissingFieldParserError("Unable to find original title of tooltip");
+  }
+
+  var parser = new DOMParser();
+  var parsedDocument = parser.parseFromString(unparsedHtml, "text/html");
+  var airlineElements = parsedDocument.querySelectorAll("span");
+
+  if (!airlineElements) {
+    throw new _shared_errors__WEBPACK_IMPORTED_MODULE_0__.MissingFieldParserError("Unable to find span in tooltip");
+  }
+
+  return Array.from(airlineElements).map(function (span) {
+    return span.textContent || "";
+  });
+};
+
+/***/ }),
+
+/***/ "./src/skiplagged/parser/getFlightContainer.ts":
+/*!*****************************************************!*\
+  !*** ./src/skiplagged/parser/getFlightContainer.ts ***!
+  \*****************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "getFlightContainer": () => (/* binding */ getFlightContainer)
+/* harmony export */ });
+/* harmony import */ var _shared_errors__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../shared/errors */ "./src/shared/errors.ts");
+/* harmony import */ var _shared_pause__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../shared/pause */ "./src/shared/pause.ts");
+/* harmony import */ var _shared_utilities_waitFor__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../shared/utilities/waitFor */ "./src/shared/utilities/waitFor.ts");
+function _slicedToArray(arr, i) { return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _unsupportedIterableToArray(arr, i) || _nonIterableRest(); }
+
+function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
+
+function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
+
+function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
+
+function _iterableToArrayLimit(arr, i) { if (typeof Symbol === "undefined" || !(Symbol.iterator in Object(arr))) return; var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"] != null) _i["return"](); } finally { if (_d) throw _e; } } return _arr; }
+
+function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
+
+function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
+
+function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
+
+
+
+
+var FLIGHT_CARDS_CONTAINER_SELECTOR = ".trip-list";
+var INFINITE_SCROLL_CONTAINER_SELECTOR = ".infinite-trip-list";
+var getFlightContainer = /*#__PURE__*/function () {
+  var _ref = _asyncToGenerator(function* (selectedFlight) {
+    (0,_shared_utilities_waitFor__WEBPACK_IMPORTED_MODULE_2__.waitForAppearance)(45000, FLIGHT_CARDS_CONTAINER_SELECTOR);
+    var flightType = selectedFlight ? "RETURN" : "DEPARTURE";
+
+    var _ref2 = document.querySelectorAll(FLIGHT_CARDS_CONTAINER_SELECTOR),
+        _ref3 = _slicedToArray(_ref2, 2),
+        departureContainer = _ref3[0],
+        returnContainer = _ref3[1];
+
+    var container = selectedFlight ? returnContainer : departureContainer;
+
+    if (!container) {
+      yield (0,_shared_pause__WEBPACK_IMPORTED_MODULE_1__.pause)(60000);
+      throw new _shared_errors__WEBPACK_IMPORTED_MODULE_0__.MissingElementLookupError("Unable to locate ".concat(flightType.toLowerCase(), " container"));
+    }
+
+    var tripListElement = container.querySelector(INFINITE_SCROLL_CONTAINER_SELECTOR);
+
+    if (!tripListElement) {
+      throw new _shared_errors__WEBPACK_IMPORTED_MODULE_0__.MissingElementLookupError("Unable to locate infinite scroll container for ".concat(flightType.toLowerCase()));
+    }
+
+    var tripListContainer = tripListElement.children[0];
+
+    if (!tripListContainer) {
+      throw new _shared_errors__WEBPACK_IMPORTED_MODULE_0__.MissingElementLookupError("Unable to locate infinite scroll container child for ".concat(flightType.toLowerCase()));
+    }
+
+    return tripListContainer;
+  });
+
+  return function getFlightContainer(_x) {
+    return _ref.apply(this, arguments);
+  };
+}();
+
+/***/ }),
+
+/***/ "./src/skiplagged/parser/getFlightDetails.ts":
+/*!***************************************************!*\
+  !*** ./src/skiplagged/parser/getFlightDetails.ts ***!
+  \***************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "getFlightDetails": () => (/* binding */ getFlightDetails)
+/* harmony export */ });
+/* harmony import */ var _shared_errors__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../shared/errors */ "./src/shared/errors.ts");
+/* harmony import */ var _shared_helpers__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../shared/helpers */ "./src/shared/helpers.js");
+/* harmony import */ var _shared_types_FlightDetails__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../shared/types/FlightDetails */ "./src/shared/types/FlightDetails.ts");
+/* harmony import */ var _shared_utilities_waitFor__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../shared/utilities/waitFor */ "./src/shared/utilities/waitFor.ts");
+/* harmony import */ var _getAirlines__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./getAirlines */ "./src/skiplagged/parser/getAirlines.ts");
+/* harmony import */ var _getLayovers__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./getLayovers */ "./src/skiplagged/parser/getLayovers.ts");
+/* harmony import */ var _getParsedAirlineName__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./getParsedAirlineName */ "./src/skiplagged/parser/getParsedAirlineName.ts");
+function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _unsupportedIterableToArray(arr) || _nonIterableSpread(); }
+
+function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
+
+function _iterableToArray(iter) { if (typeof Symbol !== "undefined" && Symbol.iterator in Object(iter)) return Array.from(iter); }
+
+function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) return _arrayLikeToArray(arr); }
+
+function _createForOfIteratorHelper(o, allowArrayLike) { var it; if (typeof Symbol === "undefined" || o[Symbol.iterator] == null) { if (Array.isArray(o) || (it = _unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = o[Symbol.iterator](); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it["return"] != null) it["return"](); } finally { if (didErr) throw err; } } }; }
+
+function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
+
+function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
+
+function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
+
+function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
+
+
+
+
+
+
+
+
+var CONTAINER_SHELL_SELECTOR = "section #trip-list-wrapper";
+var SORT_BUTTON_SELECTOR = "[data-sort='cost']";
+var DURATION_SELECTOR = "span.trip-path-duration";
+var TRIP_TIME_SELECTOR = "div[class*='trip-path-point-time']";
+var HAS_STOP_REGEX = /\d{1,2} stops?/i;
+var getFlightDetails = /*#__PURE__*/function () {
+  var _ref = _asyncToGenerator(function* (flightCard) {
+    yield (0,_shared_utilities_waitFor__WEBPACK_IMPORTED_MODULE_3__.waitForAppearance)(3000, CONTAINER_SHELL_SELECTOR);
+    yield (0,_shared_utilities_waitFor__WEBPACK_IMPORTED_MODULE_3__.waitForAppearance)(10000, SORT_BUTTON_SELECTOR);
+    var marketingAirline = getAirlineName(flightCard);
+    var fromTime = getDepartureTime(flightCard);
+    var toTime = getArrivalTime(flightCard);
+
+    var _getDurationDetails = getDurationDetails(flightCard),
+        duration = _getDurationDetails.duration,
+        hasStops = _getDurationDetails.hasStops;
+
+    var layovers = (0,_getLayovers__WEBPACK_IMPORTED_MODULE_5__.getLayovers)(flightCard);
+
+    if (!hasStops) {
+      layovers = [];
+    }
+
+    return new _shared_types_FlightDetails__WEBPACK_IMPORTED_MODULE_2__.FlightDetails({
+      marketingAirline: marketingAirline,
+      operatingAirline: null,
+      layovers: layovers,
+      duration: duration,
+      fromTime: fromTime,
+      toTime: toTime
+    });
+  });
+
+  return function getFlightDetails(_x) {
+    return _ref.apply(this, arguments);
+  };
+}();
+
+var getDurationDetails = function getDurationDetails(flightCard) {
+  var _durationContainer$te, _durationContainer$te2;
+
+  var durationContainer = flightCard.querySelector(DURATION_SELECTOR);
+
+  if (!durationContainer) {
+    throw new _shared_errors__WEBPACK_IMPORTED_MODULE_0__.MissingElementLookupError("Unable to lookup flight duration time");
+  }
+
+  var duration = (_durationContainer$te = durationContainer.textContent) === null || _durationContainer$te === void 0 ? void 0 : _durationContainer$te.split("|")[0].trim();
+  var hasStops = HAS_STOP_REGEX.test(((_durationContainer$te2 = durationContainer.textContent) === null || _durationContainer$te2 === void 0 ? void 0 : _durationContainer$te2.split("|")[1].trim()) || "");
+
+  if (!duration) {
+    throw new _shared_errors__WEBPACK_IMPORTED_MODULE_0__.MissingFieldParserError("Unable to determine duration time for flight");
+  }
+
+  return {
+    duration: duration,
+    hasStops: hasStops
+  };
+};
+
+var getAirlineName = function getAirlineName(flightCard) {
+  var airlineNames = new Set();
+  var flightNames = (0,_getAirlines__WEBPACK_IMPORTED_MODULE_4__.getAirlines)(flightCard);
+
+  var _iterator = _createForOfIteratorHelper(flightNames),
+      _step;
+
+  try {
+    for (_iterator.s(); !(_step = _iterator.n()).done;) {
+      var flightName = _step.value;
+      var airlineName = (0,_getParsedAirlineName__WEBPACK_IMPORTED_MODULE_6__.getParsedAirlineName)(flightName);
+      airlineNames.add(airlineName);
+    }
+  } catch (err) {
+    _iterator.e(err);
+  } finally {
+    _iterator.f();
+  }
+
+  return airlineNames.size === 1 ? _toConsumableArray(airlineNames)[0] : "Multiple airlines";
+};
+
+var getDepartureTime = function getDepartureTime(flightCard) {
+  var _timeElement$dataset;
+
+  var timeElement = flightCard.querySelector(TRIP_TIME_SELECTOR);
+
+  if (!timeElement) {
+    throw new _shared_errors__WEBPACK_IMPORTED_MODULE_0__.MissingElementLookupError("Unable to determine departure time");
+  }
+
+  var time = timeElement.textContent;
+
+  if (!time) {
+    throw new _shared_errors__WEBPACK_IMPORTED_MODULE_0__.MissingFieldParserError("Unable to extract departure time");
+  }
+
+  var dayDifference = parseInt(((_timeElement$dataset = timeElement.dataset) === null || _timeElement$dataset === void 0 ? void 0 : _timeElement$dataset.diffDays) || "0");
+
+  if (dayDifference) {
+    time += "+".concat(dayDifference);
+  }
+
+  return (0,_shared_helpers__WEBPACK_IMPORTED_MODULE_1__.standardizeTimeString)(time);
+};
+
+var getArrivalTime = function getArrivalTime(flightCard) {
+  var _timeElement$dataset2;
+
+  var timeElements = flightCard.querySelectorAll(TRIP_TIME_SELECTOR);
+
+  if (!timeElements) {
+    throw new _shared_errors__WEBPACK_IMPORTED_MODULE_0__.MissingElementLookupError("Unable to find time elements");
+  }
+
+  var timeElement = Array.from(timeElements).slice(-1)[0];
+
+  if (!timeElement) {
+    throw new _shared_errors__WEBPACK_IMPORTED_MODULE_0__.MissingElementLookupError("Unable to find arrival time");
+  }
+
+  var time = timeElement.textContent;
+
+  if (!time) {
+    throw new _shared_errors__WEBPACK_IMPORTED_MODULE_0__.MissingFieldParserError("Unable to extract arrival time");
+  }
+
+  var dayDifference = parseInt(((_timeElement$dataset2 = timeElement.dataset) === null || _timeElement$dataset2 === void 0 ? void 0 : _timeElement$dataset2.diffDays) || "0");
+
+  if (dayDifference) {
+    time += "+".concat(dayDifference);
+  }
+
+  return (0,_shared_helpers__WEBPACK_IMPORTED_MODULE_1__.standardizeTimeString)(time);
+};
+
+/***/ }),
+
+/***/ "./src/skiplagged/parser/getLayovers.ts":
+/*!**********************************************!*\
+  !*** ./src/skiplagged/parser/getLayovers.ts ***!
+  \**********************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "getLayovers": () => (/* binding */ getLayovers)
+/* harmony export */ });
+/* harmony import */ var _shared_errors__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../shared/errors */ "./src/shared/errors.ts");
+/* harmony import */ var _shared_helpers__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../shared/helpers */ "./src/shared/helpers.js");
+/* harmony import */ var _getAirlines__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./getAirlines */ "./src/skiplagged/parser/getAirlines.ts");
+/* harmony import */ var _getParsedAirlineName__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./getParsedAirlineName */ "./src/skiplagged/parser/getParsedAirlineName.ts");
+function _createForOfIteratorHelper(o, allowArrayLike) { var it; if (typeof Symbol === "undefined" || o[Symbol.iterator] == null) { if (Array.isArray(o) || (it = _unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = o[Symbol.iterator](); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it["return"] != null) it["return"](); } finally { if (didErr) throw err; } } }; }
+
+function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
+
+function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
+
+
+
+
+
+var TRIP_OVERVIEW_SELECTOR = "div.trip-path";
+var TRIP_COMPONENT_SELECTOR = ".trip-path-point, .trip-path-spacer";
+var TRIP_TIME_SELECTOR = "div[class*='trip-path-point-time']";
+var TRIP_AIRPORT_SELECTOR = "span[class='airport-code']";
+var TRIP_DURATION_SELECTOR = ".trip-path-spacer-label";
+var TRIP_WAYPOINT_CLASSNAME_REGEX = /trip-path-point\b/;
+var TRIP_SPACER_CLASSNAME_REGEX = /trip-path-spacer\b/;
+var getLayovers = function getLayovers(flightCard) {
+  var tripContainer = flightCard.querySelector(TRIP_OVERVIEW_SELECTOR);
+
+  if (!tripContainer) {
+    throw new _shared_errors__WEBPACK_IMPORTED_MODULE_0__.MissingElementLookupError("Unable to lookup trip container");
+  }
+
+  var tripComponents = tripContainer.querySelectorAll(TRIP_COMPONENT_SELECTOR);
+
+  if (!tripComponents) {
+    throw new _shared_errors__WEBPACK_IMPORTED_MODULE_0__.MissingElementLookupError("Unable to lookup trip components");
+  }
+
+  var airlines = (0,_getAirlines__WEBPACK_IMPORTED_MODULE_2__.getAirlines)(flightCard);
+  var layovers = [];
+  var incomplete = {};
+  var previousDayDifference = 0;
+  var skipNext = false;
+
+  var _iterator = _createForOfIteratorHelper(tripComponents),
+      _step;
+
+  try {
+    for (_iterator.s(); !(_step = _iterator.n()).done;) {
+      var component = _step.value;
+
+      if (skipNext) {
+        skipNext = false;
+        continue;
+      }
+
+      var className = component.getAttribute("class") || "";
+
+      switch (true) {
+        case TRIP_WAYPOINT_CLASSNAME_REGEX.test(className):
+          if (incomplete.from) {
+            incomplete.to = getWaypointAirport(component);
+
+            var _getWaypointTime = getWaypointTime(component, previousDayDifference),
+                time = _getWaypointTime.time,
+                delta = _getWaypointTime.dateDifference;
+
+            incomplete.toTime = time;
+            previousDayDifference = delta;
+            layovers.push(incomplete);
+            incomplete = {};
+            skipNext = true;
+          } else {
+            incomplete.from = getWaypointAirport(component);
+
+            var _getWaypointTime2 = getWaypointTime(component, previousDayDifference),
+                _time = _getWaypointTime2.time,
+                _delta = _getWaypointTime2.dateDifference;
+
+            incomplete.fromTime = _time;
+            previousDayDifference = _delta;
+          }
+
+          break;
+
+        case TRIP_SPACER_CLASSNAME_REGEX.test(className):
+          incomplete.duration = getDuration(component);
+          incomplete.operatingAirline = (0,_getParsedAirlineName__WEBPACK_IMPORTED_MODULE_3__.getParsedAirlineName)(airlines[layovers.length]);
+          break;
+
+        default:
+          throw new _shared_errors__WEBPACK_IMPORTED_MODULE_0__.ParserError("Unknown case option ".concat(component.getAttribute("class")));
+      }
+    }
+  } catch (err) {
+    _iterator.e(err);
+  } finally {
+    _iterator.f();
+  }
+
+  if (!layovers) {
+    throw new _shared_errors__WEBPACK_IMPORTED_MODULE_0__.ParserError("Unable to identify layovers");
+  }
+
+  return layovers;
+};
+
+var getWaypointTime = function getWaypointTime(waypointContainer, previousDayDifference) {
+  var _timeElement$dataset;
+
+  /*
+     Skiplagged sanely displays the +1 above each date.
+     Our date system expects the +n to only occur on the actual transition for the difference between the two times.
+     So, we have to keep track of previous date diffs to make our dates happy.  Whrgrbl!
+  */
+  var timeElement = waypointContainer.querySelector(TRIP_TIME_SELECTOR);
+
+  if (!timeElement) {
+    throw new _shared_errors__WEBPACK_IMPORTED_MODULE_0__.MissingElementLookupError("Unable to determine waypoint time");
+  }
+
+  var time = timeElement.textContent;
+
+  if (!time) {
+    throw new _shared_errors__WEBPACK_IMPORTED_MODULE_0__.MissingFieldParserError("Unable to extract time");
+  }
+
+  var dateDelta = parseInt(((_timeElement$dataset = timeElement.dataset) === null || _timeElement$dataset === void 0 ? void 0 : _timeElement$dataset.diffDays) || "0");
+
+  if (dateDelta && dateDelta > previousDayDifference) {
+    time += "+".concat(dateDelta - previousDayDifference);
+  }
+
+  return {
+    time: (0,_shared_helpers__WEBPACK_IMPORTED_MODULE_1__.standardizeTimeString)(time),
+    dateDifference: dateDelta
+  };
+};
+
+var getWaypointAirport = function getWaypointAirport(waypointContainer) {
+  var airportElement = waypointContainer.querySelector(TRIP_AIRPORT_SELECTOR);
+
+  if (!airportElement) {
+    throw new _shared_errors__WEBPACK_IMPORTED_MODULE_0__.MissingElementLookupError("Unable to determine waypoint airport");
+  }
+
+  var airportCode = airportElement.textContent;
+
+  if (!airportCode) {
+    throw new _shared_errors__WEBPACK_IMPORTED_MODULE_0__.MissingFieldParserError("Unable to extract airport code");
+  }
+
+  return airportCode;
+};
+
+var getDuration = function getDuration(spacerContainer) {
+  var durationElement = spacerContainer.querySelector(TRIP_DURATION_SELECTOR);
+
+  if (!durationElement) {
+    throw new _shared_errors__WEBPACK_IMPORTED_MODULE_0__.MissingElementLookupError("Unable to determine spacer duration");
+  }
+
+  var duration = durationElement.textContent;
+
+  if (!duration) {
+    throw new _shared_errors__WEBPACK_IMPORTED_MODULE_0__.MissingFieldParserError("Unable to extract duration");
+  }
+
+  return duration.trim();
+};
+
+/***/ }),
+
+/***/ "./src/skiplagged/parser/getParsedAirlineName.ts":
+/*!*******************************************************!*\
+  !*** ./src/skiplagged/parser/getParsedAirlineName.ts ***!
+  \*******************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "getParsedAirlineName": () => (/* binding */ getParsedAirlineName)
+/* harmony export */ });
+/* harmony import */ var _shared_errors__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../shared/errors */ "./src/shared/errors.ts");
+/* harmony import */ var _shared_nameMaps_airlineMap_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../shared/nameMaps/airlineMap.js */ "./src/shared/nameMaps/airlineMap.js");
+function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+
+function _wrapRegExp(re, groups) { _wrapRegExp = function _wrapRegExp(re, groups) { return new BabelRegExp(re, undefined, groups); }; var _RegExp = _wrapNativeSuper(RegExp); var _super = RegExp.prototype; var _groups = new WeakMap(); function BabelRegExp(re, flags, groups) { var _this = _RegExp.call(this, re, flags); _groups.set(_this, groups || _groups.get(re)); return _this; } _inherits(BabelRegExp, _RegExp); BabelRegExp.prototype.exec = function (str) { var result = _super.exec.call(this, str); if (result) result.groups = buildGroups(result, this); return result; }; BabelRegExp.prototype[Symbol.replace] = function (str, substitution) { if (typeof substitution === "string") { var groups = _groups.get(this); return _super[Symbol.replace].call(this, str, substitution.replace(/\$<([^>]+)>/g, function (_, name) { return "$" + groups[name]; })); } else if (typeof substitution === "function") { var _this = this; return _super[Symbol.replace].call(this, str, function () { var args = []; args.push.apply(args, arguments); if (_typeof(args[args.length - 1]) !== "object") { args.push(buildGroups(args, _this)); } return substitution.apply(this, args); }); } else { return _super[Symbol.replace].call(this, str, substitution); } }; function buildGroups(result, re) { var g = _groups.get(re); return Object.keys(g).reduce(function (groups, name) { groups[name] = result[g[name]]; return groups; }, Object.create(null)); } return _wrapRegExp.apply(this, arguments); }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
+
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
+
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function _wrapNativeSuper(Class) { var _cache = typeof Map === "function" ? new Map() : undefined; _wrapNativeSuper = function _wrapNativeSuper(Class) { if (Class === null || !_isNativeFunction(Class)) return Class; if (typeof Class !== "function") { throw new TypeError("Super expression must either be null or a function"); } if (typeof _cache !== "undefined") { if (_cache.has(Class)) return _cache.get(Class); _cache.set(Class, Wrapper); } function Wrapper() { return _construct(Class, arguments, _getPrototypeOf(this).constructor); } Wrapper.prototype = Object.create(Class.prototype, { constructor: { value: Wrapper, enumerable: false, writable: true, configurable: true } }); return _setPrototypeOf(Wrapper, Class); }; return _wrapNativeSuper(Class); }
+
+function _construct(Parent, args, Class) { if (_isNativeReflectConstruct()) { _construct = Reflect.construct; } else { _construct = function _construct(Parent, args, Class) { var a = [null]; a.push.apply(a, args); var Constructor = Function.bind.apply(Parent, a); var instance = new Constructor(); if (Class) _setPrototypeOf(instance, Class.prototype); return instance; }; } return _construct.apply(null, arguments); }
+
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
+
+function _isNativeFunction(fn) { return Function.toString.call(fn).indexOf("[native code]") !== -1; }
+
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+
+
+
+
+var AIRLINE_NAME_REGEX = /*#__PURE__*/_wrapRegExp(/^([ A-Za-z]*)[\t-\r \xA0\u1680\u2000-\u200A\u2028\u2029\u202F\u205F\u3000\uFEFF]*([Ff]light)[\t-\r \xA0\u1680\u2000-\u200A\u2028\u2029\u202F\u205F\u3000\uFEFF]*([0-9]*)$/, {
+  Airline: 1,
+  Flight: 2,
+  Number: 3
+});
+
+var getParsedAirlineName = function getParsedAirlineName(flightName) {
+  var _flightName$match, _flightName$match$gro, _flightName$match$gro2;
+
+  var result = (_flightName$match = flightName.match(AIRLINE_NAME_REGEX)) === null || _flightName$match === void 0 ? void 0 : (_flightName$match$gro = _flightName$match.groups) === null || _flightName$match$gro === void 0 ? void 0 : (_flightName$match$gro2 = _flightName$match$gro.Airline) === null || _flightName$match$gro2 === void 0 ? void 0 : _flightName$match$gro2.trim();
+
+  if (!result) {
+    throw new _shared_errors__WEBPACK_IMPORTED_MODULE_0__.ParserError("Unable to extract airline name from ".concat(flightName));
+  }
+
+  var fullName = _shared_nameMaps_airlineMap_js__WEBPACK_IMPORTED_MODULE_1__.default.getAirlineName(result);
+
+  if (!fullName) {
+    throw new _shared_errors__WEBPACK_IMPORTED_MODULE_0__.ParserError("Unable to extract airline name from airline map");
+  }
+
+  return fullName;
+};
+
+/***/ }),
+
+/***/ "./src/skiplagged/parser/observer.ts":
+/*!*******************************************!*\
+  !*** ./src/skiplagged/parser/observer.ts ***!
+  \*******************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "FlightObserver": () => (/* binding */ FlightObserver)
+/* harmony export */ });
+/* harmony import */ var _sendFlights__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./sendFlights */ "./src/skiplagged/parser/sendFlights.ts");
+function _createForOfIteratorHelper(o, allowArrayLike) { var it; if (typeof Symbol === "undefined" || o[Symbol.iterator] == null) { if (Array.isArray(o) || (it = _unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = o[Symbol.iterator](); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it["return"] != null) it["return"](); } finally { if (didErr) throw err; } } }; }
+
+function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
+
+function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
+
+function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
+
+function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+
+var FlightObserver = /*#__PURE__*/function () {
+  function FlightObserver() {
+    var selectedFlight = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : null;
+
+    _classCallCheck(this, FlightObserver);
+
+    this.flightMap = {}; // eslint-disable-next-line @typescript-eslint/no-this-alias
+
+    var that = this;
+    this.observer = new MutationObserver( /*#__PURE__*/function () {
+      var _ref = _asyncToGenerator(function* (mutations) {
+        var flightCards = [];
+
+        var _iterator = _createForOfIteratorHelper(mutations),
+            _step;
+
+        try {
+          for (_iterator.s(); !(_step = _iterator.n()).done;) {
+            var mutation = _step.value;
+            flightCards = flightCards.concat(Array.from(mutation.addedNodes));
+          }
+        } catch (err) {
+          _iterator.e(err);
+        } finally {
+          _iterator.f();
+        }
+
+        var newFlightMaps = yield (0,_sendFlights__WEBPACK_IMPORTED_MODULE_0__.sendFlights)(flightCards, that.flightMap, selectedFlight);
+        that.addNewFlightsToMap(newFlightMaps);
+      });
+
+      return function (_x) {
+        return _ref.apply(this, arguments);
+      };
+    }());
+  }
+
+  _createClass(FlightObserver, [{
+    key: "addNewFlightsToMap",
+    value: function addNewFlightsToMap(mappings) {
+      for (var flightPenguinId in mappings) {
+        var _mappings$flightPengu = mappings[flightPenguinId],
+            skiplaggedId = _mappings$flightPengu.skiplaggedId,
+            lastUpdatedAt = _mappings$flightPengu.lastUpdatedAt;
+        var currentRecord = this.flightMap[flightPenguinId];
+
+        if (currentRecord) {
+          if (currentRecord.skiplaggedId !== skiplaggedId && lastUpdatedAt > currentRecord.lastUpdatedAt) {
+            this.flightMap[flightPenguinId] = {
+              skiplaggedId: skiplaggedId,
+              lastUpdatedAt: lastUpdatedAt
+            };
+          }
+        } else {
+          this.flightMap[flightPenguinId] = {
+            skiplaggedId: skiplaggedId,
+            lastUpdatedAt: lastUpdatedAt
+          };
+        }
+      }
+    }
+  }, {
+    key: "getSkiplaggedId",
+    value: function getSkiplaggedId(flightPenguinId) {
+      return this.flightMap[flightPenguinId]["skiplaggedId"];
+    }
+  }, {
+    key: "beginObservation",
+    value: function beginObservation(flightContainer) {
+      this.observer.observe(flightContainer, {
+        childList: true
+      });
+    }
+  }, {
+    key: "endObservation",
+    value: function endObservation() {
+      this.observer.disconnect();
+    }
+  }, {
+    key: "getFlightMap",
+    value: function getFlightMap() {
+      return this.flightMap;
+    }
+  }]);
+
+  return FlightObserver;
+}();
+
+/***/ }),
+
+/***/ "./src/skiplagged/parser/sendFlights.ts":
+/*!**********************************************!*\
+  !*** ./src/skiplagged/parser/sendFlights.ts ***!
+  \**********************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "sendFlights": () => (/* binding */ sendFlights)
+/* harmony export */ });
+/* harmony import */ var _shared_errors__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../shared/errors */ "./src/shared/errors.ts");
+/* harmony import */ var _shared_events__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../shared/events */ "./src/shared/events/index.ts");
+/* harmony import */ var _getFlightDetails__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./getFlightDetails */ "./src/skiplagged/parser/getFlightDetails.ts");
+function _slicedToArray(arr, i) { return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _unsupportedIterableToArray(arr, i) || _nonIterableRest(); }
+
+function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
+
+function _iterableToArrayLimit(arr, i) { if (typeof Symbol === "undefined" || !(Symbol.iterator in Object(arr))) return; var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"] != null) _i["return"](); } finally { if (_d) throw _e; } } return _arr; }
+
+function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
+
+function _createForOfIteratorHelper(o, allowArrayLike) { var it; if (typeof Symbol === "undefined" || o[Symbol.iterator] == null) { if (Array.isArray(o) || (it = _unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e2) { throw _e2; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = o[Symbol.iterator](); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e3) { didErr = true; err = _e3; }, f: function f() { try { if (!normalCompletion && it["return"] != null) it["return"](); } finally { if (didErr) throw err; } } }; }
+
+function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
+
+function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
+
+function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
+
+function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
+
+
+
+
+var FARE_PARENT_CONTAINER_SELECTOR = "div.trip-cost";
+var sendFlights = /*#__PURE__*/function () {
+  var _ref = _asyncToGenerator(function* (flightCards, flightMap) {
+    var selectedFlight = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : null;
+    var flights = [];
+    var newlyVisitedIds = {};
+
+    var _iterator = _createForOfIteratorHelper(flightCards),
+        _step;
+
+    try {
+      for (_iterator.s(); !(_step = _iterator.n()).done;) {
+        var node = _step.value;
+        var flightCard = node;
+
+        if (shouldSkipCard(flightCard)) {
+          continue;
+        }
+
+        var flightDetails = yield (0,_getFlightDetails__WEBPACK_IMPORTED_MODULE_2__.getFlightDetails)(flightCard);
+
+        var _ref2 = selectedFlight ? [selectedFlight, flightDetails] : [flightDetails, null],
+            _ref3 = _slicedToArray(_ref2, 2),
+            departureFlight = _ref3[0],
+            returnFlight = _ref3[1];
+
+        var fare = getFare(flightCard);
+        var flightPenguinId = getFlightDatasetId(flightDetails);
+        var skiplaggedShortId = getFlightCardShortId(flightCard);
+        flightCard.dataset.fpid = flightPenguinId;
+        flightCard.dataset.visited = "true";
+        flights.push({
+          departureFlight: departureFlight,
+          returnFlight: returnFlight,
+          fare: fare
+        });
+        newlyVisitedIds[flightPenguinId] = {
+          skiplaggedId: skiplaggedShortId,
+          lastUpdatedAt: new Date()
+        };
+      }
+    } catch (err) {
+      _iterator.e(err);
+    } finally {
+      _iterator.f();
+    }
+
+    var sendFlightsFunc = selectedFlight ? _shared_events__WEBPACK_IMPORTED_MODULE_1__.sendReturnFlightsEvent : _shared_events__WEBPACK_IMPORTED_MODULE_1__.sendFlightsEvent;
+
+    if (flights.length) {
+      sendFlightsFunc("skiplagged", flights);
+    }
+
+    return newlyVisitedIds;
+  });
+
+  return function sendFlights(_x, _x2) {
+    return _ref.apply(this, arguments);
+  };
+}();
+
+var shouldSkipCard = function shouldSkipCard(flightCard) {
+  var denyListTerms = ["bargain fare", "special fare", "after booking"];
+  return Array.from(flightCard.classList).includes("skip-trip") || denyListTerms.some(function (term) {
+    var _flightCard$textConte;
+
+    return (_flightCard$textConte = flightCard.textContent) === null || _flightCard$textConte === void 0 ? void 0 : _flightCard$textConte.includes(term);
+  });
+};
+
+var getFlightDatasetId = function getFlightDatasetId(flight) {
+  return [flight.fromTime, flight.toTime, flight.marketingAirline].join("-");
+};
+
+var getFare = function getFare(flightCard) {
+  var fareWrapper = flightCard.querySelector(FARE_PARENT_CONTAINER_SELECTOR);
+
+  if (!fareWrapper) {
+    throw new _shared_errors__WEBPACK_IMPORTED_MODULE_0__.MissingElementLookupError("Unable to find fare wrapper");
+  }
+
+  var fareContainer = fareWrapper.querySelector("p");
+
+  if (!fareContainer) {
+    throw new _shared_errors__WEBPACK_IMPORTED_MODULE_0__.MissingElementLookupError("Unable to find fare container");
+  }
+
+  return fareContainer.textContent;
+};
+
+var getFlightCardShortId = function getFlightCardShortId(flightCard) {
+  return flightCard.id.split('"key":')[1].split(",")[0].replace(/\W/g, "").trim();
+};
+
+/***/ }),
+
+/***/ "./src/skiplagged/ui/clearSelection.ts":
+/*!*********************************************!*\
+  !*** ./src/skiplagged/ui/clearSelection.ts ***!
+  \*********************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "clearSelection": () => (/* binding */ clearSelection)
+/* harmony export */ });
+/* harmony import */ var _shared_errors__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../shared/errors */ "./src/shared/errors.ts");
+/* harmony import */ var _shared_utilities_isVisible__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../shared/utilities/isVisible */ "./src/shared/utilities/isVisible.ts");
+/* harmony import */ var _shared_utilities_waitFor__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../shared/utilities/waitFor */ "./src/shared/utilities/waitFor.ts");
+/* harmony import */ var _highlightFlightCard__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./highlightFlightCard */ "./src/skiplagged/ui/highlightFlightCard.ts");
+/* harmony import */ var _scrollThroughContainer__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./scrollThroughContainer */ "./src/skiplagged/ui/scrollThroughContainer.ts");
+function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
+
+function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
+
+
+
+
+
+
+var RETURN_HEADER_SELECTOR = ".trip-return-header";
+var SELECTED_FLIGHT_CARD_SELECTOR = ".selected-trip";
+var clearSelection = /*#__PURE__*/function () {
+  var _ref = _asyncToGenerator(function* () {
+    (0,_highlightFlightCard__WEBPACK_IMPORTED_MODULE_3__.clearExistingSelections)();
+
+    if (!isSelectingReturnFlight()) {
+      return;
+    }
+
+    var flightCard = getSelectedFlightCard();
+    flightCard.click();
+    yield waitForLoad();
+    yield (0,_scrollThroughContainer__WEBPACK_IMPORTED_MODULE_4__.removeScrollingCheck)(null);
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth"
+    });
+  });
+
+  return function clearSelection() {
+    return _ref.apply(this, arguments);
+  };
+}();
+
+var isSelectingReturnFlight = function isSelectingReturnFlight() {
+  var returnHeader = document.querySelector(RETURN_HEADER_SELECTOR);
+
+  if (!returnHeader) {
+    throw new _shared_errors__WEBPACK_IMPORTED_MODULE_0__.MissingElementLookupError("Unable to locate return header");
+  }
+
+  return (0,_shared_utilities_isVisible__WEBPACK_IMPORTED_MODULE_1__.isVisible)(returnHeader);
+};
+
+var getSelectedFlightCard = function getSelectedFlightCard() {
+  var flightCard = document.querySelector(SELECTED_FLIGHT_CARD_SELECTOR);
+
+  if (!flightCard) {
+    throw new _shared_errors__WEBPACK_IMPORTED_MODULE_0__.MissingElementLookupError("Unable to selected departure flight card");
+  }
+
+  return flightCard;
+};
+
+var waitForLoad = /*#__PURE__*/function () {
+  var _ref2 = _asyncToGenerator(function* () {
+    yield (0,_shared_utilities_waitFor__WEBPACK_IMPORTED_MODULE_2__.waitForInvisible)(5000, SELECTED_FLIGHT_CARD_SELECTOR);
+  });
+
+  return function waitForLoad() {
+    return _ref2.apply(this, arguments);
+  };
+}();
+
+/***/ }),
+
+/***/ "./src/skiplagged/ui/findFlightCard.ts":
+/*!*********************************************!*\
+  !*** ./src/skiplagged/ui/findFlightCard.ts ***!
+  \*********************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "findFlightCard": () => (/* binding */ findFlightCard)
+/* harmony export */ });
+/* harmony import */ var _shared_errors__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../shared/errors */ "./src/shared/errors.ts");
+/* harmony import */ var _shared_pause__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../shared/pause */ "./src/shared/pause.ts");
+/* harmony import */ var _scrollThroughContainer__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./scrollThroughContainer */ "./src/skiplagged/ui/scrollThroughContainer.ts");
+/* harmony import */ var _scrollToFlightCard__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./scrollToFlightCard */ "./src/skiplagged/ui/scrollToFlightCard.ts");
+function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
+
+function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
+
+
+
+
+
+var FLIGHT_CARD_SELECTOR = "div[class='trip']";
+var findFlightCard = /*#__PURE__*/function () {
+  var _ref = _asyncToGenerator(function* (skiplaggedFlightId) {
+    yield (0,_scrollThroughContainer__WEBPACK_IMPORTED_MODULE_2__.stopScrollingNow)("Searching for flight card");
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth"
+    });
+    yield (0,_shared_pause__WEBPACK_IMPORTED_MODULE_1__.pause)(2000);
+    var flightSelector = "div[id*='\"key\":\"".concat(skiplaggedFlightId, "\"']");
+    var flightCard = null;
+    var lastFlightCard = (0,_scrollThroughContainer__WEBPACK_IMPORTED_MODULE_2__.getLastFlightCard)(document);
+    var batchLastFlightCard = null;
+
+    while (lastFlightCard !== batchLastFlightCard) {
+      flightCard = document.querySelector(flightSelector);
+
+      if (flightCard) {
+        break;
+      }
+
+      var flightCards = document.querySelectorAll(FLIGHT_CARD_SELECTOR);
+      batchLastFlightCard = Array.from(flightCards).slice(-1)[0];
+      (0,_scrollToFlightCard__WEBPACK_IMPORTED_MODULE_3__.scrollToFlightCard)(batchLastFlightCard);
+      yield (0,_shared_pause__WEBPACK_IMPORTED_MODULE_1__.pause)(750, 150, 200);
+      lastFlightCard = (0,_scrollThroughContainer__WEBPACK_IMPORTED_MODULE_2__.getLastFlightCard)(document);
+    }
+
+    (0,_scrollThroughContainer__WEBPACK_IMPORTED_MODULE_2__.removeScrollingCheck)(null);
+
+    if (flightCard) {
+      return flightCard;
+    } else {
+      throw new _shared_errors__WEBPACK_IMPORTED_MODULE_0__.ParserError("Could not find flight card");
+    }
+  });
+
+  return function findFlightCard(_x) {
+    return _ref.apply(this, arguments);
+  };
+}();
+
+/***/ }),
+
+/***/ "./src/skiplagged/ui/highlightFlightCard.ts":
+/*!**************************************************!*\
+  !*** ./src/skiplagged/ui/highlightFlightCard.ts ***!
+  \**************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "highlightFlightCard": () => (/* binding */ highlightFlightCard),
+/* harmony export */   "clearExistingSelections": () => (/* binding */ clearExistingSelections)
+/* harmony export */ });
+/* harmony import */ var _shared_ui_manageSelectionHighlights__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../shared/ui/manageSelectionHighlights */ "./src/shared/ui/manageSelectionHighlights.ts");
+/* harmony import */ var _findFlightCard__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./findFlightCard */ "./src/skiplagged/ui/findFlightCard.ts");
+/* harmony import */ var _scrollToFlightCard__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./scrollToFlightCard */ "./src/skiplagged/ui/scrollToFlightCard.ts");
+function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
+
+function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
+
+
+
+
+var highlightFlightCard = /*#__PURE__*/function () {
+  var _ref = _asyncToGenerator(function* (selectedFlightId) {
+    clearExistingSelections();
+    var flightCard = yield (0,_findFlightCard__WEBPACK_IMPORTED_MODULE_1__.findFlightCard)(selectedFlightId);
+    (0,_shared_ui_manageSelectionHighlights__WEBPACK_IMPORTED_MODULE_0__.highlightSelectedElement)(flightCard);
+    (0,_scrollToFlightCard__WEBPACK_IMPORTED_MODULE_2__.scrollToFlightCard)(flightCard);
+  });
+
+  return function highlightFlightCard(_x) {
+    return _ref.apply(this, arguments);
+  };
+}();
+var clearExistingSelections = function clearExistingSelections() {
+  var previousDepSelection = document.querySelector("[data-selected='true']");
+
+  if (previousDepSelection) {
+    (0,_shared_ui_manageSelectionHighlights__WEBPACK_IMPORTED_MODULE_0__.clearHighlightFromElement)(previousDepSelection);
+  }
+};
+
+/***/ }),
+
+/***/ "./src/skiplagged/ui/scrollThroughContainer.ts":
+/*!*****************************************************!*\
+  !*** ./src/skiplagged/ui/scrollThroughContainer.ts ***!
+  \*****************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "scrollThroughContainer": () => (/* binding */ scrollThroughContainer),
+/* harmony export */   "stopScrollingNow": () => (/* binding */ stopScrollingNow),
+/* harmony export */   "removeScrollingCheck": () => (/* binding */ removeScrollingCheck),
+/* harmony export */   "getLastFlightCard": () => (/* binding */ getLastFlightCard)
+/* harmony export */ });
+/* harmony import */ var _shared_pause__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../shared/pause */ "./src/shared/pause.ts");
+/* harmony import */ var _shared_utilities_waitFor__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../shared/utilities/waitFor */ "./src/shared/utilities/waitFor.ts");
+/* harmony import */ var _scrollToFlightCard__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./scrollToFlightCard */ "./src/skiplagged/ui/scrollToFlightCard.ts");
+function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
+
+function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
+
+
+
+
+var FLIGHT_CARD_SELECTOR = "div[class='trip']";
+var PROGRESS_SELECTOR = ".ui-mprogress";
+var STOP_SCROLLING_ID = "stop-scrolling";
+var STOP_SCROLLING_SELECTOR = "div#".concat(STOP_SCROLLING_ID);
+var scrollThroughContainer = /*#__PURE__*/function () {
+  var _ref = _asyncToGenerator(function* (container) {
+    yield (0,_shared_utilities_waitFor__WEBPACK_IMPORTED_MODULE_1__.waitForDisappearance)(45000, PROGRESS_SELECTOR);
+    yield (0,_shared_utilities_waitFor__WEBPACK_IMPORTED_MODULE_1__.waitForAppearance)(45000, FLIGHT_CARD_SELECTOR, container);
+    removeScrollingCheck(null);
+    var startTime = new Date().getTime();
+
+    while (getTimeSinceStart(startTime) < 60000) {
+      if (yield stopScrollingCheck(true)) {
+        break;
+      }
+
+      yield progressiveScrollingOnce(container);
+      yield (0,_shared_pause__WEBPACK_IMPORTED_MODULE_0__.pause)(500);
+    }
+  });
+
+  return function scrollThroughContainer(_x) {
+    return _ref.apply(this, arguments);
+  };
+}();
+
+var progressiveScrollingOnce = /*#__PURE__*/function () {
+  var _ref2 = _asyncToGenerator(function* (flightContainer) {
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth"
+    });
+    yield (0,_shared_pause__WEBPACK_IMPORTED_MODULE_0__.pause)(1250);
+    var lastFlightCard = getLastFlightCard(flightContainer);
+    var batchLastFlightCard = null;
+
+    while (lastFlightCard !== batchLastFlightCard) {
+      if (yield stopScrollingCheck(false)) {
+        break;
+      }
+
+      var flightCards = flightContainer.querySelectorAll(FLIGHT_CARD_SELECTOR);
+      batchLastFlightCard = Array.from(flightCards).slice(-1)[0];
+      (0,_scrollToFlightCard__WEBPACK_IMPORTED_MODULE_2__.scrollToFlightCard)(batchLastFlightCard);
+
+      if (yield stopScrollingCheck(false)) {
+        break;
+      }
+
+      yield (0,_shared_pause__WEBPACK_IMPORTED_MODULE_0__.pause)(750);
+      lastFlightCard = getLastFlightCard(flightContainer);
+    }
+  });
+
+  return function progressiveScrollingOnce(_x2) {
+    return _ref2.apply(this, arguments);
+  };
+}();
+
+var getTimeSinceStart = function getTimeSinceStart(startTime) {
+  var currentTime = new Date().getTime();
+  return currentTime - startTime;
+};
+
+var stopScrollingCheck = /*#__PURE__*/function () {
+  var _ref3 = _asyncToGenerator(function* (remove) {
+    var div = document.querySelector(STOP_SCROLLING_SELECTOR);
+    var stopScrolling = !!div;
+
+    if (stopScrolling) {
+      console.debug("Stopping scrolling due to ".concat(div.dataset.reason));
+    }
+
+    if (stopScrolling && remove) {
+      yield removeScrollingCheck(div);
+    }
+
+    return stopScrolling;
+  });
+
+  return function stopScrollingCheck(_x3) {
+    return _ref3.apply(this, arguments);
+  };
+}();
+
+var stopScrollingNow = function stopScrollingNow(reason) {
+  var div = document.createElement("div");
+  div.id = STOP_SCROLLING_ID;
+  div.dataset.reason = reason;
+  document.body.appendChild(div);
+};
+var removeScrollingCheck = /*#__PURE__*/function () {
+  var _ref4 = _asyncToGenerator(function* (div) {
+    var element = div ? div : document.querySelector(STOP_SCROLLING_SELECTOR);
+
+    if (element) {
+      element.remove();
+    }
+
+    yield (0,_shared_utilities_waitFor__WEBPACK_IMPORTED_MODULE_1__.waitForDisappearance)(5000, STOP_SCROLLING_SELECTOR);
+  });
+
+  return function removeScrollingCheck(_x4) {
+    return _ref4.apply(this, arguments);
+  };
+}();
+var getLastFlightCard = function getLastFlightCard(container) {
+  return Array.from(container.querySelectorAll(FLIGHT_CARD_SELECTOR)).slice(-1)[0];
+};
+
+/***/ }),
+
+/***/ "./src/skiplagged/ui/scrollToFlightCard.ts":
+/*!*************************************************!*\
+  !*** ./src/skiplagged/ui/scrollToFlightCard.ts ***!
+  \*************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "scrollToFlightCard": () => (/* binding */ scrollToFlightCard)
+/* harmony export */ });
+var scrollToFlightCard = function scrollToFlightCard(flightCard) {
+  var yPosition = window.pageYOffset + flightCard.getBoundingClientRect().top - window.innerHeight / 2;
+  window.scrollTo({
+    top: yPosition,
+    behavior: "smooth"
+  });
+};
+
+/***/ }),
+
+/***/ "./src/skiplagged/ui/selectFlightCard.ts":
+/*!***********************************************!*\
+  !*** ./src/skiplagged/ui/selectFlightCard.ts ***!
+  \***********************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "selectFlightCard": () => (/* binding */ selectFlightCard)
+/* harmony export */ });
+/* harmony import */ var _findFlightCard__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./findFlightCard */ "./src/skiplagged/ui/findFlightCard.ts");
+function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
+
+function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
+
+
+var selectFlightCard = /*#__PURE__*/function () {
+  var _ref = _asyncToGenerator(function* (skiplaggedId) {
+    var flightCard = yield (0,_findFlightCard__WEBPACK_IMPORTED_MODULE_0__.findFlightCard)(skiplaggedId);
+    flightCard.click();
+  });
+
+  return function selectFlightCard(_x) {
+    return _ref.apply(this, arguments);
+  };
+}();
+
+/***/ }),
+
+/***/ "./src/utilityFunctions.js":
+/*!*********************************!*\
+  !*** ./src/utilityFunctions.js ***!
+  \*********************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "convertTimeTo24HourClock": () => (/* binding */ convertTimeTo24HourClock),
+/* harmony export */   "convertMinutesTo12HourClock": () => (/* binding */ convertMinutesTo12HourClock),
+/* harmony export */   "convert12HourTimeToMinutes": () => (/* binding */ convert12HourTimeToMinutes),
+/* harmony export */   "getTimezoneOffset": () => (/* binding */ getTimezoneOffset),
+/* harmony export */   "convertDurationToMinutes": () => (/* binding */ convertDurationToMinutes),
+/* harmony export */   "getTimeDetails": () => (/* binding */ getTimeDetails),
+/* harmony export */   "addTimezoneOffset": () => (/* binding */ addTimezoneOffset),
+/* harmony export */   "isOvernight": () => (/* binding */ isOvernight)
+/* harmony export */ });
+function _slicedToArray(arr, i) { return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _unsupportedIterableToArray(arr, i) || _nonIterableRest(); }
+
+function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
+
+function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
+
+function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
+
+function _iterableToArrayLimit(arr, i) { if (typeof Symbol === "undefined" || !(Symbol.iterator in Object(arr))) return; var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"] != null) _i["return"](); } finally { if (_d) throw _e; } } return _arr; }
+
+function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
+
+function convertTimeTo24HourClock(time, addDays) {
+  var timeFormatted = time.toLowerCase();
+
+  var _timeFormatted$split = timeFormatted.split(":"),
+      _timeFormatted$split2 = _slicedToArray(_timeFormatted$split, 2),
+      hours = _timeFormatted$split2[0],
+      minutesAndTimeOfDay = _timeFormatted$split2[1];
+
+  hours = Number(hours);
+  var minutes = Number(minutesAndTimeOfDay.replace(/(pm)|(am)|(\+\d)/g, "").trim());
+
+  if (addDays) {
+    var daysToAdd = time.match(/(\+\d)/);
+
+    if (daysToAdd) {
+      hours += daysToAdd[0].split("+")[1] * 24;
+    }
+  }
+
+  if (timeFormatted.includes("pm") && hours % 12 !== 0) {
+    hours += 12;
+  } else if (timeFormatted.includes("am") && hours % 12 === 0) {
+    hours -= 12;
+  }
+
+  return {
+    hours: hours,
+    minutes: minutes
+  };
+}
+
+function convert12HourTimeToMinutes(time) {
+  var _convertTimeTo24HourC = convertTimeTo24HourClock(time, true),
+      hours = _convertTimeTo24HourC.hours,
+      minutes = _convertTimeTo24HourC.minutes;
+
+  return hours * 60 + minutes;
+}
+
+function addTimezoneOffset(time, tzOffset) {
+  var minutes = convert12HourTimeToMinutes(time);
+  var newTimeInMinutes = minutes - tzOffset;
+  return convertMinutesTo12HourClock(newTimeInMinutes, true);
+}
+
+function convertMinutesTo12HourClock(time, addDay) {
+  var totalMinutes = Math.abs(time);
+  var hours = Math.floor(totalMinutes / 60) % 24;
+  var minutes = totalMinutes % 60;
+  var minuteString = "" + minutes;
+  minuteString = minuteString.padStart(2, "0");
+  var timeString = "";
+
+  if (hours < 12) {
+    if (hours === 0) {
+      timeString += "12";
+    } else {
+      timeString += hours;
+    }
+
+    timeString += ":".concat(minuteString, " AM");
+  } else {
+    if (hours === 12) {
+      timeString += 12;
+    } else {
+      timeString += "".concat(hours - 12);
+    }
+
+    timeString += ":".concat(minuteString, " PM");
+  }
+
+  if (addDay && totalMinutes / 60 > 24) {
+    timeString += "+".concat(Math.floor(totalMinutes / 60 / 24));
+  }
+
+  return timeString;
+}
+
+function convertDurationToMinutes(duration) {
+  // duration looks like 10h 30m
+  var durationHours;
+  var durationRest;
+
+  if (duration.includes("h")) {
+    var _duration$split = duration.split("h");
+
+    var _duration$split2 = _slicedToArray(_duration$split, 2);
+
+    durationHours = _duration$split2[0];
+    durationRest = _duration$split2[1];
+  } else {
+    // less than 1 hour
+    durationHours = 0;
+    durationRest = duration;
+  }
+
+  var durationMinutes = durationRest.trim().split("m")[0] || 0;
+  return Number(durationMinutes) + Number(durationHours) * 60;
+} // calculate timezone offset in minutes
+
+
+function getTimezoneOffset(fromTime, toTime, duration) {
+  var _convertTimeTo24HourC2 = convertTimeTo24HourClock(fromTime),
+      fromHr = _convertTimeTo24HourC2.hours,
+      fromMin = _convertTimeTo24HourC2.minutes;
+
+  var _convertTimeTo24HourC3 = convertTimeTo24HourClock(toTime),
+      toHr = _convertTimeTo24HourC3.hours,
+      toMin = _convertTimeTo24HourC3.minutes;
+
+  var endsNextDay = toTime.match(/(\+\d)/);
+  var startsNextDay = fromTime.match(/(\+\d)/);
+  var startDayOffset = 0;
+  var endDayOffset = 0;
+
+  if (startsNextDay) {
+    var _startsNextDay$0$spli = startsNextDay[0].split("+"),
+        _startsNextDay$0$spli2 = _slicedToArray(_startsNextDay$0$spli, 2),
+        _ = _startsNextDay$0$spli2[0],
+        startDays = _startsNextDay$0$spli2[1];
+
+    startDayOffset += Number(startDays);
+    endDayOffset = startDayOffset;
+  }
+
+  if (endsNextDay) {
+    var _endsNextDay$0$split = endsNextDay[0].split("+"),
+        _endsNextDay$0$split2 = _slicedToArray(_endsNextDay$0$split, 2),
+        _2 = _endsNextDay$0$split2[0],
+        endDays = _endsNextDay$0$split2[1];
+
+    endDayOffset += Number(endDays);
+  }
+
+  var fromTotalMinutes = (fromHr + 24 * startDayOffset) * 60 + fromMin;
+  var toTotalMinutes = (toHr + 24 * endDayOffset) * 60 + toMin;
+  var durationMinutes = convertDurationToMinutes(duration);
+  return durationMinutes - (toTotalMinutes - fromTotalMinutes);
+}
+
+function getTimeDetails(time) {
+  var _convertTimeTo24HourC4 = convertTimeTo24HourClock(time, true),
+      hours = _convertTimeTo24HourC4.hours,
+      minutes = _convertTimeTo24HourC4.minutes;
+
+  var timeOfDay = time.toLowerCase().match(/(pm)|(am)/)[0];
+  var excessDays = time.match(/(\+\d)/);
+  var displayHours = Number(time.split(":")[0]); // want 12 hour clock
+
+  return {
+    hours: hours,
+    displayHours: displayHours,
+    minutes: minutes,
+    timeOfDay: timeOfDay,
+    excessDays: excessDays ? excessDays[0] : excessDays
+  };
+}
+
+function isOvernight(fromTime, toTime) {
+  var MINUTES_PER_DAY = 24 * 60; // return convert12HourTimeToMinutes(fromTime) + convertDurationToMinutes(duration) > MINUTES_PER_DAY;
+  // if fromTime + duration > 24 hour
+
+  return fromTime.toLowerCase().includes("pm") && toTime.toLowerCase().includes("am");
+}
+
+
+
+/***/ }),
+
+/***/ "./node_modules/lodash.capitalize/index.js":
+/*!*************************************************!*\
+  !*** ./node_modules/lodash.capitalize/index.js ***!
+  \*************************************************/
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+/**
+ * lodash (Custom Build) <https://lodash.com/>
+ * Build: `lodash modularize exports="npm" -o ./`
+ * Copyright jQuery Foundation and other contributors <https://jquery.org/>
+ * Released under MIT license <https://lodash.com/license>
+ * Based on Underscore.js 1.8.3 <http://underscorejs.org/LICENSE>
+ * Copyright Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
+ */
+
+/** Used as references for various `Number` constants. */
+var INFINITY = 1 / 0;
+
+/** `Object#toString` result references. */
+var symbolTag = '[object Symbol]';
+
+/** Used to compose unicode character classes. */
+var rsAstralRange = '\\ud800-\\udfff',
+    rsComboMarksRange = '\\u0300-\\u036f\\ufe20-\\ufe23',
+    rsComboSymbolsRange = '\\u20d0-\\u20f0',
+    rsVarRange = '\\ufe0e\\ufe0f';
+
+/** Used to compose unicode capture groups. */
+var rsAstral = '[' + rsAstralRange + ']',
+    rsCombo = '[' + rsComboMarksRange + rsComboSymbolsRange + ']',
+    rsFitz = '\\ud83c[\\udffb-\\udfff]',
+    rsModifier = '(?:' + rsCombo + '|' + rsFitz + ')',
+    rsNonAstral = '[^' + rsAstralRange + ']',
+    rsRegional = '(?:\\ud83c[\\udde6-\\uddff]){2}',
+    rsSurrPair = '[\\ud800-\\udbff][\\udc00-\\udfff]',
+    rsZWJ = '\\u200d';
+
+/** Used to compose unicode regexes. */
+var reOptMod = rsModifier + '?',
+    rsOptVar = '[' + rsVarRange + ']?',
+    rsOptJoin = '(?:' + rsZWJ + '(?:' + [rsNonAstral, rsRegional, rsSurrPair].join('|') + ')' + rsOptVar + reOptMod + ')*',
+    rsSeq = rsOptVar + reOptMod + rsOptJoin,
+    rsSymbol = '(?:' + [rsNonAstral + rsCombo + '?', rsCombo, rsRegional, rsSurrPair, rsAstral].join('|') + ')';
+
+/** Used to match [string symbols](https://mathiasbynens.be/notes/javascript-unicode). */
+var reUnicode = RegExp(rsFitz + '(?=' + rsFitz + ')|' + rsSymbol + rsSeq, 'g');
+
+/** Used to detect strings with [zero-width joiners or code points from the astral planes](http://eev.ee/blog/2015/09/12/dark-corners-of-unicode/). */
+var reHasUnicode = RegExp('[' + rsZWJ + rsAstralRange  + rsComboMarksRange + rsComboSymbolsRange + rsVarRange + ']');
+
+/** Detect free variable `global` from Node.js. */
+var freeGlobal = typeof __webpack_require__.g == 'object' && __webpack_require__.g && __webpack_require__.g.Object === Object && __webpack_require__.g;
+
+/** Detect free variable `self`. */
+var freeSelf = typeof self == 'object' && self && self.Object === Object && self;
+
+/** Used as a reference to the global object. */
+var root = freeGlobal || freeSelf || Function('return this')();
+
+/**
+ * Converts an ASCII `string` to an array.
+ *
+ * @private
+ * @param {string} string The string to convert.
+ * @returns {Array} Returns the converted array.
+ */
+function asciiToArray(string) {
+  return string.split('');
+}
+
+/**
+ * Checks if `string` contains Unicode symbols.
+ *
+ * @private
+ * @param {string} string The string to inspect.
+ * @returns {boolean} Returns `true` if a symbol is found, else `false`.
+ */
+function hasUnicode(string) {
+  return reHasUnicode.test(string);
+}
+
+/**
+ * Converts `string` to an array.
+ *
+ * @private
+ * @param {string} string The string to convert.
+ * @returns {Array} Returns the converted array.
+ */
+function stringToArray(string) {
+  return hasUnicode(string)
+    ? unicodeToArray(string)
+    : asciiToArray(string);
+}
+
+/**
+ * Converts a Unicode `string` to an array.
+ *
+ * @private
+ * @param {string} string The string to convert.
+ * @returns {Array} Returns the converted array.
+ */
+function unicodeToArray(string) {
+  return string.match(reUnicode) || [];
+}
+
+/** Used for built-in method references. */
+var objectProto = Object.prototype;
+
+/**
+ * Used to resolve the
+ * [`toStringTag`](http://ecma-international.org/ecma-262/7.0/#sec-object.prototype.tostring)
+ * of values.
+ */
+var objectToString = objectProto.toString;
+
+/** Built-in value references. */
+var Symbol = root.Symbol;
+
+/** Used to convert symbols to primitives and strings. */
+var symbolProto = Symbol ? Symbol.prototype : undefined,
+    symbolToString = symbolProto ? symbolProto.toString : undefined;
+
+/**
+ * The base implementation of `_.slice` without an iteratee call guard.
+ *
+ * @private
+ * @param {Array} array The array to slice.
+ * @param {number} [start=0] The start position.
+ * @param {number} [end=array.length] The end position.
+ * @returns {Array} Returns the slice of `array`.
+ */
+function baseSlice(array, start, end) {
+  var index = -1,
+      length = array.length;
+
+  if (start < 0) {
+    start = -start > length ? 0 : (length + start);
+  }
+  end = end > length ? length : end;
+  if (end < 0) {
+    end += length;
+  }
+  length = start > end ? 0 : ((end - start) >>> 0);
+  start >>>= 0;
+
+  var result = Array(length);
+  while (++index < length) {
+    result[index] = array[index + start];
+  }
+  return result;
+}
+
+/**
+ * The base implementation of `_.toString` which doesn't convert nullish
+ * values to empty strings.
+ *
+ * @private
+ * @param {*} value The value to process.
+ * @returns {string} Returns the string.
+ */
+function baseToString(value) {
+  // Exit early for strings to avoid a performance hit in some environments.
+  if (typeof value == 'string') {
+    return value;
+  }
+  if (isSymbol(value)) {
+    return symbolToString ? symbolToString.call(value) : '';
+  }
+  var result = (value + '');
+  return (result == '0' && (1 / value) == -INFINITY) ? '-0' : result;
+}
+
+/**
+ * Casts `array` to a slice if it's needed.
+ *
+ * @private
+ * @param {Array} array The array to inspect.
+ * @param {number} start The start position.
+ * @param {number} [end=array.length] The end position.
+ * @returns {Array} Returns the cast slice.
+ */
+function castSlice(array, start, end) {
+  var length = array.length;
+  end = end === undefined ? length : end;
+  return (!start && end >= length) ? array : baseSlice(array, start, end);
+}
+
+/**
+ * Creates a function like `_.lowerFirst`.
+ *
+ * @private
+ * @param {string} methodName The name of the `String` case method to use.
+ * @returns {Function} Returns the new case function.
+ */
+function createCaseFirst(methodName) {
+  return function(string) {
+    string = toString(string);
+
+    var strSymbols = hasUnicode(string)
+      ? stringToArray(string)
+      : undefined;
+
+    var chr = strSymbols
+      ? strSymbols[0]
+      : string.charAt(0);
+
+    var trailing = strSymbols
+      ? castSlice(strSymbols, 1).join('')
+      : string.slice(1);
+
+    return chr[methodName]() + trailing;
+  };
+}
+
+/**
+ * Checks if `value` is object-like. A value is object-like if it's not `null`
+ * and has a `typeof` result of "object".
+ *
+ * @static
+ * @memberOf _
+ * @since 4.0.0
+ * @category Lang
+ * @param {*} value The value to check.
+ * @returns {boolean} Returns `true` if `value` is object-like, else `false`.
+ * @example
+ *
+ * _.isObjectLike({});
+ * // => true
+ *
+ * _.isObjectLike([1, 2, 3]);
+ * // => true
+ *
+ * _.isObjectLike(_.noop);
+ * // => false
+ *
+ * _.isObjectLike(null);
+ * // => false
+ */
+function isObjectLike(value) {
+  return !!value && typeof value == 'object';
+}
+
+/**
+ * Checks if `value` is classified as a `Symbol` primitive or object.
+ *
+ * @static
+ * @memberOf _
+ * @since 4.0.0
+ * @category Lang
+ * @param {*} value The value to check.
+ * @returns {boolean} Returns `true` if `value` is a symbol, else `false`.
+ * @example
+ *
+ * _.isSymbol(Symbol.iterator);
+ * // => true
+ *
+ * _.isSymbol('abc');
+ * // => false
+ */
+function isSymbol(value) {
+  return typeof value == 'symbol' ||
+    (isObjectLike(value) && objectToString.call(value) == symbolTag);
+}
+
+/**
+ * Converts `value` to a string. An empty string is returned for `null`
+ * and `undefined` values. The sign of `-0` is preserved.
+ *
+ * @static
+ * @memberOf _
+ * @since 4.0.0
+ * @category Lang
+ * @param {*} value The value to process.
+ * @returns {string} Returns the string.
+ * @example
+ *
+ * _.toString(null);
+ * // => ''
+ *
+ * _.toString(-0);
+ * // => '-0'
+ *
+ * _.toString([1, 2, 3]);
+ * // => '1,2,3'
+ */
+function toString(value) {
+  return value == null ? '' : baseToString(value);
+}
+
+/**
+ * Converts the first character of `string` to upper case and the remaining
+ * to lower case.
+ *
+ * @static
+ * @memberOf _
+ * @since 3.0.0
+ * @category String
+ * @param {string} [string=''] The string to capitalize.
+ * @returns {string} Returns the capitalized string.
+ * @example
+ *
+ * _.capitalize('FRED');
+ * // => 'Fred'
+ */
+function capitalize(string) {
+  return upperFirst(toString(string).toLowerCase());
+}
+
+/**
+ * Converts the first character of `string` to upper case.
+ *
+ * @static
+ * @memberOf _
+ * @since 4.0.0
+ * @category String
+ * @param {string} [string=''] The string to convert.
+ * @returns {string} Returns the converted string.
+ * @example
+ *
+ * _.upperFirst('fred');
+ * // => 'Fred'
+ *
+ * _.upperFirst('FRED');
+ * // => 'FRED'
+ */
+var upperFirst = createCaseFirst('toUpperCase');
+
+module.exports = capitalize;
+
+
+/***/ }),
+
+/***/ "./node_modules/wait-for-the-element/wait-for-the-element.js":
+/*!*******************************************************************!*\
+  !*** ./node_modules/wait-for-the-element/wait-for-the-element.js ***!
+  \*******************************************************************/
+/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "waitForTheElement": () => (/* binding */ a),
+/* harmony export */   "waitForTheElementToDisappear": () => (/* binding */ l)
+/* harmony export */ });
+function t(t,r){return function(t){if(Array.isArray(t))return t}(t)||function(t,u){var r=null==t?null:"undefined"!=typeof Symbol&&t[Symbol.iterator]||t["@@iterator"];if(null==r)return;var e,n,o=[],F=!0,i=!1;try{for(r=r.call(t);!(F=(e=r.next()).done)&&(o.push(e.value),!u||o.length!==u);F=!0);}catch(t){i=!0,n=t}finally{try{F||null==r.return||r.return()}finally{if(i)throw n}}return o}(t,r)||u(t,r)||function(){throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.")}()}function u(t,u){if(t){if("string"==typeof t)return r(t,u);var e=Object.prototype.toString.call(t).slice(8,-1);return"Object"===e&&t.constructor&&(e=t.constructor.name),"Map"===e||"Set"===e?Array.from(t):"Arguments"===e||/^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(e)?r(t,u):void 0}}function r(t,u){(null==u||u>t.length)&&(u=t.length);for(var r=0,e=new Array(u);r<u;r++)e[r]=t[r];return e}var e=/\.(?:(?:[\x2D0-9A-Z_a-z\x80-\uD7FF\uE000-\uFFFF]|[\uD800-\uDBFF](?![\uDC00-\uDFFF])|(?:[^\uD800-\uDBFF]|^)[\uDC00-\uDFFF])|\\(?:[\0-\t\x0B\f\x0E-\u2027\u202A-\uD7FF\uE000-\uFFFF]|[\uD800-\uDBFF][\uDC00-\uDFFF]|[\uD800-\uDBFF](?![\uDC00-\uDFFF])|(?:[^\uD800-\uDBFF]|^)[\uDC00-\uDFFF]))+/,n=/#(?:(?:[\x2D0-9A-Z_a-z\x80-\uD7FF\uE000-\uFFFF]|[\uD800-\uDBFF](?![\uDC00-\uDFFF])|(?:[^\uD800-\uDBFF]|^)[\uDC00-\uDFFF])|\\(?:[\0-\t\x0B\f\x0E-\u2027\u202A-\uD7FF\uE000-\uFFFF]|[\uD800-\uDBFF][\uDC00-\uDFFF]|[\uD800-\uDBFF](?![\uDC00-\uDFFF])|(?:[^\uD800-\uDBFF]|^)[\uDC00-\uDFFF]))+/,o=/\[[\t-\r \xA0\u1680\u2000-\u200A\u2028\u2029\u202F\u205F\u3000\uFEFF]*((?:(?:\*|[\x2D0-9A-Z_a-z]*)\|)?(?:(?:[\x2D0-9A-Z_a-z\x80-\uD7FF\uE000-\uFFFF]|[\uD800-\uDBFF](?![\uDC00-\uDFFF])|(?:[^\uD800-\uDBFF]|^)[\uDC00-\uDFFF])+))/g,F={};function i(r){var i=F[r];if(i)return i;i=F[r]={attributes:!0,subtree:!0,childList:!0};var a,l=[],c=function(t,r){var e="undefined"!=typeof Symbol&&t[Symbol.iterator]||t["@@iterator"];if(!e){if(Array.isArray(t)||(e=u(t))||r&&t&&"number"==typeof t.length){e&&(t=e);var n=0,o=function(){};return{s:o,n:function(){return n>=t.length?{done:!0}:{done:!1,value:t[n++]}},e:function(t){throw t},f:o}}throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.")}var F,i=!0,a=!1;return{s:function(){e=e.call(t)},n:function(){var t=e.next();return i=t.done,t},e:function(t){a=!0,F=t},f:function(){try{i||null==e.return||e.return()}finally{if(a)throw F}}}}(r.matchAll(o));try{for(c.s();!(a=c.n()).done;){var D=t(a.value,2)[1];if(D.startsWith("*")||D.startsWith("|"))return i;l.push(D.replace("|",":"))}}catch(t){c.e(t)}finally{c.f()}return e.test(r)&&l.push("class"),n.test(r)&&l.push("id"),0===l.length?i.attributes=!1:i.attributeFilter=l,i}function a(t){var u=arguments.length>1&&void 0!==arguments[1]?arguments[1]:{},r=u.timeout,e=void 0===r?2500:r,n=u.scope,o=void 0===n?document:n;return new Promise((function(u){var r=o.querySelector(t);if(null===r){var n=null,F=new MutationObserver((function(){var r=o.querySelector(t);null!==r&&(clearTimeout(n),F.disconnect(),u(r))}));F.observe(o,i(t)),n=setTimeout((function(){F.disconnect(),u(null)}),e)}else u(r)}))}function l(t){var u=arguments.length>1&&void 0!==arguments[1]?arguments[1]:{},r=u.timeout,e=void 0===r?2500:r,n=u.scope,o=void 0===n?document:n;return new Promise((function(u){var r=null;if(null!==o.querySelector(t)){var n=new MutationObserver((function(){null===o.querySelector(t)&&(clearTimeout(r),n.disconnect(),u(!0))}));n.observe(o,i(t)),r=setTimeout((function(){n.disconnect(),u(!1)}),e)}else u(!0)}))}
+
+
+/***/ })
+
+/******/ 	});
+/************************************************************************/
+/******/ 	// The module cache
+/******/ 	var __webpack_module_cache__ = {};
+/******/ 	
+/******/ 	// The require function
+/******/ 	function __webpack_require__(moduleId) {
+/******/ 		// Check if module is in cache
+/******/ 		if(__webpack_module_cache__[moduleId]) {
+/******/ 			return __webpack_module_cache__[moduleId].exports;
+/******/ 		}
+/******/ 		// Create a new module (and put it into the cache)
+/******/ 		var module = __webpack_module_cache__[moduleId] = {
+/******/ 			// no module.id needed
+/******/ 			// no module.loaded needed
+/******/ 			exports: {}
+/******/ 		};
+/******/ 	
+/******/ 		// Execute the module function
+/******/ 		__webpack_modules__[moduleId](module, module.exports, __webpack_require__);
+/******/ 	
+/******/ 		// Return the exports of the module
+/******/ 		return module.exports;
+/******/ 	}
+/******/ 	
+/************************************************************************/
+/******/ 	/* webpack/runtime/compat get default export */
+/******/ 	(() => {
+/******/ 		// getDefaultExport function for compatibility with non-harmony modules
+/******/ 		__webpack_require__.n = (module) => {
+/******/ 			var getter = module && module.__esModule ?
+/******/ 				() => (module['default']) :
+/******/ 				() => (module);
+/******/ 			__webpack_require__.d(getter, { a: getter });
+/******/ 			return getter;
+/******/ 		};
+/******/ 	})();
+/******/ 	
+/******/ 	/* webpack/runtime/define property getters */
+/******/ 	(() => {
+/******/ 		// define getter functions for harmony exports
+/******/ 		__webpack_require__.d = (exports, definition) => {
+/******/ 			for(var key in definition) {
+/******/ 				if(__webpack_require__.o(definition, key) && !__webpack_require__.o(exports, key)) {
+/******/ 					Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
+/******/ 				}
+/******/ 			}
+/******/ 		};
+/******/ 	})();
+/******/ 	
+/******/ 	/* webpack/runtime/global */
+/******/ 	(() => {
+/******/ 		__webpack_require__.g = (function() {
+/******/ 			if (typeof globalThis === 'object') return globalThis;
+/******/ 			try {
+/******/ 				return this || new Function('return this')();
+/******/ 			} catch (e) {
+/******/ 				if (typeof window === 'object') return window;
+/******/ 			}
+/******/ 		})();
+/******/ 	})();
+/******/ 	
+/******/ 	/* webpack/runtime/hasOwnProperty shorthand */
+/******/ 	(() => {
+/******/ 		__webpack_require__.o = (obj, prop) => (Object.prototype.hasOwnProperty.call(obj, prop))
+/******/ 	})();
+/******/ 	
+/******/ 	/* webpack/runtime/make namespace object */
+/******/ 	(() => {
+/******/ 		// define __esModule on exports
+/******/ 		__webpack_require__.r = (exports) => {
+/******/ 			if(typeof Symbol !== 'undefined' && Symbol.toStringTag) {
+/******/ 				Object.defineProperty(exports, Symbol.toStringTag, { value: 'Module' });
+/******/ 			}
+/******/ 			Object.defineProperty(exports, '__esModule', { value: true });
+/******/ 		};
+/******/ 	})();
+/******/ 	
+/************************************************************************/
+var __webpack_exports__ = {};
+// This entry need to be wrapped in an IIFE because it need to be in strict mode.
+(() => {
+"use strict";
+/*!*****************************************!*\
+  !*** ./src/skiplagged/contentScript.ts ***!
+  \*****************************************/
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _shared_errors__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../shared/errors */ "./src/shared/errors.ts");
+/* harmony import */ var _shared_events__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../shared/events */ "./src/shared/events/index.ts");
+/* harmony import */ var _shared_ui_backToSearch__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../shared/ui/backToSearch */ "./src/shared/ui/backToSearch.ts");
+/* harmony import */ var _parser_getFlightContainer__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./parser/getFlightContainer */ "./src/skiplagged/parser/getFlightContainer.ts");
+/* harmony import */ var _parser_observer__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./parser/observer */ "./src/skiplagged/parser/observer.ts");
+/* harmony import */ var _ui_clearSelection__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./ui/clearSelection */ "./src/skiplagged/ui/clearSelection.ts");
+/* harmony import */ var _ui_highlightFlightCard__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./ui/highlightFlightCard */ "./src/skiplagged/ui/highlightFlightCard.ts");
+/* harmony import */ var _ui_scrollThroughContainer__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./ui/scrollThroughContainer */ "./src/skiplagged/ui/scrollThroughContainer.ts");
+/* harmony import */ var _ui_selectFlightCard__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./ui/selectFlightCard */ "./src/skiplagged/ui/selectFlightCard.ts");
+function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
+
+function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
+
+
+window.Sentry.init({
+  dsn: "https://d7f3363dd3774a64ad700b4523bcb789@o407795.ingest.sentry.io/5277451"
+});
+
+
+
+
+
+
+
+
+var departureFlightContainer;
+var departureObserver = null;
+var returnFlightContainer;
+var returnObserver = null;
+chrome.runtime.onMessage.addListener( /*#__PURE__*/function () {
+  var _ref = _asyncToGenerator(function* (message) {
+    console.debug(message);
+
+    switch (message.event) {
+      case "BEGIN_PARSING":
+        try {
+          departureObserver = new _parser_observer__WEBPACK_IMPORTED_MODULE_4__.FlightObserver(null);
+          departureFlightContainer = yield attachObserver(departureObserver, false);
+
+          if (departureFlightContainer) {
+            yield (0,_ui_scrollThroughContainer__WEBPACK_IMPORTED_MODULE_7__.scrollThroughContainer)(departureFlightContainer);
+          }
+
+          (0,_shared_events__WEBPACK_IMPORTED_MODULE_1__.sendScraperComplete)("skiplagged", "DEPARTURE");
+          departureObserver.endObservation();
+        } catch (error) {
+          console.error(error);
+          window.Sentry.captureException(error);
+          (0,_shared_events__WEBPACK_IMPORTED_MODULE_1__.sendFailedScraper)("skiplagged", error, "DEPARTURE");
+        }
+
+        break;
+
+      case "GET_RETURN_FLIGHTS":
+        try {
+          var _departureObserver;
+
+          (_departureObserver = departureObserver) === null || _departureObserver === void 0 ? void 0 : _departureObserver.endObservation();
+          yield (0,_ui_scrollThroughContainer__WEBPACK_IMPORTED_MODULE_7__.stopScrollingNow)("Return flight selected");
+          returnObserver = new _parser_observer__WEBPACK_IMPORTED_MODULE_4__.FlightObserver(message.departure);
+          returnFlightContainer = yield attachObserver(returnObserver, true);
+          yield (0,_ui_selectFlightCard__WEBPACK_IMPORTED_MODULE_8__.selectFlightCard)(getSkiplaggedDepartureId(departureObserver, message.departure.id));
+
+          if (returnFlightContainer) {
+            yield (0,_ui_scrollThroughContainer__WEBPACK_IMPORTED_MODULE_7__.scrollThroughContainer)(returnFlightContainer);
+          }
+
+          (0,_shared_events__WEBPACK_IMPORTED_MODULE_1__.sendScraperComplete)("skiplagged", "RETURN");
+        } catch (error) {
+          console.error(error);
+          window.Sentry.captureException(error);
+          (0,_shared_events__WEBPACK_IMPORTED_MODULE_1__.sendFailedScraper)("skiplagged", error, "RETURN");
+        }
+
+        break;
+
+      case "HIGHLIGHT_FLIGHT":
+        try {
+          var _departureObserver2, _returnObserver;
+
+          yield (0,_ui_scrollThroughContainer__WEBPACK_IMPORTED_MODULE_7__.stopScrollingNow)("Flight selection");
+          (_departureObserver2 = departureObserver) === null || _departureObserver2 === void 0 ? void 0 : _departureObserver2.endObservation();
+          (_returnObserver = returnObserver) === null || _returnObserver === void 0 ? void 0 : _returnObserver.endObservation();
+          yield highlightFlight(message.selectedDepartureId, departureObserver, message.selectedReturnId, returnObserver);
+        } catch (error) {
+          console.error(error);
+          window.Sentry.captureException(error);
+        }
+
+        break;
+
+      case "CLEAR_SELECTION":
+        try {
+          var _departureObserver3, _returnObserver2;
+
+          (_departureObserver3 = departureObserver) === null || _departureObserver3 === void 0 ? void 0 : _departureObserver3.endObservation();
+          (_returnObserver2 = returnObserver) === null || _returnObserver2 === void 0 ? void 0 : _returnObserver2.endObservation();
+          yield (0,_ui_scrollThroughContainer__WEBPACK_IMPORTED_MODULE_7__.stopScrollingNow)("Clear selection");
+          yield (0,_ui_clearSelection__WEBPACK_IMPORTED_MODULE_5__.clearSelection)();
+          chrome.runtime.sendMessage({
+            event: "PROVIDER_READY",
+            provider: "skiplagged"
+          });
+        } catch (error) {
+          console.error(error);
+          window.Sentry.captureException(error);
+        }
+
+        break;
+
+      default:
+        break;
+    }
+  });
+
+  return function (_x) {
+    return _ref.apply(this, arguments);
+  };
+}());
+
+var attachObserver = /*#__PURE__*/function () {
+  var _ref2 = _asyncToGenerator(function* (observer, selectedFlight) {
+    var flightContainer = yield (0,_parser_getFlightContainer__WEBPACK_IMPORTED_MODULE_3__.getFlightContainer)(!!selectedFlight);
+    observer.beginObservation(flightContainer);
+    return flightContainer;
+  });
+
+  return function attachObserver(_x2, _x3) {
+    return _ref2.apply(this, arguments);
+  };
+}();
+
+var highlightFlight = /*#__PURE__*/function () {
+  var _ref3 = _asyncToGenerator(function* (flightPenguinDepartureId, departureObserver, flightPenguinReturnId, returnObserver) {
+    (0,_shared_ui_backToSearch__WEBPACK_IMPORTED_MODULE_2__.addBackToSearchButton)();
+    var flightId;
+
+    if (flightPenguinReturnId) {
+      flightId = returnObserver === null || returnObserver === void 0 ? void 0 : returnObserver.getSkiplaggedId(flightPenguinReturnId);
+    } else if (flightPenguinDepartureId) {
+      flightId = departureObserver === null || departureObserver === void 0 ? void 0 : departureObserver.getSkiplaggedId(flightPenguinDepartureId);
+    } else {
+      throw new _shared_errors__WEBPACK_IMPORTED_MODULE_0__.ParserError("highlighting without a flight...");
+    }
+
+    yield (0,_ui_highlightFlightCard__WEBPACK_IMPORTED_MODULE_6__.highlightFlightCard)(flightId || "");
+  });
+
+  return function highlightFlight(_x4, _x5, _x6, _x7) {
+    return _ref3.apply(this, arguments);
+  };
+}();
+
+var getSkiplaggedDepartureId = function getSkiplaggedDepartureId(departureObserver, flightPenguinId) {
+  if (departureObserver) {
+    return departureObserver.getSkiplaggedId(flightPenguinId);
+  }
+
+  throw new _shared_errors__WEBPACK_IMPORTED_MODULE_0__.ParserError("Departure observer not initialized...");
+};
+})();
+
+/******/ })()
+;

@@ -10,9 +10,11 @@ export const getLegDetails = (
   leg: Element,
   legIndex: number,
   formData: FlightSearchFormData,
+  isReturn: boolean,
   previousLegDetails?: FlightLeg,
 ): FlightLeg => {
-  const legDepartureDate = getLegDepartureDate(previousLegDetails, formData.fromDate);
+  const originDate = isReturn ? formData.toDate : formData.fromDate;
+  const legDepartureDate = getLegDepartureDate(previousLegDetails, originDate);
 
   const [departure, details, arrival] = leg.children;
 

@@ -11,6 +11,7 @@ export const getLayovers = async (
   modal: Element,
   timeout = 3000,
   formData: FlightSearchFormData,
+  isReturn: boolean,
 ): Promise<FlightLeg[]> => {
   const firstLeg = await waitForTheElement(LEG_SELECTOR, { timeout });
   if (!firstLeg) {
@@ -23,7 +24,7 @@ export const getLayovers = async (
 
   const layovers = [];
   for (const [index, leg] of legs.entries()) {
-    const details = getLegDetails(leg, index, formData, layovers[layovers.length - 1]);
+    const details = getLegDetails(leg, index, formData, isReturn, layovers[layovers.length - 1]);
     layovers.push(details);
   }
 

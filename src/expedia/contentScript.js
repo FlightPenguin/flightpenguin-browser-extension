@@ -57,7 +57,7 @@ const scrapeDepartureFlights = async (formData) => {
 const scrapeReturnFlights = async (departure) => {
   await selectReturnFlight(departure);
   try {
-    const flights = await getFlights(departure);
+    const flights = await getFlights(departure, 30000, formData);
     if (flights) {
       sendReturnFlightsEvent("expedia", flights);
       sendScraperComplete("expedia", "RETURN");

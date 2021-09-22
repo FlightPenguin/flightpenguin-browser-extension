@@ -49,7 +49,7 @@ export const getFlights = async (
       continue;
     }
 
-    const flight = await getFlight(flightCard, formData);
+    const flight = await getFlight(flightCard, formData, !!selectedFlight);
 
     let departureFlight = null;
     let returnFlight = null;
