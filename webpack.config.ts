@@ -9,7 +9,7 @@ const defaultEntry = {
   skyscanner: "./src/skyscanner/contentScript.js",
   southwest: "./src/southwest/contentScript.js",
   expedia: "./src/expedia/contentScript.js",
-  skiplagged: "./src/skiplagged/contentScript.ts",
+  kiwi: "./src/kiwi/contentScript.ts",
 };
 
 const getModuleRules = ({ mode }: { mode: "production" | "development" }) => [
@@ -41,7 +41,7 @@ const basePlugins = [
   new ProgressPlugin({}),
   new DefinePlugin({
     "process.env.BUMBAG_ENV": JSON.stringify("not test"),
-    "process.env.VERSION": "1.2.3",
+    "process.env.VERSION": "1.3.0",
   }),
 ];
 

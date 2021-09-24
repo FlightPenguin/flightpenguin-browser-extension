@@ -32,13 +32,20 @@ export class FlightDetails {
     this.toTime = toTime;
     this.toTimeDetails = this.getTimeDetails(toTime);
     this.duration = duration;
-    this.operatingAirline = AirlineMap.getAirlineName(operatingAirline);
-    this.operatingAirlineDetails = operatingAirline ? AirlineMap.getAirlineDetails(operatingAirline) : null;
-    this.marketingAirline = AirlineMap.getAirlineName(marketingAirline);
-    this.marketingAirlineDetails = marketingAirline ? AirlineMap.getAirlineDetails(marketingAirline) : null;
+    if (operatingAirline) {
+      this.operatingAirline = AirlineMap.getAirlineName(operatingAirline);
+      this.operatingAirlineDetails = operatingAirline ? AirlineMap.getAirlineDetails(operatingAirline) : null;
+    }
+
+    if (marketingAirline) {
+      this.marketingAirline = AirlineMap.getAirlineName(marketingAirline);
+      this.marketingAirlineDetails = marketingAirline ? AirlineMap.getAirlineDetails(marketingAirline) : null;
+    }
     this.layovers = layovers;
     this.timezoneOffset = this.getTimezoneOffset();
     this.id = this.getFlightPenguinId();
+
+    this.checkMissingExcessDays();
   }
 
   getTimeDetails(time: string): FlightTimeDetails {
@@ -57,10 +64,32 @@ export class FlightDetails {
   }
 
   getFlightPenguinId(): string {
-    return `${this.operatingAirline}-${this.fromTime}-${this.toTime}`;
+    const airline = this.operatingAirline ? this.operatingAirline : this.marketingAirline;
+
+    return `${this.fromTime}-${this.toTime}-${airline}`;
   }
 
   getTimezoneOffset(): number {
     return getTimezoneOffset(this.fromTime, this.toTime, this.duration);
+  }
+
+  checkMissingExcessDays(): void {
+    let excessDays = 0;
+    this.layovers.forEach((layover) => {
+      if (layover.fromTimeDetails.excessDays) {
+        excessDays += Number(layover.fromTimeDetails.excessDays.replace("+", ""));
+      }
+
+      if (layover.toTimeDetails.excessDays) {
+        excessDays += Number(layover.toTimeDetails.excessDays.replace("+", ""));
+      }
+    });
+
+    if (excessDays && `+${excessDays}` !== this.toTimeDetails.excessDays) {
+      this.toTimeDetails.excessDays = `+${excessDays}`;
+
+      const time = this.toTime.split("+")[0];
+      this.toTime = `${time}+${excessDays}`;
+    }
   }
 }

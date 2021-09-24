@@ -1,9 +1,9 @@
 import { getUrl as getExpediaUrl } from "../expedia/mappings/getUrl";
+import { getUrl as getKiwiUrl } from "../kiwi/mappings/getUrl";
 import { pause } from "../shared/pause";
 import { FlightSearchFormData } from "../shared/types/FlightSearchFormData";
 import { Itinerary } from "../shared/types/Itinerary";
 import { WindowConfig } from "../shared/types/WindowConfig";
-import { getUrl as getSkiplaggedUrl } from "../skiplagged/mappings/getUrl";
 import { getUrl as getSkyscannerUrl } from "../skyscanner/mappings/getUrl";
 import { getUrl as getSouthwestUrl } from "../southwest/mappings/getUrl";
 import {
@@ -34,7 +34,7 @@ const providerURLBaseMap: { [key: string]: (formData: FlightSearchFormData) => s
   southwest: getSouthwestUrl,
   skyscanner: getSkyscannerUrl,
   expedia: getExpediaUrl,
-  skiplagged: getSkiplaggedUrl,
+  kiwi: getKiwiUrl,
 };
 
 export class ProviderManager {

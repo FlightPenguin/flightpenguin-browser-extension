@@ -1,6 +1,6 @@
 {
   "name": "FlightPenguin",
-  "version": "1.2.3",
+  "version": "1.3.0",
   "description": "Search flights",
   "background": {
     "page": "src/background.html",
@@ -47,11 +47,10 @@
       ]
     },
     {
-      "matches": ["https://skiplagged.com/flights/*"],
+      "matches": ["https://www.kiwi.com/us/search/results/*"],
       "css": ["src/shared/contentScript.css"],
       "js": [
-        "src/shared/sentry.js",
-        "dist/skiplagged.bundle.js"
+        "dist/kiwi.bundle.js"
       ]
     }
   ],
