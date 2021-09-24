@@ -401,6 +401,10 @@ var getAirlineName = function getAirlineName(flightSegmentContainer) {
     throw new _shared_errors__WEBPACK_IMPORTED_MODULE_0__.MissingFieldParserError("Unable to extract airline name");
   }
 
+  if (airlineName === "WN") {
+    airlineName = "Southwest Airlines";
+  }
+
   return airlineName;
 };
 

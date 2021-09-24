@@ -134,9 +134,13 @@ const getAirlineName = (flightSegmentContainer: HTMLDivElement): string => {
     throw new MissingElementLookupError("Unable to locate image in airline container");
   }
 
-  const airlineName = image.title || image.alt;
+  let airlineName = image.title || image.alt;
   if (!airlineName) {
     throw new MissingFieldParserError("Unable to extract airline name");
+  }
+
+  if (airlineName === "WN") {
+    airlineName = "Southwest Airlines";
   }
 
   return airlineName;
