@@ -2,13 +2,13 @@ import { sendFlightsEvent } from "../../shared/events";
 import { UnprocessedFlightSearchResult } from "../../shared/types/UnprocessedFlightSearchResult";
 import { getFlight } from "./getFlight";
 
-export const sendFlights = async (flightCards: Node[]) => {
+export const sendFlights = async (flightCards: Node[]): Promise<void> => {
   const flights: UnprocessedFlightSearchResult[] = [];
 
   for (const node of flightCards) {
     const flightCard = node as HTMLDivElement;
     if (shouldSkipCard(flightCard)) {
-      flightCard.remove();
+      flightCard.style.display = "none";
       continue;
     }
 

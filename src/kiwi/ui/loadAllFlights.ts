@@ -13,7 +13,7 @@ export const loadAllFlights = async () => {
   let exhausted = false;
   const startTime = new Date();
   let timeSinceStarted = 0;
-  while (!exhausted && timeSinceStarted < 60000) {
+  while (!exhausted && timeSinceStarted < 90000) {
     console.debug(timeSinceStarted);
     if (await stopScrollingCheck(false)) {
       break;

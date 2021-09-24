@@ -20,7 +20,6 @@ chrome.runtime.onMessage.addListener(async function (message) {
           await loadAllFlights();
         }
         sendScraperComplete("kiwi", "DEPARTURE");
-        observer.endObservation();
       } catch (error) {
         console.error(error);
         // window.Sentry.captureException(error);  // TODO: Sentry setup

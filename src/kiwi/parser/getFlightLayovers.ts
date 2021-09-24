@@ -4,6 +4,7 @@ import { FlightType } from "../../background/constants";
 import { MissingElementLookupError, MissingFieldParserError } from "../../shared/errors";
 import { AirportDetails } from "../../shared/types/AirportDetails";
 import { FlightLeg } from "../../shared/types/FlightLeg";
+import { getExcessDays } from "../shared/getExcessDays";
 
 const FLIGHT_CONTAINER_SELECTOR = "[data-test='TripPopupWrapper']";
 const FLIGHT_SEGMENT_CONTAINER_SELECTOR = "div[class*='SectorGridWrapper']";
@@ -32,15 +33,8 @@ export const getFlightLayovers = (modal: HTMLDivElement, flightType: FlightType)
 
   let previousFlightSegment: KiwiDetailedFlightSegment;
   return flightSegments.map((flightSegment) => {
-    const { departureTime, arrivalTimeExcessDaysModifier } = getFormattedDepartureTime(
-      flightSegment.departureTime,
-      previousFlightSegment,
-    );
-    const arrivalTime = getFormattedArrivalTime(
-      flightSegment.departureTime,
-      flightSegment.arrivalTime,
-      arrivalTimeExcessDaysModifier,
-    );
+    const departureTime = getFormattedDepartureTime(flightSegment.departureTime, previousFlightSegment);
+    const arrivalTime = getFormattedArrivalTime(flightSegment.departureTime, flightSegment.arrivalTime);
 
     const flightLeg = new FlightLeg({
       from: flightSegment.departureAirport.code,
@@ -50,6 +44,9 @@ export const getFlightLayovers = (modal: HTMLDivElement, flightType: FlightType)
       operatingAirline: flightSegment.operatingAirline,
       duration: flightSegment.durationText,
     });
+    // if (flightLeg.fromTime.toLowerCase().startsWith("11:29a") && flightLeg.toTime.toLowerCase().startsWith("1:31p")) {
+    //   debugger;
+    // }
     previousFlightSegment = flightSegment;
     return flightLeg;
   });
@@ -239,15 +236,9 @@ const getAirport = (airportContainer: HTMLDivElement): { name: string; code: str
   return { name: airportInfo.airportName, code: airportInfo.airportCode };
 };
 
-const getFormattedArrivalTime = (
-  departureDateTime: Date,
-  arrivalDateTime: Date,
-  arrivalTimeExcessDaysModifier: number,
-): string => {
+const getFormattedArrivalTime = (departureDateTime: Date, arrivalDateTime: Date): string => {
   let arrivalTime = format(arrivalDateTime, "h:mmaaa");
-  const excessDays =
-    Math.floor(Math.abs(arrivalDateTime.valueOf() - departureDateTime.valueOf()) / 86400000) +
-    arrivalTimeExcessDaysModifier;
+  const excessDays = getExcessDays(departureDateTime, arrivalDateTime);
   if (excessDays) {
     arrivalTime += `+${excessDays}`;
   }
@@ -257,17 +248,22 @@ const getFormattedArrivalTime = (
 const getFormattedDepartureTime = (
   departureDateTime: Date,
   previousFlightSegmentDetails: KiwiDetailedFlightSegment,
-): { departureTime: string; arrivalTimeExcessDaysModifier: number } => {
+): string => {
   let departureTime = format(departureDateTime, "h:mmaaa");
-  let arrivalTimeExcessDaysModifier = 0;
+  // if (
+  //   departureTime.toLowerCase().startsWith("6:22a") &&
+  //   !!previousFlightSegmentDetails &&
+  //   format(previousFlightSegmentDetails.departureTime, "h:mmaaa").toLowerCase().startsWith("10:25p")
+  // ) {
+  //   debugger;
+  // }
   const layoverDays = getLayoverDays(previousFlightSegmentDetails, departureDateTime);
 
   if (layoverDays > 0) {
     departureTime += `+${layoverDays}`;
-    arrivalTimeExcessDaysModifier -= layoverDays;
   }
 
-  return { departureTime, arrivalTimeExcessDaysModifier };
+  return departureTime;
 };
 
 const getLayoverDays = (previousFlightSegmentDetails: KiwiDetailedFlightSegment, departureDateTime: Date): number => {
@@ -275,7 +271,5 @@ const getLayoverDays = (previousFlightSegmentDetails: KiwiDetailedFlightSegment,
     return 0;
   }
 
-  return Math.floor(
-    Math.abs(departureDateTime.valueOf() - previousFlightSegmentDetails.arrivalTime.valueOf()) / 86400000,
-  );
+  return getExcessDays(previousFlightSegmentDetails.arrivalTime, departureDateTime);
 };

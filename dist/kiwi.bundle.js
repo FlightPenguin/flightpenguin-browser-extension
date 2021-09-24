@@ -167,23 +167,74 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "getFlightDetails": () => (/* binding */ getFlightDetails)
 /* harmony export */ });
+/* harmony import */ var date_fns__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! date-fns */ "./node_modules/date-fns/esm/parseISO/index.js");
+/* harmony import */ var date_fns__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! date-fns */ "./node_modules/date-fns/esm/format/index.js");
 /* harmony import */ var _shared_errors__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../shared/errors */ "./src/shared/errors.ts");
 /* harmony import */ var _shared_types_FlightDetails__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../shared/types/FlightDetails */ "./src/shared/types/FlightDetails.ts");
+/* harmony import */ var _shared_getExcessDays__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../shared/getExcessDays */ "./src/kiwi/shared/getExcessDays.ts");
+
+
 
 
 var DURATION_CONTAINER_SELECTOR = 'div[data-test="TripDurationBadge"]';
+var ITINERARY_CONTAINER_SELECTOR = 'div[class*="ResultCardItinerarystyled__ResultCardSection"]';
 var getFlightDetails = function getFlightDetails(flightCard, flightType, layovers) {
   var duration = getDuration(flightCard, flightType);
-  var departureTime = layovers[0].fromTime;
-  var returnTime = layovers.slice(-1)[0].toTime;
+
+  var _getDepartureTime = getDepartureTime(flightCard, flightType),
+      departureDate = _getDepartureTime.departureDate,
+      departureTime = _getDepartureTime.departureTime;
+
+  var _getArrivalTime = getArrivalTime(flightCard, flightType, departureDate),
+      arrivalTime = _getArrivalTime.arrivalTime;
+
   var airline = getOperatingAirline(layovers);
   return new _shared_types_FlightDetails__WEBPACK_IMPORTED_MODULE_1__.FlightDetails({
     fromTime: departureTime,
-    toTime: returnTime,
+    toTime: arrivalTime,
     marketingAirline: airline,
     duration: duration,
     layovers: layovers
   });
+};
+
+var getDepartureTime = function getDepartureTime(flightCard, flightType) {
+  var itineraryContainer = getItineraryContainer(flightCard, flightType);
+  var timeElements = itineraryContainer.querySelectorAll("time");
+
+  if (![4, 5].includes(timeElements.length)) {
+    throw new _shared_errors__WEBPACK_IMPORTED_MODULE_0__.MissingElementLookupError("Unable to find ".concat(flightType, " trip datetime element"));
+  }
+
+  var timeElement = timeElements[1];
+  var departureDate = (0,date_fns__WEBPACK_IMPORTED_MODULE_3__.default)(timeElement.dateTime);
+  return {
+    departureDate: departureDate,
+    departureTime: (0,date_fns__WEBPACK_IMPORTED_MODULE_4__.default)(departureDate, "h:mmaaa")
+  };
+};
+
+var getArrivalTime = function getArrivalTime(flightCard, flightType, departureDate) {
+  var itineraryContainer = getItineraryContainer(flightCard, flightType);
+  var timeElements = itineraryContainer.querySelectorAll("time");
+
+  if (![4, 5].includes(timeElements.length)) {
+    throw new _shared_errors__WEBPACK_IMPORTED_MODULE_0__.MissingElementLookupError("Unable to find ".concat(flightType, " trip datetime element"));
+  }
+
+  var timeElement = timeElements[3];
+  var arrivalDate = (0,date_fns__WEBPACK_IMPORTED_MODULE_3__.default)(timeElement.dateTime);
+  var arrivalTime = (0,date_fns__WEBPACK_IMPORTED_MODULE_4__.default)(arrivalDate, "h:mmaaa");
+  var excessDays = (0,_shared_getExcessDays__WEBPACK_IMPORTED_MODULE_2__.getExcessDays)(departureDate, arrivalDate);
+
+  if (excessDays) {
+    arrivalTime += "+".concat(excessDays);
+  }
+
+  return {
+    arrivalTime: arrivalTime,
+    arrivalDate: arrivalDate
+  };
 };
 
 var getDuration = function getDuration(flightCard, flightType) {
@@ -211,6 +262,17 @@ var getOperatingAirline = function getOperatingAirline(layovers) {
   return airlines.join(", ");
 };
 
+var getItineraryContainer = function getItineraryContainer(flightCard, flightType) {
+  var index = flightType === "RETURN" ? 1 : 0;
+  var itineraryContainers = flightCard.querySelectorAll(ITINERARY_CONTAINER_SELECTOR);
+
+  if (itineraryContainers.length !== 2) {
+    throw new _shared_errors__WEBPACK_IMPORTED_MODULE_0__.MissingElementLookupError("Unexpected number of itinerary containers");
+  }
+
+  return itineraryContainers[index];
+};
+
 /***/ }),
 
 /***/ "./src/kiwi/parser/getFlightLayovers.ts":
@@ -224,10 +286,11 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "getFlightLayovers": () => (/* binding */ getFlightLayovers)
 /* harmony export */ });
-/* harmony import */ var date_fns__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! date-fns */ "./node_modules/date-fns/esm/parseISO/index.js");
-/* harmony import */ var date_fns__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! date-fns */ "./node_modules/date-fns/esm/format/index.js");
+/* harmony import */ var date_fns__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! date-fns */ "./node_modules/date-fns/esm/parseISO/index.js");
+/* harmony import */ var date_fns__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! date-fns */ "./node_modules/date-fns/esm/format/index.js");
 /* harmony import */ var _shared_errors__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../shared/errors */ "./src/shared/errors.ts");
 /* harmony import */ var _shared_types_FlightLeg__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../shared/types/FlightLeg */ "./src/shared/types/FlightLeg.ts");
+/* harmony import */ var _shared_getExcessDays__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../shared/getExcessDays */ "./src/kiwi/shared/getExcessDays.ts");
 function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
 function _slicedToArray(arr, i) { return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _unsupportedIterableToArray(arr, i) || _nonIterableRest(); }
@@ -265,6 +328,7 @@ function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.g
 
 
 
+
 var FLIGHT_CONTAINER_SELECTOR = "[data-test='TripPopupWrapper']";
 var FLIGHT_SEGMENT_CONTAINER_SELECTOR = "div[class*='SectorGridWrapper']";
 var FLIGHT_SEGMENT_TIME_CONTAINER_SELECTOR = "div[class*='SectorTime']";
@@ -284,11 +348,8 @@ var getFlightLayovers = function getFlightLayovers(modal, flightType) {
   var flightSegments = getFlightSegments(legSection);
   var previousFlightSegment;
   return flightSegments.map(function (flightSegment) {
-    var _getFormattedDepartur = getFormattedDepartureTime(flightSegment.departureTime, previousFlightSegment),
-        departureTime = _getFormattedDepartur.departureTime,
-        arrivalTimeExcessDaysModifier = _getFormattedDepartur.arrivalTimeExcessDaysModifier;
-
-    var arrivalTime = getFormattedArrivalTime(flightSegment.departureTime, flightSegment.arrivalTime, arrivalTimeExcessDaysModifier);
+    var departureTime = getFormattedDepartureTime(flightSegment.departureTime, previousFlightSegment);
+    var arrivalTime = getFormattedArrivalTime(flightSegment.departureTime, flightSegment.arrivalTime);
     var flightLeg = new _shared_types_FlightLeg__WEBPACK_IMPORTED_MODULE_1__.FlightLeg({
       from: flightSegment.departureAirport.code,
       fromTime: departureTime,
@@ -296,7 +357,10 @@ var getFlightLayovers = function getFlightLayovers(modal, flightType) {
       toTime: arrivalTime,
       operatingAirline: flightSegment.operatingAirline,
       duration: flightSegment.durationText
-    });
+    }); // if (flightLeg.fromTime.toLowerCase().startsWith("11:29a") && flightLeg.toTime.toLowerCase().startsWith("1:31p")) {
+    //   debugger;
+    // }
+
     previousFlightSegment = flightSegment;
     return flightLeg;
   });
@@ -379,7 +443,7 @@ var getDateTimeFromWrapper = function getDateTimeFromWrapper(container) {
     throw new _shared_errors__WEBPACK_IMPORTED_MODULE_0__.MissingElementLookupError("Unable to find segment datetime element");
   }
 
-  return (0,date_fns__WEBPACK_IMPORTED_MODULE_2__.default)(timeElement.dateTime);
+  return (0,date_fns__WEBPACK_IMPORTED_MODULE_3__.default)(timeElement.dateTime);
 };
 
 var getAirlineName = function getAirlineName(flightSegmentContainer) {
@@ -525,9 +589,9 @@ var getAirport = function getAirport(airportContainer) {
   };
 };
 
-var getFormattedArrivalTime = function getFormattedArrivalTime(departureDateTime, arrivalDateTime, arrivalTimeExcessDaysModifier) {
-  var arrivalTime = (0,date_fns__WEBPACK_IMPORTED_MODULE_3__.default)(arrivalDateTime, "h:mmaaa");
-  var excessDays = Math.floor(Math.abs(arrivalDateTime.valueOf() - departureDateTime.valueOf()) / 86400000) + arrivalTimeExcessDaysModifier;
+var getFormattedArrivalTime = function getFormattedArrivalTime(departureDateTime, arrivalDateTime) {
+  var arrivalTime = (0,date_fns__WEBPACK_IMPORTED_MODULE_4__.default)(arrivalDateTime, "h:mmaaa");
+  var excessDays = (0,_shared_getExcessDays__WEBPACK_IMPORTED_MODULE_2__.getExcessDays)(departureDateTime, arrivalDateTime);
 
   if (excessDays) {
     arrivalTime += "+".concat(excessDays);
@@ -537,19 +601,21 @@ var getFormattedArrivalTime = function getFormattedArrivalTime(departureDateTime
 };
 
 var getFormattedDepartureTime = function getFormattedDepartureTime(departureDateTime, previousFlightSegmentDetails) {
-  var departureTime = (0,date_fns__WEBPACK_IMPORTED_MODULE_3__.default)(departureDateTime, "h:mmaaa");
-  var arrivalTimeExcessDaysModifier = 0;
+  var departureTime = (0,date_fns__WEBPACK_IMPORTED_MODULE_4__.default)(departureDateTime, "h:mmaaa"); // if (
+  //   departureTime.toLowerCase().startsWith("6:22a") &&
+  //   !!previousFlightSegmentDetails &&
+  //   format(previousFlightSegmentDetails.departureTime, "h:mmaaa").toLowerCase().startsWith("10:25p")
+  // ) {
+  //   debugger;
+  // }
+
   var layoverDays = getLayoverDays(previousFlightSegmentDetails, departureDateTime);
 
   if (layoverDays > 0) {
     departureTime += "+".concat(layoverDays);
-    arrivalTimeExcessDaysModifier -= layoverDays;
   }
 
-  return {
-    departureTime: departureTime,
-    arrivalTimeExcessDaysModifier: arrivalTimeExcessDaysModifier
-  };
+  return departureTime;
 };
 
 var getLayoverDays = function getLayoverDays(previousFlightSegmentDetails, departureDateTime) {
@@ -557,7 +623,7 @@ var getLayoverDays = function getLayoverDays(previousFlightSegmentDetails, depar
     return 0;
   }
 
-  return Math.floor(Math.abs(departureDateTime.valueOf() - previousFlightSegmentDetails.arrivalTime.valueOf()) / 86400000);
+  return (0,_shared_getExcessDays__WEBPACK_IMPORTED_MODULE_2__.getExcessDays)(previousFlightSegmentDetails.arrivalTime, departureDateTime);
 };
 
 /***/ }),
@@ -682,7 +748,7 @@ var sendFlights = /*#__PURE__*/function () {
         var flightCard = node;
 
         if (shouldSkipCard(flightCard)) {
-          flightCard.remove();
+          flightCard.style.display = "none";
           continue;
         }
 
@@ -717,6 +783,31 @@ var shouldSkipCard = function shouldSkipCard(flightCard) {
 
     return !((_flightCard$textConte2 = flightCard.textContent) !== null && _flightCard$textConte2 !== void 0 && _flightCard$textConte2.toLowerCase().includes(term));
   });
+};
+
+/***/ }),
+
+/***/ "./src/kiwi/shared/getExcessDays.ts":
+/*!******************************************!*\
+  !*** ./src/kiwi/shared/getExcessDays.ts ***!
+  \******************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "getExcessDays": () => (/* binding */ getExcessDays)
+/* harmony export */ });
+/* harmony import */ var date_fns__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! date-fns */ "./node_modules/date-fns/esm/startOfDay/index.js");
+
+var getExcessDays = function getExcessDays(departureDate, arrivalDate) {
+  var value = Math.floor(Math.abs((0,date_fns__WEBPACK_IMPORTED_MODULE_0__.default)(departureDate).valueOf() - (0,date_fns__WEBPACK_IMPORTED_MODULE_0__.default)(arrivalDate).valueOf()) / 86400000);
+
+  if (arrivalDate <= departureDate) {
+    value += 1;
+  }
+
+  return value;
 };
 
 /***/ }),
@@ -918,7 +1009,7 @@ var loadAllFlights = /*#__PURE__*/function () {
     var startTime = new Date();
     var timeSinceStarted = 0;
 
-    while (!exhausted && timeSinceStarted < 60000) {
+    while (!exhausted && timeSinceStarted < 90000) {
       console.debug(timeSinceStarted);
 
       if (yield stopScrollingCheck(false)) {
@@ -1788,6 +1879,7 @@ var FlightDetails = /*#__PURE__*/function () {
     this.layovers = layovers;
     this.timezoneOffset = this.getTimezoneOffset();
     this.id = this.getFlightPenguinId();
+    this.checkMissingExcessDays();
   }
 
   _createClass(FlightDetails, [{
@@ -1820,6 +1912,26 @@ var FlightDetails = /*#__PURE__*/function () {
     value: function getTimezoneOffset() {
       return (0,_utilityFunctions__WEBPACK_IMPORTED_MODULE_0__.getTimezoneOffset)(this.fromTime, this.toTime, this.duration);
     }
+  }, {
+    key: "checkMissingExcessDays",
+    value: function checkMissingExcessDays() {
+      var excessDays = 0;
+      this.layovers.forEach(function (layover) {
+        if (layover.fromTimeDetails.excessDays) {
+          excessDays += Number(layover.fromTimeDetails.excessDays.replace("+", ""));
+        }
+
+        if (layover.toTimeDetails.excessDays) {
+          excessDays += Number(layover.toTimeDetails.excessDays.replace("+", ""));
+        }
+      });
+
+      if (excessDays && "+".concat(excessDays) !== this.toTimeDetails.excessDays) {
+        this.toTimeDetails.excessDays = "+".concat(excessDays);
+        var time = this.toTime.split("+")[0];
+        this.toTime = "".concat(time, "+").concat(excessDays);
+      }
+    }
   }]);
 
   return FlightDetails;
@@ -1840,6 +1952,18 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /* harmony import */ var _utilityFunctions__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../utilityFunctions */ "./src/utilityFunctions.js");
 /* harmony import */ var _nameMaps_airlineMap__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../nameMaps/airlineMap */ "./src/shared/nameMaps/airlineMap.js");
+function _slicedToArray(arr, i) { return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _unsupportedIterableToArray(arr, i) || _nonIterableRest(); }
+
+function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
+
+function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
+
+function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
+
+function _iterableToArrayLimit(arr, i) { if (typeof Symbol === "undefined" || !(Symbol.iterator in Object(arr))) return; var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"] != null) _i["return"](); } finally { if (_d) throw _e; } } return _arr; }
+
+function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
+
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
@@ -1868,6 +1992,7 @@ var FlightLeg = /*#__PURE__*/function () {
     this.operatingAirline = operatingAirline;
     this.duration = duration;
     this.operatingAirlineDetails = _nameMaps_airlineMap__WEBPACK_IMPORTED_MODULE_1__.default.getAirlineDetails(operatingAirline);
+    this.timezoneOffset = this.getTimezoneOffset();
   }
 
   _createClass(FlightLeg, [{
@@ -1888,6 +2013,32 @@ var FlightLeg = /*#__PURE__*/function () {
         timeOfDay: timeOfDay,
         excessDays: excessDays ? excessDays[0] : excessDays
       };
+    }
+  }, {
+    key: "getTimezoneOffset",
+    value: function getTimezoneOffset() {
+      return (0,_utilityFunctions__WEBPACK_IMPORTED_MODULE_0__.getTimezoneOffset)(this.fromTime, this.toTime, this.duration);
+    }
+  }, {
+    key: "checkMissingExcessDays",
+    value: function checkMissingExcessDays() {
+      if (!this.toTimeDetails.excessDays) {
+        // Flying across the date line can cause edge cases where you have flown for a day, but it's the same day.
+        var _this$duration$split = this.duration.split(/\s+/),
+            _this$duration$split2 = _slicedToArray(_this$duration$split, 2),
+            rawDurationHours = _this$duration$split2[0],
+            rawDurationMinutes = _this$duration$split2[1];
+
+        var durationHours = Number(rawDurationHours.replace("h", ""));
+        var durationMinutes = Number(rawDurationMinutes.replace("m", ""));
+        var arrivalTimeInMinutes = (this.fromTimeDetails.hours % 24 + durationHours) * 60 + durationMinutes + this.fromTimeDetails.minutes;
+        var excessDays = Math.floor(arrivalTimeInMinutes / 1440);
+
+        if (excessDays) {
+          this.toTimeDetails.excessDays = "+".concat(excessDays);
+          this.toTime += "+".concat(excessDays);
+        }
+      }
     }
   }]);
 
@@ -5389,6 +5540,53 @@ function validateTimezone(_hours, minutes) {
 
 /***/ }),
 
+/***/ "./node_modules/date-fns/esm/startOfDay/index.js":
+/*!*******************************************************!*\
+  !*** ./node_modules/date-fns/esm/startOfDay/index.js ***!
+  \*******************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ startOfDay)
+/* harmony export */ });
+/* harmony import */ var _toDate_index_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../toDate/index.js */ "./node_modules/date-fns/esm/toDate/index.js");
+/* harmony import */ var _lib_requiredArgs_index_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../_lib/requiredArgs/index.js */ "./node_modules/date-fns/esm/_lib/requiredArgs/index.js");
+
+
+/**
+ * @name startOfDay
+ * @category Day Helpers
+ * @summary Return the start of a day for the given date.
+ *
+ * @description
+ * Return the start of a day for the given date.
+ * The result will be in the local timezone.
+ *
+ * ### v2.0.0 breaking changes:
+ *
+ * - [Changes that are common for the whole library](https://github.com/date-fns/date-fns/blob/master/docs/upgradeGuide.md#Common-Changes).
+ *
+ * @param {Date|Number} date - the original date
+ * @returns {Date} the start of a day
+ * @throws {TypeError} 1 argument required
+ *
+ * @example
+ * // The start of a day for 2 September 2014 11:55:00:
+ * const result = startOfDay(new Date(2014, 8, 2, 11, 55, 0))
+ * //=> Tue Sep 02 2014 00:00:00
+ */
+
+function startOfDay(dirtyDate) {
+  (0,_lib_requiredArgs_index_js__WEBPACK_IMPORTED_MODULE_0__.default)(1, arguments);
+  var date = (0,_toDate_index_js__WEBPACK_IMPORTED_MODULE_1__.default)(dirtyDate);
+  date.setHours(0, 0, 0, 0);
+  return date;
+}
+
+/***/ }),
+
 /***/ "./node_modules/date-fns/esm/subMilliseconds/index.js":
 /*!************************************************************!*\
   !*** ./node_modules/date-fns/esm/subMilliseconds/index.js ***!
@@ -5975,7 +6173,6 @@ chrome.runtime.onMessage.addListener( /*#__PURE__*/function () {
           }
 
           (0,_shared_events__WEBPACK_IMPORTED_MODULE_0__.sendScraperComplete)("kiwi", "DEPARTURE");
-          observer.endObservation();
         } catch (error) {
           console.error(error); // window.Sentry.captureException(error);  // TODO: Sentry setup
 

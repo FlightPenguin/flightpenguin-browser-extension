@@ -44,6 +44,8 @@ export class FlightDetails {
     this.layovers = layovers;
     this.timezoneOffset = this.getTimezoneOffset();
     this.id = this.getFlightPenguinId();
+
+    this.checkMissingExcessDays();
   }
 
   getTimeDetails(time: string): FlightTimeDetails {
@@ -69,5 +71,25 @@ export class FlightDetails {
 
   getTimezoneOffset(): number {
     return getTimezoneOffset(this.fromTime, this.toTime, this.duration);
+  }
+
+  checkMissingExcessDays(): void {
+    let excessDays = 0;
+    this.layovers.forEach((layover) => {
+      if (layover.fromTimeDetails.excessDays) {
+        excessDays += Number(layover.fromTimeDetails.excessDays.replace("+", ""));
+      }
+
+      if (layover.toTimeDetails.excessDays) {
+        excessDays += Number(layover.toTimeDetails.excessDays.replace("+", ""));
+      }
+    });
+
+    if (excessDays && `+${excessDays}` !== this.toTimeDetails.excessDays) {
+      this.toTimeDetails.excessDays = `+${excessDays}`;
+
+      const time = this.toTime.split("+")[0];
+      this.toTime = `${time}+${excessDays}`;
+    }
   }
 }
