@@ -788,9 +788,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /* harmony import */ var _shared_errors__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../shared/errors */ "./src/shared/errors.ts");
 
-var FLIGHT_CARD_SELECTOR = 'div[data-test="ResultCardWrapper"]';
 var findFlightCard = function findFlightCard(id) {
-  var desiredFlightCardSelector = "".concat(FLIGHT_CARD_SELECTOR, ", div[data-fpid=\"").concat(id, "\"]");
+  var desiredFlightCardSelector = "div[data-fpid=\"".concat(id, "\"]");
   var flightCard = document.querySelector(desiredFlightCardSelector);
 
   if (!flightCard) {
@@ -890,7 +889,9 @@ var highlightFlightCard = /*#__PURE__*/function () {
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "loadAllFlights": () => (/* binding */ loadAllFlights)
+/* harmony export */   "loadAllFlights": () => (/* binding */ loadAllFlights),
+/* harmony export */   "removeScrollingCheck": () => (/* binding */ removeScrollingCheck),
+/* harmony export */   "stopScrollingNow": () => (/* binding */ stopScrollingNow)
 /* harmony export */ });
 /* harmony import */ var _shared_errors__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../shared/errors */ "./src/shared/errors.ts");
 /* harmony import */ var _shared_pause__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../shared/pause */ "./src/shared/pause.ts");
@@ -905,6 +906,8 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 
 
 var LOADER_SELECTOR = "div[class*='ResultListLoader']";
+var STOP_SCROLLING_ID = "stop-scrolling";
+var STOP_SCROLLING_SELECTOR = "div#".concat(STOP_SCROLLING_ID);
 var loadAllFlights = /*#__PURE__*/function () {
   var _ref = _asyncToGenerator(function* () {
     scrollToBottom();
@@ -914,8 +917,18 @@ var loadAllFlights = /*#__PURE__*/function () {
 
     while (!exhausted && timeSinceStarted < 60000) {
       console.debug(timeSinceStarted);
+
+      if (yield stopScrollingCheck(false)) {
+        break;
+      }
+
       var flightContainer = yield (0,_parser_getFlightContainer__WEBPACK_IMPORTED_MODULE_3__.getFlightContainer)();
       yield waitForLoaderDisappearance();
+
+      if (yield stopScrollingCheck(false)) {
+        break;
+      }
+
       scrollToBottom();
       yield (0,_shared_pause__WEBPACK_IMPORTED_MODULE_1__.pause)(500);
       scrollToBottom();
@@ -923,6 +936,10 @@ var loadAllFlights = /*#__PURE__*/function () {
 
       if (!showMoreButton) {
         exhausted = true;
+        break;
+      }
+
+      if (yield stopScrollingCheck(false)) {
         break;
       }
 
@@ -969,6 +986,51 @@ var getShowMoreButton = function getShowMoreButton(flightContainer) {
   }
 
   return buttonText.toLowerCase().includes("load more") ? button : null;
+};
+
+var stopScrollingCheck = /*#__PURE__*/function () {
+  var _ref3 = _asyncToGenerator(function* (remove) {
+    var div = document.querySelector(STOP_SCROLLING_SELECTOR);
+    var stopScrolling = !!div;
+
+    if (stopScrolling) {
+      console.debug("Stopping scrolling due to ".concat(div.dataset.reason));
+    }
+
+    if (stopScrolling && remove) {
+      yield removeScrollingCheck();
+    }
+
+    return stopScrolling;
+  });
+
+  return function stopScrollingCheck(_x) {
+    return _ref3.apply(this, arguments);
+  };
+}();
+
+var removeScrollingCheck = /*#__PURE__*/function () {
+  var _ref4 = _asyncToGenerator(function* () {
+    var elements = document.querySelectorAll(STOP_SCROLLING_SELECTOR);
+
+    if (elements.length) {
+      elements.forEach(function (element) {
+        return element.remove();
+      });
+    }
+
+    yield (0,_shared_utilities_waitFor__WEBPACK_IMPORTED_MODULE_2__.waitForDisappearance)(5000, STOP_SCROLLING_SELECTOR);
+  });
+
+  return function removeScrollingCheck() {
+    return _ref4.apply(this, arguments);
+  };
+}();
+var stopScrollingNow = function stopScrollingNow(reason) {
+  var div = document.createElement("div");
+  div.id = STOP_SCROLLING_ID;
+  div.dataset.reason = reason;
+  document.body.appendChild(div);
 };
 
 /***/ }),
@@ -5912,6 +5974,7 @@ chrome.runtime.onMessage.addListener( /*#__PURE__*/function () {
         break;
 
       case "HIGHLIGHT_FLIGHT":
+        (0,_ui_loadAllFlights__WEBPACK_IMPORTED_MODULE_6__.stopScrollingNow)("flight selected");
         yield (0,_ui_highlightFlightCard__WEBPACK_IMPORTED_MODULE_5__.highlightFlightCard)((0,_shared_getFlightPenguinId__WEBPACK_IMPORTED_MODULE_4__.getFlightPenguinId)(message.selectedDepartureId, message.selectedReturnId));
         (0,_shared_ui_backToSearch__WEBPACK_IMPORTED_MODULE_1__.addBackToSearchButton)();
         break;

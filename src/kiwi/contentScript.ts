@@ -4,7 +4,7 @@ import { getFlightContainer } from "./parser/getFlightContainer";
 import { FlightObserver } from "./parser/observer";
 import { getFlightPenguinId } from "./shared/getFlightPenguinId";
 import { highlightFlightCard } from "./ui/highlightFlightCard";
-import { loadAllFlights } from "./ui/loadAllFlights";
+import { loadAllFlights, stopScrollingNow } from "./ui/loadAllFlights";
 
 let observer: FlightObserver | null = null;
 let flightContainer: HTMLDivElement | null;
@@ -28,6 +28,7 @@ chrome.runtime.onMessage.addListener(async function (message) {
       }
       break;
     case "HIGHLIGHT_FLIGHT":
+      stopScrollingNow("flight selected");
       await highlightFlightCard(getFlightPenguinId(message.selectedDepartureId, message.selectedReturnId));
       addBackToSearchButton();
       break;
