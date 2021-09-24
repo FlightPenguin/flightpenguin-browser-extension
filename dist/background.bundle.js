@@ -93,8 +93,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "ProviderManager": () => (/* binding */ ProviderManager)
 /* harmony export */ });
 /* harmony import */ var _expedia_mappings_getUrl__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../expedia/mappings/getUrl */ "./src/expedia/mappings/getUrl.ts");
-/* harmony import */ var _shared_pause__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../shared/pause */ "./src/shared/pause.ts");
-/* harmony import */ var _skiplagged_mappings_getUrl__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../skiplagged/mappings/getUrl */ "./src/skiplagged/mappings/getUrl.ts");
+/* harmony import */ var _kiwi_mappings_getUrl__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../kiwi/mappings/getUrl */ "./src/kiwi/mappings/getUrl.ts");
+/* harmony import */ var _shared_pause__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../shared/pause */ "./src/shared/pause.ts");
 /* harmony import */ var _skyscanner_mappings_getUrl__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../skyscanner/mappings/getUrl */ "./src/skyscanner/mappings/getUrl.ts");
 /* harmony import */ var _southwest_mappings_getUrl__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../southwest/mappings/getUrl */ "./src/southwest/mappings/getUrl.ts");
 /* harmony import */ var _constants__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./constants */ "./src/background/constants.ts");
@@ -122,7 +122,7 @@ var providerURLBaseMap = {
   southwest: _southwest_mappings_getUrl__WEBPACK_IMPORTED_MODULE_4__.getUrl,
   skyscanner: _skyscanner_mappings_getUrl__WEBPACK_IMPORTED_MODULE_3__.getUrl,
   expedia: _expedia_mappings_getUrl__WEBPACK_IMPORTED_MODULE_0__.getUrl,
-  skiplagged: _skiplagged_mappings_getUrl__WEBPACK_IMPORTED_MODULE_2__.getUrl
+  kiwi: _kiwi_mappings_getUrl__WEBPACK_IMPORTED_MODULE_1__.getUrl
 };
 var ProviderManager = /*#__PURE__*/function () {
   function ProviderManager() {
@@ -485,7 +485,7 @@ var ProviderManager = /*#__PURE__*/function () {
         },
         extensionClosedCallback: function extensionClosedCallback() {
           // Simpler than polling for status...
-          (0,_shared_pause__WEBPACK_IMPORTED_MODULE_1__.pause)(500).then(function () {
+          (0,_shared_pause__WEBPACK_IMPORTED_MODULE_2__.pause)(500).then(function () {
             _this6.setPrimaryTab();
           });
         }
@@ -618,12 +618,12 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "CabinMap": () => (/* binding */ CabinMap)
 /* harmony export */ });
 var PROVIDERS_NEEDING_RETURNS = [// force expansion
-"expedia" // "skiplagged",
+  // "expedia",
 ];
 var PROVIDERS_SUPPORTING_POINTS_SEARCH = ["expedia"];
 var SUPPORTED_PROVIDERS = [// force expansion
-"expedia" // "skiplagged",
-// "skyscanner",
+// "expedia",
+"kiwi" // "skyscanner",
 // "southwest",
 ]; // eslint-disable-next-line @typescript-eslint/no-empty-function
 
@@ -1897,6 +1897,54 @@ var formatDate = function formatDate(dateString) {
 
 /***/ }),
 
+/***/ "./src/kiwi/mappings/cabin.ts":
+/*!************************************!*\
+  !*** ./src/kiwi/mappings/cabin.ts ***!
+  \************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "cabinMap": () => (/* binding */ cabinMap)
+/* harmony export */ });
+var cabinMap = {
+  econ: "ECONOMY",
+  prem_econ: "PREMIUM_ECONOMY",
+  business: "BUSINESS",
+  first: "FIRST_CLASS"
+};
+
+/***/ }),
+
+/***/ "./src/kiwi/mappings/getUrl.ts":
+/*!*************************************!*\
+  !*** ./src/kiwi/mappings/getUrl.ts ***!
+  \*************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "getUrl": () => (/* binding */ getUrl)
+/* harmony export */ });
+/* harmony import */ var _cabin__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./cabin */ "./src/kiwi/mappings/cabin.ts");
+
+var getUrl = function getUrl(formData) {
+  var from = formData.from,
+      to = formData.to,
+      fromDate = formData.fromDate,
+      toDate = formData.toDate,
+      numPax = formData.numPax,
+      cabin = formData.cabin,
+      roundtrip = formData.roundtrip;
+  var returnDate = roundtrip ? toDate : "no-return";
+  var cabinValue = _cabin__WEBPACK_IMPORTED_MODULE_0__.cabinMap[formData.cabin || "econ"];
+  return "https://www.kiwi.com/us/search/results/".concat(from, "/").concat(to, "/").concat(fromDate, "/").concat(returnDate, "?adults=").concat(numPax, "&cabinClass=").concat(cabinValue, "-false&returnFromDifferentAirport=false&returnToDifferentAirport=false");
+};
+
+/***/ }),
+
 /***/ "./src/shared/focusTab.ts":
 /*!********************************!*\
   !*** ./src/shared/focusTab.ts ***!
@@ -1995,6 +2043,11 @@ var AirlineMap = {
       display: "Delta",
       color: "#EE722E",
       code: "DL"
+    },
+    WN: {
+      display: "Southwest",
+      color: "#F6C04D",
+      code: "WN"
     },
     "Southwest Airlines": {
       display: "Southwest",
@@ -2294,36 +2347,6 @@ function getRandomInt(min, max) {
   max = Math.floor(max);
   return Math.floor(Math.random() * (max - min + 1)) + min;
 }
-
-/***/ }),
-
-/***/ "./src/skiplagged/mappings/getUrl.ts":
-/*!*******************************************!*\
-  !*** ./src/skiplagged/mappings/getUrl.ts ***!
-  \*******************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "getUrl": () => (/* binding */ getUrl)
-/* harmony export */ });
-var getUrl = function getUrl(formData) {
-  var from = formData.from,
-      to = formData.to,
-      fromDate = formData.fromDate,
-      toDate = formData.toDate,
-      numPax = formData.numPax,
-      roundtrip = formData.roundtrip;
-  var url = "https://skiplagged.com/flights/".concat(from.toUpperCase(), "/").concat(to.toUpperCase(), "/").concat(fromDate);
-
-  if (roundtrip) {
-    url += "/".concat(toDate);
-  }
-
-  url += "?adults=".concat(numPax);
-  return url;
-};
 
 /***/ }),
 

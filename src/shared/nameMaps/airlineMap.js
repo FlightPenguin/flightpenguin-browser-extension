@@ -18,6 +18,7 @@ const AirlineMap = {
     American: { display: "American", color: "#C5423E", code: "AA" },
     Delta: { display: "Delta", color: "#EE722E", code: "DL" },
     "Delta Air Lines": { display: "Delta", color: "#EE722E", code: "DL" },
+    WN: { display: "Southwest", color: "#F6C04D", code: "WN" },
     "Southwest Airlines": { display: "Southwest", color: "#F6C04D", code: "WN" },
     Southwest: { display: "Southwest", color: "#F6C04D", code: "WN" },
     United: { display: "United", color: "#235EA6", code: "UA" },

@@ -9,7 +9,7 @@ const defaultEntry = {
   skyscanner: "./src/skyscanner/contentScript.js",
   southwest: "./src/southwest/contentScript.js",
   expedia: "./src/expedia/contentScript.js",
-  skiplagged: "./src/skiplagged/contentScript.ts",
+  kiwi: "./src/kiwi/contentScript.ts",
 };
 
 const getModuleRules = ({ mode }: { mode: "production" | "development" }) => [

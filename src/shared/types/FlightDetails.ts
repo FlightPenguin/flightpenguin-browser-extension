@@ -57,7 +57,7 @@ export class FlightDetails {
   }
 
   getFlightPenguinId(): string {
-    return `${this.operatingAirline}-${this.fromTime}-${this.toTime}`;
+    return `${this.fromTime}-${this.toTime}-${this.operatingAirline}`;
   }
 
   getTimezoneOffset(): number {

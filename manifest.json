@@ -47,11 +47,10 @@
       ]
     },
     {
-      "matches": ["https://skiplagged.com/flights/*"],
+      "matches": ["https://www.kiwi.com/us/search/results/*"],
       "css": ["src/shared/contentScript.css"],
       "js": [
-        "src/shared/sentry.js",
-        "dist/skiplagged.bundle.js"
+        "dist/kiwi.bundle.js"
       ]
     }
   ],

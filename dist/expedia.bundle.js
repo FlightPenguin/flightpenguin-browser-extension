@@ -1297,6 +1297,11 @@ var AirlineMap = {
       color: "#EE722E",
       code: "DL"
     },
+    WN: {
+      display: "Southwest",
+      color: "#F6C04D",
+      code: "WN"
+    },
     "Southwest Airlines": {
       display: "Southwest",
       color: "#F6C04D",
@@ -1607,7 +1612,7 @@ var FlightDetails = /*#__PURE__*/function () {
   }, {
     key: "getFlightPenguinId",
     value: function getFlightPenguinId() {
-      return "".concat(this.operatingAirline, "-").concat(this.fromTime, "-").concat(this.toTime);
+      return "".concat(this.fromTime, "-").concat(this.toTime, "-").concat(this.operatingAirline);
     }
   }, {
     key: "getTimezoneOffset",

@@ -2,7 +2,7 @@ import { convertTimeTo24HourClock } from "../../utilityFunctions";
 import AirlineMap from "../nameMaps/airlineMap";
 import { FlightTimeDetails } from "./FlightTimeDetails";
 
-interface FlightLegInput {
+export interface FlightLegInput {
   fromTime: string;
   toTime: string;
   from: string;
