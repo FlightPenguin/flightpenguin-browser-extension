@@ -181,7 +181,6 @@ var getFlightDetails = function getFlightDetails(flightCard, flightType, layover
     fromTime: departureTime,
     toTime: returnTime,
     marketingAirline: airline,
-    operatingAirline: airline,
     duration: duration,
     layovers: layovers
   });
@@ -1771,10 +1770,17 @@ var FlightDetails = /*#__PURE__*/function () {
     this.toTime = toTime;
     this.toTimeDetails = this.getTimeDetails(toTime);
     this.duration = duration;
-    this.operatingAirline = _nameMaps_airlineMap__WEBPACK_IMPORTED_MODULE_1__.default.getAirlineName(operatingAirline);
-    this.operatingAirlineDetails = operatingAirline ? _nameMaps_airlineMap__WEBPACK_IMPORTED_MODULE_1__.default.getAirlineDetails(operatingAirline) : null;
-    this.marketingAirline = _nameMaps_airlineMap__WEBPACK_IMPORTED_MODULE_1__.default.getAirlineName(marketingAirline);
-    this.marketingAirlineDetails = marketingAirline ? _nameMaps_airlineMap__WEBPACK_IMPORTED_MODULE_1__.default.getAirlineDetails(marketingAirline) : null;
+
+    if (operatingAirline) {
+      this.operatingAirline = _nameMaps_airlineMap__WEBPACK_IMPORTED_MODULE_1__.default.getAirlineName(operatingAirline);
+      this.operatingAirlineDetails = operatingAirline ? _nameMaps_airlineMap__WEBPACK_IMPORTED_MODULE_1__.default.getAirlineDetails(operatingAirline) : null;
+    }
+
+    if (marketingAirline) {
+      this.marketingAirline = _nameMaps_airlineMap__WEBPACK_IMPORTED_MODULE_1__.default.getAirlineName(marketingAirline);
+      this.marketingAirlineDetails = marketingAirline ? _nameMaps_airlineMap__WEBPACK_IMPORTED_MODULE_1__.default.getAirlineDetails(marketingAirline) : null;
+    }
+
     this.layovers = layovers;
     this.timezoneOffset = this.getTimezoneOffset();
     this.id = this.getFlightPenguinId();
@@ -1802,7 +1808,8 @@ var FlightDetails = /*#__PURE__*/function () {
   }, {
     key: "getFlightPenguinId",
     value: function getFlightPenguinId() {
-      return "".concat(this.fromTime, "-").concat(this.toTime, "-").concat(this.operatingAirline);
+      var airline = this.operatingAirline ? this.operatingAirline : this.marketingAirline;
+      return "".concat(this.fromTime, "-").concat(this.toTime, "-").concat(airline);
     }
   }, {
     key: "getTimezoneOffset",

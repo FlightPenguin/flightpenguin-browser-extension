@@ -20,7 +20,6 @@ export const getFlightDetails = (
     fromTime: departureTime,
     toTime: returnTime,
     marketingAirline: airline,
-    operatingAirline: airline,
     duration: duration,
     layovers: layovers,
   });

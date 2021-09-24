@@ -32,10 +32,15 @@ export class FlightDetails {
     this.toTime = toTime;
     this.toTimeDetails = this.getTimeDetails(toTime);
     this.duration = duration;
-    this.operatingAirline = AirlineMap.getAirlineName(operatingAirline);
-    this.operatingAirlineDetails = operatingAirline ? AirlineMap.getAirlineDetails(operatingAirline) : null;
-    this.marketingAirline = AirlineMap.getAirlineName(marketingAirline);
-    this.marketingAirlineDetails = marketingAirline ? AirlineMap.getAirlineDetails(marketingAirline) : null;
+    if (operatingAirline) {
+      this.operatingAirline = AirlineMap.getAirlineName(operatingAirline);
+      this.operatingAirlineDetails = operatingAirline ? AirlineMap.getAirlineDetails(operatingAirline) : null;
+    }
+
+    if (marketingAirline) {
+      this.marketingAirline = AirlineMap.getAirlineName(marketingAirline);
+      this.marketingAirlineDetails = marketingAirline ? AirlineMap.getAirlineDetails(marketingAirline) : null;
+    }
     this.layovers = layovers;
     this.timezoneOffset = this.getTimezoneOffset();
     this.id = this.getFlightPenguinId();
@@ -57,7 +62,9 @@ export class FlightDetails {
   }
 
   getFlightPenguinId(): string {
-    return `${this.fromTime}-${this.toTime}-${this.operatingAirline}`;
+    const airline = this.operatingAirline ? this.operatingAirline : this.marketingAirline;
+
+    return `${this.fromTime}-${this.toTime}-${airline}`;
   }
 
   getTimezoneOffset(): number {
