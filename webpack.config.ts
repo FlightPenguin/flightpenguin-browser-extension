@@ -5,7 +5,6 @@ import { Configuration, DefinePlugin, ProgressPlugin } from "webpack";
 const defaultEntry = {
   background: "./src/background.js",
   index: "./src/index.js",
-  searchForm: "./src/searchForm.js",
   skyscanner: "./src/skyscanner/contentScript.js",
   southwest: "./src/southwest/contentScript.js",
   expedia: "./src/expedia/contentScript.js",
