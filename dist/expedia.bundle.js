@@ -16,10 +16,11 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _shared_helpers__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../shared/helpers */ "./src/shared/helpers.js");
 /* harmony import */ var _shared_nameMaps_airlineMap__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../shared/nameMaps/airlineMap */ "./src/shared/nameMaps/airlineMap.js");
 /* harmony import */ var _shared_types_FlightDetails__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../shared/types/FlightDetails */ "./src/shared/types/FlightDetails.ts");
-/* harmony import */ var _ui_openFlightDetailsModal__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../ui/openFlightDetailsModal */ "./src/expedia/ui/openFlightDetailsModal.ts");
-/* harmony import */ var _ui_openLayoverDetailsCollapsible__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../ui/openLayoverDetailsCollapsible */ "./src/expedia/ui/openLayoverDetailsCollapsible.ts");
-/* harmony import */ var _getFlightDetailsModal__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./getFlightDetailsModal */ "./src/expedia/parser/getFlightDetailsModal.ts");
-/* harmony import */ var _getLayovers__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./getLayovers */ "./src/expedia/parser/getLayovers.ts");
+/* harmony import */ var _shared_types_FlightLeg__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../../shared/types/FlightLeg */ "./src/shared/types/FlightLeg.ts");
+/* harmony import */ var _ui_openFlightDetailsModal__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../ui/openFlightDetailsModal */ "./src/expedia/ui/openFlightDetailsModal.ts");
+/* harmony import */ var _ui_openLayoverDetailsCollapsible__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../ui/openLayoverDetailsCollapsible */ "./src/expedia/ui/openLayoverDetailsCollapsible.ts");
+/* harmony import */ var _getFlightDetailsModal__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./getFlightDetailsModal */ "./src/expedia/parser/getFlightDetailsModal.ts");
+/* harmony import */ var _getLayovers__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./getLayovers */ "./src/expedia/parser/getLayovers.ts");
 function _slicedToArray(arr, i) { return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _unsupportedIterableToArray(arr, i) || _nonIterableRest(); }
 
 function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
@@ -44,6 +45,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 
 
 
+
 var AIRLINE_SELECTOR = "[data-test-id='flight-operated']";
 var ARRIVAL_TIME_SELECTOR = "[data-test-id='arrival-time']";
 var DURATION_SELECTOR = "[data-test-id='journey-duration']";
@@ -58,12 +60,22 @@ var getFlight = /*#__PURE__*/function () {
         arrivalTime = _getFlightTimes.arrivalTime;
 
     var _getDurationDetails = getDurationDetails(element),
-        duration = _getDurationDetails.duration;
+        duration = _getDurationDetails.duration,
+        hasStops = _getDurationDetails.hasStops;
 
-    (0,_ui_openFlightDetailsModal__WEBPACK_IMPORTED_MODULE_4__.openFlightDetailsModal)(element);
-    var modal = yield (0,_getFlightDetailsModal__WEBPACK_IMPORTED_MODULE_6__.getFlightDetailsModal)();
-    yield (0,_ui_openLayoverDetailsCollapsible__WEBPACK_IMPORTED_MODULE_5__.openLayoverDetailsCollapsible)(modal);
-    var layovers = yield (0,_getLayovers__WEBPACK_IMPORTED_MODULE_7__.getLayovers)(modal, 3000, formData, isReturn);
+    (0,_ui_openFlightDetailsModal__WEBPACK_IMPORTED_MODULE_5__.openFlightDetailsModal)(element);
+    var modal = yield (0,_getFlightDetailsModal__WEBPACK_IMPORTED_MODULE_7__.getFlightDetailsModal)();
+    yield (0,_ui_openLayoverDetailsCollapsible__WEBPACK_IMPORTED_MODULE_6__.openLayoverDetailsCollapsible)(modal);
+    var layovers = hasStops ? yield (0,_getLayovers__WEBPACK_IMPORTED_MODULE_8__.getLayovers)(modal, 3000, formData, isReturn) : [new _shared_types_FlightLeg__WEBPACK_IMPORTED_MODULE_4__.FlightLeg({
+      fromTime: departureTime,
+      toTime: arrivalTime,
+      from: isReturn ? formData.to : formData.from,
+      to: isReturn ? formData.from : formData.to,
+      duration: duration,
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      operatingAirline: marketingAirline || operatingAirline
+    })];
     return new _shared_types_FlightDetails__WEBPACK_IMPORTED_MODULE_3__.FlightDetails({
       marketingAirline: marketingAirline,
       operatingAirline: operatingAirline,
@@ -867,13 +879,13 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 
 var FLIGHT_SELECTION_BUTTON_SELECTOR = "[data-test-id='select-button']";
 var selectReturnFlight = /*#__PURE__*/function () {
-  var _ref = _asyncToGenerator(function* (departure) {
+  var _ref = _asyncToGenerator(function* (departure, formData) {
     var departureCard = document.querySelector("[data-fpid='".concat(departure.id, "']"));
 
     if (!departureCard) {
       // may have re-rendered because we are changing departure selection after viewing returns
       // re-render wipes dataset.id
-      yield (0,_parser_getFlights__WEBPACK_IMPORTED_MODULE_2__.getFlights)();
+      yield (0,_parser_getFlights__WEBPACK_IMPORTED_MODULE_2__.getFlights)(null, 30000, formData);
       departureCard = document.querySelector("[data-fpid='".concat(departure.id, "']"));
 
       if (!departureCard) {
@@ -886,7 +898,7 @@ var selectReturnFlight = /*#__PURE__*/function () {
     clickSelectionConfirmation(modal);
   });
 
-  return function selectReturnFlight(_x) {
+  return function selectReturnFlight(_x, _x2) {
     return _ref.apply(this, arguments);
   };
 }();
@@ -6439,7 +6451,7 @@ chrome.runtime.onMessage.addListener( /*#__PURE__*/function () {
         break;
 
       case "GET_RETURN_FLIGHTS":
-        yield scrapeReturnFlights(message.departure);
+        yield scrapeReturnFlights(message.departure, formData);
         break;
 
       case "HIGHLIGHT_FLIGHT":
@@ -6449,6 +6461,7 @@ chrome.runtime.onMessage.addListener( /*#__PURE__*/function () {
 
       case "CLEAR_SELECTION":
         history.back();
+        formData = null;
         chrome.runtime.sendMessage({
           event: "PROVIDER_READY",
           provider: "expedia"
@@ -6488,8 +6501,8 @@ var scrapeDepartureFlights = /*#__PURE__*/function () {
 }();
 
 var scrapeReturnFlights = /*#__PURE__*/function () {
-  var _ref3 = _asyncToGenerator(function* (departure) {
-    yield (0,_ui_selectReturnFlight__WEBPACK_IMPORTED_MODULE_4__.selectReturnFlight)(departure);
+  var _ref3 = _asyncToGenerator(function* (departure, formData) {
+    yield (0,_ui_selectReturnFlight__WEBPACK_IMPORTED_MODULE_4__.selectReturnFlight)(departure, formData);
 
     try {
       var flights = yield (0,_parser_getFlights__WEBPACK_IMPORTED_MODULE_2__.getFlights)(departure, 30000, formData);
@@ -6506,7 +6519,7 @@ var scrapeReturnFlights = /*#__PURE__*/function () {
     }
   });
 
-  return function scrapeReturnFlights(_x3) {
+  return function scrapeReturnFlights(_x3, _x4) {
     return _ref3.apply(this, arguments);
   };
 }();

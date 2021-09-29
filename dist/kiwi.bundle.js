@@ -987,14 +987,12 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "removeScrollingCheck": () => (/* binding */ removeScrollingCheck),
 /* harmony export */   "stopScrollingNow": () => (/* binding */ stopScrollingNow)
 /* harmony export */ });
-/* harmony import */ var _shared_errors__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../shared/errors */ "./src/shared/errors.ts");
-/* harmony import */ var _shared_pause__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../shared/pause */ "./src/shared/pause.ts");
-/* harmony import */ var _shared_utilities_waitFor__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../shared/utilities/waitFor */ "./src/shared/utilities/waitFor.ts");
-/* harmony import */ var _parser_getFlightContainer__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../parser/getFlightContainer */ "./src/kiwi/parser/getFlightContainer.ts");
+/* harmony import */ var _shared_pause__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../shared/pause */ "./src/shared/pause.ts");
+/* harmony import */ var _shared_utilities_waitFor__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../shared/utilities/waitFor */ "./src/shared/utilities/waitFor.ts");
+/* harmony import */ var _parser_getFlightContainer__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../parser/getFlightContainer */ "./src/kiwi/parser/getFlightContainer.ts");
 function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
 
 function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
-
 
 
 
@@ -1016,7 +1014,7 @@ var loadAllFlights = /*#__PURE__*/function () {
         break;
       }
 
-      var flightContainer = yield (0,_parser_getFlightContainer__WEBPACK_IMPORTED_MODULE_3__.getFlightContainer)();
+      var flightContainer = yield (0,_parser_getFlightContainer__WEBPACK_IMPORTED_MODULE_2__.getFlightContainer)();
       yield waitForLoaderDisappearance();
 
       if (yield stopScrollingCheck(false)) {
@@ -1024,7 +1022,7 @@ var loadAllFlights = /*#__PURE__*/function () {
       }
 
       scrollToBottom();
-      yield (0,_shared_pause__WEBPACK_IMPORTED_MODULE_1__.pause)(500);
+      yield (0,_shared_pause__WEBPACK_IMPORTED_MODULE_0__.pause)(500);
       scrollToBottom();
       var showMoreButton = getShowMoreButton(flightContainer);
 
@@ -1038,7 +1036,7 @@ var loadAllFlights = /*#__PURE__*/function () {
       }
 
       showMoreButton.click();
-      yield (0,_shared_pause__WEBPACK_IMPORTED_MODULE_1__.pause)(500);
+      yield (0,_shared_pause__WEBPACK_IMPORTED_MODULE_0__.pause)(500);
       timeSinceStarted = Math.abs(startTime.valueOf() - new Date().valueOf());
     }
 
@@ -1060,7 +1058,7 @@ var scrollToBottom = function scrollToBottom() {
 var waitForLoaderDisappearance = /*#__PURE__*/function () {
   var _ref2 = _asyncToGenerator(function* () {
     try {
-      yield (0,_shared_utilities_waitFor__WEBPACK_IMPORTED_MODULE_2__.waitForDisappearance)(60000, LOADER_SELECTOR);
+      yield (0,_shared_utilities_waitFor__WEBPACK_IMPORTED_MODULE_1__.waitForDisappearance)(60000, LOADER_SELECTOR);
     } catch (e) {
       console.debug("Waiting for loader failed, ending kiwi flight loading");
     }
@@ -1076,7 +1074,8 @@ var getShowMoreButton = function getShowMoreButton(flightContainer) {
   var buttonText = button.textContent;
 
   if (!buttonText) {
-    throw new _shared_errors__WEBPACK_IMPORTED_MODULE_0__.MissingFieldParserError("Unable to extract text from last flight container button");
+    console.debug("Unable to extract text from last flight container button");
+    return null;
   }
 
   return buttonText.toLowerCase().includes("load more") ? button : null;
@@ -1113,7 +1112,7 @@ var removeScrollingCheck = /*#__PURE__*/function () {
       });
     }
 
-    yield (0,_shared_utilities_waitFor__WEBPACK_IMPORTED_MODULE_2__.waitForDisappearance)(5000, STOP_SCROLLING_SELECTOR);
+    yield (0,_shared_utilities_waitFor__WEBPACK_IMPORTED_MODULE_1__.waitForDisappearance)(5000, STOP_SCROLLING_SELECTOR);
   });
 
   return function removeScrollingCheck() {

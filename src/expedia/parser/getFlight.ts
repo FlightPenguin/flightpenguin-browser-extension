@@ -20,13 +20,26 @@ export const getFlight = async (
 ): Promise<FlightDetails> => {
   const { marketingAirline, operatingAirline } = getAirlines(element);
   const { departureTime, arrivalTime } = getFlightTimes(element);
-  const { duration } = getDurationDetails(element);
+  const { duration, hasStops } = getDurationDetails(element);
 
   openFlightDetailsModal(element);
   const modal = await getFlightDetailsModal();
   await openLayoverDetailsCollapsible(modal);
 
-  const layovers = await getLayovers(modal, 3000, formData, isReturn);
+  const layovers = hasStops
+    ? await getLayovers(modal, 3000, formData, isReturn)
+    : [
+        new FlightLeg({
+          fromTime: departureTime,
+          toTime: arrivalTime,
+          from: isReturn ? formData.to : formData.from,
+          to: isReturn ? formData.from : formData.to,
+          duration: duration,
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
+          operatingAirline: marketingAirline || operatingAirline,
+        }),
+      ];
 
   return new FlightDetails({
     marketingAirline,

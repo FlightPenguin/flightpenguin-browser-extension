@@ -628,7 +628,10 @@ var PROVIDERS_NEEDING_RETURNS = [// force expansion
 "expedia"];
 var PROVIDERS_SUPPORTING_POINTS_SEARCH = ["expedia"];
 var SUPPORTED_PROVIDERS = [// force expansion
-"expedia", "kiwi", "skyscanner", "southwest"]; // eslint-disable-next-line @typescript-eslint/no-empty-function
+"expedia" // "kiwi",
+// "skyscanner",
+// "southwest",
+]; // eslint-disable-next-line @typescript-eslint/no-empty-function
 
 var DEFAULT_ON_READY_FUNCTION = function DEFAULT_ON_READY_FUNCTION() {};
 var CabinMap = {
