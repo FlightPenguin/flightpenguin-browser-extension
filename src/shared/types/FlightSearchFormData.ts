@@ -1,3 +1,4 @@
+import { CabinType } from "../../background/constants";
 import { CardType } from "../../components/constants";
 
 export interface FlightSearchFormData {
@@ -7,7 +8,7 @@ export interface FlightSearchFormData {
   toDate: string;
   numPax: number;
   roundtrip: boolean;
-  cabin?: "econ" | "prem_econ" | "business" | "first";
+  cabin?: CabinType;
   searchByPoints: boolean;
   pointsType: CardType | undefined;
 }

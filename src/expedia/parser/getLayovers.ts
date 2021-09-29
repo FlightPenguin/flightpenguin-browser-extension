@@ -28,7 +28,7 @@ export const getLayovers = async (
     layovers.push(details);
   }
 
-  if (!layovers) {
+  if (!layovers.length) {
     throw new ParserError("Unable to identify layovers");
   }
 

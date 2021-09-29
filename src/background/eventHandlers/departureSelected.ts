@@ -65,13 +65,17 @@ const requestNoRoundtripProviderReturns = (
 
 const getRoundtripProviderReturns = (departure: any, providerManager: ProviderManager) => {
   const { itineraries } = providerManager.getItineraries();
-  const returnList = sortFlights(findReturnFlights(departure, itineraries), itineraries);
+  const returnList = sortFlights(
+    findReturnFlights(departure, itineraries),
+    itineraries,
+    providerManager.getFormCabinValue(),
+  );
   providerManager.addReturns(returnList);
 
   const message = {
     event: "RETURN_FLIGHTS_FOR_CLIENT",
     flights: {
-      departureList: sortFlights(providerManager.getDepartures(), itineraries),
+      departureList: sortFlights(providerManager.getDepartures(), itineraries, providerManager.getFormCabinValue()),
       returnList: providerManager.getReturns(),
       itins: itineraries,
       updatedAt: new Date(),

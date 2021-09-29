@@ -98,6 +98,10 @@ export class ProviderManager {
     return this.formData;
   }
 
+  getFormCabinValue(): string {
+    return this.formData?.cabin || "econ";
+  }
+
   setSelectedProviders(providerNames: string[]) {
     this.selectedProviders = providerNames;
   }

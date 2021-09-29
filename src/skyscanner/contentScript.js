@@ -15,7 +15,7 @@ let continueScraping = true;
 chrome.runtime.onMessage.addListener(async function (message) {
   switch (message.event) {
     case "BEGIN_PARSING":
-      await scrapeFlights();
+      await scrapeFlights(message.formData);
       break;
     case "HIGHLIGHT_FLIGHT":
       continueScraping = false;
@@ -28,13 +28,13 @@ chrome.runtime.onMessage.addListener(async function (message) {
   }
 });
 
-const scrapeFlights = async () => {
+const scrapeFlights = async (formData) => {
   let totalFlightCount = 0;
   let hasMoreFlights = true;
   try {
     while (totalFlightCount < 60 && hasMoreFlights && continueScraping) {
       closePopupModal();
-      const unsentFlights = await getUnsentFlights();
+      const unsentFlights = await getUnsentFlights(formData);
       if (unsentFlights) {
         sendFlightsEvent("skyscanner", unsentFlights);
         totalFlightCount += unsentFlights.length;

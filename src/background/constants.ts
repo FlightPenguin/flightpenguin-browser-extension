@@ -22,3 +22,4 @@ export const CabinMap = {
   business: "Business",
   first: "First",
 };
+export type CabinType = "econ" | "prem_econ" | "business" | "first";

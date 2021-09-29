@@ -19,7 +19,6 @@
   "extends": [
     "eslint:recommended",
     "plugin:prettier/recommended",
-    "plugin:sonarjs/recommended",
     "plugin:security/recommended",
     "plugin:@typescript-eslint/recommended"
   ],

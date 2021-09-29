@@ -1,6 +1,8 @@
 import { MissingElementLookupError, MissingFieldParserError } from "../../shared/errors";
 import { standardizeTimeString } from "../../shared/helpers";
 import AirlineMap from "../../shared/nameMaps/airlineMap";
+import { FlightLeg } from "../../shared/types/FlightLeg";
+import { FlightSearchFormData } from "../../shared/types/FlightSearchFormData";
 import { UnprocessedFlightSearchResult } from "../../shared/types/UnprocessedFlightSearchResult";
 import { getLayovers } from "./getLayovers";
 
@@ -14,15 +16,43 @@ const DURATION_CONTAINER_SELECTOR = "span[class*='Duration_duration']";
 
 const STOP_REGEX = /\d{1,2} stop/;
 
-export const getFlight = async (flightCard: HTMLElement): Promise<UnprocessedFlightSearchResult> => {
+export const getFlight = async (
+  flightCard: HTMLElement,
+  formData: FlightSearchFormData,
+): Promise<UnprocessedFlightSearchResult> => {
   const fare = getFare(flightCard);
-
-  const { departureLayovers, returnLayovers } = isNonstop(flightCard)
-    ? { departureLayovers: [], returnLayovers: [] }
-    : await getLayovers(flightCard);
 
   const departureFlight = getFlightDetails(flightCard, "DEPARTURE");
   const returnFlight = getFlightDetails(flightCard, "ARRIVAL");
+
+  const { departureLayovers, returnLayovers } = isNonstop(flightCard)
+    ? {
+        departureLayovers: [
+          new FlightLeg({
+            duration: departureFlight.duration,
+            from: formData.from,
+            fromTime: departureFlight.fromTime,
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-ignore
+            operatingAirline: departureFlight.operatingAirline || departureFlight.marketingAirline,
+            toTime: departureFlight.toTime,
+            to: formData.to,
+          }),
+        ],
+        returnLayovers: [
+          new FlightLeg({
+            duration: returnFlight.duration,
+            from: formData.to,
+            fromTime: returnFlight.fromTime,
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-ignore
+            operatingAirline: returnFlight.operatingAirline || returnFlight.marketingAirline,
+            toTime: returnFlight.toTime,
+            to: formData.from,
+          }),
+        ],
+      }
+    : await getLayovers(flightCard);
 
   setFlightCardVisited(flightCard);
   return {
