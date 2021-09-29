@@ -1,10 +1,9 @@
+import { getCalculatedDuration } from "shared/utilities/getCalculatedDuration";
+import { getPain } from "shared/utilities/pain/getPain";
+
 import AirlineMap from "./shared/nameMaps/airlineMap.js";
 import isRegionalAirline from "./shared/nameMaps/regionalAirlines.js";
-import {
-  getTimezoneOffset,
-  getTimeDetails,
-  convertDurationToMinutes,
-} from "./utilityFunctions.js";
+import { convertDurationToMinutes, getTimeDetails, getTimezoneOffset } from "./utilityFunctions.js";
 
 /**
  * Flight {
@@ -22,21 +21,16 @@ import {
  * @param {string} marketingAirline
  * @param {string} duration
  */
-function Flight(
-  fromTime,
-  toTime,
-  operatingAirline,
-  marketingAirline,
-  duration,
-  layovers
-) {
+function Flight(fromTime, toTime, operatingAirline, marketingAirline, duration, layovers) {
   this.fromTime = fromTime;
   this.toTime = toTime;
 
   this.fromTimeDetails = getTimeDetails(fromTime);
   this.toTimeDetails = getTimeDetails(toTime);
 
-  let opAirline = operatingAirline ? operatingAirline.replace("Operated by", "").replace("Partially operated by", "") : operatingAirline;
+  let opAirline = operatingAirline
+    ? operatingAirline.replace("Operated by", "").replace("Partially operated by", "")
+    : operatingAirline;
   opAirline = AirlineMap.getAirlineName(opAirline);
   const markAirline = AirlineMap.getAirlineName(marketingAirline);
 
@@ -86,9 +80,7 @@ function cleanupAirline(airline) {
   if (airlines.length === 1) {
     shortAirlineName = airlines[0];
   } else {
-    shortAirlineName = airlines
-      .map((airline) => AirlineMap.getAirlineName(airline.replace("  ", " ")))
-      .join(", ");
+    shortAirlineName = airlines.map((airline) => AirlineMap.getAirlineName(airline.replace("  ", " "))).join(", ");
   }
 
   return AirlineMap.getAirlineDetails(shortAirlineName.replace("  ", " "));
@@ -98,38 +90,38 @@ Flight.prototype.calculateTimezoneOffset = function () {
   let totalTimezoneOffset = 0;
 
   if (!this.layovers.length) {
-    totalTimezoneOffset = getTimezoneOffset(
-      this.fromTime,
-      this.toTime,
-      this.duration
-    );
+    totalTimezoneOffset = getTimezoneOffset(this.fromTime, this.toTime, this.duration);
   } else {
-    const layovers = this.layovers.map(
-      ({ fromTime, toTime, duration, operatingAirline }, idx) => {
-        totalTimezoneOffset += getTimezoneOffset(fromTime, toTime, duration);
-        return {
-          ...this.layovers[idx],
-          operatingAirline: cleanupAirline(operatingAirline),
-          timezoneOffset: totalTimezoneOffset,
-        };
-      }
-    );
+    const layovers = this.layovers.map(({ fromTime, toTime, duration, operatingAirline }, idx) => {
+      totalTimezoneOffset += getTimezoneOffset(fromTime, toTime, duration);
+      return {
+        ...this.layovers[idx],
+        fromTimeDetails: getTimeDetails(fromTime),
+        toTimeDetails: getTimeDetails(toTime),
+        duration: duration,
+        operatingAirline: cleanupAirline(operatingAirline),
+        timezoneOffset: totalTimezoneOffset,
+      };
+    });
     const layoversWithStops = [];
     for (let i = 0; i < layovers.length - 1; i++) {
       const previousFlight = layovers[i];
       const nextFlight = layovers[i + 1];
       let { toTime: fromTime, to: from } = previousFlight;
       let { fromTime: toTime, from: to } = nextFlight;
-
-      // could do this check here
-      // if (isOvernight(fromTime, toTime)) {
-      //   toTime += "+1";
-      // }
+      const fromTimeDetails = getTimeDetails(fromTime);
+      const toTimeDetails = getTimeDetails(toTime);
+      const { durationInMinutes, duration } = getCalculatedDuration(fromTimeDetails, toTimeDetails);
+      toTimeDetails.hours * 60 + toTimeDetails.minutes - (fromTimeDetails.hours * 60 - fromTimeDetails.minutes);
 
       layoversWithStops.push(previousFlight);
       layoversWithStops.push({
         fromTime,
+        fromTimeDetails,
         toTime,
+        toTimeDetails,
+        duration,
+        durationInMinutes,
         from,
         to,
         isLayoverStop: true,
@@ -164,27 +156,13 @@ Flight.prototype.calculateTimezoneOffset = function () {
 /**
  * @param {object} flights
  * @param {object} itins
+ * @param {string}: cabin
  * @returns {array} list of departures
  */
-function sortFlights(flights, itins) {
+function sortFlights(flights, itins, cabin) {
   for (let [k, v] of Object.entries(flights)) {
-    let airportChange = 1;
-    if (v.layovers.length) {
-      for (let i = 1; i < v.layovers.length; i++) {
-        if (v.layovers[i - 1].to !== v.layovers[i].from) {
-          airportChange = 2;
-          break;
-        }
-      }
-    }
-    const price =
-      itins[
-        v.itinIds.sort((a, b) => itins[a].fareNumber - itins[b].fareNumber)[0]
-      ].fareNumber;
-
-    v.pain =
-      (Math.log2(v.durationMinutes) + Math.log2(price) + v.layovers.length) *
-      airportChange;
+    const price = itins[v.itinIds.sort((a, b) => itins[a].fareNumber - itins[b].fareNumber)[0]].fareNumber;
+    v.pain = getPain(price, cabin, v.layovers);
   }
 
   return Object.values(flights).sort((a, b) => a.pain - b.pain);
@@ -207,16 +185,7 @@ function sortFlights(flights, itins) {
  * @param {number} windowId
  * @param {number} tabId
  */
-function Itin(
-  depFlight,
-  retFlight,
-  fare,
-  currency,
-  provider,
-  windowId,
-  tabId,
-  makeRetFlightOnly
-) {
+function Itin(depFlight, retFlight, fare, currency, provider, windowId, tabId, makeRetFlightOnly) {
   if (makeRetFlightOnly) {
     this.depFlight = depFlight;
   } else {
@@ -226,7 +195,7 @@ function Itin(
       depFlight.operatingAirline,
       depFlight.marketingAirline,
       depFlight.duration,
-      depFlight.layovers
+      depFlight.layovers,
     );
   }
 
@@ -237,7 +206,7 @@ function Itin(
       retFlight.operatingAirline,
       retFlight.marketingAirline,
       retFlight.duration,
-      retFlight.layovers
+      retFlight.layovers,
     );
     this.id = `${this.depFlight.id}-${this.retFlight.id}`;
   } else {
@@ -264,15 +233,7 @@ function findReturnFlights(depFlight, itins) {
  * @param {number} tabId
  * @returns {object} {itins, departures, returns}
  */
-function makeItins(
-  itinCollection,
-  departures,
-  itins,
-  provider,
-  windowId,
-  tabId,
-  makeRetFlightOnly = false
-) {
+function makeItins(itinCollection, departures, itins, provider, windowId, tabId, makeRetFlightOnly = false) {
   const returns = {};
 
   itinCollection.forEach((ic) => {
@@ -284,7 +245,7 @@ function makeItins(
       provider,
       windowId,
       tabId,
-      makeRetFlightOnly
+      makeRetFlightOnly,
     );
 
     // the deduping flights part

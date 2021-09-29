@@ -41,14 +41,14 @@ export const handleFlightResultsReceived = (
     const updatedDepartures = providerManager.getDepartures();
     const { itineraries: updatedItineraries } = providerManager.getItineraries();
 
-    const departuresToSend = sortFlights(updatedDepartures, updatedItineraries);
+    const departuresToSend = sortFlights(updatedDepartures, updatedItineraries, providerManager.getFormCabinValue());
 
     const nextMessage = {
       event: "FLIGHT_RESULTS_FOR_CLIENT",
       flights: {
         departureList: departuresToSend,
         itins: updatedItineraries,
-        returnList: sortFlights(providerManager.getReturns(), updatedItineraries),
+        returnList: sortFlights(providerManager.getReturns(), updatedItineraries, providerManager.getFormCabinValue()),
         updatedAt: new Date(),
       },
       formData: providerManager.getFormData(),

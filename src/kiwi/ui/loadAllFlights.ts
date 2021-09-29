@@ -57,7 +57,8 @@ const getShowMoreButton = (flightContainer: HTMLDivElement): HTMLButtonElement |
   const button = Array.from(flightContainer.querySelectorAll("button")).slice(-1)[0] as HTMLButtonElement;
   const buttonText = button.textContent;
   if (!buttonText) {
-    throw new MissingFieldParserError("Unable to extract text from last flight container button");
+    console.debug("Unable to extract text from last flight container button");
+    return null;
   }
 
   return buttonText.toLowerCase().includes("load more") ? button : null;

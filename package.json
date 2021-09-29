@@ -6,7 +6,8 @@
   "scripts": {
     "build": "npx webpack -c ./webpack.production.config.js",
     "build:dev": "npx webpack -c webpack.development.config.js --watch",
-    "prepare": "husky install"
+    "prepare": "husky install",
+    "test": "jest"
   },
   "repository": {
     "type": "git",
@@ -24,6 +25,7 @@
     "@babel/preset-react": "^7.14.5",
     "@babel/preset-typescript": "^7.15.0",
     "@types/chrome": "0.0.147",
+    "@types/jest": "^27.0.2",
     "@types/lodash.capitalize": "^4.2.6",
     "@types/lodash.isequal": "^4.5.5",
     "@types/lodash.uniqby": "^4.7.6",
@@ -42,11 +44,13 @@
     "eslint-plugin-prettier": "^3.4.0",
     "eslint-plugin-security": "^1.4.0",
     "eslint-plugin-simple-import-sort": "^7.0.0",
-    "eslint-plugin-sonarjs": "^0.9.1",
     "husky": "^7.0.1",
+    "jest": "^27.2.2",
+    "jest-cli": "^27.2.2",
     "lint-staged": "^11.0.1",
     "prettier": "^2.3.2",
     "style-loader": "^2.0.0",
+    "ts-jest": "^27.0.5",
     "typescript": "^4.3.5",
     "webpack": "^5.24.4",
     "webpack-cli": "^4.5.0"

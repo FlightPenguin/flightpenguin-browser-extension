@@ -24,7 +24,7 @@ chrome.runtime.onMessage.addListener(async function (message) {
       await scrapeDepartureFlights(formData);
       break;
     case "GET_RETURN_FLIGHTS":
-      await scrapeReturnFlights(message.departure);
+      await scrapeReturnFlights(message.departure, formData);
       break;
     case "HIGHLIGHT_FLIGHT":
       await highlightFlightCard(message.selectedDepartureId, message.selectedReturnId);
@@ -32,6 +32,7 @@ chrome.runtime.onMessage.addListener(async function (message) {
       break;
     case "CLEAR_SELECTION":
       history.back();
+      formData = null;
       chrome.runtime.sendMessage({ event: "PROVIDER_READY", provider: "expedia" });
       break;
     default:
@@ -54,8 +55,8 @@ const scrapeDepartureFlights = async (formData) => {
   }
 };
 
-const scrapeReturnFlights = async (departure) => {
-  await selectReturnFlight(departure);
+const scrapeReturnFlights = async (departure, formData) => {
+  await selectReturnFlight(departure, formData);
   try {
     const flights = await getFlights(departure, 30000, formData);
     if (flights) {

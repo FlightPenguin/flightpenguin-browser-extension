@@ -10,7 +10,7 @@ const IFRAME_LOADING_SELECTOR = "[class*='DetailsPanel_loading']";
 export const createLayoversIframe = async (flightCard: HTMLElement) => {
   const link = await getLayoversLink(flightCard);
   const iframeDocument = await createInvisibleIframe(flightCard, link, 15000, "", [IFRAME_CLASSNAME]);
-  await waitForDisappearance(15000, IFRAME_LOADING_SELECTOR, iframeDocument);
+  await waitForDisappearance(30000, IFRAME_LOADING_SELECTOR, iframeDocument);
   return iframeDocument;
 };
 

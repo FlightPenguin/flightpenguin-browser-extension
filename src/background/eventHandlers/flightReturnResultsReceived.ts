@@ -39,13 +39,13 @@ export const handleFlightReturnResultsReceived = (
   const setSuccessful = providerManager.setItineraries(allItins, existingItinerariesVersion);
   if (setSuccessful) {
     providerManager.setPartialReturn(providerName, "RETURN");
-    const returnList = sortFlights(Object.values(returns), allItins); // TODO dedup returns
+    const returnList = sortFlights(Object.values(returns), allItins, providerManager.getFormCabinValue()); // TODO dedup returns
     providerManager.addReturns(returnList);
 
     const nextMessage = {
       event: "RETURN_FLIGHTS_FOR_CLIENT",
       flights: {
-        departureList: sortFlights(providerManager.getDepartures(), allItins),
+        departureList: sortFlights(providerManager.getDepartures(), allItins, providerManager.getFormCabinValue()),
         returnList: providerManager.getReturns(),
         itins: itineraries,
         updatedAt: new Date(),

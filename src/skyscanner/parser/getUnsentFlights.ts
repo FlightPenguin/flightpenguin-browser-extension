@@ -1,4 +1,5 @@
 import { FlightDetails } from "../../shared/types/FlightDetails";
+import { FlightSearchFormData } from "../../shared/types/FlightSearchFormData";
 import { UnprocessedFlightSearchResult } from "../../shared/types/UnprocessedFlightSearchResult";
 import { waitForAppearance } from "../../shared/utilities/waitFor";
 import { handleCaptcha } from "../ui/handleCaptcha";
@@ -9,7 +10,10 @@ const NO_RESULTS_SELECTOR = "div[class*=FallbackNoResults_container]";
 const RESULTS_SELECTOR = "span[class*=SummaryInfo_itineraryCountContainer]";
 const FLIGHT_CARD_SELECTOR = "[class*='FlightsTicket_container'] [role='button']:not([data-visited='true'])";
 
-export const getUnsentFlights = async (loadingTimeout = 30_000): Promise<UnprocessedFlightSearchResult[]> => {
+export const getUnsentFlights = async (
+  formData: FlightSearchFormData,
+  loadingTimeout = 30_000,
+): Promise<UnprocessedFlightSearchResult[]> => {
   await waitForAppearance(loadingTimeout, "body");
   if (isCaptcha()) {
     handleCaptcha();
@@ -27,7 +31,7 @@ export const getUnsentFlights = async (loadingTimeout = 30_000): Promise<Unproce
       continue;
     }
 
-    const flight = await getFlight(flightCard);
+    const flight = await getFlight(flightCard, formData);
     setFlightId(flightCard, flight);
     flights.push(flight);
   }

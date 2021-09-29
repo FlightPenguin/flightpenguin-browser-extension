@@ -2,6 +2,7 @@ import { MissingElementLookupError, MissingFieldParserError } from "../../shared
 import { standardizeTimeString } from "../../shared/helpers";
 import AirlineMap from "../../shared/nameMaps/airlineMap";
 import { FlightDetails } from "../../shared/types/FlightDetails";
+import { FlightLeg } from "../../shared/types/FlightLeg";
 import { FlightSearchFormData } from "../../shared/types/FlightSearchFormData";
 import { openFlightDetailsModal } from "../ui/openFlightDetailsModal";
 import { openLayoverDetailsCollapsible } from "../ui/openLayoverDetailsCollapsible";
@@ -24,7 +25,21 @@ export const getFlight = async (
   openFlightDetailsModal(element);
   const modal = await getFlightDetailsModal();
   await openLayoverDetailsCollapsible(modal);
-  const layovers = hasStops ? await getLayovers(modal, 3000, formData, isReturn) : [];
+
+  const layovers = hasStops
+    ? await getLayovers(modal, 3000, formData, isReturn)
+    : [
+        new FlightLeg({
+          fromTime: departureTime,
+          toTime: arrivalTime,
+          from: isReturn ? formData.to : formData.from,
+          to: isReturn ? formData.from : formData.to,
+          duration: duration,
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
+          operatingAirline: marketingAirline || operatingAirline,
+        }),
+      ];
 
   return new FlightDetails({
     marketingAirline,

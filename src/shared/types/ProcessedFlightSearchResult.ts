@@ -17,7 +17,7 @@ export interface ProcessedFlightSearchResult {
   pain: number;
 }
 
-interface Layover {
+export interface Layover {
   from: string;
   fromTime: string;
   duration: string;
