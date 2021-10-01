@@ -1,4 +1,4 @@
-import { Provider as BumbagProvider } from "bumbag";
+import { Provider as BumbagProvider, ToastManager } from "bumbag";
 import React from "react";
 import ReactDom from "react-dom";
 
@@ -11,6 +11,7 @@ if (root) {
   ReactDom.render(
     <BumbagProvider theme={FlightPenguinTheme}>
       <SearchPage />
+      <ToastManager />
     </BumbagProvider>,
     root,
   );

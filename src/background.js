@@ -18,15 +18,23 @@ import {
   handleProviderReady,
   handleScraperFailed,
   handleScraperSuccess,
+  handleUpdateRequest,
 } from "./background/eventHandlers";
 import { ProviderManager } from "./background/ProviderManager";
-import { ExtensionInstalledHandler, ExtensionOpenedHandler, ExtensionUninstalledHandler } from "./background/state";
+import {
+  ExtensionInstalledHandler,
+  ExtensionOpenedHandler,
+  ExtensionUninstalledHandler,
+  ExtensionUpdateAvailableHandler,
+} from "./background/state";
 
 ExtensionUninstalledHandler();
 ExtensionInstalledHandler();
 ExtensionOpenedHandler();
 
 const providerManager = new ProviderManager();
+
+ExtensionUpdateAvailableHandler(providerManager);
 
 chrome.runtime.onMessage.addListener(function (message, sender, reply) {
   console.debug(message);
@@ -69,6 +77,9 @@ chrome.runtime.onMessage.addListener(function (message, sender, reply) {
       break;
     case "INDEX_UNLOAD":
       handleIndexUnloaded(providerManager);
+      break;
+    case "UPDATE_NOW":
+      handleUpdateRequest();
       break;
     default:
       window.Sentry.captureException(new Error(message));
