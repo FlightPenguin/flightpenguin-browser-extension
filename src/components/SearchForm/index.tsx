@@ -103,7 +103,7 @@ interface SearchFormProps {
 
 export const SearchForm = ({ onSubmit, initialValues = defaultInitialValues }: SearchFormProps): React.ReactElement => {
   return (
-    <Box className="search-form-wrapper">
+    <Box className="search-form-wrapper" alignX="center">
       <Card maxWidth={`${searchFormWidth}px`}>
         <Formik
           initialValues={initialValues}
