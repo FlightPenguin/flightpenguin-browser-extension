@@ -40,7 +40,7 @@ const basePlugins = [
   new ProgressPlugin({}),
   new DefinePlugin({
     "process.env.BUMBAG_ENV": JSON.stringify("not test"),
-    "process.env.VERSION": "1.5.0",
+    "process.env.VERSION": "1.6.0",
   }),
 ];
 
