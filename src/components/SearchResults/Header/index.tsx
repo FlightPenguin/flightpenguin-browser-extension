@@ -1,9 +1,12 @@
-import { Box } from "bumbag";
+import { Box, ProgressBar } from "bumbag";
 import isEqual from "lodash.isequal";
 import React from "react";
+import ReactSlider from "react-slider";
 
 import { FlightSearchFormData } from "../../../shared/types/FlightSearchFormData";
 import { flightTimeContainerWidth } from "../../constants";
+import { TimelineSlider } from "../Slider";
+import { getDatetimeAtPosition } from "../Slider/getTimeAtPosition";
 import { TimeCell } from "./TimeCell";
 import { getFlightInfo } from "./utilities/getFlightInfo";
 import { getFontSize } from "./utilities/getFontSize";
@@ -26,31 +29,35 @@ const TimelineHeader = ({ formData, flightType, intervals, tzOffset }: TimelineH
       className={`${flightType.toLowerCase()}-header`}
       display="flex"
       flexDirection="row"
+      flexWrap="wrap"
       width={`${flightTimeContainerWidth + intervalWidth}px`}
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
       marginLeft={`-${intervalWidth / 2}px`}
     >
-      {intervals.map((interval, index) => {
-        if (interval % 24 === 0 && interval !== 0) {
-          daysCounter += 1;
-        }
+      <Box flexBasis="100%" display="flex" flexDirection="row">
+        {intervals.map((interval, index) => {
+          if (interval % 24 === 0 && interval !== 0) {
+            daysCounter += 1;
+          }
 
-        return (
-          <TimeCell
-            index={index}
-            interval={interval}
-            intervalWidth={intervalWidth}
-            tzOffset={tzOffset}
-            startDate={startDate}
-            daysCounter={daysCounter}
-            departureAirportCode={departureAirportCode}
-            arrivalAirportCode={arrivalAirportCode}
-            timeFontSize={timeFontSize}
-            key={`interval-header-${interval}`}
-          />
-        );
-      })}
+          return (
+            <TimeCell
+              index={index}
+              interval={interval}
+              intervalWidth={intervalWidth}
+              tzOffset={tzOffset}
+              startDate={startDate}
+              daysCounter={daysCounter}
+              departureAirportCode={departureAirportCode}
+              arrivalAirportCode={arrivalAirportCode}
+              timeFontSize={timeFontSize}
+              key={`interval-header-${interval}`}
+            />
+          );
+        })}
+      </Box>
+      <TimelineSlider intervals={intervals} intervalWidth={intervalWidth} startDate={startDate} />
     </Box>
   );
 };

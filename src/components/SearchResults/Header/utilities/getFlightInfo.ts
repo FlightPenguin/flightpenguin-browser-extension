@@ -2,7 +2,10 @@ import { parse } from "date-fns";
 
 import { FlightSearchFormData } from "../../../../shared/types/FlightSearchFormData";
 
-export const getFlightInfo = (formData: FlightSearchFormData, flightType: "DEPARTURE" | "RETURN") => {
+export const getFlightInfo = (
+  formData: FlightSearchFormData,
+  flightType: "DEPARTURE" | "RETURN",
+): { startDate: Date; departureAirportCode: string; arrivalAirportCode: string } => {
   let startDate;
   let departureAirportCode;
   let arrivalAirportCode;

@@ -1,4 +1,5 @@
 import { convertTimeTo24HourClock } from "../../../../../utilityFunctions";
+import { getPixelsPerMinute } from "../../../../utilities/position/getPixelsPerMinute";
 
 export function getPosition(
   fromTime: string,
@@ -19,9 +20,7 @@ export function getPosition(
    * So 6:05am would be (33.33 * 6) + (5 * 33.33/60) = start position in pixels
    * width = end position in pixels - start position in pixels
    */
-  const totalHours = (intervalCount - 1) * increment;
-  const totalMinutes = totalHours * 60;
-  const pxPerMinute = containerWidth / totalMinutes;
+  const pxPerMinute = getPixelsPerMinute({ intervalCount, increment, width: containerWidth });
   const minutesPerHour = 60;
   const minutesPerDay = minutesPerHour * 24;
   const positionAtMidnight = pxPerMinute * minutesPerDay;
