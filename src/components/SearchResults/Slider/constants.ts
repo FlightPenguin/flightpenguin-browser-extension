@@ -1,1 +1,1 @@
-export const thumbWidthValue = 84;
+export const thumbWidthValue = 36;

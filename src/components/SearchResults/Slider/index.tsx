@@ -12,17 +12,17 @@ interface TimelineSliderProps {
   intervalWidth: number;
 }
 
-const heightValue = 36;
+const heightValue = 8;
 
 export const TimelineSlider = ({ intervals, startDate, intervalWidth }: TimelineSliderProps): React.ReactElement => {
   return (
     <Box
       width={`${flightTimeContainerWidth}px`}
       alignItems="center"
-      marginLeft={`${intervalWidth / 2 - 6}px`}
+      marginLeft={`${intervalWidth / 2}px`}
       height={`${heightValue}px`}
-      marginTop="minor-1"
-      marginBottom="minor-1"
+      marginTop="major-2"
+      marginBottom="major-4"
     >
       <ReactSlider
         defaultValue={[0, flightTimeContainerWidth]}

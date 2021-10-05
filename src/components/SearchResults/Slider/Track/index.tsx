@@ -9,9 +9,6 @@ interface TrackProps {
 }
 
 export const Track = ({ state, props, heightValue }: TrackProps): React.ReactElement => {
-  console.log(state);
-  console.log(props);
-
   const position = getTrackPosition({ props, index: state.index });
 
   const backgroundColor = state.index % 2 === 1 ? "blue" : "grey";

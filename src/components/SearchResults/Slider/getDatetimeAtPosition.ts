@@ -21,10 +21,6 @@ export const getDatetimeAtPosition = ({
     width,
   });
 
-  console.log(width);
-  console.log(intervals);
-  console.log(pixelsPerMinute);
-
   const minutes = position / pixelsPerMinute;
   const datetime = addMinutes(addHours(startDate, intervals[0]), minutes);
   const formattedDatetime = format(datetime, "MM/dd/yyyy hh:mmaaa");
