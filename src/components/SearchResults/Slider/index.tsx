@@ -22,7 +22,7 @@ export const TimelineSlider = ({ intervals, startDate, intervalWidth }: Timeline
       marginLeft={`${intervalWidth / 2}px`}
       height={`${heightValue}px`}
       marginTop="major-2"
-      marginBottom="major-4"
+      marginBottom="major-6"
     >
       <ReactSlider
         defaultValue={[0, flightTimeContainerWidth]}

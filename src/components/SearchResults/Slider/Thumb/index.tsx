@@ -1,8 +1,8 @@
-import { Box, Icon } from "bumbag";
+import { Box, Icon, Text, Tooltip } from "bumbag";
 import React, { HTMLProps } from "react";
 
 import { flightTimeContainerWidth } from "../../../constants";
-import { thumbWidthValue } from "../constants";
+import { thumbWidthValue, thumbWidthWrapperValue } from "../constants";
 import { getDatetimeAtPosition } from "../getDatetimeAtPosition";
 import { getThumbPosition } from "./getThumbPosition";
 
@@ -15,13 +15,17 @@ interface ThumbProps {
 }
 
 const widthValue = thumbWidthValue;
+const wrapperWidthValue = thumbWidthWrapperValue;
 
 export const Thumb = ({ state, props, startDate, intervals, heightValue }: ThumbProps): React.ReactElement => {
+  const rawPosition = props.style?.left as string;
+
   const { formattedDate, formattedTime } = getDatetimeAtPosition({
     startDate,
-    position: state.valueNow,
+    rawPosition,
     intervals: intervals,
     width: flightTimeContainerWidth,
+    thumbIndex: state.index,
   });
 
   const position = getThumbPosition({ props, index: state.index });
@@ -29,10 +33,14 @@ export const Thumb = ({ state, props, startDate, intervals, heightValue }: Thumb
 
   return (
     <Box
+      alignItems="center"
       aria-valuetext={`${formattedDate} ${formattedTime}`}
       aria-orientation="horizontal"
-      aria-label={state.index === 0 ? "Depart after" : "Arrive before"}
+      aria-label={state.index === 0 ? "Filter flights to departures after" : "Filter flights to arrivals before"}
+      value={state.valueNow}
       cursor="grab"
+      display="flex"
+      flexDirection="column"
       key={`thumb-${state.index}`}
       left={`${position}px`}
       onChange={props.onChange}
@@ -45,6 +53,7 @@ export const Thumb = ({ state, props, startDate, intervals, heightValue }: Thumb
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
       top={`-${heightAdjust}px`}
+      width={`${wrapperWidthValue}px`}
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
       zIndex={`${props.style?.zIndex || 0}`}
@@ -61,6 +70,11 @@ export const Thumb = ({ state, props, startDate, intervals, heightValue }: Thumb
       >
         <Icon icon={state.index === 0 ? "solid-plane-departure" : "solid-plane-arrival"} color="white" fontSize="300" />
       </Box>
+      <Tooltip content={`${formattedDate}`} hasArrow placement="right">
+        <Box marginTop="minor-1">
+          <Text fontWeight="700">{formattedTime}</Text>
+        </Box>
+      </Tooltip>
     </Box>
   );
 };

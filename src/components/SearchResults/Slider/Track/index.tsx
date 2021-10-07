@@ -10,8 +10,6 @@ interface TrackProps {
 }
 
 export const Track = ({ state, props, heightValue }: TrackProps): React.ReactElement => {
-  console.log(props);
-
   // TODO: Cleanup left, right.  Track 0 needs right moved leftwards the width of the slider, track 1 the opposite.
   // const position = getTrackPosition({ props, index: state.index });
 
