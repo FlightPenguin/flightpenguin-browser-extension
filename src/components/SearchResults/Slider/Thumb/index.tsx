@@ -3,7 +3,7 @@ import React, { HTMLProps } from "react";
 
 import { flightTimeContainerWidth } from "../../../constants";
 import { thumbWidthValue, thumbWidthWrapperValue } from "../constants";
-import { getDatetimeAtPosition } from "../getDatetimeAtPosition";
+import { getDatetimeAtPosition } from "../utilities/getDatetimeAtPosition";
 import { getThumbPosition } from "./getThumbPosition";
 
 interface ThumbProps {

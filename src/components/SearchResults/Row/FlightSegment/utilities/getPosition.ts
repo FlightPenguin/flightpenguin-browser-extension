@@ -23,7 +23,7 @@ export function getPosition(
   const pxPerMinute = getPixelsPerMinute({ intervalCount, increment, width: containerWidth });
   const minutesPerHour = 60;
   const minutesPerDay = minutesPerHour * 24;
-  const positionAtMidnight = pxPerMinute * minutesPerDay;
+  const positionAtMidnight = pxPerMinute.times(minutesPerDay);
 
   const startMinutesOffset = startDayOffset * minutesPerDay - startHourOffset * minutesPerHour; // if flight starts on a following day, happens with layovers
   const endMinutesOffset = endDayOffset * minutesPerDay - startHourOffset * minutesPerHour; // if flight ends on a following day, happens with long distance flights and layovers
@@ -34,13 +34,13 @@ export function getPosition(
   const toTimeAttrs = convertTimeTo24HourClock(toTime);
   const endTimeInMinutes = endMinutesOffset + toTimeAttrs.minutes + toTimeAttrs.hours * minutesPerHour;
 
-  const startPositionPx = startTimeInMinutes * pxPerMinute;
-  let endPositionPx = endTimeInMinutes * pxPerMinute;
+  const startPositionPx = pxPerMinute.times(startTimeInMinutes);
+  let endPositionPx = pxPerMinute.times(endTimeInMinutes);
 
   if (endPositionPx < startPositionPx) {
-    endPositionPx += positionAtMidnight;
+    endPositionPx = endPositionPx.plus(positionAtMidnight);
   }
 
-  const timeBarWidth = endPositionPx - startPositionPx;
-  return { width: timeBarWidth, startX: startPositionPx };
+  const timeBarWidth = endPositionPx.minus(startPositionPx);
+  return { width: timeBarWidth.toDecimalPlaces(2).toNumber(), startX: startPositionPx.toDecimalPlaces(2).toNumber() };
 }

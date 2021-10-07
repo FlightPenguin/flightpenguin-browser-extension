@@ -61,6 +61,7 @@
     "@react-hook/debounce": "^4.0.0",
     "bumbag": "^2.6.0",
     "date-fns": "^2.23.0",
+    "decimal.js-light": "^2.5.1",
     "formik": "^2.2.9",
     "lodash.capitalize": "^4.2.1",
     "lodash.isequal": "^4.5.0",
