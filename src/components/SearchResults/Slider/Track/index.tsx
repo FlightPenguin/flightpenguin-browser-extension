@@ -10,24 +10,17 @@ interface TrackProps {
 }
 
 export const Track = ({ state, props, heightValue }: TrackProps): React.ReactElement => {
-  // TODO: Cleanup left, right.  Track 0 needs right moved leftwards the width of the slider, track 1 the opposite.
-  // const position = getTrackPosition({ props, index: state.index });
+  const { left, right } = getTrackPosition({ props, index: state.index });
 
   return (
     <Box
       backgroundColor={state.index % 2 === 1 ? "primary" : "gray"}
       bottom="0px"
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
       height={`${heightValue}px`}
       key={`track-${state.index}`}
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
-      left={`${props.style?.left || 0}px`}
+      left={`${left}px`}
       position="absolute"
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
-      right={`${props.style?.right || 0}px`}
+      right={`${right}px`}
       top="0px"
       willChange={props.style?.willChange}
     />
