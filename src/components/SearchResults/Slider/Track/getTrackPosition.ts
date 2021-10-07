@@ -1,6 +1,6 @@
 import { HTMLProps } from "react";
 
-import { thumbWidthValue, thumbWidthWrapperValue } from "../constants";
+import { thumbWidthWrapperValue } from "../constants";
 
 interface GetTrackPositionProps {
   props: HTMLProps<HTMLDivElement>;
