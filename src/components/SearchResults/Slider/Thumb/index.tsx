@@ -13,12 +13,22 @@ interface ThumbProps {
   startDate: Date;
   intervals: number[];
   heightValue: number;
+  minimumDateValue: Date;
+  maximumDateValue: Date;
 }
 
 const widthValue = thumbWidthValue;
 const wrapperWidthValue = thumbWidthWrapperValue;
 
-const Thumb = ({ state, props, startDate, intervals, heightValue }: ThumbProps): React.ReactElement => {
+const Thumb = ({
+  state,
+  props,
+  startDate,
+  intervals,
+  heightValue,
+  minimumDateValue,
+  maximumDateValue,
+}: ThumbProps): React.ReactElement => {
   const rawPosition = props.style?.left as string;
 
   const { formattedDate, formattedTime } = getDatetimeAtPosition({
@@ -27,6 +37,8 @@ const Thumb = ({ state, props, startDate, intervals, heightValue }: ThumbProps):
     intervals: intervals,
     width: flightTimeContainerWidth,
     thumbIndex: state.index,
+    minimumDateValue,
+    maximumDateValue,
   });
 
   const position = getThumbPosition({ props, index: state.index });
@@ -84,12 +96,21 @@ export default React.memo(Thumb, (previous, next) => {
   return isEqual(getValuesForMemoCheck(previous), getValuesForMemoCheck(next));
 });
 
-const getValuesForMemoCheck = ({ state, props, startDate, intervals }: ThumbProps) => {
+const getValuesForMemoCheck = ({
+  state,
+  props,
+  startDate,
+  intervals,
+  minimumDateValue,
+  maximumDateValue,
+}: ThumbProps) => {
   return {
     index: state.index,
     left: props.style?.left,
     zIndex: props.style?.zIndex,
-    startDate: startDate,
+    startDate,
     intervalCount: intervals.length,
+    minimumDateValue,
+    maximumDateValue,
   };
 };

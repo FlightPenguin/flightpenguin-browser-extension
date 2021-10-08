@@ -12,6 +12,8 @@ interface GetDatetimeAtPositionProps {
   intervals: number[];
   width: number;
   thumbIndex: number;
+  minimumDateValue: Date;
+  maximumDateValue: Date;
 }
 
 export const getDatetimeAtPosition = ({
@@ -20,6 +22,8 @@ export const getDatetimeAtPosition = ({
   intervals,
   width,
   thumbIndex,
+  minimumDateValue,
+  maximumDateValue,
 }: GetDatetimeAtPositionProps): {
   formattedDate: string;
   formattedTime: string;
@@ -35,7 +39,14 @@ export const getDatetimeAtPosition = ({
   const adjustedPosition = getAdjustedPosition(position, thumbIndex);
 
   const minutes = adjustedPosition.dividedBy(pixelsPerMinute).toDecimalPlaces(0).toNumber();
-  const datetime = addMinutes(addHours(startDate, intervals[0]), minutes);
+  let datetime = addMinutes(addHours(startDate, intervals[0]), minutes);
+  if (datetime < minimumDateValue) {
+    datetime = minimumDateValue;
+  }
+  if (datetime > maximumDateValue) {
+    datetime = maximumDateValue;
+  }
+
   const roundedDatetime = roundToNearestMinutes(datetime, { nearestTo: 15 });
   const formattedDatetime = format(roundedDatetime, "MM/dd/yyyy h:mmaaa");
   const formattedDatetimeTokens = formattedDatetime.split(/\s+/);

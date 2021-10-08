@@ -7,6 +7,7 @@ import { flightTimeContainerWidth } from "../../constants";
 import { getPixelsPerMinute } from "../../utilities/position/getPixelsPerMinute";
 import Thumb from "./Thumb";
 import Track from "./Track";
+import { getAcceptableDateRange } from "./utilities/getAcceptableDateRange";
 import { getIncrement } from "./utilities/getIncrement";
 import { getMinSeparation } from "./utilities/getMinSeparation";
 import { getStepSize } from "./utilities/getStepSize";
@@ -25,9 +26,9 @@ const TimelineSlider = ({ intervals, startDate, intervalWidth }: TimelineSliderP
     increment: getIncrement(intervals),
     width: flightTimeContainerWidth,
   });
-  // The following need to be converted from pixel to values I guesss.......
   const stepSize = getStepSize({ pixelsPerMinute, stepMinutes: 15 });
   const minSeparation = getMinSeparation({ pixelsPerMinute, minSeparationMinutes: 120 });
+  const { minimumDate, maximumDate } = getAcceptableDateRange({ intervals, startDate });
 
   return (
     <Box
@@ -48,7 +49,15 @@ const TimelineSlider = ({ intervals, startDate, intervalWidth }: TimelineSliderP
         pearling
         renderThumb={(props, state) => {
           return (
-            <Thumb state={state} props={props} startDate={startDate} intervals={intervals} heightValue={heightValue} />
+            <Thumb
+              state={state}
+              props={props}
+              startDate={startDate}
+              intervals={intervals}
+              heightValue={heightValue}
+              minimumDateValue={minimumDate}
+              maximumDateValue={maximumDate}
+            />
           );
         }}
         renderTrack={(props, state) => {
