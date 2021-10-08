@@ -37,8 +37,6 @@ export const getDatetimeAtPosition = ({
   const minutes = adjustedPosition.dividedBy(pixelsPerMinute).toDecimalPlaces(0).toNumber();
   const datetime = addMinutes(addHours(startDate, intervals[0]), minutes);
   const roundedDatetime = roundToNearestMinutes(datetime, { nearestTo: 15 });
-  console.log(datetime);
-  console.log(roundedDatetime);
   const formattedDatetime = format(roundedDatetime, "MM/dd/yyyy h:mmaaa");
   const formattedDatetimeTokens = formattedDatetime.split(/\s+/);
 
