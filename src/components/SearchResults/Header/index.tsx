@@ -14,9 +14,16 @@ interface TimelineHeaderProps {
   flightType: "DEPARTURE" | "RETURN";
   intervals: number[];
   tzOffset: number;
+  onSliderChange: (minDate: Date, maxDate: Date) => void;
 }
 
-const TimelineHeader = ({ formData, flightType, intervals, tzOffset }: TimelineHeaderProps): React.ReactElement => {
+const TimelineHeader = ({
+  formData,
+  flightType,
+  intervals,
+  tzOffset,
+  onSliderChange,
+}: TimelineHeaderProps): React.ReactElement => {
   let daysCounter = 0;
   const intervalWidth = flightTimeContainerWidth / (intervals.length - 1);
   const { startDate, departureAirportCode, arrivalAirportCode } = getFlightInfo(formData, flightType);
@@ -55,7 +62,12 @@ const TimelineHeader = ({ formData, flightType, intervals, tzOffset }: TimelineH
           );
         })}
       </Box>
-      <TimelineSlider intervals={intervals} intervalWidth={intervalWidth} startDate={startDate} />
+      <TimelineSlider
+        intervals={intervals}
+        intervalWidth={intervalWidth}
+        startDate={startDate}
+        onRangeChange={onSliderChange}
+      />
     </Box>
   );
 };

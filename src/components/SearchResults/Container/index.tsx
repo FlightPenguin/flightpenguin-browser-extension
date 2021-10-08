@@ -33,9 +33,15 @@ const TimelineContainer = ({
   onSelection,
   onClear,
 }: TimelimeContainerProps): React.ReactElement => {
+  console.log("renderme");
+
   const [skeletonItineraries, setSkeletonItineraries] = useState<{ [keyof: string]: ProcessedItinerary }>({});
   const [skeletonFlights, setSkeletonFlights] = useState<ProcessedFlightSearchResult[]>([]);
 
+  const [filterDateRange, setFilterDateRange] = useState<{ lowerBound: Date | null; upperBound: Date | null }>({
+    lowerBound: null,
+    upperBound: null,
+  });
   const [selectedFlightDetails, setSelectedFlightDetails] = useState<FlightSelection | null>(null);
   const [displayFlights, setDisplayFlights] = useState<ProcessedFlightSearchResult[]>([]);
   const [intervalInfo, setIntervalInfo] = useState<{
@@ -110,6 +116,9 @@ const TimelineContainer = ({
           flightType={flightType}
           intervals={intervalInfo.intervals}
           tzOffset={intervalInfo.timezoneOffset}
+          onSliderChange={(minDate: Date, maxDate: Date) => {
+            setFilterDateRange({ lowerBound: minDate, upperBound: maxDate });
+          }}
         />
       </Box>
       <Box data-name={`${flightType.toLowerCase()}-container`} display="flex">

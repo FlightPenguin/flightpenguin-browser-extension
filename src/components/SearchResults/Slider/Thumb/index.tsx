@@ -15,6 +15,7 @@ interface ThumbProps {
   heightValue: number;
   minimumDateValue: Date;
   maximumDateValue: Date;
+  onChange: (index: number, value: Date) => void;
 }
 
 const widthValue = thumbWidthValue;
@@ -28,10 +29,11 @@ const Thumb = ({
   heightValue,
   minimumDateValue,
   maximumDateValue,
+  onChange,
 }: ThumbProps): React.ReactElement => {
   const rawPosition = props.style?.left as string;
 
-  const { formattedDate, formattedTime } = getDatetimeAtPosition({
+  const { formattedDate, formattedTime, roundedDatetime } = getDatetimeAtPosition({
     startDate,
     rawPosition,
     intervals: intervals,
@@ -56,7 +58,13 @@ const Thumb = ({
       flexDirection="column"
       key={`thumb-${state.index}`}
       left={`${position}px`}
-      onChange={props.onChange}
+      onChange={(event) => {
+        if (props.onChange) {
+          props.onChange(event);
+        }
+
+        onChange(state.index, roundedDatetime);
+      }}
       onFocus={props.onFocus}
       onTouchStart={props.onTouchStart}
       position="absolute"

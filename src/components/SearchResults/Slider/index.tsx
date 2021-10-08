@@ -1,6 +1,6 @@
 import { Box } from "bumbag";
 import isEqual from "lodash.isequal";
-import React from "react";
+import React, { useState } from "react";
 import ReactSlider from "react-slider";
 
 import { flightTimeContainerWidth } from "../../constants";
@@ -16,11 +16,21 @@ interface TimelineSliderProps {
   intervals: number[];
   startDate: Date;
   intervalWidth: number;
+  onRangeChange: (minDate: Date, maxDate: Date) => void;
 }
 
 const heightValue = 8;
 
-const TimelineSlider = ({ intervals, startDate, intervalWidth }: TimelineSliderProps): React.ReactElement => {
+const TimelineSlider = ({
+  intervals,
+  startDate,
+  intervalWidth,
+  onRangeChange,
+}: TimelineSliderProps): React.ReactElement => {
+  const { minimumDate, maximumDate } = getAcceptableDateRange({ intervals, startDate });
+  const [earliestDatetime, setEarliestDatetime] = useState<Date>(minimumDate);
+  const [latestDatetime, setLatestDatetime] = useState<Date>(maximumDate);
+
   const pixelsPerMinute = getPixelsPerMinute({
     intervalCount: intervals.length,
     increment: getIncrement(intervals),
@@ -28,7 +38,6 @@ const TimelineSlider = ({ intervals, startDate, intervalWidth }: TimelineSliderP
   });
   const stepSize = getStepSize({ pixelsPerMinute, stepMinutes: 15 });
   const minSeparation = getMinSeparation({ pixelsPerMinute, minSeparationMinutes: 120 });
-  const { minimumDate, maximumDate } = getAcceptableDateRange({ intervals, startDate });
 
   return (
     <Box
@@ -57,6 +66,20 @@ const TimelineSlider = ({ intervals, startDate, intervalWidth }: TimelineSliderP
               heightValue={heightValue}
               minimumDateValue={minimumDate}
               maximumDateValue={maximumDate}
+              onChange={(index: number, value: Date) => {
+                switch (index) {
+                  case 0:
+                    setEarliestDatetime(value);
+                    onRangeChange(value, latestDatetime);
+                    break;
+                  case 1:
+                    setLatestDatetime(value);
+                    onRangeChange(earliestDatetime, value);
+                    break;
+                  default:
+                    throw new Error(`Unknown index value (${index}`);
+                }
+              }}
             />
           );
         }}
