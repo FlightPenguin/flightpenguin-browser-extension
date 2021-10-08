@@ -1,12 +1,10 @@
-import { Box, ProgressBar } from "bumbag";
+import { Box } from "bumbag";
 import isEqual from "lodash.isequal";
 import React from "react";
-import ReactSlider from "react-slider";
 
 import { FlightSearchFormData } from "../../../shared/types/FlightSearchFormData";
 import { flightTimeContainerWidth } from "../../constants";
-import { TimelineSlider } from "../Slider";
-import { getDatetimeAtPosition } from "../Slider/getTimeAtPosition";
+import TimelineSlider from "../Slider";
 import { TimeCell } from "./TimeCell";
 import { getFlightInfo } from "./utilities/getFlightInfo";
 import { getFontSize } from "./utilities/getFontSize";

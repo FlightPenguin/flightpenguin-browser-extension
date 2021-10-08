@@ -1,11 +1,12 @@
 import { Box } from "bumbag";
+import isEqual from "lodash.isequal";
 import React from "react";
 import ReactSlider from "react-slider";
 
 import { flightTimeContainerWidth } from "../../constants";
 import { getPixelsPerMinute } from "../../utilities/position/getPixelsPerMinute";
-import { Thumb } from "./Thumb";
-import { Track } from "./Track";
+import Thumb from "./Thumb";
+import Track from "./Track";
 import { getIncrement } from "./utilities/getIncrement";
 import { getMinSeparation } from "./utilities/getMinSeparation";
 import { getStepSize } from "./utilities/getStepSize";
@@ -18,7 +19,7 @@ interface TimelineSliderProps {
 
 const heightValue = 8;
 
-export const TimelineSlider = ({ intervals, startDate, intervalWidth }: TimelineSliderProps): React.ReactElement => {
+const TimelineSlider = ({ intervals, startDate, intervalWidth }: TimelineSliderProps): React.ReactElement => {
   const pixelsPerMinute = getPixelsPerMinute({
     intervalCount: intervals.length,
     increment: getIncrement(intervals),
@@ -27,7 +28,6 @@ export const TimelineSlider = ({ intervals, startDate, intervalWidth }: Timeline
   // The following need to be converted from pixel to values I guesss.......
   const stepSize = getStepSize({ pixelsPerMinute, stepMinutes: 15 });
   const minSeparation = getMinSeparation({ pixelsPerMinute, minSeparationMinutes: 120 });
-  console.log(minSeparation);
 
   return (
     <Box
@@ -59,3 +59,7 @@ export const TimelineSlider = ({ intervals, startDate, intervalWidth }: Timeline
     </Box>
   );
 };
+
+export default React.memo(TimelineSlider, (previous, next) => {
+  return isEqual(previous, next);
+});

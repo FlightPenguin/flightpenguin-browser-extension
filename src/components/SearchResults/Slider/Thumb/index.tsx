@@ -1,4 +1,5 @@
 import { Box, Icon, Text, Tooltip } from "bumbag";
+import isEqual from "lodash.isequal";
 import React, { HTMLProps } from "react";
 
 import { flightTimeContainerWidth } from "../../../constants";
@@ -17,7 +18,7 @@ interface ThumbProps {
 const widthValue = thumbWidthValue;
 const wrapperWidthValue = thumbWidthWrapperValue;
 
-export const Thumb = ({ state, props, startDate, intervals, heightValue }: ThumbProps): React.ReactElement => {
+const Thumb = ({ state, props, startDate, intervals, heightValue }: ThumbProps): React.ReactElement => {
   const rawPosition = props.style?.left as string;
 
   const { formattedDate, formattedTime } = getDatetimeAtPosition({
@@ -37,7 +38,7 @@ export const Thumb = ({ state, props, startDate, intervals, heightValue }: Thumb
       aria-valuetext={`${formattedDate} ${formattedTime}`}
       aria-orientation="horizontal"
       aria-label={state.index === 0 ? "Filter flights to departures after" : "Filter flights to arrivals before"}
-      value={state.valueNow}
+      value={`${formattedDate} ${formattedTime}`}
       cursor="grab"
       display="flex"
       flexDirection="column"
@@ -77,4 +78,18 @@ export const Thumb = ({ state, props, startDate, intervals, heightValue }: Thumb
       </Tooltip>
     </Box>
   );
+};
+
+export default React.memo(Thumb, (previous, next) => {
+  return isEqual(getValuesForMemoCheck(previous), getValuesForMemoCheck(next));
+});
+
+const getValuesForMemoCheck = ({ state, props, startDate, intervals }: ThumbProps) => {
+  return {
+    index: state.index,
+    left: props.style?.left,
+    zIndex: props.style?.zIndex,
+    startDate: startDate,
+    intervalCount: intervals.length,
+  };
 };

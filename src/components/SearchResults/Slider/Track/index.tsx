@@ -1,4 +1,5 @@
 import { Box } from "bumbag";
+import isEqual from "lodash.isequal";
 import React, { HTMLProps } from "react";
 
 import { getTrackPosition } from "./getTrackPosition";
@@ -9,7 +10,7 @@ interface TrackProps {
   heightValue: number;
 }
 
-export const Track = ({ state, props, heightValue }: TrackProps): React.ReactElement => {
+const Track = ({ state, props, heightValue }: TrackProps): React.ReactElement => {
   const { left, right } = getTrackPosition({ props, index: state.index });
 
   return (
@@ -25,4 +26,16 @@ export const Track = ({ state, props, heightValue }: TrackProps): React.ReactEle
       willChange={props.style?.willChange}
     />
   );
+};
+
+export default React.memo(Track, (previous, next) => {
+  return isEqual(getValuesForMemoCheck(previous), getValuesForMemoCheck(next));
+});
+
+const getValuesForMemoCheck = ({ state, props }: TrackProps) => {
+  return {
+    index: state.index,
+    left: props.style?.left,
+    right: props.style?.right,
+  };
 };
