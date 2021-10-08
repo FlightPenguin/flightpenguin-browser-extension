@@ -33,8 +33,6 @@ const TimelineContainer = ({
   onSelection,
   onClear,
 }: TimelimeContainerProps): React.ReactElement => {
-  console.log("renderme");
-
   const [skeletonItineraries, setSkeletonItineraries] = useState<{ [keyof: string]: ProcessedItinerary }>({});
   const [skeletonFlights, setSkeletonFlights] = useState<ProcessedFlightSearchResult[]>([]);
 
