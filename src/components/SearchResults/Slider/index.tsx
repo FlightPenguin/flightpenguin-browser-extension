@@ -52,6 +52,8 @@ const TimelineSlider = ({
             <Thumb
               state={state}
               props={props}
+              minimumValue={0}
+              maximumValue={ticks}
               startDate={startDate}
               intervals={intervals}
               heightValue={heightValue}

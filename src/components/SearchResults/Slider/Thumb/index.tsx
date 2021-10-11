@@ -5,8 +5,11 @@ import React, { HTMLProps } from "react";
 
 import { thumbWidthValue, thumbWidthWrapperValue } from "../constants";
 import { getThumbPosition } from "./getThumbPosition";
+import { getValue } from "./getValue";
 
 interface ThumbProps {
+  minimumValue: number;
+  maximumValue: number;
   state: { index: number; value: number[]; valueNow: number };
   props: HTMLProps<HTMLDivElement>;
   startDate: Date;
@@ -17,12 +20,21 @@ interface ThumbProps {
 const widthValue = thumbWidthValue;
 const wrapperWidthValue = thumbWidthWrapperValue;
 
-const Thumb = ({ state, props, startDate, intervals, heightValue }: ThumbProps): React.ReactElement => {
-  const datetime = addMinutes(startDate, state.valueNow * 15);
+const Thumb = ({
+  state,
+  props,
+  minimumValue,
+  maximumValue,
+  startDate,
+  intervals,
+  heightValue,
+}: ThumbProps): React.ReactElement => {
+  const value = getValue(state.valueNow, minimumValue, maximumValue);
+  const datetime = addMinutes(startDate, value * 15);
   const formattedDatetime = format(datetime, "MM/dd/yyyy h:mmaaa");
   const [formattedDate, formattedTime] = formattedDatetime.split(/\s+/);
 
-  const position = getThumbPosition({ intervals, value: state.valueNow, index: state.index });
+  const position = getThumbPosition({ intervals, value, index: state.index });
   const heightAdjust = (thumbWidthValue - heightValue) / 2;
 
   return (
