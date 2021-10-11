@@ -8,9 +8,11 @@ interface TrackProps {
   state: { index: number; value: number[] };
   props: HTMLProps<HTMLDivElement>;
   heightValue: number;
+  intervals: number[];
 }
 
-const Track = ({ state, props, heightValue }: TrackProps): React.ReactElement => {
+const Track = ({ state, props, heightValue, intervals }: TrackProps): React.ReactElement => {
+  console.log(`${state.index}-renderme`);
   const { left, right } = getTrackPosition({ props, index: state.index });
 
   return (
@@ -32,10 +34,11 @@ export default React.memo(Track, (previous, next) => {
   return isEqual(getValuesForMemoCheck(previous), getValuesForMemoCheck(next));
 });
 
-const getValuesForMemoCheck = ({ state, props }: TrackProps) => {
+const getValuesForMemoCheck = ({ state, props, intervals }: TrackProps) => {
   return {
     index: state.index,
     left: props.style?.left,
     right: props.style?.right,
+    intervalCount: intervals.length,
   };
 };

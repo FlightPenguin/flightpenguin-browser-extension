@@ -4,13 +4,10 @@ import React, { useState } from "react";
 import ReactSlider from "react-slider";
 
 import { flightTimeContainerWidth } from "../../constants";
-import { getPixelsPerMinute } from "../../utilities/position/getPixelsPerMinute";
 import Thumb from "./Thumb";
 import Track from "./Track";
 import { getAcceptableDateRange } from "./utilities/getAcceptableDateRange";
-import { getIncrement } from "./utilities/getIncrement";
-import { getMinSeparation } from "./utilities/getMinSeparation";
-import { getStepSize } from "./utilities/getStepSize";
+import { getSliderTicks } from "./utilities/getSliderTicks";
 
 interface TimelineSliderProps {
   intervals: number[];
@@ -31,13 +28,7 @@ const TimelineSlider = ({
   const [earliestDatetime, setEarliestDatetime] = useState<Date>(minimumDate);
   const [latestDatetime, setLatestDatetime] = useState<Date>(maximumDate);
 
-  const pixelsPerMinute = getPixelsPerMinute({
-    intervalCount: intervals.length,
-    increment: getIncrement(intervals),
-    width: flightTimeContainerWidth,
-  });
-  const stepSize = getStepSize({ pixelsPerMinute, stepMinutes: 15 });
-  const minSeparation = getMinSeparation({ pixelsPerMinute, minSeparationMinutes: 120 });
+  const ticks = getSliderTicks({ intervals });
 
   return (
     <Box
@@ -51,10 +42,10 @@ const TimelineSlider = ({
       <ReactSlider
         ariaLabel={["Depart after", "Arrive before"]}
         ariaValuetext={(state) => `Thumb value ${state.valueNow}`}
-        defaultValue={[0, flightTimeContainerWidth]}
-        max={flightTimeContainerWidth}
+        defaultValue={[0, ticks]}
+        max={ticks}
         min={0}
-        minDistance={minSeparation}
+        minDistance={8}
         pearling
         renderThumb={(props, state) => {
           return (
@@ -64,34 +55,40 @@ const TimelineSlider = ({
               startDate={startDate}
               intervals={intervals}
               heightValue={heightValue}
-              minimumDateValue={minimumDate}
-              maximumDateValue={maximumDate}
-              onChange={(index: number, value: Date) => {
-                switch (index) {
-                  case 0:
-                    setEarliestDatetime(value);
-                    onRangeChange(value, latestDatetime);
-                    break;
-                  case 1:
-                    setLatestDatetime(value);
-                    onRangeChange(earliestDatetime, value);
-                    break;
-                  default:
-                    throw new Error(`Unknown index value (${index}`);
-                }
-              }}
+              // onChange={(index: number, value: Date) => {
+              //   switch (index) {
+              //     case 0:
+              //       setEarliestDatetime(value);
+              //       onRangeChange(value, latestDatetime);
+              //       break;
+              //     case 1:
+              //       setLatestDatetime(value);
+              //       onRangeChange(earliestDatetime, value);
+              //       break;
+              //     default:
+              //       throw new Error(`Unknown index value (${index}`);
+              //   }
+              // }}
             />
           );
         }}
         renderTrack={(props, state) => {
-          return <Track state={state} props={props} heightValue={heightValue} />;
+          return <Track state={state} props={props} heightValue={heightValue} intervals={intervals} />;
         }}
-        step={stepSize}
+        step={1}
       />
     </Box>
   );
 };
 
 export default React.memo(TimelineSlider, (previous, next) => {
-  return isEqual(previous, next);
+  return isEqual(getValuesForMemoCheck(previous), getValuesForMemoCheck(next));
 });
+
+const getValuesForMemoCheck = ({ intervals, startDate, intervalWidth }: TimelineSliderProps) => {
+  return {
+    intervalsCount: intervals.length,
+    startDate: startDate,
+    intervalWidth: intervalWidth,
+  };
+};
