@@ -12,7 +12,7 @@ interface TrackProps {
 }
 
 const Track = ({ state, props, heightValue, intervals }: TrackProps): React.ReactElement => {
-  const { left, right } = getTrackPosition({ props, index: state.index });
+  const { left, right } = getTrackPosition({ value: state.value, index: state.index, intervals });
 
   return (
     <Box

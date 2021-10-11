@@ -3,9 +3,9 @@ import { addMinutes, format } from "date-fns";
 import isEqual from "lodash.isequal";
 import React, { HTMLProps } from "react";
 
+import { getValueInRange } from "../../../../shared/utilities/getValueInRange";
 import { thumbWidthValue, thumbWidthWrapperValue } from "../constants";
-import { getThumbPosition } from "./getThumbPosition";
-import { getValue } from "./getValue";
+import { getPositionByTick } from "../utilities/getPositionByTick";
 
 interface ThumbProps {
   minimumValue: number;
@@ -29,12 +29,12 @@ const Thumb = ({
   intervals,
   heightValue,
 }: ThumbProps): React.ReactElement => {
-  const value = getValue(state.valueNow, minimumValue, maximumValue);
+  const value = getValueInRange({ value: state.valueNow, minimumValue, maximumValue });
   const datetime = addMinutes(startDate, value * 15);
   const formattedDatetime = format(datetime, "MM/dd/yyyy h:mmaaa");
   const [formattedDate, formattedTime] = formattedDatetime.split(/\s+/);
 
-  const position = getThumbPosition({ intervals, value, index: state.index });
+  const position = getPositionByTick({ intervals, value });
   const heightAdjust = (thumbWidthValue - heightValue) / 2;
 
   return (
