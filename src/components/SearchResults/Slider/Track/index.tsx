@@ -12,7 +12,6 @@ interface TrackProps {
 }
 
 const Track = ({ state, props, heightValue, intervals }: TrackProps): React.ReactElement => {
-  console.log(`${state.index}-renderme`);
   const { left, right } = getTrackPosition({ props, index: state.index });
 
   return (
