@@ -9,10 +9,23 @@ interface TrackProps {
   props: HTMLProps<HTMLDivElement>;
   heightValue: number;
   intervals: number[];
+  touched: boolean;
+  minimumValue: number;
+  maximumValue: number;
 }
 
-const Track = ({ state, props, heightValue, intervals }: TrackProps): React.ReactElement => {
-  const { left, right } = getTrackPosition({ value: state.value, index: state.index, intervals });
+const Track = ({
+  state,
+  props,
+  heightValue,
+  intervals,
+  touched,
+  minimumValue,
+  maximumValue,
+}: TrackProps): React.ReactElement => {
+  const value = touched ? state.value : [minimumValue, maximumValue];
+
+  const { left, right } = getTrackPosition({ value: value, index: state.index, intervals });
 
   return (
     <Box
@@ -33,11 +46,13 @@ export default React.memo(Track, (previous, next) => {
   return isEqual(getValuesForMemoCheck(previous), getValuesForMemoCheck(next));
 });
 
-const getValuesForMemoCheck = ({ state, props, intervals }: TrackProps) => {
+const getValuesForMemoCheck = ({ state, props, intervals, minimumValue, maximumValue }: TrackProps) => {
   return {
     index: state.index,
     left: props.style?.left,
     right: props.style?.right,
-    intervalCount: intervals.length,
+    intervals,
+    minimumValue,
+    maximumValue,
   };
 };

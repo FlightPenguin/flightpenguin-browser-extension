@@ -1,12 +1,13 @@
 import { Box } from "bumbag";
 import isEqual from "lodash.isequal";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import ReactSlider from "react-slider";
 
 import { flightTimeContainerWidth } from "../../constants";
 import Thumb from "./Thumb";
 import Track from "./Track";
 import { getAcceptableDateRange } from "./utilities/getAcceptableDateRange";
+import { getDatetimeByTick } from "./utilities/getDatetimeByTick";
 import { getSliderTicks } from "./utilities/getSliderTicks";
 
 interface TimelineSliderProps {
@@ -24,6 +25,7 @@ const TimelineSlider = ({
   intervalWidth,
   onRangeChange,
 }: TimelineSliderProps): React.ReactElement => {
+  const [touched, setTouched] = useState(false);
   const { minimumDate, maximumDate } = getAcceptableDateRange({ intervals, startDate });
   const [earliestDatetime, setEarliestDatetime] = useState<Date>(minimumDate);
   const [latestDatetime, setLatestDatetime] = useState<Date>(maximumDate);
@@ -57,25 +59,39 @@ const TimelineSlider = ({
               startDate={startDate}
               intervals={intervals}
               heightValue={heightValue}
-              // onChange={(index: number, value: Date) => {
-              //   switch (index) {
-              //     case 0:
-              //       setEarliestDatetime(value);
-              //       onRangeChange(value, latestDatetime);
-              //       break;
-              //     case 1:
-              //       setLatestDatetime(value);
-              //       onRangeChange(earliestDatetime, value);
-              //       break;
-              //     default:
-              //       throw new Error(`Unknown index value (${index}`);
-              //   }
-              // }}
+              touched={touched}
             />
           );
         }}
         renderTrack={(props, state) => {
-          return <Track state={state} props={props} heightValue={heightValue} intervals={intervals} />;
+          return (
+            <Track
+              state={state}
+              props={props}
+              heightValue={heightValue}
+              intervals={intervals}
+              minimumValue={0}
+              maximumValue={ticks}
+              touched={touched}
+            />
+          );
+        }}
+        onChange={(value, index) => {
+          const { datetime } = getDatetimeByTick({ startDate, value: value[index] });
+
+          switch (index) {
+            case 0:
+              setEarliestDatetime(datetime);
+              onRangeChange(datetime, latestDatetime);
+              break;
+            case 1:
+              setLatestDatetime(datetime);
+              onRangeChange(earliestDatetime, datetime);
+              break;
+            default:
+              throw new Error(`Unknown index value (${index}`);
+          }
+          setTouched(true);
         }}
         step={1}
       />

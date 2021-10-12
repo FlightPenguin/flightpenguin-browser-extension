@@ -5,6 +5,7 @@ import React, { HTMLProps } from "react";
 
 import { getValueInRange } from "../../../../shared/utilities/getValueInRange";
 import { thumbWidthValue, thumbWidthWrapperValue } from "../constants";
+import { getDatetimeByTick } from "../utilities/getDatetimeByTick";
 import { getPositionByTick } from "../utilities/getPositionByTick";
 
 interface ThumbProps {
@@ -15,6 +16,7 @@ interface ThumbProps {
   startDate: Date;
   intervals: number[];
   heightValue: number;
+  touched: boolean;
 }
 
 const widthValue = thumbWidthValue;
@@ -28,14 +30,17 @@ const Thumb = ({
   startDate,
   intervals,
   heightValue,
+  touched,
 }: ThumbProps): React.ReactElement => {
-  const value = getValueInRange({ value: state.valueNow, minimumValue, maximumValue });
-  const datetime = addMinutes(startDate, value * 15);
-  const formattedDatetime = format(datetime, "MM/dd/yyyy h:mmaaa");
-  const [formattedDate, formattedTime] = formattedDatetime.split(/\s+/);
-
-  const position = getPositionByTick({ intervals, value });
   const heightAdjust = (thumbWidthValue - heightValue) / 2;
+  const value = touched
+    ? getValueInRange({ value: state.valueNow, minimumValue, maximumValue })
+    : state.index === 0
+    ? minimumValue
+    : maximumValue;
+
+  const { formattedDate, formattedTime } = getDatetimeByTick({ startDate, value });
+  const position = getPositionByTick({ intervals, value });
 
   return (
     <Box
@@ -88,12 +93,14 @@ export default React.memo(Thumb, (previous, next) => {
   return isEqual(getValuesForMemoCheck(previous), getValuesForMemoCheck(next));
 });
 
-const getValuesForMemoCheck = ({ state, props, startDate, intervals }: ThumbProps) => {
+const getValuesForMemoCheck = ({ state, props, startDate, intervals, minimumValue, maximumValue }: ThumbProps) => {
   return {
     index: state.index,
     value: state.valueNow,
     zIndex: props.style?.zIndex,
     startDate,
-    intervalCount: intervals.length,
+    intervals: intervals,
+    minimumValue,
+    maximumValue,
   };
 };
