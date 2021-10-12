@@ -1,8 +1,9 @@
 import { Box } from "bumbag";
 import isEqual from "lodash.isequal";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import ReactSlider from "react-slider";
 
+import { getDateValueInRange } from "../../../shared/utilities/getDateValueInRange";
 import { flightTimeContainerWidth } from "../../constants";
 import Thumb from "./Thumb";
 import Track from "./Track";
@@ -26,10 +27,8 @@ const TimelineSlider = ({
   onRangeChange,
 }: TimelineSliderProps): React.ReactElement => {
   const [touched, setTouched] = useState(false);
-  const { minimumDate, maximumDate } = getAcceptableDateRange({ intervals, startDate });
-  const [earliestDatetime, setEarliestDatetime] = useState<Date>(minimumDate);
-  const [latestDatetime, setLatestDatetime] = useState<Date>(maximumDate);
 
+  const { minimumDate, maximumDate } = getAcceptableDateRange({ intervals, startDate });
   const ticks = getSliderTicks({ intervals });
 
   return (
@@ -76,21 +75,13 @@ const TimelineSlider = ({
             />
           );
         }}
-        onChange={(value, index) => {
-          const { datetime } = getDatetimeByTick({ startDate, value: value[index] });
-
-          switch (index) {
-            case 0:
-              setEarliestDatetime(datetime);
-              onRangeChange(datetime, latestDatetime);
-              break;
-            case 1:
-              setLatestDatetime(datetime);
-              onRangeChange(earliestDatetime, datetime);
-              break;
-            default:
-              throw new Error(`Unknown index value (${index}`);
-          }
+        onChange={(value) => {
+          const { datetime: lowerBoundary } = getDatetimeByTick({ startDate, value: value[0] });
+          const { datetime: upperBoundary } = getDatetimeByTick({ startDate, value: value[1] });
+          onRangeChange(
+            getDateValueInRange({ value: lowerBoundary, minimumValue: minimumDate, maximumValue: maximumDate }),
+            getDateValueInRange({ value: upperBoundary, minimumValue: minimumDate, maximumValue: maximumDate }),
+          );
           setTouched(true);
         }}
         step={1}
