@@ -44,9 +44,6 @@ export const getFlightLayovers = (modal: HTMLDivElement, flightType: FlightType)
       operatingAirline: flightSegment.operatingAirline,
       duration: flightSegment.durationText,
     });
-    // if (flightLeg.fromTime.toLowerCase().startsWith("11:29a") && flightLeg.toTime.toLowerCase().startsWith("1:31p")) {
-    //   debugger;
-    // }
     previousFlightSegment = flightSegment;
     return flightLeg;
   });
@@ -55,7 +52,7 @@ export const getFlightLayovers = (modal: HTMLDivElement, flightType: FlightType)
 const getLegSection = (modal: HTMLDivElement, flightType: FlightType): HTMLDivElement => {
   const index = flightType === "RETURN" ? 1 : 0;
   const legsSections = modal.querySelectorAll(FLIGHT_CONTAINER_SELECTOR);
-  if (legsSections.length !== 2) {
+  if (![1, 2].includes(legsSections.length)) {
     throw new MissingElementLookupError("Unable to locate leg sections properly");
   }
   return legsSections[index] as HTMLDivElement;

@@ -1,4 +1,5 @@
 import { MissingElementLookupError, MissingFieldParserError } from "../../shared/errors";
+import { FlightSearchFormData } from "../../shared/types/FlightSearchFormData";
 import { UnprocessedFlightSearchResult } from "../../shared/types/UnprocessedFlightSearchResult";
 import { getFlightPenguinId } from "../shared/getFlightPenguinId";
 import { getAllLayovers } from "./getAllLayovers";
@@ -6,15 +7,20 @@ import { getFlightDetails } from "./getFlightDetails";
 
 const FARE_ELEMENT_SELECTOR = "strong[class*='PriceText']";
 
-export const getFlight = async (flightCard: HTMLDivElement): Promise<UnprocessedFlightSearchResult> => {
+interface GetFlightProps {
+  flightCard: HTMLDivElement;
+  formData: FlightSearchFormData;
+}
+
+export const getFlight = async ({ flightCard, formData }: GetFlightProps): Promise<UnprocessedFlightSearchResult> => {
   const fare = getFare(flightCard);
 
-  const { departureLayovers, returnLayovers } = await getAllLayovers(flightCard);
+  const { departureLayovers, returnLayovers } = await getAllLayovers({ flightCard, roundtrip: formData.roundtrip });
 
   const departureFlight = getFlightDetails(flightCard, "DEPARTURE", departureLayovers);
-  const returnFlight = getFlightDetails(flightCard, "RETURN", returnLayovers);
+  const returnFlight = formData.roundtrip ? getFlightDetails(flightCard, "RETURN", returnLayovers) : null;
 
-  const id = getFlightPenguinId(departureFlight.id, returnFlight.id);
+  const id = getFlightPenguinId(departureFlight.id, formData.roundtrip && returnFlight ? returnFlight.id : null);
   setFlightId(flightCard, id);
 
   return {

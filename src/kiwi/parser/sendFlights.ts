@@ -1,8 +1,14 @@
 import { sendFlightsEvent } from "../../shared/events";
+import { FlightSearchFormData } from "../../shared/types/FlightSearchFormData";
 import { UnprocessedFlightSearchResult } from "../../shared/types/UnprocessedFlightSearchResult";
 import { getFlight } from "./getFlight";
 
-export const sendFlights = async (flightCards: Node[]): Promise<void> => {
+interface SendFlightsProps {
+  flightCards: Node[];
+  formData: FlightSearchFormData;
+}
+
+export const sendFlights = async ({ flightCards, formData }: SendFlightsProps): Promise<void> => {
   const flights: UnprocessedFlightSearchResult[] = [];
 
   for (const node of flightCards) {
@@ -12,7 +18,7 @@ export const sendFlights = async (flightCards: Node[]): Promise<void> => {
       continue;
     }
 
-    const flight = await getFlight(flightCard);
+    const flight = await getFlight({ flightCard, formData });
     flights.push(flight);
   }
 

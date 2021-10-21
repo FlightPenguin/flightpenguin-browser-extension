@@ -1,10 +1,14 @@
+import { FlightSearchFormData } from "../../shared/types/FlightSearchFormData";
 import { sendFlights } from "./sendFlights";
+
+interface FlightObserverProps {
+  formData: FlightSearchFormData;
+}
 
 export class FlightObserver {
   private observer: MutationObserver;
 
-  constructor() {
-    // eslint-disable-next-line @typescript-eslint/no-this-alias
+  constructor({ formData }: FlightObserverProps) {
     this.observer = new MutationObserver(async function (mutations) {
       let flightCards: HTMLElement[] = [];
       for (const mutation of mutations) {
@@ -14,7 +18,7 @@ export class FlightObserver {
           }),
         );
       }
-      await sendFlights(flightCards);
+      await sendFlights({ flightCards, formData: formData });
     });
   }
 

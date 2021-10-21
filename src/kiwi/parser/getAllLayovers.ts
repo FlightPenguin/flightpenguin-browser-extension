@@ -6,14 +6,20 @@ import { getFlightLayovers } from "./getFlightLayovers";
 
 const FLIGHT_CONTAINER_SELECTOR = "[data-test='TripPopupWrapper']";
 
-export const getAllLayovers = async (
-  flightCard: HTMLDivElement,
-): Promise<{ departureLayovers: FlightLeg[]; returnLayovers: FlightLeg[] }> => {
+interface GetAllLayoversProps {
+  flightCard: HTMLDivElement;
+  roundtrip: boolean;
+}
+
+export const getAllLayovers = async ({
+  flightCard,
+  roundtrip,
+}: GetAllLayoversProps): Promise<{ departureLayovers: FlightLeg[]; returnLayovers: FlightLeg[] }> => {
   const modal = await getLayoversDetailModal(flightCard);
 
-  await waitForAppearance(30000, FLIGHT_CONTAINER_SELECTOR);
+  await waitForAppearance(60000, FLIGHT_CONTAINER_SELECTOR);
   const departureLayovers = getFlightLayovers(modal, "DEPARTURE");
-  const returnLayovers = getFlightLayovers(modal, "RETURN");
+  const returnLayovers = roundtrip ? getFlightLayovers(modal, "RETURN") : [];
 
   await closeModal(modal);
 
