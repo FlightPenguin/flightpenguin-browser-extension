@@ -39,6 +39,6 @@ chrome.runtime.onMessage.addListener(async function (message) {
 
 const attachObserver = async (observer: FlightObserver): Promise<HTMLDivElement | null> => {
   const flightContainer = await getFlightContainer();
-  observer.beginObservation(flightContainer);
+  await observer.beginObservation(flightContainer);
   return flightContainer;
 };
