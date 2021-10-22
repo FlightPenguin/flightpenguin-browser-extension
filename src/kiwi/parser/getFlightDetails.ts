@@ -4,6 +4,7 @@ import { FlightType } from "../../background/constants";
 import { MissingElementLookupError, MissingFieldParserError } from "../../shared/errors";
 import { FlightDetails } from "../../shared/types/FlightDetails";
 import { FlightLeg } from "../../shared/types/FlightLeg";
+import { FlightSearchFormData } from "../../shared/types/FlightSearchFormData";
 import { getExcessDays } from "../shared/getExcessDays";
 
 const DURATION_CONTAINER_SELECTOR = 'div[data-test="TripDurationBadge"]';
@@ -13,6 +14,7 @@ export const getFlightDetails = (
   flightCard: HTMLDivElement,
   flightType: FlightType,
   layovers: FlightLeg[],
+  formData: FlightSearchFormData,
 ): FlightDetails => {
   const duration = getDuration(flightCard, flightType);
 
@@ -21,6 +23,7 @@ export const getFlightDetails = (
   const airline = getOperatingAirline(layovers);
 
   return new FlightDetails({
+    departureDate: flightType === "DEPARTURE" ? formData.fromDate : formData.toDate,
     fromTime: departureTime,
     toTime: arrivalTime,
     marketingAirline: airline,

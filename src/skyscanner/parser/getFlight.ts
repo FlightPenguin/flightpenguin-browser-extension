@@ -1,6 +1,7 @@
 import { MissingElementLookupError, MissingFieldParserError } from "../../shared/errors";
 import { standardizeTimeString } from "../../shared/helpers";
 import AirlineMap from "../../shared/nameMaps/airlineMap";
+import { FlightDetails } from "../../shared/types/FlightDetails";
 import { FlightLeg } from "../../shared/types/FlightLeg";
 import { FlightSearchFormData } from "../../shared/types/FlightSearchFormData";
 import { UnprocessedFlightSearchResult } from "../../shared/types/UnprocessedFlightSearchResult";
@@ -56,8 +57,12 @@ export const getFlight = async (
 
   setFlightCardVisited(flightCard);
   return {
-    departureFlight: { ...departureFlight, layovers: departureLayovers },
-    returnFlight: { ...returnFlight, layovers: returnLayovers },
+    departureFlight: new FlightDetails({
+      ...departureFlight,
+      layovers: departureLayovers,
+      departureDate: formData.fromDate,
+    }),
+    returnFlight: new FlightDetails({ ...returnFlight, layovers: returnLayovers, departureDate: formData.toDate }),
     fare,
   } as UnprocessedFlightSearchResult;
 };

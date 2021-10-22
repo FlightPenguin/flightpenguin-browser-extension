@@ -77,6 +77,7 @@ var getFlight = /*#__PURE__*/function () {
       operatingAirline: marketingAirline || operatingAirline
     })];
     return new _shared_types_FlightDetails__WEBPACK_IMPORTED_MODULE_3__.FlightDetails({
+      departureDate: isReturn ? formData.toDate : formData.fromDate,
       marketingAirline: marketingAirline,
       operatingAirline: operatingAirline,
       fromTime: departureTime,

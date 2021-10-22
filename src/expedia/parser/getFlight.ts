@@ -42,6 +42,7 @@ export const getFlight = async (
       ];
 
   return new FlightDetails({
+    departureDate: isReturn ? formData.toDate : formData.fromDate,
     marketingAirline,
     operatingAirline,
     fromTime: departureTime,

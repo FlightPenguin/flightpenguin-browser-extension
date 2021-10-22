@@ -70,15 +70,15 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 
 var FARE_ELEMENT_SELECTOR = "strong[class*='PriceText']";
 var getFlight = /*#__PURE__*/function () {
-  var _ref = _asyncToGenerator(function* (flightCard) {
+  var _ref = _asyncToGenerator(function* (flightCard, formData) {
     var fare = getFare(flightCard);
 
     var _yield$getAllLayovers = yield (0,_getAllLayovers__WEBPACK_IMPORTED_MODULE_2__.getAllLayovers)(flightCard),
         departureLayovers = _yield$getAllLayovers.departureLayovers,
         returnLayovers = _yield$getAllLayovers.returnLayovers;
 
-    var departureFlight = (0,_getFlightDetails__WEBPACK_IMPORTED_MODULE_3__.getFlightDetails)(flightCard, "DEPARTURE", departureLayovers);
-    var returnFlight = (0,_getFlightDetails__WEBPACK_IMPORTED_MODULE_3__.getFlightDetails)(flightCard, "RETURN", returnLayovers);
+    var departureFlight = (0,_getFlightDetails__WEBPACK_IMPORTED_MODULE_3__.getFlightDetails)(flightCard, "DEPARTURE", departureLayovers, formData);
+    var returnFlight = (0,_getFlightDetails__WEBPACK_IMPORTED_MODULE_3__.getFlightDetails)(flightCard, "RETURN", returnLayovers, formData);
     var id = (0,_shared_getFlightPenguinId__WEBPACK_IMPORTED_MODULE_1__.getFlightPenguinId)(departureFlight.id, returnFlight.id);
     setFlightId(flightCard, id);
     return {
@@ -89,7 +89,7 @@ var getFlight = /*#__PURE__*/function () {
     };
   });
 
-  return function getFlight(_x) {
+  return function getFlight(_x, _x2) {
     return _ref.apply(this, arguments);
   };
 }();
@@ -178,7 +178,7 @@ __webpack_require__.r(__webpack_exports__);
 
 var DURATION_CONTAINER_SELECTOR = 'div[data-test="TripDurationBadge"]';
 var ITINERARY_CONTAINER_SELECTOR = 'div[class*="ResultCardItinerarystyled__ResultCardSection"]';
-var getFlightDetails = function getFlightDetails(flightCard, flightType, layovers) {
+var getFlightDetails = function getFlightDetails(flightCard, flightType, layovers, formData) {
   var duration = getDuration(flightCard, flightType);
 
   var _getDepartureTime = getDepartureTime(flightCard, flightType),
@@ -190,6 +190,7 @@ var getFlightDetails = function getFlightDetails(flightCard, flightType, layover
 
   var airline = getOperatingAirline(layovers);
   return new _shared_types_FlightDetails__WEBPACK_IMPORTED_MODULE_1__.FlightDetails({
+    departureDate: flightType === "DEPARTURE" ? formData.fromDate : formData.toDate,
     fromTime: departureTime,
     toTime: arrivalTime,
     marketingAirline: airline,
@@ -658,10 +659,9 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
 
 
 var FlightObserver = /*#__PURE__*/function () {
-  function FlightObserver() {
+  function FlightObserver(formData) {
     _classCallCheck(this, FlightObserver);
 
-    // eslint-disable-next-line @typescript-eslint/no-this-alias
     this.observer = new MutationObserver( /*#__PURE__*/function () {
       var _ref = _asyncToGenerator(function* (mutations) {
         var flightCards = [];
@@ -682,7 +682,7 @@ var FlightObserver = /*#__PURE__*/function () {
           _iterator.f();
         }
 
-        yield (0,_sendFlights__WEBPACK_IMPORTED_MODULE_0__.sendFlights)(flightCards);
+        yield (0,_sendFlights__WEBPACK_IMPORTED_MODULE_0__.sendFlights)(flightCards, formData);
       });
 
       return function (_x) {
@@ -736,7 +736,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 
 
 var sendFlights = /*#__PURE__*/function () {
-  var _ref = _asyncToGenerator(function* (flightCards) {
+  var _ref = _asyncToGenerator(function* (flightCards, formData) {
     var flights = [];
 
     var _iterator = _createForOfIteratorHelper(flightCards),
@@ -752,7 +752,7 @@ var sendFlights = /*#__PURE__*/function () {
           continue;
         }
 
-        var flight = yield (0,_getFlight__WEBPACK_IMPORTED_MODULE_1__.getFlight)(flightCard);
+        var flight = yield (0,_getFlight__WEBPACK_IMPORTED_MODULE_1__.getFlight)(flightCard, formData);
         flights.push(flight);
       }
     } catch (err) {
@@ -766,7 +766,7 @@ var sendFlights = /*#__PURE__*/function () {
     }
   });
 
-  return function sendFlights(_x) {
+  return function sendFlights(_x, _x2) {
     return _ref.apply(this, arguments);
   };
 }();
@@ -8629,7 +8629,7 @@ chrome.runtime.onMessage.addListener( /*#__PURE__*/function () {
     switch (message.event) {
       case "BEGIN_PARSING":
         try {
-          observer = new _parser_observer__WEBPACK_IMPORTED_MODULE_3__.FlightObserver();
+          observer = new _parser_observer__WEBPACK_IMPORTED_MODULE_3__.FlightObserver(message.formData);
           flightContainer = yield attachObserver(observer);
 
           if (flightContainer) {

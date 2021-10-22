@@ -14,7 +14,7 @@ chrome.runtime.onMessage.addListener(async function (message) {
   switch (message.event) {
     case "BEGIN_PARSING":
       try {
-        observer = new FlightObserver();
+        observer = new FlightObserver(message.formData);
         flightContainer = await attachObserver(observer);
         if (flightContainer) {
           await loadAllFlights();

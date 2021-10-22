@@ -1,4 +1,5 @@
 import { MissingElementLookupError, MissingFieldParserError } from "../../shared/errors";
+import { FlightSearchFormData } from "../../shared/types/FlightSearchFormData";
 import { UnprocessedFlightSearchResult } from "../../shared/types/UnprocessedFlightSearchResult";
 import { getFlightPenguinId } from "../shared/getFlightPenguinId";
 import { getAllLayovers } from "./getAllLayovers";
@@ -6,13 +7,16 @@ import { getFlightDetails } from "./getFlightDetails";
 
 const FARE_ELEMENT_SELECTOR = "strong[class*='PriceText']";
 
-export const getFlight = async (flightCard: HTMLDivElement): Promise<UnprocessedFlightSearchResult> => {
+export const getFlight = async (
+  flightCard: HTMLDivElement,
+  formData: FlightSearchFormData,
+): Promise<UnprocessedFlightSearchResult> => {
   const fare = getFare(flightCard);
 
   const { departureLayovers, returnLayovers } = await getAllLayovers(flightCard);
 
-  const departureFlight = getFlightDetails(flightCard, "DEPARTURE", departureLayovers);
-  const returnFlight = getFlightDetails(flightCard, "RETURN", returnLayovers);
+  const departureFlight = getFlightDetails(flightCard, "DEPARTURE", departureLayovers, formData);
+  const returnFlight = getFlightDetails(flightCard, "RETURN", returnLayovers, formData);
 
   const id = getFlightPenguinId(departureFlight.id, returnFlight.id);
   setFlightId(flightCard, id);
