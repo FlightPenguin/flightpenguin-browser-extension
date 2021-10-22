@@ -1,9 +1,12 @@
+import { addDays, addHours, addMinutes, parse } from "date-fns";
+
 import { convertTimeTo24HourClock, getTimezoneOffset } from "../../utilityFunctions";
 import AirlineMap from "../nameMaps/airlineMap";
 import { FlightLeg } from "./FlightLeg";
 import { FlightTimeDetails } from "./FlightTimeDetails";
 
 interface FlightDetailsInput {
+  departureDate: string;
   marketingAirline?: string;
   operatingAirline?: string | null;
   fromTime: string;
@@ -18,6 +21,8 @@ export class FlightDetails {
   toTime: string;
   fromTimeDetails: FlightTimeDetails;
   toTimeDetails: FlightTimeDetails;
+  fromDateTime: Date;
+  toDateTime: Date;
   duration: string;
   layovers: FlightLeg[];
   operatingAirline?: string | null;
@@ -26,11 +31,21 @@ export class FlightDetails {
   marketingAirlineDetails?: { display: string; color: string };
   timezoneOffset: number;
 
-  constructor({ fromTime, toTime, operatingAirline, marketingAirline, duration, layovers }: FlightDetailsInput) {
+  constructor({
+    fromTime,
+    toTime,
+    operatingAirline,
+    marketingAirline,
+    duration,
+    layovers,
+    departureDate,
+  }: FlightDetailsInput) {
     this.fromTime = fromTime;
     this.fromTimeDetails = this.getTimeDetails(fromTime);
+    this.fromDateTime = this.getFlightDateTime(departureDate, this.fromTimeDetails);
     this.toTime = toTime;
     this.toTimeDetails = this.getTimeDetails(toTime);
+    this.toDateTime = this.getFlightDateTime(departureDate, this.toTimeDetails);
     this.duration = duration;
     if (operatingAirline) {
       this.operatingAirline = AirlineMap.getAirlineName(operatingAirline);
@@ -61,6 +76,21 @@ export class FlightDetails {
       timeOfDay,
       excessDays: excessDays ? excessDays[0] : excessDays,
     };
+  }
+
+  getFlightDateTime(departureDate: string, timeDetails: FlightTimeDetails): Date {
+    let flightDateTime = parse(departureDate, "yyyy-MM-dd", new Date());
+    if (timeDetails.excessDays) {
+      const excessDays = Number(timeDetails.excessDays.split("+").slice(-1)[0]);
+      flightDateTime = addDays(flightDateTime, excessDays);
+    }
+    if (timeDetails.hours) {
+      flightDateTime = addHours(flightDateTime, timeDetails.hours);
+    }
+    if (timeDetails.minutes) {
+      flightDateTime = addMinutes(flightDateTime, timeDetails.minutes);
+    }
+    return flightDateTime;
   }
 
   getFlightPenguinId(): string {

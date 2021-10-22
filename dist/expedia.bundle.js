@@ -1571,6 +1571,10 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "FlightDetails": () => (/* binding */ FlightDetails)
 /* harmony export */ });
+/* harmony import */ var date_fns__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! date-fns */ "./node_modules/date-fns/esm/parse/index.js");
+/* harmony import */ var date_fns__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! date-fns */ "./node_modules/date-fns/esm/addDays/index.js");
+/* harmony import */ var date_fns__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! date-fns */ "./node_modules/date-fns/esm/addHours/index.js");
+/* harmony import */ var date_fns__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! date-fns */ "./node_modules/date-fns/esm/addMinutes/index.js");
 /* harmony import */ var _utilityFunctions__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../utilityFunctions */ "./src/utilityFunctions.js");
 /* harmony import */ var _nameMaps_airlineMap__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../nameMaps/airlineMap */ "./src/shared/nameMaps/airlineMap.js");
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -1581,6 +1585,7 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
 
 
 
+
 var FlightDetails = /*#__PURE__*/function () {
   function FlightDetails(_ref) {
     var fromTime = _ref.fromTime,
@@ -1588,14 +1593,17 @@ var FlightDetails = /*#__PURE__*/function () {
         operatingAirline = _ref.operatingAirline,
         marketingAirline = _ref.marketingAirline,
         duration = _ref.duration,
-        layovers = _ref.layovers;
+        layovers = _ref.layovers,
+        departureDate = _ref.departureDate;
 
     _classCallCheck(this, FlightDetails);
 
     this.fromTime = fromTime;
     this.fromTimeDetails = this.getTimeDetails(fromTime);
+    this.fromDateTime = this.getFlightDateTime(departureDate, this.fromTimeDetails);
     this.toTime = toTime;
     this.toTimeDetails = this.getTimeDetails(toTime);
+    this.toDateTime = this.getFlightDateTime(departureDate, this.toTimeDetails);
     this.duration = duration;
 
     if (operatingAirline) {
@@ -1632,6 +1640,26 @@ var FlightDetails = /*#__PURE__*/function () {
         timeOfDay: timeOfDay,
         excessDays: excessDays ? excessDays[0] : excessDays
       };
+    }
+  }, {
+    key: "getFlightDateTime",
+    value: function getFlightDateTime(departureDate, timeDetails) {
+      var flightDateTime = (0,date_fns__WEBPACK_IMPORTED_MODULE_2__.default)(departureDate, "yyyy-MM-dd", new Date());
+
+      if (timeDetails.excessDays) {
+        var excessDays = Number(timeDetails.excessDays.split("+").slice(-1)[0]);
+        flightDateTime = (0,date_fns__WEBPACK_IMPORTED_MODULE_3__.default)(flightDateTime, excessDays);
+      }
+
+      if (timeDetails.hours) {
+        flightDateTime = (0,date_fns__WEBPACK_IMPORTED_MODULE_4__.default)(flightDateTime, timeDetails.hours);
+      }
+
+      if (timeDetails.minutes) {
+        flightDateTime = (0,date_fns__WEBPACK_IMPORTED_MODULE_5__.default)(flightDateTime, timeDetails.minutes);
+      }
+
+      return flightDateTime;
     }
   }, {
     key: "getFlightPenguinId",
@@ -2938,6 +2966,55 @@ function addDays(dirtyDate, dirtyAmount) {
 
 /***/ }),
 
+/***/ "./node_modules/date-fns/esm/addHours/index.js":
+/*!*****************************************************!*\
+  !*** ./node_modules/date-fns/esm/addHours/index.js ***!
+  \*****************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ addHours)
+/* harmony export */ });
+/* harmony import */ var _lib_toInteger_index_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../_lib/toInteger/index.js */ "./node_modules/date-fns/esm/_lib/toInteger/index.js");
+/* harmony import */ var _addMilliseconds_index_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../addMilliseconds/index.js */ "./node_modules/date-fns/esm/addMilliseconds/index.js");
+/* harmony import */ var _lib_requiredArgs_index_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../_lib/requiredArgs/index.js */ "./node_modules/date-fns/esm/_lib/requiredArgs/index.js");
+
+
+
+var MILLISECONDS_IN_HOUR = 3600000;
+/**
+ * @name addHours
+ * @category Hour Helpers
+ * @summary Add the specified number of hours to the given date.
+ *
+ * @description
+ * Add the specified number of hours to the given date.
+ *
+ * ### v2.0.0 breaking changes:
+ *
+ * - [Changes that are common for the whole library](https://github.com/date-fns/date-fns/blob/master/docs/upgradeGuide.md#Common-Changes).
+ *
+ * @param {Date|Number} date - the date to be changed
+ * @param {Number} amount - the amount of hours to be added. Positive decimals will be rounded using `Math.floor`, decimals less than zero will be rounded using `Math.ceil`.
+ * @returns {Date} the new date with the hours added
+ * @throws {TypeError} 2 arguments required
+ *
+ * @example
+ * // Add 2 hours to 10 July 2014 23:00:00:
+ * const result = addHours(new Date(2014, 6, 10, 23, 0), 2)
+ * //=> Fri Jul 11 2014 01:00:00
+ */
+
+function addHours(dirtyDate, dirtyAmount) {
+  (0,_lib_requiredArgs_index_js__WEBPACK_IMPORTED_MODULE_0__.default)(2, arguments);
+  var amount = (0,_lib_toInteger_index_js__WEBPACK_IMPORTED_MODULE_1__.default)(dirtyAmount);
+  return (0,_addMilliseconds_index_js__WEBPACK_IMPORTED_MODULE_2__.default)(dirtyDate, amount * MILLISECONDS_IN_HOUR);
+}
+
+/***/ }),
+
 /***/ "./node_modules/date-fns/esm/addMilliseconds/index.js":
 /*!************************************************************!*\
   !*** ./node_modules/date-fns/esm/addMilliseconds/index.js ***!
@@ -2983,6 +3060,55 @@ function addMilliseconds(dirtyDate, dirtyAmount) {
   var timestamp = (0,_toDate_index_js__WEBPACK_IMPORTED_MODULE_1__.default)(dirtyDate).getTime();
   var amount = (0,_lib_toInteger_index_js__WEBPACK_IMPORTED_MODULE_2__.default)(dirtyAmount);
   return new Date(timestamp + amount);
+}
+
+/***/ }),
+
+/***/ "./node_modules/date-fns/esm/addMinutes/index.js":
+/*!*******************************************************!*\
+  !*** ./node_modules/date-fns/esm/addMinutes/index.js ***!
+  \*******************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ addMinutes)
+/* harmony export */ });
+/* harmony import */ var _lib_toInteger_index_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../_lib/toInteger/index.js */ "./node_modules/date-fns/esm/_lib/toInteger/index.js");
+/* harmony import */ var _addMilliseconds_index_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../addMilliseconds/index.js */ "./node_modules/date-fns/esm/addMilliseconds/index.js");
+/* harmony import */ var _lib_requiredArgs_index_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../_lib/requiredArgs/index.js */ "./node_modules/date-fns/esm/_lib/requiredArgs/index.js");
+
+
+
+var MILLISECONDS_IN_MINUTE = 60000;
+/**
+ * @name addMinutes
+ * @category Minute Helpers
+ * @summary Add the specified number of minutes to the given date.
+ *
+ * @description
+ * Add the specified number of minutes to the given date.
+ *
+ * ### v2.0.0 breaking changes:
+ *
+ * - [Changes that are common for the whole library](https://github.com/date-fns/date-fns/blob/master/docs/upgradeGuide.md#Common-Changes).
+ *
+ * @param {Date|Number} date - the date to be changed
+ * @param {Number} amount - the amount of minutes to be added. Positive decimals will be rounded using `Math.floor`, decimals less than zero will be rounded using `Math.ceil`.
+ * @returns {Date} the new date with the minutes added
+ * @throws {TypeError} 2 arguments required
+ *
+ * @example
+ * // Add 30 minutes to 10 July 2014 12:00:00:
+ * const result = addMinutes(new Date(2014, 6, 10, 12, 0), 30)
+ * //=> Thu Jul 10 2014 12:30:00
+ */
+
+function addMinutes(dirtyDate, dirtyAmount) {
+  (0,_lib_requiredArgs_index_js__WEBPACK_IMPORTED_MODULE_0__.default)(2, arguments);
+  var amount = (0,_lib_toInteger_index_js__WEBPACK_IMPORTED_MODULE_1__.default)(dirtyAmount);
+  return (0,_addMilliseconds_index_js__WEBPACK_IMPORTED_MODULE_2__.default)(dirtyDate, amount * MILLISECONDS_IN_MINUTE);
 }
 
 /***/ }),
