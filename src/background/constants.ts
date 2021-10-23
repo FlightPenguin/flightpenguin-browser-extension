@@ -7,8 +7,8 @@ export const SUPPORTED_PROVIDERS = [
   // force expansion
   // "expedia",
   // "kiwi",
-  "skyscanner",
-  // "southwest",
+  // "skyscanner",
+  "southwest",
 ];
 
 // eslint-disable-next-line @typescript-eslint/no-empty-function
