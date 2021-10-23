@@ -6,7 +6,8 @@ const defaultEntry = {
   background: "./src/background.js",
   index: "./src/index.js",
   skyscanner: "./src/skyscanner/contentScript.js",
-  southwest: "./src/southwest/contentScript.js",
+  southwest: "./src/southwest/contentScript.ts",
+  southwestEmpty: "./src/southwest/emptyResultsContentScript.ts",
   expedia: "./src/expedia/contentScript.js",
   kiwi: "./src/kiwi/contentScript.ts",
 };

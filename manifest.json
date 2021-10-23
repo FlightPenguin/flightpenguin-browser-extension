@@ -17,9 +17,9 @@
     },
     {
       "matches": ["https://www.southwest.com/air/booking/index.html?*"],
+      "css": ["src/shared/contentScript.css"],
       "js": [
-        "src/shared/sentry.js",
-        "src/southwest/emptySearchContentScript.js"
+        "dist/southwestEmpty.bundle.js"
       ]
     },
     {
