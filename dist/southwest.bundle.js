@@ -1042,7 +1042,6 @@ var getFlightDetails = function getFlightDetails(_ref) {
     departureDate: (0,date_fns_tz__WEBPACK_IMPORTED_MODULE_4__.default)(departureDateTime, "yyyy-MM-dd"),
     fromTime: (0,date_fns_tz__WEBPACK_IMPORTED_MODULE_4__.default)(departureDateTime, "h:mmaaa"),
     toTime: (0,date_fns_tz__WEBPACK_IMPORTED_MODULE_4__.default)(arrivalDateTime, "h:mmaaa"),
-    operatingAirline: "Southwest",
     marketingAirline: "Southwest",
     duration: (0,_getDurationValue__WEBPACK_IMPORTED_MODULE_1__.getDurationValue)({
       minutes: Number(flight.totalDuration)

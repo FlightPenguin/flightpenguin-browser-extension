@@ -19,7 +19,6 @@ export const getFlightDetails = ({ flight }: GetFlightDetailsProps): FlightDetai
     departureDate: format(departureDateTime, "yyyy-MM-dd"),
     fromTime: format(departureDateTime, "h:mmaaa"),
     toTime: format(arrivalDateTime, "h:mmaaa"),
-    operatingAirline: "Southwest",
     marketingAirline: "Southwest",
     duration: getDurationValue({ minutes: Number(flight.totalDuration) }),
     layovers: layovers,
