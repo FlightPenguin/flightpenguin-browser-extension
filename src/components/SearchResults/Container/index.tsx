@@ -15,6 +15,7 @@ import _skeletonItineraries from "./skeletonItineraries.json";
 import { getFilteredFlightsByArrivalTime } from "./utilities/getFilteredFlightsByArrivalTime";
 import { getFilteredFlightsByDepartureTime } from "./utilities/getFilteredFlightsByDepartureTime";
 import { getIntervalInfo } from "./utilities/getIntervalInfo";
+import { getSkeletonItinerariesWithFlightDates } from "./utilities/getSkeletonItinerariesWithFlightDates";
 
 interface TimelimeContainerProps {
   flightType: "DEPARTURE" | "RETURN";
@@ -52,7 +53,11 @@ const TimelineContainer = ({
   }>({ startHour: 0, increment: 4, intervals: [0, 4, 8, 12, 16, 20, 24, 28], timezoneOffset: 0 });
 
   useEffect(() => {
-    const itins = _skeletonItineraries as { [keyof: string]: ProcessedItinerary };
+    const itins = getSkeletonItinerariesWithFlightDates({
+      itineraries: _skeletonItineraries,
+      fromDate: formData.fromDate,
+      toDate: formData.toDate,
+    });
     setSkeletonItineraries(itins);
     setSkeletonFlights(
       Object.keys(_skeletonItineraries).map((itineraryId) => {
