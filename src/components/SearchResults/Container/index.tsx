@@ -12,6 +12,8 @@ import TimelineGrid from "../Grid";
 import TimelineHeader from "../Header";
 import TimelineTitle from "../Title";
 import _skeletonItineraries from "./skeletonItineraries.json";
+import { filterFlightsByArrivalTime } from "./utilities/filterFlightsByArrivalTime";
+import { filterFlightsByDepartureTime } from "./utilities/filterFlightsByDepartureTime";
 import { getIntervalInfo } from "./utilities/getIntervalInfo";
 
 interface TimelimeContainerProps {
@@ -64,7 +66,13 @@ const TimelineContainer = ({
     if (selectedFlightDetails) {
       return;
     }
-    const sortedFlights = uniqBy(flights, "id").sort((a, b) => {
+    // filter
+    let filteredFlights = flights;
+    filteredFlights = filterFlightsByArrivalTime({ flights: filteredFlights, datetime: filterDateRange.lowerBound });
+    filteredFlights = filterFlightsByDepartureTime({ flights: filteredFlights, datetime: filterDateRange.upperBound });
+
+    // sort / unique
+    const sortedFlights = uniqBy(filteredFlights, "id").sort((a, b) => {
       return a.pain - b.pain;
     });
     setDisplayFlights(sortedFlights);

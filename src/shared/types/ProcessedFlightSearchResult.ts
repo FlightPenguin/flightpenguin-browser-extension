@@ -3,8 +3,10 @@ import { FlightTimeDetails } from "./FlightTimeDetails";
 
 export interface ProcessedFlightSearchResult {
   fromTime: string;
+  fromDateTime: Date;
   fromTimeDetails: FlightTimeDetails;
   toTime: string;
+  toDateTime: Date;
   toTimeDetails: FlightTimeDetails;
   operatingAirline: AirlineDetails;
   marketingAirlineText?: string;
