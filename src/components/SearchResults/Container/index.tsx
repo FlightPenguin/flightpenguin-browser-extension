@@ -131,6 +131,7 @@ const TimelineContainer = ({
           onSliderChange={(minDate: Date, maxDate: Date) => {
             setFilterDateRange({ lowerBound: minDate, upperBound: maxDate });
           }}
+          sliderDisabled={!!selectedFlightDetails}
         />
       </Box>
       <Box data-name={`${flightType.toLowerCase()}-container`} display="flex">

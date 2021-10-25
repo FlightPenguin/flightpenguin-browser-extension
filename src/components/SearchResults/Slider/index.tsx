@@ -16,6 +16,7 @@ interface TimelineSliderProps {
   startDate: Date;
   intervalWidth: number;
   onRangeChange: (minDate: Date, maxDate: Date) => void;
+  disabled: boolean;
 }
 
 const heightValue = 8;
@@ -25,6 +26,7 @@ const TimelineSlider = ({
   startDate,
   intervalWidth,
   onRangeChange,
+  disabled,
 }: TimelineSliderProps): React.ReactElement => {
   const [touched, setTouched] = useState(false);
 
@@ -44,6 +46,7 @@ const TimelineSlider = ({
         ariaLabel={["Depart after", "Arrive before"]}
         ariaValuetext={(state) => `Thumb value ${state.valueNow}`}
         defaultValue={[0, ticks]}
+        disabled={disabled}
         max={ticks}
         min={0}
         minDistance={8}
