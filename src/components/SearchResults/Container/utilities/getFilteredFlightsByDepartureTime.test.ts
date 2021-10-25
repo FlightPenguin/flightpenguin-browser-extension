@@ -1,5 +1,5 @@
 import { ProcessedFlightSearchResult } from "../../../../shared/types/ProcessedFlightSearchResult";
-import { filterFlightsByArrivalTime } from "./filterFlightsByArrivalTime";
+import { getFilteredFlightsByDepartureTime } from "./getFilteredFlightsByDepartureTime";
 
 const testFlights: ProcessedFlightSearchResult[] = [
   {
@@ -36,29 +36,38 @@ const testFlights: ProcessedFlightSearchResult[] = [
   },
 ];
 
-describe("filterFlightsByArrivalTime happy path", () => {
+describe("getFilteredFlightsByDepartureTime happy path", () => {
   it("no flights", () => {
-    const value = filterFlightsByArrivalTime({ flights: [], datetime: new Date(2020, 10, 1, 0, 0, 0, 0) });
+    const value = getFilteredFlightsByDepartureTime({ flights: [], datetime: new Date(2020, 10, 1, 0, 0, 0, 0) });
     expect(value).toEqual([]);
   });
 
   it("no time", () => {
-    const value = filterFlightsByArrivalTime({ flights: [], datetime: null });
+    const value = getFilteredFlightsByDepartureTime({ flights: [], datetime: null });
     expect(value).toEqual([]);
   });
 
-  it("arrival time before filter", () => {
-    const value = filterFlightsByArrivalTime({ flights: testFlights, datetime: new Date(2020, 10, 1, 9, 15, 0, 0) });
-    expect(value).toEqual(testFlights);
-  });
-
-  it("arrival time equals filter", () => {
-    const value = filterFlightsByArrivalTime({ flights: testFlights, datetime: new Date(2020, 10, 1, 9, 30, 0, 0) });
-    expect(value).toEqual(testFlights);
-  });
-
-  it("arrival time after filter", () => {
-    const value = filterFlightsByArrivalTime({ flights: testFlights, datetime: new Date(2020, 10, 1, 9, 45, 0, 0) });
+  it("departure time before filter", () => {
+    const value = getFilteredFlightsByDepartureTime({
+      flights: testFlights,
+      datetime: new Date(2020, 10, 1, 8, 15, 0, 0),
+    });
     expect(value).toEqual([]);
+  });
+
+  it("departure time equals filter", () => {
+    const value = getFilteredFlightsByDepartureTime({
+      flights: testFlights,
+      datetime: new Date(2020, 10, 1, 8, 0, 0, 0),
+    });
+    expect(value).toEqual(testFlights);
+  });
+
+  it("departure time after filter", () => {
+    const value = getFilteredFlightsByDepartureTime({
+      flights: testFlights,
+      datetime: new Date(2020, 10, 1, 7, 45, 0, 0),
+    });
+    expect(value).toEqual(testFlights);
   });
 });

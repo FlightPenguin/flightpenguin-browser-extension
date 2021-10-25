@@ -1,14 +1,14 @@
 import { ProcessedFlightSearchResult } from "../../../../shared/types/ProcessedFlightSearchResult";
 
-interface FilterFlightsByArrivalTimeProps {
+interface GetFilteredFlightsByArrivalTimeProps {
   flights: ProcessedFlightSearchResult[];
   datetime: Date | null;
 }
 
-export const filterFlightsByArrivalTime = ({
+export const getFilteredFlightsByArrivalTime = ({
   flights,
   datetime,
-}: FilterFlightsByArrivalTimeProps): ProcessedFlightSearchResult[] => {
+}: GetFilteredFlightsByArrivalTimeProps): ProcessedFlightSearchResult[] => {
   if (datetime && flights.length) {
     return flights.filter((flight) => flight.toDateTime >= datetime);
   }
