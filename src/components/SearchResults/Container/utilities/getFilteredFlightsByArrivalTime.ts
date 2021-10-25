@@ -10,7 +10,7 @@ export const getFilteredFlightsByArrivalTime = ({
   datetime,
 }: GetFilteredFlightsByArrivalTimeProps): ProcessedFlightSearchResult[] => {
   if (datetime && flights.length) {
-    return flights.filter((flight) => flight.toDateTime >= datetime);
+    return flights.filter((flight) => flight.toDateTime <= datetime);
   }
   return flights;
 };

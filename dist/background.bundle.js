@@ -1618,17 +1618,23 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
  *  layovers: [Layover] // TODO
  * }
  * @param {string} fromTime
+ * @param {FlightTimeDetails} fromTimeDetails
+ * @param {Date} fromDateTime
  * @param {string} toTime
+ * @param {FlightTimeDetails} toTimeDetails
+ * @param {Date} toDateTime
  * @param {string} operatingAirline
  * @param {string} marketingAirline
  * @param {string} duration
  */
 
-function Flight(fromTime, toTime, operatingAirline, marketingAirline, duration, layovers) {
+function Flight(fromTime, fromTimeDetails, fromDateTime, toTime, toTimeDetails, toDateTime, operatingAirline, marketingAirline, duration, layovers) {
   this.fromTime = fromTime;
   this.toTime = toTime;
-  this.fromTimeDetails = (0,_utilityFunctions_js__WEBPACK_IMPORTED_MODULE_4__.getTimeDetails)(fromTime);
-  this.toTimeDetails = (0,_utilityFunctions_js__WEBPACK_IMPORTED_MODULE_4__.getTimeDetails)(toTime);
+  this.fromTimeDetails = fromTimeDetails;
+  this.toTimeDetails = toTimeDetails;
+  this.fromDateTime = fromDateTime;
+  this.toDateTime = toDateTime;
   var opAirline = operatingAirline ? operatingAirline.replace("Operated by", "").replace("Partially operated by", "") : operatingAirline;
   opAirline = _shared_nameMaps_airlineMap_js__WEBPACK_IMPORTED_MODULE_2__.default.getAirlineName(opAirline);
   var markAirline = _shared_nameMaps_airlineMap_js__WEBPACK_IMPORTED_MODULE_2__.default.getAirlineName(marketingAirline); // operating airline is what is primarily displayed
@@ -1818,11 +1824,11 @@ function Itin(depFlight, retFlight, fare, currency, provider, windowId, tabId, m
   if (makeRetFlightOnly) {
     this.depFlight = depFlight;
   } else {
-    this.depFlight = new Flight(depFlight.fromTime, depFlight.toTime, depFlight.operatingAirline, depFlight.marketingAirline, depFlight.duration, depFlight.layovers);
+    this.depFlight = new Flight(depFlight.fromTime, depFlight.fromTimeDetails, depFlight.fromDateTime, depFlight.toTime, depFlight.toTimeDetails, depFlight.toDateTime, depFlight.operatingAirline, depFlight.marketingAirline, depFlight.duration, depFlight.layovers);
   }
 
   if (retFlight) {
-    this.retFlight = new Flight(retFlight.fromTime, retFlight.toTime, retFlight.operatingAirline, retFlight.marketingAirline, retFlight.duration, retFlight.layovers);
+    this.retFlight = new Flight(retFlight.fromTime, retFlight.fromTimeDetails, retFlight.fromDateTime, retFlight.toTime, retFlight.toTimeDetails, retFlight.toDateTime, retFlight.operatingAirline, retFlight.marketingAirline, retFlight.duration, retFlight.layovers);
     this.id = "".concat(this.depFlight.id, "-").concat(this.retFlight.id);
   } else {
     this.id = this.depFlight.id;

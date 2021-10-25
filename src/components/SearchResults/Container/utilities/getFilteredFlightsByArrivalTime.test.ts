@@ -52,7 +52,7 @@ describe("getFilteredFlightsByArrivalTime happy path", () => {
       flights: testFlights,
       datetime: new Date(2020, 10, 1, 9, 15, 0, 0),
     });
-    expect(value).toEqual(testFlights);
+    expect(value).toEqual([]);
   });
 
   it("arrival time equals filter", () => {
@@ -68,6 +68,6 @@ describe("getFilteredFlightsByArrivalTime happy path", () => {
       flights: testFlights,
       datetime: new Date(2020, 10, 1, 9, 45, 0, 0),
     });
-    expect(value).toEqual([]);
+    expect(value).toEqual(testFlights);
   });
 });

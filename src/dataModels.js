@@ -16,17 +16,35 @@ import { convertDurationToMinutes, getTimeDetails, getTimezoneOffset } from "./u
  *  layovers: [Layover] // TODO
  * }
  * @param {string} fromTime
+ * @param {FlightTimeDetails} fromTimeDetails
+ * @param {Date} fromDateTime
  * @param {string} toTime
+ * @param {FlightTimeDetails} toTimeDetails
+ * @param {Date} toDateTime
  * @param {string} operatingAirline
  * @param {string} marketingAirline
  * @param {string} duration
  */
-function Flight(fromTime, toTime, operatingAirline, marketingAirline, duration, layovers) {
+function Flight(
+  fromTime,
+  fromTimeDetails,
+  fromDateTime,
+  toTime,
+  toTimeDetails,
+  toDateTime,
+  operatingAirline,
+  marketingAirline,
+  duration,
+  layovers,
+) {
   this.fromTime = fromTime;
   this.toTime = toTime;
 
-  this.fromTimeDetails = getTimeDetails(fromTime);
-  this.toTimeDetails = getTimeDetails(toTime);
+  this.fromTimeDetails = fromTimeDetails;
+  this.toTimeDetails = toTimeDetails;
+
+  this.fromDateTime = fromDateTime;
+  this.toDateTime = toDateTime;
 
   let opAirline = operatingAirline
     ? operatingAirline.replace("Operated by", "").replace("Partially operated by", "")
@@ -191,7 +209,11 @@ function Itin(depFlight, retFlight, fare, currency, provider, windowId, tabId, m
   } else {
     this.depFlight = new Flight(
       depFlight.fromTime,
+      depFlight.fromTimeDetails,
+      depFlight.fromDateTime,
       depFlight.toTime,
+      depFlight.toTimeDetails,
+      depFlight.toDateTime,
       depFlight.operatingAirline,
       depFlight.marketingAirline,
       depFlight.duration,
@@ -202,7 +224,11 @@ function Itin(depFlight, retFlight, fare, currency, provider, windowId, tabId, m
   if (retFlight) {
     this.retFlight = new Flight(
       retFlight.fromTime,
+      retFlight.fromTimeDetails,
+      retFlight.fromDateTime,
       retFlight.toTime,
+      retFlight.toTimeDetails,
+      retFlight.toDateTime,
       retFlight.operatingAirline,
       retFlight.marketingAirline,
       retFlight.duration,

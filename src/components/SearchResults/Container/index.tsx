@@ -1,4 +1,5 @@
 import { Alert, Badge, Box } from "bumbag";
+import { parseISO } from "date-fns";
 import isEqual from "lodash.isequal";
 import uniqBy from "lodash.uniqby";
 import React, { useEffect, useState } from "react";
@@ -72,22 +73,34 @@ const TimelineContainer = ({
       return;
     }
     // filter
+    flights.forEach((flight) => {
+      // These coercions are necessary due to object passing from thread to thread...
+      if (!(flight.fromDateTime instanceof Date)) {
+        flight.fromDateTime = parseISO(flight.fromDateTime);
+      }
+      if (!(flight.toDateTime instanceof Date)) {
+        flight.toDateTime = parseISO(flight.toDateTime);
+      }
+    });
     let filteredFlights = flights;
     filteredFlights = getFilteredFlightsByArrivalTime({
       flights: filteredFlights,
-      datetime: filterDateRange.lowerBound,
+      datetime: filterDateRange.upperBound,
     });
     filteredFlights = getFilteredFlightsByDepartureTime({
       flights: filteredFlights,
-      datetime: filterDateRange.upperBound,
+      datetime: filterDateRange.lowerBound,
     });
+    // if (flights.length === 13 && filteredFlights.length !== 13) {
+    //   debugger;
+    // }
 
     // sort / unique
     const sortedFlights = uniqBy(filteredFlights, "id").sort((a, b) => {
       return a.pain - b.pain;
     });
     setDisplayFlights(sortedFlights);
-  }, [flights, selectedFlightDetails]);
+  }, [flights, selectedFlightDetails, filterDateRange]);
 
   useEffect(() => {
     if (
@@ -141,7 +154,7 @@ const TimelineContainer = ({
       </Box>
       <Box data-name={`${flightType.toLowerCase()}-container`} display="flex">
         <Box className="border-flex-box" display="flex" borderLeft="default">
-          {displayFlights.length ? (
+          {flights.length ? (
             <TimelineGrid
               flights={displayFlights}
               itineraries={itineraries}
