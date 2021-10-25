@@ -987,8 +987,6 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "getFare": () => (/* binding */ getFare)
 /* harmony export */ });
-/* harmony import */ var _shared_errors__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../shared/errors */ "./src/shared/errors.ts");
-
 var getFare = function getFare(_ref) {
   var _flight$fareProducts, _flight$fareProducts$, _flight$fareProducts$2, _flight$fareProducts$3, _flight$fareProducts$4, _flight$fareProducts2, _flight$fareProducts3, _flight$fareProducts4, _flight$fareProducts5, _flight$fareProducts6, _flight$fareProducts7, _flight$fareProducts8, _flight$fareProducts9, _flight$fareProducts10, _flight$fareProducts11;
 
@@ -996,10 +994,9 @@ var getFare = function getFare(_ref) {
   var fare = (_flight$fareProducts = flight.fareProducts) === null || _flight$fareProducts === void 0 ? void 0 : (_flight$fareProducts$ = _flight$fareProducts.ADULT) === null || _flight$fareProducts$ === void 0 ? void 0 : (_flight$fareProducts$2 = _flight$fareProducts$.WGA) === null || _flight$fareProducts$2 === void 0 ? void 0 : (_flight$fareProducts$3 = _flight$fareProducts$2.fare) === null || _flight$fareProducts$3 === void 0 ? void 0 : (_flight$fareProducts$4 = _flight$fareProducts$3.totalFare) === null || _flight$fareProducts$4 === void 0 ? void 0 : _flight$fareProducts$4.value;
   fare = fare || ((_flight$fareProducts2 = flight.fareProducts) === null || _flight$fareProducts2 === void 0 ? void 0 : (_flight$fareProducts3 = _flight$fareProducts2.ADULT) === null || _flight$fareProducts3 === void 0 ? void 0 : (_flight$fareProducts4 = _flight$fareProducts3.ANY) === null || _flight$fareProducts4 === void 0 ? void 0 : (_flight$fareProducts5 = _flight$fareProducts4.fare) === null || _flight$fareProducts5 === void 0 ? void 0 : (_flight$fareProducts6 = _flight$fareProducts5.totalFare) === null || _flight$fareProducts6 === void 0 ? void 0 : _flight$fareProducts6.value);
   fare = fare || ((_flight$fareProducts7 = flight.fareProducts) === null || _flight$fareProducts7 === void 0 ? void 0 : (_flight$fareProducts8 = _flight$fareProducts7.ADULT) === null || _flight$fareProducts8 === void 0 ? void 0 : (_flight$fareProducts9 = _flight$fareProducts8.BUS) === null || _flight$fareProducts9 === void 0 ? void 0 : (_flight$fareProducts10 = _flight$fareProducts9.fare) === null || _flight$fareProducts10 === void 0 ? void 0 : (_flight$fareProducts11 = _flight$fareProducts10.totalFare) === null || _flight$fareProducts11 === void 0 ? void 0 : _flight$fareProducts11.value);
-  console.log(flight.fareProducts);
 
   if (!fare) {
-    throw new _shared_errors__WEBPACK_IMPORTED_MODULE_0__.MissingFieldParserError("Unable to extract fare");
+    return null;
   }
 
   return Math.floor(Number(fare)).toString();
@@ -1127,6 +1124,11 @@ var getUnprocessedSearchResults = function getUnprocessedSearchResults(_ref) {
       flight: departureItem
     });
 
+    if (!departureFare) {
+      // Southwest displays but blocks out full flights...
+      return;
+    }
+
     if (roundtrip) {
       returns.forEach(function (returnItem) {
         var returnFlight = (0,_getFlightDetails__WEBPACK_IMPORTED_MODULE_1__.getFlightDetails)({
@@ -1135,6 +1137,12 @@ var getUnprocessedSearchResults = function getUnprocessedSearchResults(_ref) {
         var returnFare = (0,_getFare__WEBPACK_IMPORTED_MODULE_0__.getFare)({
           flight: returnItem
         });
+
+        if (!returnFare) {
+          // Southwest displays but blocks out full flights...
+          return;
+        }
+
         itineraries.push({
           departureFlight: departureFlight,
           returnFlight: returnFlight,

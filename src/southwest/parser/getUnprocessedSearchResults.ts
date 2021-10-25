@@ -17,10 +17,18 @@ export const getUnprocessedSearchResults = ({
   departures.forEach((departureItem) => {
     const departureFlight = getFlightDetails({ flight: departureItem });
     const departureFare = getFare({ flight: departureItem });
+    if (!departureFare) {
+      // Southwest displays but blocks out full flights...
+      return;
+    }
     if (roundtrip) {
       returns.forEach((returnItem) => {
         const returnFlight = getFlightDetails({ flight: returnItem });
         const returnFare = getFare({ flight: returnItem });
+        if (!returnFare) {
+          // Southwest displays but blocks out full flights...
+          return;
+        }
         itineraries.push({
           departureFlight,
           returnFlight,
