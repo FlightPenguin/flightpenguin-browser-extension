@@ -41,6 +41,7 @@ const TimelineSlider = ({
       height={`${heightValue}px`}
       marginTop="major-2"
       marginBottom="major-6"
+      display={disabled ? "none" : "block"}
     >
       <ReactSlider
         ariaLabel={["Depart after", "Arrive before"]}
@@ -97,10 +98,11 @@ export default React.memo(TimelineSlider, (previous, next) => {
   return isEqual(getValuesForMemoCheck(previous), getValuesForMemoCheck(next));
 });
 
-const getValuesForMemoCheck = ({ intervals, startDate, intervalWidth }: TimelineSliderProps) => {
+const getValuesForMemoCheck = ({ intervals, startDate, intervalWidth, disabled }: TimelineSliderProps) => {
   return {
     intervalsCount: intervals.length,
     startDate: startDate,
     intervalWidth: intervalWidth,
+    disabled: disabled,
   };
 };
