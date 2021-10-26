@@ -91,9 +91,6 @@ const TimelineContainer = ({
       flights: filteredFlights,
       datetime: filterDateRange.lowerBound,
     });
-    // if (flights.length === 13 && filteredFlights.length !== 13) {
-    //   debugger;
-    // }
 
     // sort / unique
     const sortedFlights = uniqBy(filteredFlights, "id").sort((a, b) => {
