@@ -50,16 +50,16 @@ export const getFlightSegments = (
     }
 
     // eslint-disable-next-line prefer-const
-    let { width, startX } = getPosition(
-      layover.fromTime,
-      layover.toTime,
+    let { width, startX } = getPosition({
+      fromTime: layover.fromTime,
+      toTime: layover.toTime,
       startDayOffset,
       endDayOffset,
       increment,
       startHourOffset,
       intervalCount,
       containerWidth,
-    );
+    });
 
     if (layover.isLayoverStop) {
       width += 1;

@@ -1,16 +1,27 @@
 import { convertTimeTo24HourClock } from "../../../../../utilityFunctions";
 import { getPixelsPerMinute } from "../../../../utilities/position/getPixelsPerMinute";
 
-export function getPosition(
-  fromTime: string,
-  toTime: string,
-  startDayOffset: number,
-  endDayOffset: number,
-  increment: number,
-  startHourOffset: number,
-  intervalCount: number,
-  containerWidth: number,
-): { width: number; startX: number } {
+interface GetPositionProps {
+  fromTime: string;
+  toTime: string;
+  startDayOffset: number;
+  endDayOffset: number;
+  increment: number;
+  startHourOffset: number;
+  intervalCount: number;
+  containerWidth: number;
+}
+
+export function getPosition({
+  fromTime,
+  toTime,
+  startDayOffset,
+  endDayOffset,
+  increment,
+  startHourOffset,
+  intervalCount,
+  containerWidth,
+}: GetPositionProps): { width: number; startX: number } {
   /**
    * Basically this is what's happening here:
    * Intervals for 24 hours
@@ -37,7 +48,7 @@ export function getPosition(
   const startPositionPx = pxPerMinute.times(startTimeInMinutes);
   let endPositionPx = pxPerMinute.times(endTimeInMinutes);
 
-  if (endPositionPx < startPositionPx) {
+  if (endPositionPx.toNumber() < startPositionPx.toNumber()) {
     endPositionPx = endPositionPx.plus(positionAtMidnight);
   }
 
