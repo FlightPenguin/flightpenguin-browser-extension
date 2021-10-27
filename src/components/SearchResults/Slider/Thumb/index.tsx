@@ -1,5 +1,4 @@
 import { Box, Icon, Text, Tooltip } from "bumbag";
-import { addMinutes, format } from "date-fns";
 import isEqual from "lodash.isequal";
 import React, { HTMLProps } from "react";
 
@@ -56,6 +55,7 @@ const Thumb = ({
       left={`${position}px`}
       onFocus={props.onFocus}
       onTouchStart={props.onTouchStart}
+      onMouseDown={props.onMouseDown}
       position="absolute"
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
