@@ -1556,6 +1556,27 @@ var waitForLoading = /*#__PURE__*/function () {
 
 /***/ }),
 
+/***/ "./src/southwest/ui/clearSelections.ts":
+/*!*********************************************!*\
+  !*** ./src/southwest/ui/clearSelections.ts ***!
+  \*********************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "clearSelections": () => (/* binding */ clearSelections)
+/* harmony export */ });
+var BUTTON_SELECTOR = "button.fare-detail--clear-flight";
+var clearSelections = function clearSelections() {
+  var buttons = document.querySelectorAll(BUTTON_SELECTOR);
+  buttons.forEach(function (button) {
+    button.click();
+  });
+};
+
+/***/ }),
+
 /***/ "./src/southwest/ui/findFlightCard.ts":
 /*!********************************************!*\
   !*** ./src/southwest/ui/findFlightCard.ts ***!
@@ -1571,7 +1592,6 @@ __webpack_require__.r(__webpack_exports__);
 
 var findFlightCard = function findFlightCard(id) {
   var desiredFlightCardSelector = "li[data-fpid=\"".concat(id, "\"]");
-  console.log(desiredFlightCardSelector);
   var flightCard = document.querySelector(desiredFlightCardSelector);
 
   if (!flightCard) {
@@ -1595,12 +1615,14 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "highlightFlightCard": () => (/* binding */ highlightFlightCard)
 /* harmony export */ });
 /* harmony import */ var _shared_ui_manageSelectionHighlights__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../shared/ui/manageSelectionHighlights */ "./src/shared/ui/manageSelectionHighlights.ts");
-/* harmony import */ var _findFlightCard__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./findFlightCard */ "./src/southwest/ui/findFlightCard.ts");
-/* harmony import */ var _removeFlightCardHighlight__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./removeFlightCardHighlight */ "./src/southwest/ui/removeFlightCardHighlight.ts");
-/* harmony import */ var _scrollToFlightCard__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./scrollToFlightCard */ "./src/southwest/ui/scrollToFlightCard.ts");
+/* harmony import */ var _clearSelections__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./clearSelections */ "./src/southwest/ui/clearSelections.ts");
+/* harmony import */ var _findFlightCard__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./findFlightCard */ "./src/southwest/ui/findFlightCard.ts");
+/* harmony import */ var _removeFlightCardHighlight__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./removeFlightCardHighlight */ "./src/southwest/ui/removeFlightCardHighlight.ts");
+/* harmony import */ var _scrollToFlightCard__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./scrollToFlightCard */ "./src/southwest/ui/scrollToFlightCard.ts");
 function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
 
 function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
+
 
 
 
@@ -1610,16 +1632,17 @@ var highlightFlightCard = /*#__PURE__*/function () {
   var _ref2 = _asyncToGenerator(function* (_ref) {
     var departureId = _ref.departureId,
         returnId = _ref.returnId;
-    (0,_removeFlightCardHighlight__WEBPACK_IMPORTED_MODULE_2__.removeFlightCardHighlight)();
-    var departureFlightCard = yield (0,_findFlightCard__WEBPACK_IMPORTED_MODULE_1__.findFlightCard)(departureId);
+    (0,_removeFlightCardHighlight__WEBPACK_IMPORTED_MODULE_3__.removeFlightCardHighlight)();
+    (0,_clearSelections__WEBPACK_IMPORTED_MODULE_1__.clearSelections)();
+    var departureFlightCard = yield (0,_findFlightCard__WEBPACK_IMPORTED_MODULE_2__.findFlightCard)(departureId);
     (0,_shared_ui_manageSelectionHighlights__WEBPACK_IMPORTED_MODULE_0__.highlightSelectedElement)(departureFlightCard);
 
     if (returnId) {
-      var returnFlightCard = yield (0,_findFlightCard__WEBPACK_IMPORTED_MODULE_1__.findFlightCard)(returnId);
+      var returnFlightCard = yield (0,_findFlightCard__WEBPACK_IMPORTED_MODULE_2__.findFlightCard)(returnId);
       (0,_shared_ui_manageSelectionHighlights__WEBPACK_IMPORTED_MODULE_0__.highlightSelectedElement)(returnFlightCard);
     }
 
-    (0,_scrollToFlightCard__WEBPACK_IMPORTED_MODULE_3__.scrollToFlightCard)(departureFlightCard);
+    (0,_scrollToFlightCard__WEBPACK_IMPORTED_MODULE_4__.scrollToFlightCard)(departureFlightCard);
   });
 
   return function highlightFlightCard(_x) {
@@ -9530,18 +9553,20 @@ var __webpack_exports__ = {};
   !*** ./src/southwest/contentScript.ts ***!
   \****************************************/
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _shared_events__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../shared/events */ "./src/shared/events/index.ts");
-/* harmony import */ var _shared_ui_backToSearch__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../shared/ui/backToSearch */ "./src/shared/ui/backToSearch.ts");
-/* harmony import */ var _parser_parseFlights__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./parser/parseFlights */ "./src/southwest/parser/parseFlights.ts");
-/* harmony import */ var _parser_setFlightIds__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./parser/setFlightIds */ "./src/southwest/parser/setFlightIds.ts");
-/* harmony import */ var _parser_waitForLoading__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./parser/waitForLoading */ "./src/southwest/parser/waitForLoading.ts");
-/* harmony import */ var _ui_highlightFlightCard__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./ui/highlightFlightCard */ "./src/southwest/ui/highlightFlightCard.ts");
+/* harmony import */ var _ui_clearSelections__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./ui/clearSelections */ "./src/southwest/ui/clearSelections.ts");
+/* harmony import */ var _shared_events__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../shared/events */ "./src/shared/events/index.ts");
+/* harmony import */ var _shared_ui_backToSearch__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../shared/ui/backToSearch */ "./src/shared/ui/backToSearch.ts");
+/* harmony import */ var _parser_parseFlights__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./parser/parseFlights */ "./src/southwest/parser/parseFlights.ts");
+/* harmony import */ var _parser_setFlightIds__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./parser/setFlightIds */ "./src/southwest/parser/setFlightIds.ts");
+/* harmony import */ var _parser_waitForLoading__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./parser/waitForLoading */ "./src/southwest/parser/waitForLoading.ts");
+/* harmony import */ var _ui_highlightFlightCard__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./ui/highlightFlightCard */ "./src/southwest/ui/highlightFlightCard.ts");
 function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
 
 function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
 
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
+
 Sentry.init({
   dsn: "https://d7f3363dd3774a64ad700b4523bcb789@o407795.ingest.sentry.io/5277451"
 });
@@ -9563,18 +9588,26 @@ chrome.runtime.onMessage.addListener( /*#__PURE__*/function () {
           // eslint-disable-next-line @typescript-eslint/ban-ts-comment
           // @ts-ignore
           window.Sentry.captureException(error);
-          (0,_shared_events__WEBPACK_IMPORTED_MODULE_0__.sendFailedScraper)("southwest", error, "ALL");
+          (0,_shared_events__WEBPACK_IMPORTED_MODULE_1__.sendFailedScraper)("southwest", error, "ALL");
         }
 
         break;
 
       case "HIGHLIGHT_FLIGHT":
-        yield (0,_parser_setFlightIds__WEBPACK_IMPORTED_MODULE_3__.setFlightIds)();
-        yield (0,_ui_highlightFlightCard__WEBPACK_IMPORTED_MODULE_5__.highlightFlightCard)({
+        yield (0,_parser_setFlightIds__WEBPACK_IMPORTED_MODULE_4__.setFlightIds)();
+        yield (0,_ui_highlightFlightCard__WEBPACK_IMPORTED_MODULE_6__.highlightFlightCard)({
           departureId: message.selectedDepartureId,
           returnId: message.selectedReturnId
         });
-        (0,_shared_ui_backToSearch__WEBPACK_IMPORTED_MODULE_1__.addBackToSearchButton)();
+        (0,_shared_ui_backToSearch__WEBPACK_IMPORTED_MODULE_2__.addBackToSearchButton)();
+        break;
+
+      case "CLEAR_SELECTION":
+        (0,_ui_clearSelections__WEBPACK_IMPORTED_MODULE_0__.clearSelections)();
+        chrome.runtime.sendMessage({
+          event: "PROVIDER_READY",
+          provider: "southwest"
+        });
         break;
 
       default:
@@ -9589,14 +9622,14 @@ chrome.runtime.onMessage.addListener( /*#__PURE__*/function () {
 
 var getFlightResults = /*#__PURE__*/function () {
   var _ref2 = _asyncToGenerator(function* () {
-    yield (0,_parser_waitForLoading__WEBPACK_IMPORTED_MODULE_4__.waitForLoading)();
+    yield (0,_parser_waitForLoading__WEBPACK_IMPORTED_MODULE_5__.waitForLoading)();
     var id = window.setInterval(function () {
       var searchResults = JSON.parse(window.sessionStorage.getItem("AirBookingSearchResultsSearchStore-searchResults-v1") || "{}");
 
       if (searchResults && searchResults.searchResults) {
-        (0,_parser_parseFlights__WEBPACK_IMPORTED_MODULE_2__.parseFlights)(searchResults.searchResults);
+        (0,_parser_parseFlights__WEBPACK_IMPORTED_MODULE_3__.parseFlights)(searchResults.searchResults);
         window.clearInterval(id);
-        (0,_shared_events__WEBPACK_IMPORTED_MODULE_0__.sendScraperComplete)("southwest", "BOTH");
+        (0,_shared_events__WEBPACK_IMPORTED_MODULE_1__.sendScraperComplete)("southwest", "BOTH");
       }
     }, 500);
   });
