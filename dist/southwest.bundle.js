@@ -1000,6 +1000,122 @@ var getDurationInMinutes = function getDurationInMinutes(duration) {
 
 /***/ }),
 
+/***/ "./src/shared/utilities/isVisible.ts":
+/*!*******************************************!*\
+  !*** ./src/shared/utilities/isVisible.ts ***!
+  \*******************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "isVisible": () => (/* binding */ isVisible)
+/* harmony export */ });
+var isVisible = function isVisible(element) {
+  return element.offsetWidth > 0 && element.offsetHeight > 0;
+};
+
+/***/ }),
+
+/***/ "./src/shared/utilities/waitFor.ts":
+/*!*****************************************!*\
+  !*** ./src/shared/utilities/waitFor.ts ***!
+  \*****************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "waitForDisappearance": () => (/* binding */ waitForDisappearance),
+/* harmony export */   "waitForAppearance": () => (/* binding */ waitForAppearance),
+/* harmony export */   "waitForInvisible": () => (/* binding */ waitForInvisible)
+/* harmony export */ });
+/* harmony import */ var wait_for_the_element__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! wait-for-the-element */ "./node_modules/wait-for-the-element/wait-for-the-element.js");
+/* harmony import */ var _errors__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../errors */ "./src/shared/errors.ts");
+/* harmony import */ var _isVisible__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./isVisible */ "./src/shared/utilities/isVisible.ts");
+function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
+
+function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
+
+
+
+
+var waitForDisappearance = /*#__PURE__*/function () {
+  var _ref = _asyncToGenerator(function* (loadingTimeout, selector) {
+    var doc = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : window.document;
+
+    if (doc.querySelector(selector)) {
+      var loadingIndicator = yield (0,wait_for_the_element__WEBPACK_IMPORTED_MODULE_0__.waitForTheElementToDisappear)(selector, {
+        timeout: loadingTimeout,
+        // @ts-ignore
+        scope: doc
+      });
+
+      if (!loadingIndicator) {
+        throw new _errors__WEBPACK_IMPORTED_MODULE_1__.LoadingTimeoutParserError("Took longer than ".concat(loadingTimeout, " ms to make the loading indicator (").concat(selector, ") disappear"));
+      }
+    }
+  });
+
+  return function waitForDisappearance(_x, _x2) {
+    return _ref.apply(this, arguments);
+  };
+}();
+var waitForAppearance = /*#__PURE__*/function () {
+  var _ref2 = _asyncToGenerator(function* () {
+    var loadingTimeout = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 3000;
+    var selector = arguments.length > 1 ? arguments[1] : undefined;
+    var doc = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : window.document;
+    var container = doc.querySelector(selector);
+
+    if (!container) {
+      container = yield (0,wait_for_the_element__WEBPACK_IMPORTED_MODULE_0__.waitForTheElement)(selector, {
+        timeout: loadingTimeout,
+        scope: doc
+      });
+
+      if (!container) {
+        throw new _errors__WEBPACK_IMPORTED_MODULE_1__.LoadingTimeoutParserError("Render of ".concat(selector, " failed to complete in ").concat(loadingTimeout));
+      }
+    }
+
+    return container;
+  });
+
+  return function waitForAppearance() {
+    return _ref2.apply(this, arguments);
+  };
+}();
+var waitForInvisible = /*#__PURE__*/function () {
+  var _ref3 = _asyncToGenerator(function* () {
+    var disappearanceTimeout = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 5000;
+    var selector = arguments.length > 1 ? arguments[1] : undefined;
+    var doc = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : window.document;
+    var visible = true;
+    var startTime = new Date();
+
+    while (visible && startTime.valueOf() - new Date().valueOf() < disappearanceTimeout) {
+      var selectedElement = doc.querySelector(selector);
+
+      if (!selectedElement) {
+        visible = false;
+      }
+
+      visible = (0,_isVisible__WEBPACK_IMPORTED_MODULE_2__.isVisible)(selectedElement);
+    }
+
+    if (visible) {
+      throw new _errors__WEBPACK_IMPORTED_MODULE_1__.LoadingTimeoutParserError("Took longer than ".concat(disappearanceTimeout, " to make ").concat(selector, " disappear"));
+    }
+  });
+
+  return function waitForInvisible() {
+    return _ref3.apply(this, arguments);
+  };
+}();
+
+/***/ }),
+
 /***/ "./src/southwest/parser/getDurationValue.ts":
 /*!**************************************************!*\
   !*** ./src/southwest/parser/getDurationValue.ts ***!
@@ -1268,7 +1384,6 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /* harmony import */ var _shared_events__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../shared/events */ "./src/shared/events/index.ts");
 /* harmony import */ var _getUnprocessedSearchResults__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./getUnprocessedSearchResults */ "./src/southwest/parser/getUnprocessedSearchResults.ts");
-/* harmony import */ var _setFlightIds__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./setFlightIds */ "./src/southwest/parser/setFlightIds.ts");
 function _slicedToArray(arr, i) { return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _unsupportedIterableToArray(arr, i) || _nonIterableRest(); }
 
 function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
@@ -1280,7 +1395,6 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
 function _iterableToArrayLimit(arr, i) { if (typeof Symbol === "undefined" || !(Symbol.iterator in Object(arr))) return; var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"] != null) _i["return"](); } finally { if (_d) throw _e; } } return _arr; }
 
 function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
-
 
 
 
@@ -1304,7 +1418,6 @@ var parseFlights = function parseFlights(searchResults) {
     departures: departureFlights,
     returns: returnFlights
   });
-  (0,_setFlightIds__WEBPACK_IMPORTED_MODULE_2__.setFlightIds)();
   (0,_shared_events__WEBPACK_IMPORTED_MODULE_0__.sendFlightsEvent)("southwest", results);
 };
 
@@ -1389,18 +1502,57 @@ var setFlightIds = function setFlightIds() {
 var setContainerFlightIds = function setContainerFlightIds(container) {
   var flightCards = Array.from(container.childNodes);
   flightCards.forEach(function (flightCard) {
-    var _map = _toConsumableArray(flightCard.querySelectorAll(TIME_CONTAINER_SELECTOR)).map(function (element) {
-      return element.textContent;
-    }),
-        _map2 = _slicedToArray(_map, 2),
-        fromTimeRaw = _map2[0],
-        toTimeRaw = _map2[1];
+    try {
+      var _map = _toConsumableArray(flightCard.querySelectorAll(TIME_CONTAINER_SELECTOR)).map(function (element) {
+        return element.textContent;
+      }),
+          _map2 = _slicedToArray(_map, 2),
+          fromTimeRaw = _map2[0],
+          toTimeRaw = _map2[1];
 
-    var fromTime = (0,_shared_helpers__WEBPACK_IMPORTED_MODULE_0__.standardizeTimeString)(fromTimeRaw).replace("departs", "");
-    var toTime = (0,_shared_helpers__WEBPACK_IMPORTED_MODULE_0__.standardizeTimeString)(toTimeRaw).replace("arrives", "");
-    flightCard.dataset.fpid = [fromTime, toTime, "Southwest"].join("-");
+      var fromTime = (0,_shared_helpers__WEBPACK_IMPORTED_MODULE_0__.standardizeTimeString)(fromTimeRaw).replace("departs", "");
+      var toTime = (0,_shared_helpers__WEBPACK_IMPORTED_MODULE_0__.standardizeTimeString)(toTimeRaw).replace("arrives", "");
+      flightCard.dataset.fpid = [fromTime, toTime, "Southwest"].join("-");
+    } catch (e) {
+      console.log(flightCard);
+      console.log(e);
+    }
   });
 };
+
+/***/ }),
+
+/***/ "./src/southwest/parser/waitForLoading.ts":
+/*!************************************************!*\
+  !*** ./src/southwest/parser/waitForLoading.ts ***!
+  \************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "waitForLoading": () => (/* binding */ waitForLoading)
+/* harmony export */ });
+/* harmony import */ var _shared_utilities_waitFor__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../shared/utilities/waitFor */ "./src/shared/utilities/waitFor.ts");
+function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
+
+function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
+
+
+var SEARCH_CONTAINER_SELECTOR = "section.search-results--matrix";
+var SEARCH_RESULTS_LOADING_INDICATOR_SELECTOR = "div.price-matrix--loading-detail";
+var FLIGHT_CARD_SELECTOR = "li.air-booking-select-detail";
+var waitForLoading = /*#__PURE__*/function () {
+  var _ref = _asyncToGenerator(function* () {
+    yield (0,_shared_utilities_waitFor__WEBPACK_IMPORTED_MODULE_0__.waitForAppearance)(120000, SEARCH_CONTAINER_SELECTOR);
+    yield (0,_shared_utilities_waitFor__WEBPACK_IMPORTED_MODULE_0__.waitForDisappearance)(120000, SEARCH_RESULTS_LOADING_INDICATOR_SELECTOR);
+    yield (0,_shared_utilities_waitFor__WEBPACK_IMPORTED_MODULE_0__.waitForAppearance)(120000, FLIGHT_CARD_SELECTOR);
+  });
+
+  return function waitForLoading() {
+    return _ref.apply(this, arguments);
+  };
+}();
 
 /***/ }),
 
@@ -9272,6 +9424,23 @@ var upperFirst = createCaseFirst('toUpperCase');
 module.exports = capitalize;
 
 
+/***/ }),
+
+/***/ "./node_modules/wait-for-the-element/wait-for-the-element.js":
+/*!*******************************************************************!*\
+  !*** ./node_modules/wait-for-the-element/wait-for-the-element.js ***!
+  \*******************************************************************/
+/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "waitForTheElement": () => (/* binding */ a),
+/* harmony export */   "waitForTheElementToDisappear": () => (/* binding */ l)
+/* harmony export */ });
+function t(t,r){return function(t){if(Array.isArray(t))return t}(t)||function(t,u){var r=null==t?null:"undefined"!=typeof Symbol&&t[Symbol.iterator]||t["@@iterator"];if(null==r)return;var e,n,o=[],F=!0,i=!1;try{for(r=r.call(t);!(F=(e=r.next()).done)&&(o.push(e.value),!u||o.length!==u);F=!0);}catch(t){i=!0,n=t}finally{try{F||null==r.return||r.return()}finally{if(i)throw n}}return o}(t,r)||u(t,r)||function(){throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.")}()}function u(t,u){if(t){if("string"==typeof t)return r(t,u);var e=Object.prototype.toString.call(t).slice(8,-1);return"Object"===e&&t.constructor&&(e=t.constructor.name),"Map"===e||"Set"===e?Array.from(t):"Arguments"===e||/^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(e)?r(t,u):void 0}}function r(t,u){(null==u||u>t.length)&&(u=t.length);for(var r=0,e=new Array(u);r<u;r++)e[r]=t[r];return e}var e=/\.(?:(?:[\x2D0-9A-Z_a-z\x80-\uD7FF\uE000-\uFFFF]|[\uD800-\uDBFF](?![\uDC00-\uDFFF])|(?:[^\uD800-\uDBFF]|^)[\uDC00-\uDFFF])|\\(?:[\0-\t\x0B\f\x0E-\u2027\u202A-\uD7FF\uE000-\uFFFF]|[\uD800-\uDBFF][\uDC00-\uDFFF]|[\uD800-\uDBFF](?![\uDC00-\uDFFF])|(?:[^\uD800-\uDBFF]|^)[\uDC00-\uDFFF]))+/,n=/#(?:(?:[\x2D0-9A-Z_a-z\x80-\uD7FF\uE000-\uFFFF]|[\uD800-\uDBFF](?![\uDC00-\uDFFF])|(?:[^\uD800-\uDBFF]|^)[\uDC00-\uDFFF])|\\(?:[\0-\t\x0B\f\x0E-\u2027\u202A-\uD7FF\uE000-\uFFFF]|[\uD800-\uDBFF][\uDC00-\uDFFF]|[\uD800-\uDBFF](?![\uDC00-\uDFFF])|(?:[^\uD800-\uDBFF]|^)[\uDC00-\uDFFF]))+/,o=/\[[\t-\r \xA0\u1680\u2000-\u200A\u2028\u2029\u202F\u205F\u3000\uFEFF]*((?:(?:\*|[\x2D0-9A-Z_a-z]*)\|)?(?:(?:[\x2D0-9A-Z_a-z\x80-\uD7FF\uE000-\uFFFF]|[\uD800-\uDBFF](?![\uDC00-\uDFFF])|(?:[^\uD800-\uDBFF]|^)[\uDC00-\uDFFF])+))/g,F={};function i(r){var i=F[r];if(i)return i;i=F[r]={attributes:!0,subtree:!0,childList:!0};var a,l=[],c=function(t,r){var e="undefined"!=typeof Symbol&&t[Symbol.iterator]||t["@@iterator"];if(!e){if(Array.isArray(t)||(e=u(t))||r&&t&&"number"==typeof t.length){e&&(t=e);var n=0,o=function(){};return{s:o,n:function(){return n>=t.length?{done:!0}:{done:!1,value:t[n++]}},e:function(t){throw t},f:o}}throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.")}var F,i=!0,a=!1;return{s:function(){e=e.call(t)},n:function(){var t=e.next();return i=t.done,t},e:function(t){a=!0,F=t},f:function(){try{i||null==e.return||e.return()}finally{if(a)throw F}}}}(r.matchAll(o));try{for(c.s();!(a=c.n()).done;){var D=t(a.value,2)[1];if(D.startsWith("*")||D.startsWith("|"))return i;l.push(D.replace("|",":"))}}catch(t){c.e(t)}finally{c.f()}return e.test(r)&&l.push("class"),n.test(r)&&l.push("id"),0===l.length?i.attributes=!1:i.attributeFilter=l,i}function a(t){var u=arguments.length>1&&void 0!==arguments[1]?arguments[1]:{},r=u.timeout,e=void 0===r?2500:r,n=u.scope,o=void 0===n?document:n;return new Promise((function(u){var r=o.querySelector(t);if(null===r){var n=null,F=new MutationObserver((function(){var r=o.querySelector(t);null!==r&&(clearTimeout(n),F.disconnect(),u(r))}));F.observe(o,i(t)),n=setTimeout((function(){F.disconnect(),u(null)}),e)}else u(r)}))}function l(t){var u=arguments.length>1&&void 0!==arguments[1]?arguments[1]:{},r=u.timeout,e=void 0===r?2500:r,n=u.scope,o=void 0===n?document:n;return new Promise((function(u){var r=null;if(null!==o.querySelector(t)){var n=new MutationObserver((function(){null===o.querySelector(t)&&(clearTimeout(r),n.disconnect(),u(!0))}));n.observe(o,i(t)),r=setTimeout((function(){n.disconnect(),u(!1)}),e)}else u(!0)}))}
+
+
 /***/ })
 
 /******/ 	});
@@ -9364,7 +9533,9 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _shared_events__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../shared/events */ "./src/shared/events/index.ts");
 /* harmony import */ var _shared_ui_backToSearch__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../shared/ui/backToSearch */ "./src/shared/ui/backToSearch.ts");
 /* harmony import */ var _parser_parseFlights__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./parser/parseFlights */ "./src/southwest/parser/parseFlights.ts");
-/* harmony import */ var _ui_highlightFlightCard__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./ui/highlightFlightCard */ "./src/southwest/ui/highlightFlightCard.ts");
+/* harmony import */ var _parser_setFlightIds__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./parser/setFlightIds */ "./src/southwest/parser/setFlightIds.ts");
+/* harmony import */ var _parser_waitForLoading__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./parser/waitForLoading */ "./src/southwest/parser/waitForLoading.ts");
+/* harmony import */ var _ui_highlightFlightCard__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./ui/highlightFlightCard */ "./src/southwest/ui/highlightFlightCard.ts");
 function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
 
 function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
@@ -9378,7 +9549,8 @@ Sentry.init({
 
 
 
-console.log("HELLO!");
+
+
 chrome.runtime.onMessage.addListener( /*#__PURE__*/function () {
   var _ref = _asyncToGenerator(function* (message) {
     console.debug(message);
@@ -9397,7 +9569,8 @@ chrome.runtime.onMessage.addListener( /*#__PURE__*/function () {
         break;
 
       case "HIGHLIGHT_FLIGHT":
-        yield (0,_ui_highlightFlightCard__WEBPACK_IMPORTED_MODULE_3__.highlightFlightCard)({
+        yield (0,_parser_setFlightIds__WEBPACK_IMPORTED_MODULE_3__.setFlightIds)();
+        yield (0,_ui_highlightFlightCard__WEBPACK_IMPORTED_MODULE_5__.highlightFlightCard)({
           departureId: message.selectedDepartureId,
           returnId: message.selectedReturnId
         });
@@ -9416,6 +9589,7 @@ chrome.runtime.onMessage.addListener( /*#__PURE__*/function () {
 
 var getFlightResults = /*#__PURE__*/function () {
   var _ref2 = _asyncToGenerator(function* () {
+    yield (0,_parser_waitForLoading__WEBPACK_IMPORTED_MODULE_4__.waitForLoading)();
     var id = window.setInterval(function () {
       var searchResults = JSON.parse(window.sessionStorage.getItem("AirBookingSearchResultsSearchStore-searchResults-v1") || "{}");
 

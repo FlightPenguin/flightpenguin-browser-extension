@@ -14,11 +14,17 @@ export const setFlightIds = (): void => {
 const setContainerFlightIds = (container: HTMLUListElement): void => {
   const flightCards = Array.from(container.childNodes as NodeListOf<HTMLLIElement>);
   flightCards.forEach((flightCard) => {
-    const [fromTimeRaw, toTimeRaw] = [...flightCard.querySelectorAll(TIME_CONTAINER_SELECTOR)].map(
-      (element) => element.textContent,
-    );
-    const fromTime = standardizeTimeString(fromTimeRaw).replace("departs", "");
-    const toTime = standardizeTimeString(toTimeRaw).replace("arrives", "");
-    flightCard.dataset.fpid = [fromTime, toTime, "Southwest"].join("-");
+    try {
+      const [fromTimeRaw, toTimeRaw] = [...flightCard.querySelectorAll(TIME_CONTAINER_SELECTOR)].map(
+        (element) => element.textContent,
+      );
+
+      const fromTime = standardizeTimeString(fromTimeRaw).replace("departs", "");
+      const toTime = standardizeTimeString(toTimeRaw).replace("arrives", "");
+      flightCard.dataset.fpid = [fromTime, toTime, "Southwest"].join("-");
+    } catch (e) {
+      console.log(flightCard);
+      console.log(e);
+    }
   });
 };

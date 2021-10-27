@@ -15,6 +15,5 @@ export const parseFlights = (searchResults: SearchResult): void => {
   const departureFlights = departures.details;
   const returnFlights = returns ? returns.details : [];
   const results = getUnprocessedSearchResults({ departures: departureFlights, returns: returnFlights });
-  setFlightIds();
   sendFlightsEvent("southwest", results);
 };

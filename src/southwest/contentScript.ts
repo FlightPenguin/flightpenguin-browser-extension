@@ -7,9 +7,10 @@ Sentry.init({
 import { sendFailedScraper, sendScraperComplete } from "../shared/events";
 import { addBackToSearchButton } from "../shared/ui/backToSearch";
 import { parseFlights } from "./parser/parseFlights";
+import { setFlightIds } from "./parser/setFlightIds";
+import { waitForLoading } from "./parser/waitForLoading";
 import { highlightFlightCard } from "./ui/highlightFlightCard";
 
-console.log("HELLO!");
 chrome.runtime.onMessage.addListener(async function (message) {
   console.debug(message);
   switch (message.event) {
@@ -24,6 +25,7 @@ chrome.runtime.onMessage.addListener(async function (message) {
       }
       break;
     case "HIGHLIGHT_FLIGHT":
+      await setFlightIds();
       await highlightFlightCard({ departureId: message.selectedDepartureId, returnId: message.selectedReturnId });
       addBackToSearchButton();
       break;
@@ -33,6 +35,7 @@ chrome.runtime.onMessage.addListener(async function (message) {
 });
 
 const getFlightResults = async () => {
+  await waitForLoading();
   const id = window.setInterval(() => {
     const searchResults = JSON.parse(
       window.sessionStorage.getItem("AirBookingSearchResultsSearchStore-searchResults-v1") || "{}",
