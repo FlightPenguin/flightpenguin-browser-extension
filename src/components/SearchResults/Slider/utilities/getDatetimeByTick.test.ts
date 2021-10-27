@@ -1,3 +1,5 @@
+import { parseISO } from "date-fns";
+
 import { getDatetimeByTick } from "./getDatetimeByTick";
 
 describe("getDatetimeByTick happy path tests", () => {
@@ -9,6 +11,17 @@ describe("getDatetimeByTick happy path tests", () => {
       formattedDate: "01/03/2020",
       formattedTime: "1:00am",
       formattedDatetime: "01/03/2020 1:00am",
+    });
+  });
+
+  it("fixes DST issues", () => {
+    const startDate = new Date(2021, 10, 6, 0, 0, 0, 0);
+    const results = getDatetimeByTick({ startDate, value: 104 });
+    expect(results).toMatchObject({
+      datetime: parseISO("2021-11-07T06:00:00.000Z"),
+      formattedDate: "11/07/2021",
+      formattedTime: "2:00am",
+      formattedDatetime: "11/07/2021 2:00am",
     });
   });
 });
