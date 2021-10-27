@@ -125,8 +125,6 @@ const TimelineContainer = ({
     );
   }
 
-  console.log(flights);
-
   return (
     <Box
       key="timeline-container-section"
@@ -152,24 +150,33 @@ const TimelineContainer = ({
         />
       </Box>
       <Box data-name={`${flightType.toLowerCase()}-container`} display="flex">
-        <Box className="border-flex-box" display="flex" borderLeft="default">
+        <Box className="border-flex-box" display="flex" borderLeft="default" width="100%">
           {flights.length ? (
-            <TimelineGrid
-              flights={displayFlights}
-              itineraries={itineraries}
-              startHour={intervalInfo.startHour}
-              increment={intervalInfo.increment}
-              intervalCount={intervalInfo.intervals.length}
-              flightType={flightType}
-              formData={formData}
-              skeleton={false}
-              selectedFlight={selectedFlightDetails?.flight}
-              onSelection={(details: FlightSelection) => {
-                setSelectedFlightDetails(details);
-                setDisplayFlights([details.flight]);
-                onSelection(details);
-              }}
-            />
+            !displayFlights.length && (filterDateRange.lowerBound || filterDateRange.upperBound) ? (
+              <Box width="100%" display="flex" justifyContent="center">
+                <Alert title="No flights found" type="warning">
+                  We were unable to find any flights that match your search criteria.{" "}
+                  {loading ? "Results are still coming in, you can wait or u" : "U"}pdate your search and try again!
+                </Alert>
+              </Box>
+            ) : (
+              <TimelineGrid
+                flights={displayFlights}
+                itineraries={itineraries}
+                startHour={intervalInfo.startHour}
+                increment={intervalInfo.increment}
+                intervalCount={intervalInfo.intervals.length}
+                flightType={flightType}
+                formData={formData}
+                skeleton={false}
+                selectedFlight={selectedFlightDetails?.flight}
+                onSelection={(details: FlightSelection) => {
+                  setSelectedFlightDetails(details);
+                  setDisplayFlights([details.flight]);
+                  onSelection(details);
+                }}
+              />
+            )
           ) : (
             <TimelineGrid
               flights={skeletonFlights}
