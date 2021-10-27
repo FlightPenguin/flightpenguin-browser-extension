@@ -14,7 +14,6 @@ chrome.runtime.onMessage.addListener(async function (message) {
   console.debug(message);
   switch (message.event) {
     case "BEGIN_PARSING":
-      console.log("parsing");
       try {
         await getFlightResults();
       } catch (error) {

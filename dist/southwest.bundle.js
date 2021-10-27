@@ -657,17 +657,19 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "FlightDetails": () => (/* binding */ FlightDetails)
 /* harmony export */ });
-/* harmony import */ var date_fns__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! date-fns */ "./node_modules/date-fns/esm/parse/index.js");
-/* harmony import */ var date_fns__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! date-fns */ "./node_modules/date-fns/esm/addDays/index.js");
-/* harmony import */ var date_fns__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! date-fns */ "./node_modules/date-fns/esm/addHours/index.js");
-/* harmony import */ var date_fns__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! date-fns */ "./node_modules/date-fns/esm/addMinutes/index.js");
+/* harmony import */ var date_fns__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! date-fns */ "./node_modules/date-fns/esm/parse/index.js");
+/* harmony import */ var date_fns__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! date-fns */ "./node_modules/date-fns/esm/addDays/index.js");
+/* harmony import */ var date_fns__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! date-fns */ "./node_modules/date-fns/esm/addHours/index.js");
+/* harmony import */ var date_fns__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! date-fns */ "./node_modules/date-fns/esm/addMinutes/index.js");
 /* harmony import */ var _utilityFunctions__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../utilityFunctions */ "./src/utilityFunctions.js");
 /* harmony import */ var _nameMaps_airlineMap__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../nameMaps/airlineMap */ "./src/shared/nameMaps/airlineMap.js");
+/* harmony import */ var _utilities_getDurationInMinutes__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../utilities/getDurationInMinutes */ "./src/shared/utilities/getDurationInMinutes.ts");
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
 
 function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
 
 
 
@@ -689,7 +691,7 @@ var FlightDetails = /*#__PURE__*/function () {
     this.fromDateTime = this.getFlightDateTime(departureDate, this.fromTimeDetails);
     this.toTime = toTime;
     this.toTimeDetails = this.getTimeDetails(toTime);
-    this.toDateTime = this.getFlightDateTime(departureDate, this.toTimeDetails);
+    this.toDateTime = this.getDepartureDateTime(this.fromDateTime, duration);
     this.duration = duration;
 
     if (operatingAirline) {
@@ -730,22 +732,28 @@ var FlightDetails = /*#__PURE__*/function () {
   }, {
     key: "getFlightDateTime",
     value: function getFlightDateTime(departureDate, timeDetails) {
-      var flightDateTime = (0,date_fns__WEBPACK_IMPORTED_MODULE_2__.default)(departureDate, "yyyy-MM-dd", new Date());
+      var flightDateTime = (0,date_fns__WEBPACK_IMPORTED_MODULE_3__.default)(departureDate, "yyyy-MM-dd", new Date());
 
       if (timeDetails.excessDays) {
         var excessDays = Number(timeDetails.excessDays.split("+").slice(-1)[0]);
-        flightDateTime = (0,date_fns__WEBPACK_IMPORTED_MODULE_3__.default)(flightDateTime, excessDays);
+        flightDateTime = (0,date_fns__WEBPACK_IMPORTED_MODULE_4__.default)(flightDateTime, excessDays);
       }
 
       if (timeDetails.hours) {
-        flightDateTime = (0,date_fns__WEBPACK_IMPORTED_MODULE_4__.default)(flightDateTime, timeDetails.hours);
+        flightDateTime = (0,date_fns__WEBPACK_IMPORTED_MODULE_5__.default)(flightDateTime, timeDetails.hours);
       }
 
       if (timeDetails.minutes) {
-        flightDateTime = (0,date_fns__WEBPACK_IMPORTED_MODULE_5__.default)(flightDateTime, timeDetails.minutes);
+        flightDateTime = (0,date_fns__WEBPACK_IMPORTED_MODULE_6__.default)(flightDateTime, timeDetails.minutes);
       }
 
       return flightDateTime;
+    }
+  }, {
+    key: "getDepartureDateTime",
+    value: function getDepartureDateTime(departureDateTime, duration) {
+      var durationMinutes = (0,_utilities_getDurationInMinutes__WEBPACK_IMPORTED_MODULE_2__.getDurationInMinutes)(duration);
+      return (0,date_fns__WEBPACK_IMPORTED_MODULE_6__.default)(departureDateTime, durationMinutes);
     }
   }, {
     key: "getFlightPenguinId",
@@ -956,6 +964,42 @@ var clearHighlightFromElement = function clearHighlightFromElement(element) {
 
 /***/ }),
 
+/***/ "./src/shared/utilities/getDurationInMinutes.ts":
+/*!******************************************************!*\
+  !*** ./src/shared/utilities/getDurationInMinutes.ts ***!
+  \******************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "getDurationInMinutes": () => (/* binding */ getDurationInMinutes)
+/* harmony export */ });
+function _slicedToArray(arr, i) { return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _unsupportedIterableToArray(arr, i) || _nonIterableRest(); }
+
+function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
+
+function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
+
+function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
+
+function _iterableToArrayLimit(arr, i) { if (typeof Symbol === "undefined" || !(Symbol.iterator in Object(arr))) return; var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"] != null) _i["return"](); } finally { if (_d) throw _e; } } return _arr; }
+
+function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
+
+var getDurationInMinutes = function getDurationInMinutes(duration) {
+  // duration looks like 10h 30m
+  var _ref = duration.includes("h") ? duration.split("h") : [0, duration],
+      _ref2 = _slicedToArray(_ref, 2),
+      durationHours = _ref2[0],
+      remainder = _ref2[1];
+
+  var durationMinutes = remainder.trim().split("m")[0] || 0;
+  return Number(durationMinutes) + Number(durationHours) * 60;
+};
+
+/***/ }),
+
 /***/ "./src/southwest/parser/getDurationValue.ts":
 /*!**************************************************!*\
   !*** ./src/southwest/parser/getDurationValue.ts ***!
@@ -1019,7 +1063,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _shared_types_FlightDetails__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../shared/types/FlightDetails */ "./src/shared/types/FlightDetails.ts");
 /* harmony import */ var _getDurationValue__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./getDurationValue */ "./src/southwest/parser/getDurationValue.ts");
 /* harmony import */ var _getFlightLegs__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./getFlightLegs */ "./src/southwest/parser/getFlightLegs.ts");
-/* harmony import */ var _parseSouthwestDateWithTimezone__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./parseSouthwestDateWithTimezone */ "./src/southwest/parser/parseSouthwestDateWithTimezone.ts");
+/* harmony import */ var _getFormattedFlightTimes__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./getFormattedFlightTimes */ "./src/southwest/parser/getFormattedFlightTimes.ts");
 
 
 
@@ -1030,16 +1074,19 @@ var getFlightDetails = function getFlightDetails(_ref) {
   var layovers = (0,_getFlightLegs__WEBPACK_IMPORTED_MODULE_2__.getFlightLegs)({
     flight: flight
   });
-  var departureDateTime = (0,_parseSouthwestDateWithTimezone__WEBPACK_IMPORTED_MODULE_3__.parseSouthwestDateWithTimezone)({
-    rawDate: flight.departureDateTime
-  });
-  var arrivalDateTime = (0,_parseSouthwestDateWithTimezone__WEBPACK_IMPORTED_MODULE_3__.parseSouthwestDateWithTimezone)({
-    rawDate: flight.arrivalDateTime
-  });
+
+  var _getFormattedFlightTi = (0,_getFormattedFlightTimes__WEBPACK_IMPORTED_MODULE_3__.getFormattedFlightTimes)({
+    southwestDepartureDateTime: flight.departureDateTime,
+    southwestArrivalDateTime: flight.arrivalDateTime
+  }),
+      departureDateTime = _getFormattedFlightTi.departureDateTime,
+      formattedDepartureDateTime = _getFormattedFlightTi.formattedDepartureDateTime,
+      formattedArrivalDateTime = _getFormattedFlightTi.formattedArrivalDateTime;
+
   return new _shared_types_FlightDetails__WEBPACK_IMPORTED_MODULE_0__.FlightDetails({
     departureDate: (0,date_fns_tz__WEBPACK_IMPORTED_MODULE_4__.default)(departureDateTime, "yyyy-MM-dd"),
-    fromTime: (0,date_fns_tz__WEBPACK_IMPORTED_MODULE_4__.default)(departureDateTime, "h:mmaaa"),
-    toTime: (0,date_fns_tz__WEBPACK_IMPORTED_MODULE_4__.default)(arrivalDateTime, "h:mmaaa"),
+    fromTime: formattedDepartureDateTime,
+    toTime: formattedArrivalDateTime,
     marketingAirline: "Southwest",
     duration: (0,_getDurationValue__WEBPACK_IMPORTED_MODULE_1__.getDurationValue)({
       minutes: Number(flight.totalDuration)
@@ -1061,11 +1108,9 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "getFlightLegs": () => (/* binding */ getFlightLegs)
 /* harmony export */ });
-/* harmony import */ var date_fns_tz__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! date-fns-tz */ "./node_modules/date-fns-tz/esm/format/index.js");
 /* harmony import */ var _shared_types_FlightLeg__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../shared/types/FlightLeg */ "./src/shared/types/FlightLeg.ts");
 /* harmony import */ var _getDurationValue__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./getDurationValue */ "./src/southwest/parser/getDurationValue.ts");
-/* harmony import */ var _parseSouthwestDateWithTimezone__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./parseSouthwestDateWithTimezone */ "./src/southwest/parser/parseSouthwestDateWithTimezone.ts");
-
+/* harmony import */ var _getFormattedFlightTimes__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./getFormattedFlightTimes */ "./src/southwest/parser/getFormattedFlightTimes.ts");
 
 
 
@@ -1074,15 +1119,16 @@ var getFlightLegs = function getFlightLegs(_ref) {
   return flight.segments.map(function (_ref2) {
     var stopsDetails = _ref2.stopsDetails;
     return stopsDetails.map(function (stop) {
-      var departureDateTime = (0,_parseSouthwestDateWithTimezone__WEBPACK_IMPORTED_MODULE_2__.parseSouthwestDateWithTimezone)({
-        rawDate: stop.departureDateTime
-      });
-      var arrivalDateTime = (0,_parseSouthwestDateWithTimezone__WEBPACK_IMPORTED_MODULE_2__.parseSouthwestDateWithTimezone)({
-        rawDate: stop.arrivalDateTime
-      });
+      var _getFormattedFlightTi = (0,_getFormattedFlightTimes__WEBPACK_IMPORTED_MODULE_2__.getFormattedFlightTimes)({
+        southwestDepartureDateTime: stop.departureDateTime,
+        southwestArrivalDateTime: stop.arrivalDateTime
+      }),
+          formattedDepartureDateTime = _getFormattedFlightTi.formattedDepartureDateTime,
+          formattedArrivalDateTime = _getFormattedFlightTi.formattedArrivalDateTime;
+
       return new _shared_types_FlightLeg__WEBPACK_IMPORTED_MODULE_0__.FlightLeg({
-        fromTime: (0,date_fns_tz__WEBPACK_IMPORTED_MODULE_3__.default)(departureDateTime, "h:mmaaa"),
-        toTime: (0,date_fns_tz__WEBPACK_IMPORTED_MODULE_3__.default)(arrivalDateTime, "h:mmaaa"),
+        fromTime: formattedDepartureDateTime,
+        toTime: formattedArrivalDateTime,
         operatingAirline: "Southwest",
         duration: (0,_getDurationValue__WEBPACK_IMPORTED_MODULE_1__.getDurationValue)({
           minutes: stop.legDuration
@@ -1092,6 +1138,51 @@ var getFlightLegs = function getFlightLegs(_ref) {
       });
     });
   }).flat();
+};
+
+/***/ }),
+
+/***/ "./src/southwest/parser/getFormattedFlightTimes.ts":
+/*!*********************************************************!*\
+  !*** ./src/southwest/parser/getFormattedFlightTimes.ts ***!
+  \*********************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "getFormattedFlightTimes": () => (/* binding */ getFormattedFlightTimes)
+/* harmony export */ });
+/* harmony import */ var date_fns__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! date-fns */ "./node_modules/date-fns/esm/differenceInDays/index.js");
+/* harmony import */ var date_fns__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! date-fns */ "./node_modules/date-fns/esm/startOfDay/index.js");
+/* harmony import */ var date_fns_tz__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! date-fns-tz */ "./node_modules/date-fns-tz/esm/format/index.js");
+/* harmony import */ var _parseSouthwestDateWithTimezone__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./parseSouthwestDateWithTimezone */ "./src/southwest/parser/parseSouthwestDateWithTimezone.ts");
+
+
+
+var getFormattedFlightTimes = function getFormattedFlightTimes(_ref) {
+  var southwestDepartureDateTime = _ref.southwestDepartureDateTime,
+      southwestArrivalDateTime = _ref.southwestArrivalDateTime;
+  var departureDateTime = (0,_parseSouthwestDateWithTimezone__WEBPACK_IMPORTED_MODULE_0__.parseSouthwestDateWithTimezone)({
+    rawDate: southwestDepartureDateTime
+  });
+  var arrivalDateTime = (0,_parseSouthwestDateWithTimezone__WEBPACK_IMPORTED_MODULE_0__.parseSouthwestDateWithTimezone)({
+    rawDate: southwestArrivalDateTime
+  });
+  var formattedDepartureDateTime = (0,date_fns_tz__WEBPACK_IMPORTED_MODULE_1__.default)(departureDateTime, "h:mmaaa");
+  var formattedArrivalDateTime = (0,date_fns_tz__WEBPACK_IMPORTED_MODULE_1__.default)(arrivalDateTime, "h:mmaaa");
+  var dateDiff = Math.abs((0,date_fns__WEBPACK_IMPORTED_MODULE_2__.default)((0,date_fns__WEBPACK_IMPORTED_MODULE_3__.default)(arrivalDateTime), (0,date_fns__WEBPACK_IMPORTED_MODULE_3__.default)(departureDateTime)));
+
+  if (dateDiff) {
+    formattedArrivalDateTime = "".concat(formattedArrivalDateTime, "+").concat(dateDiff);
+  }
+
+  return {
+    departureDateTime: departureDateTime,
+    arrivalDateTime: arrivalDateTime,
+    formattedDepartureDateTime: formattedDepartureDateTime,
+    formattedArrivalDateTime: formattedArrivalDateTime
+  };
 };
 
 /***/ }),
@@ -4921,6 +5012,177 @@ function addMinutes(dirtyDate, dirtyAmount) {
 
 /***/ }),
 
+/***/ "./node_modules/date-fns/esm/differenceInCalendarDays/index.js":
+/*!*********************************************************************!*\
+  !*** ./node_modules/date-fns/esm/differenceInCalendarDays/index.js ***!
+  \*********************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ differenceInCalendarDays)
+/* harmony export */ });
+/* harmony import */ var _lib_getTimezoneOffsetInMilliseconds_index_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../_lib/getTimezoneOffsetInMilliseconds/index.js */ "./node_modules/date-fns/esm/_lib/getTimezoneOffsetInMilliseconds/index.js");
+/* harmony import */ var _startOfDay_index_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../startOfDay/index.js */ "./node_modules/date-fns/esm/startOfDay/index.js");
+/* harmony import */ var _lib_requiredArgs_index_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../_lib/requiredArgs/index.js */ "./node_modules/date-fns/esm/_lib/requiredArgs/index.js");
+
+
+
+var MILLISECONDS_IN_DAY = 86400000;
+/**
+ * @name differenceInCalendarDays
+ * @category Day Helpers
+ * @summary Get the number of calendar days between the given dates.
+ *
+ * @description
+ * Get the number of calendar days between the given dates. This means that the times are removed
+ * from the dates and then the difference in days is calculated.
+ *
+ * ### v2.0.0 breaking changes:
+ *
+ * - [Changes that are common for the whole library](https://github.com/date-fns/date-fns/blob/master/docs/upgradeGuide.md#Common-Changes).
+ *
+ * @param {Date|Number} dateLeft - the later date
+ * @param {Date|Number} dateRight - the earlier date
+ * @returns {Number} the number of calendar days
+ * @throws {TypeError} 2 arguments required
+ *
+ * @example
+ * // How many calendar days are between
+ * // 2 July 2011 23:00:00 and 2 July 2012 00:00:00?
+ * const result = differenceInCalendarDays(
+ *   new Date(2012, 6, 2, 0, 0),
+ *   new Date(2011, 6, 2, 23, 0)
+ * )
+ * //=> 366
+ * // How many calendar days are between
+ * // 2 July 2011 23:59:00 and 3 July 2011 00:01:00?
+ * const result = differenceInCalendarDays(
+ *   new Date(2011, 6, 3, 0, 1),
+ *   new Date(2011, 6, 2, 23, 59)
+ * )
+ * //=> 1
+ */
+
+function differenceInCalendarDays(dirtyDateLeft, dirtyDateRight) {
+  (0,_lib_requiredArgs_index_js__WEBPACK_IMPORTED_MODULE_0__.default)(2, arguments);
+  var startOfDayLeft = (0,_startOfDay_index_js__WEBPACK_IMPORTED_MODULE_1__.default)(dirtyDateLeft);
+  var startOfDayRight = (0,_startOfDay_index_js__WEBPACK_IMPORTED_MODULE_1__.default)(dirtyDateRight);
+  var timestampLeft = startOfDayLeft.getTime() - (0,_lib_getTimezoneOffsetInMilliseconds_index_js__WEBPACK_IMPORTED_MODULE_2__.default)(startOfDayLeft);
+  var timestampRight = startOfDayRight.getTime() - (0,_lib_getTimezoneOffsetInMilliseconds_index_js__WEBPACK_IMPORTED_MODULE_2__.default)(startOfDayRight); // Round the number of days to the nearest integer
+  // because the number of milliseconds in a day is not constant
+  // (e.g. it's different in the day of the daylight saving time clock shift)
+
+  return Math.round((timestampLeft - timestampRight) / MILLISECONDS_IN_DAY);
+}
+
+/***/ }),
+
+/***/ "./node_modules/date-fns/esm/differenceInDays/index.js":
+/*!*************************************************************!*\
+  !*** ./node_modules/date-fns/esm/differenceInDays/index.js ***!
+  \*************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ differenceInDays)
+/* harmony export */ });
+/* harmony import */ var _toDate_index_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../toDate/index.js */ "./node_modules/date-fns/esm/toDate/index.js");
+/* harmony import */ var _differenceInCalendarDays_index_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../differenceInCalendarDays/index.js */ "./node_modules/date-fns/esm/differenceInCalendarDays/index.js");
+/* harmony import */ var _lib_requiredArgs_index_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../_lib/requiredArgs/index.js */ "./node_modules/date-fns/esm/_lib/requiredArgs/index.js");
+
+
+ // Like `compareAsc` but uses local time not UTC, which is needed
+// for accurate equality comparisons of UTC timestamps that end up
+// having the same representation in local time, e.g. one hour before
+// DST ends vs. the instant that DST ends.
+
+function compareLocalAsc(dateLeft, dateRight) {
+  var diff = dateLeft.getFullYear() - dateRight.getFullYear() || dateLeft.getMonth() - dateRight.getMonth() || dateLeft.getDate() - dateRight.getDate() || dateLeft.getHours() - dateRight.getHours() || dateLeft.getMinutes() - dateRight.getMinutes() || dateLeft.getSeconds() - dateRight.getSeconds() || dateLeft.getMilliseconds() - dateRight.getMilliseconds();
+
+  if (diff < 0) {
+    return -1;
+  } else if (diff > 0) {
+    return 1; // Return 0 if diff is 0; return NaN if diff is NaN
+  } else {
+    return diff;
+  }
+}
+/**
+ * @name differenceInDays
+ * @category Day Helpers
+ * @summary Get the number of full days between the given dates.
+ *
+ * @description
+ * Get the number of full day periods between two dates. Fractional days are
+ * truncated towards zero.
+ *
+ * One "full day" is the distance between a local time in one day to the same
+ * local time on the next or previous day. A full day can sometimes be less than
+ * or more than 24 hours if a daylight savings change happens between two dates.
+ *
+ * To ignore DST and only measure exact 24-hour periods, use this instead:
+ * `Math.floor(differenceInHours(dateLeft, dateRight)/24)|0`.
+ *
+ *
+ * ### v2.0.0 breaking changes:
+ *
+ * - [Changes that are common for the whole library](https://github.com/date-fns/date-fns/blob/master/docs/upgradeGuide.md#Common-Changes).
+ *
+ * @param {Date|Number} dateLeft - the later date
+ * @param {Date|Number} dateRight - the earlier date
+ * @returns {Number} the number of full days according to the local timezone
+ * @throws {TypeError} 2 arguments required
+ *
+ * @example
+ * // How many full days are between
+ * // 2 July 2011 23:00:00 and 2 July 2012 00:00:00?
+ * const result = differenceInDays(
+ *   new Date(2012, 6, 2, 0, 0),
+ *   new Date(2011, 6, 2, 23, 0)
+ * )
+ * //=> 365
+ * // How many full days are between
+ * // 2 July 2011 23:59:00 and 3 July 2011 00:01:00?
+ * const result = differenceInDays(
+ *   new Date(2011, 6, 3, 0, 1),
+ *   new Date(2011, 6, 2, 23, 59)
+ * )
+ * //=> 0
+ * // How many full days are between
+ * // 1 March 2020 0:00 and 1 June 2020 0:00 ?
+ * // Note: because local time is used, the
+ * // result will always be 92 days, even in
+ * // time zones where DST starts and the
+ * // period has only 92*24-1 hours.
+ * const result = differenceInDays(
+ *   new Date(2020, 5, 1),
+ *   new Date(2020, 2, 1)
+ * )
+//=> 92
+ */
+
+
+function differenceInDays(dirtyDateLeft, dirtyDateRight) {
+  (0,_lib_requiredArgs_index_js__WEBPACK_IMPORTED_MODULE_0__.default)(2, arguments);
+  var dateLeft = (0,_toDate_index_js__WEBPACK_IMPORTED_MODULE_1__.default)(dirtyDateLeft);
+  var dateRight = (0,_toDate_index_js__WEBPACK_IMPORTED_MODULE_1__.default)(dirtyDateRight);
+  var sign = compareLocalAsc(dateLeft, dateRight);
+  var difference = Math.abs((0,_differenceInCalendarDays_index_js__WEBPACK_IMPORTED_MODULE_2__.default)(dateLeft, dateRight));
+  dateLeft.setDate(dateLeft.getDate() - sign * difference); // Math.abs(diff in full days - diff in calendar days) === 1 if last calendar day is not full
+  // If so, result must be decreased by 1 in absolute value
+
+  var isLastDayNotFull = Number(compareLocalAsc(dateLeft, dateRight) === -sign);
+  var result = sign * (difference - isLastDayNotFull); // Prevent negative zero
+
+  return result === 0 ? 0 : result;
+}
+
+/***/ }),
+
 /***/ "./node_modules/date-fns/esm/format/index.js":
 /*!***************************************************!*\
   !*** ./node_modules/date-fns/esm/format/index.js ***!
@@ -8518,6 +8780,53 @@ function validateTimezone(_hours, minutes) {
 
 /***/ }),
 
+/***/ "./node_modules/date-fns/esm/startOfDay/index.js":
+/*!*******************************************************!*\
+  !*** ./node_modules/date-fns/esm/startOfDay/index.js ***!
+  \*******************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ startOfDay)
+/* harmony export */ });
+/* harmony import */ var _toDate_index_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../toDate/index.js */ "./node_modules/date-fns/esm/toDate/index.js");
+/* harmony import */ var _lib_requiredArgs_index_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../_lib/requiredArgs/index.js */ "./node_modules/date-fns/esm/_lib/requiredArgs/index.js");
+
+
+/**
+ * @name startOfDay
+ * @category Day Helpers
+ * @summary Return the start of a day for the given date.
+ *
+ * @description
+ * Return the start of a day for the given date.
+ * The result will be in the local timezone.
+ *
+ * ### v2.0.0 breaking changes:
+ *
+ * - [Changes that are common for the whole library](https://github.com/date-fns/date-fns/blob/master/docs/upgradeGuide.md#Common-Changes).
+ *
+ * @param {Date|Number} date - the original date
+ * @returns {Date} the start of a day
+ * @throws {TypeError} 1 argument required
+ *
+ * @example
+ * // The start of a day for 2 September 2014 11:55:00:
+ * const result = startOfDay(new Date(2014, 8, 2, 11, 55, 0))
+ * //=> Tue Sep 02 2014 00:00:00
+ */
+
+function startOfDay(dirtyDate) {
+  (0,_lib_requiredArgs_index_js__WEBPACK_IMPORTED_MODULE_0__.default)(1, arguments);
+  var date = (0,_toDate_index_js__WEBPACK_IMPORTED_MODULE_1__.default)(dirtyDate);
+  date.setHours(0, 0, 0, 0);
+  return date;
+}
+
+/***/ }),
+
 /***/ "./node_modules/date-fns/esm/subMilliseconds/index.js":
 /*!************************************************************!*\
   !*** ./node_modules/date-fns/esm/subMilliseconds/index.js ***!
@@ -9076,8 +9385,6 @@ chrome.runtime.onMessage.addListener( /*#__PURE__*/function () {
 
     switch (message.event) {
       case "BEGIN_PARSING":
-        console.log("parsing");
-
         try {
           yield getFlightResults();
         } catch (error) {

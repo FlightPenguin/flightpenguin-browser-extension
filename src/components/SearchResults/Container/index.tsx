@@ -125,6 +125,8 @@ const TimelineContainer = ({
     );
   }
 
+  console.log(flights);
+
   return (
     <Box
       key="timeline-container-section"

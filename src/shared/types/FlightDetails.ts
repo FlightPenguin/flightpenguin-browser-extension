@@ -2,6 +2,7 @@ import { addDays, addHours, addMinutes, parse } from "date-fns";
 
 import { convertTimeTo24HourClock, getTimezoneOffset } from "../../utilityFunctions";
 import AirlineMap from "../nameMaps/airlineMap";
+import { getDurationInMinutes } from "../utilities/getDurationInMinutes";
 import { FlightLeg } from "./FlightLeg";
 import { FlightTimeDetails } from "./FlightTimeDetails";
 
@@ -45,7 +46,7 @@ export class FlightDetails {
     this.fromDateTime = this.getFlightDateTime(departureDate, this.fromTimeDetails);
     this.toTime = toTime;
     this.toTimeDetails = this.getTimeDetails(toTime);
-    this.toDateTime = this.getFlightDateTime(departureDate, this.toTimeDetails);
+    this.toDateTime = this.getDepartureDateTime(this.fromDateTime, duration);
     this.duration = duration;
     if (operatingAirline) {
       this.operatingAirline = AirlineMap.getAirlineName(operatingAirline);
@@ -91,6 +92,11 @@ export class FlightDetails {
       flightDateTime = addMinutes(flightDateTime, timeDetails.minutes);
     }
     return flightDateTime;
+  }
+
+  getDepartureDateTime(departureDateTime: Date, duration: string): Date {
+    const durationMinutes = getDurationInMinutes(duration);
+    return addMinutes(departureDateTime, durationMinutes);
   }
 
   getFlightPenguinId(): string {

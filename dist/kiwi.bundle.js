@@ -1843,17 +1843,19 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "FlightDetails": () => (/* binding */ FlightDetails)
 /* harmony export */ });
-/* harmony import */ var date_fns__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! date-fns */ "./node_modules/date-fns/esm/parse/index.js");
-/* harmony import */ var date_fns__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! date-fns */ "./node_modules/date-fns/esm/addDays/index.js");
-/* harmony import */ var date_fns__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! date-fns */ "./node_modules/date-fns/esm/addHours/index.js");
-/* harmony import */ var date_fns__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! date-fns */ "./node_modules/date-fns/esm/addMinutes/index.js");
+/* harmony import */ var date_fns__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! date-fns */ "./node_modules/date-fns/esm/parse/index.js");
+/* harmony import */ var date_fns__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! date-fns */ "./node_modules/date-fns/esm/addDays/index.js");
+/* harmony import */ var date_fns__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! date-fns */ "./node_modules/date-fns/esm/addHours/index.js");
+/* harmony import */ var date_fns__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! date-fns */ "./node_modules/date-fns/esm/addMinutes/index.js");
 /* harmony import */ var _utilityFunctions__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../utilityFunctions */ "./src/utilityFunctions.js");
 /* harmony import */ var _nameMaps_airlineMap__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../nameMaps/airlineMap */ "./src/shared/nameMaps/airlineMap.js");
+/* harmony import */ var _utilities_getDurationInMinutes__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../utilities/getDurationInMinutes */ "./src/shared/utilities/getDurationInMinutes.ts");
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
 
 function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
 
 
 
@@ -1875,7 +1877,7 @@ var FlightDetails = /*#__PURE__*/function () {
     this.fromDateTime = this.getFlightDateTime(departureDate, this.fromTimeDetails);
     this.toTime = toTime;
     this.toTimeDetails = this.getTimeDetails(toTime);
-    this.toDateTime = this.getFlightDateTime(departureDate, this.toTimeDetails);
+    this.toDateTime = this.getDepartureDateTime(this.fromDateTime, duration);
     this.duration = duration;
 
     if (operatingAirline) {
@@ -1916,22 +1918,28 @@ var FlightDetails = /*#__PURE__*/function () {
   }, {
     key: "getFlightDateTime",
     value: function getFlightDateTime(departureDate, timeDetails) {
-      var flightDateTime = (0,date_fns__WEBPACK_IMPORTED_MODULE_2__.default)(departureDate, "yyyy-MM-dd", new Date());
+      var flightDateTime = (0,date_fns__WEBPACK_IMPORTED_MODULE_3__.default)(departureDate, "yyyy-MM-dd", new Date());
 
       if (timeDetails.excessDays) {
         var excessDays = Number(timeDetails.excessDays.split("+").slice(-1)[0]);
-        flightDateTime = (0,date_fns__WEBPACK_IMPORTED_MODULE_3__.default)(flightDateTime, excessDays);
+        flightDateTime = (0,date_fns__WEBPACK_IMPORTED_MODULE_4__.default)(flightDateTime, excessDays);
       }
 
       if (timeDetails.hours) {
-        flightDateTime = (0,date_fns__WEBPACK_IMPORTED_MODULE_4__.default)(flightDateTime, timeDetails.hours);
+        flightDateTime = (0,date_fns__WEBPACK_IMPORTED_MODULE_5__.default)(flightDateTime, timeDetails.hours);
       }
 
       if (timeDetails.minutes) {
-        flightDateTime = (0,date_fns__WEBPACK_IMPORTED_MODULE_5__.default)(flightDateTime, timeDetails.minutes);
+        flightDateTime = (0,date_fns__WEBPACK_IMPORTED_MODULE_6__.default)(flightDateTime, timeDetails.minutes);
       }
 
       return flightDateTime;
+    }
+  }, {
+    key: "getDepartureDateTime",
+    value: function getDepartureDateTime(departureDateTime, duration) {
+      var durationMinutes = (0,_utilities_getDurationInMinutes__WEBPACK_IMPORTED_MODULE_2__.getDurationInMinutes)(duration);
+      return (0,date_fns__WEBPACK_IMPORTED_MODULE_6__.default)(departureDateTime, durationMinutes);
     }
   }, {
     key: "getFlightPenguinId",
@@ -2138,6 +2146,42 @@ var clearHighlightFromElement = function clearHighlightFromElement(element) {
   element.style.paddingTop = "0px";
   element.style.paddingBottom = "0px";
   element.style.borderRadius = "0px";
+};
+
+/***/ }),
+
+/***/ "./src/shared/utilities/getDurationInMinutes.ts":
+/*!******************************************************!*\
+  !*** ./src/shared/utilities/getDurationInMinutes.ts ***!
+  \******************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "getDurationInMinutes": () => (/* binding */ getDurationInMinutes)
+/* harmony export */ });
+function _slicedToArray(arr, i) { return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _unsupportedIterableToArray(arr, i) || _nonIterableRest(); }
+
+function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
+
+function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
+
+function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
+
+function _iterableToArrayLimit(arr, i) { if (typeof Symbol === "undefined" || !(Symbol.iterator in Object(arr))) return; var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"] != null) _i["return"](); } finally { if (_d) throw _e; } } return _arr; }
+
+function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
+
+var getDurationInMinutes = function getDurationInMinutes(duration) {
+  // duration looks like 10h 30m
+  var _ref = duration.includes("h") ? duration.split("h") : [0, duration],
+      _ref2 = _slicedToArray(_ref, 2),
+      durationHours = _ref2[0],
+      remainder = _ref2[1];
+
+  var durationMinutes = remainder.trim().split("m")[0] || 0;
+  return Number(durationMinutes) + Number(durationHours) * 60;
 };
 
 /***/ }),
