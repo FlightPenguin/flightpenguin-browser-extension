@@ -657,18 +657,20 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "FlightDetails": () => (/* binding */ FlightDetails)
 /* harmony export */ });
-/* harmony import */ var date_fns__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! date-fns */ "./node_modules/date-fns/esm/parse/index.js");
-/* harmony import */ var date_fns__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! date-fns */ "./node_modules/date-fns/esm/addDays/index.js");
-/* harmony import */ var date_fns__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! date-fns */ "./node_modules/date-fns/esm/addHours/index.js");
-/* harmony import */ var date_fns__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! date-fns */ "./node_modules/date-fns/esm/addMinutes/index.js");
+/* harmony import */ var date_fns__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! date-fns */ "./node_modules/date-fns/esm/parse/index.js");
+/* harmony import */ var date_fns__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! date-fns */ "./node_modules/date-fns/esm/addDays/index.js");
+/* harmony import */ var date_fns__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! date-fns */ "./node_modules/date-fns/esm/addHours/index.js");
+/* harmony import */ var date_fns__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! date-fns */ "./node_modules/date-fns/esm/addMinutes/index.js");
 /* harmony import */ var _utilityFunctions__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../utilityFunctions */ "./src/utilityFunctions.js");
 /* harmony import */ var _nameMaps_airlineMap__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../nameMaps/airlineMap */ "./src/shared/nameMaps/airlineMap.js");
 /* harmony import */ var _utilities_getDurationInMinutes__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../utilities/getDurationInMinutes */ "./src/shared/utilities/getDurationInMinutes.ts");
+/* harmony import */ var _utilities_getTimeStringFromDate__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../utilities/getTimeStringFromDate */ "./src/shared/utilities/getTimeStringFromDate.ts");
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
 
 function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
 
 
 
@@ -686,12 +688,8 @@ var FlightDetails = /*#__PURE__*/function () {
 
     _classCallCheck(this, FlightDetails);
 
-    this.fromTime = fromTime;
-    this.fromTimeDetails = this.getTimeDetails(fromTime);
-    this.fromDateTime = this.getFlightDateTime(departureDate, this.fromTimeDetails);
-    this.toTime = toTime;
-    this.toTimeDetails = this.getTimeDetails(toTime);
-    this.toDateTime = this.getDepartureDateTime(this.fromDateTime, duration);
+    this.id = this.getFlightPenguinId();
+    this.timezoneOffset = (0,_utilityFunctions__WEBPACK_IMPORTED_MODULE_0__.getTimezoneOffset)(fromTime, toTime, duration);
     this.duration = duration;
 
     if (operatingAirline) {
@@ -705,8 +703,17 @@ var FlightDetails = /*#__PURE__*/function () {
     }
 
     this.layovers = layovers;
-    this.timezoneOffset = this.getTimezoneOffset();
-    this.id = this.getFlightPenguinId();
+    this.fromTime = fromTime;
+    this.fromTimeDetails = this.getTimeDetails(fromTime);
+    this.fromDateTime = this.getFlightDateTime(departureDate, this.fromTimeDetails);
+    this.toLocalTime = toTime;
+    this.toLocalTimeDetails = this.getTimeDetails(toTime);
+    this.toDateTime = this.getArrivalDateTime(this.fromDateTime, duration);
+    this.toTime = (0,_utilities_getTimeStringFromDate__WEBPACK_IMPORTED_MODULE_3__.getTimeStringFromDate)({
+      date: this.toDateTime,
+      previousFlightDate: this.fromDateTime
+    });
+    this.toTimeDetails = this.getTimeDetails(this.toTime);
     this.checkMissingExcessDays();
   }
 
@@ -732,28 +739,28 @@ var FlightDetails = /*#__PURE__*/function () {
   }, {
     key: "getFlightDateTime",
     value: function getFlightDateTime(departureDate, timeDetails) {
-      var flightDateTime = (0,date_fns__WEBPACK_IMPORTED_MODULE_3__.default)(departureDate, "yyyy-MM-dd", new Date());
+      var flightDateTime = (0,date_fns__WEBPACK_IMPORTED_MODULE_4__.default)(departureDate, "yyyy-MM-dd", new Date());
 
       if (timeDetails.excessDays) {
         var excessDays = Number(timeDetails.excessDays.split("+").slice(-1)[0]);
-        flightDateTime = (0,date_fns__WEBPACK_IMPORTED_MODULE_4__.default)(flightDateTime, excessDays);
+        flightDateTime = (0,date_fns__WEBPACK_IMPORTED_MODULE_5__.default)(flightDateTime, excessDays);
       }
 
       if (timeDetails.hours) {
-        flightDateTime = (0,date_fns__WEBPACK_IMPORTED_MODULE_5__.default)(flightDateTime, timeDetails.hours);
+        flightDateTime = (0,date_fns__WEBPACK_IMPORTED_MODULE_6__.default)(flightDateTime, timeDetails.hours);
       }
 
       if (timeDetails.minutes) {
-        flightDateTime = (0,date_fns__WEBPACK_IMPORTED_MODULE_6__.default)(flightDateTime, timeDetails.minutes);
+        flightDateTime = (0,date_fns__WEBPACK_IMPORTED_MODULE_7__.default)(flightDateTime, timeDetails.minutes);
       }
 
       return flightDateTime;
     }
   }, {
-    key: "getDepartureDateTime",
-    value: function getDepartureDateTime(departureDateTime, duration) {
+    key: "getArrivalDateTime",
+    value: function getArrivalDateTime(departureDateTime, duration) {
       var durationMinutes = (0,_utilities_getDurationInMinutes__WEBPACK_IMPORTED_MODULE_2__.getDurationInMinutes)(duration);
-      return (0,date_fns__WEBPACK_IMPORTED_MODULE_6__.default)(departureDateTime, durationMinutes);
+      return (0,date_fns__WEBPACK_IMPORTED_MODULE_7__.default)(departureDateTime, durationMinutes);
     }
   }, {
     key: "getFlightPenguinId",
@@ -806,23 +813,17 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /* harmony import */ var _utilityFunctions__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../utilityFunctions */ "./src/utilityFunctions.js");
 /* harmony import */ var _nameMaps_airlineMap__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../nameMaps/airlineMap */ "./src/shared/nameMaps/airlineMap.js");
-function _slicedToArray(arr, i) { return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _unsupportedIterableToArray(arr, i) || _nonIterableRest(); }
-
-function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
-
-function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
-
-function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
-
-function _iterableToArrayLimit(arr, i) { if (typeof Symbol === "undefined" || !(Symbol.iterator in Object(arr))) return; var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"] != null) _i["return"](); } finally { if (_d) throw _e; } } return _arr; }
-
-function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
-
+/* harmony import */ var _utilities_getDurationInMinutes__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../utilities/getDurationInMinutes */ "./src/shared/utilities/getDurationInMinutes.ts");
+/* harmony import */ var _utilities_getFormatted12HourClockTimeFromTimeDetails__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../utilities/getFormatted12HourClockTimeFromTimeDetails */ "./src/shared/utilities/getFormatted12HourClockTimeFromTimeDetails.ts");
+/* harmony import */ var _utilities_getTimeDetailsFromMinutes__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../utilities/getTimeDetailsFromMinutes */ "./src/shared/utilities/getTimeDetailsFromMinutes.ts");
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
 
 function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+
+
 
 
 
@@ -833,23 +834,56 @@ var FlightLeg = /*#__PURE__*/function () {
         from = _ref.from,
         to = _ref.to,
         operatingAirline = _ref.operatingAirline,
-        duration = _ref.duration;
+        duration = _ref.duration,
+        _ref$elapsedTimezoneO = _ref.elapsedTimezoneOffset,
+        elapsedTimezoneOffset = _ref$elapsedTimezoneO === void 0 ? 0 : _ref$elapsedTimezoneO;
 
     _classCallCheck(this, FlightLeg);
 
-    this.fromTime = fromTime;
-    this.fromTimeDetails = this.getTimeDetails(fromTime);
-    this.toTime = toTime;
-    this.toTimeDetails = this.getTimeDetails(toTime);
+    this.duration = duration;
+    this.durationMinutes = (0,_utilities_getDurationInMinutes__WEBPACK_IMPORTED_MODULE_2__.getDurationInMinutes)(duration);
+    this.timezoneOffset = (0,_utilityFunctions__WEBPACK_IMPORTED_MODULE_0__.getTimezoneOffset)(fromTime, toTime, duration);
+    this.fromLocalTime = fromTime;
+    this.fromLocalTimeDetails = this.getTimeDetails(fromTime);
+
+    var _this$getTimeInTimezo = this.getTimeInTimezone(this.fromLocalTimeDetails, elapsedTimezoneOffset),
+        departureTime = _this$getTimeInTimezo.time,
+        departureTimeDetails = _this$getTimeInTimezo.timeDetails;
+
+    this.fromTime = departureTime;
+    this.fromTimeDetails = departureTimeDetails;
+
+    var _this$getTimeInTimezo2 = this.getTimeInTimezone(this.fromLocalTimeDetails, this.durationMinutes + elapsedTimezoneOffset),
+        arrivalTime = _this$getTimeInTimezo2.time,
+        arrivalTimeDetails = _this$getTimeInTimezo2.timeDetails;
+
+    this.toTime = arrivalTime;
+    this.toTimeDetails = arrivalTimeDetails;
+    this.toLocalTime = toTime;
+    this.toLocalTimeDetails = this.getTimeDetails(toTime);
     this.from = from;
     this.to = to;
     this.operatingAirline = operatingAirline;
-    this.duration = duration;
     this.operatingAirlineDetails = _nameMaps_airlineMap__WEBPACK_IMPORTED_MODULE_1__.default.getAirlineDetails(operatingAirline);
-    this.timezoneOffset = this.getTimezoneOffset();
   }
 
   _createClass(FlightLeg, [{
+    key: "getTimeInTimezone",
+    value: function getTimeInTimezone(flightTimeDetails, minutes) {
+      var departureMinutes = flightTimeDetails.hours * 60 + flightTimeDetails.minutes; // do I need excess days?!?
+
+      var elapsedMinutes = minutes + departureMinutes;
+      var timeDetails = (0,_utilities_getTimeDetailsFromMinutes__WEBPACK_IMPORTED_MODULE_4__.getTimeDetailsFromMinutes)({
+        minutes: elapsedMinutes
+      });
+      return {
+        timeDetails: timeDetails,
+        time: (0,_utilities_getFormatted12HourClockTimeFromTimeDetails__WEBPACK_IMPORTED_MODULE_3__.getFormatted12HourClockTimeFromTimeDetails)({
+          timeDetails: timeDetails
+        })
+      };
+    }
+  }, {
     key: "getTimeDetails",
     value: function getTimeDetails(time) {
       var _convertTimeTo24HourC = (0,_utilityFunctions__WEBPACK_IMPORTED_MODULE_0__.convertTimeTo24HourClock)(time, true),
@@ -867,33 +901,23 @@ var FlightLeg = /*#__PURE__*/function () {
         timeOfDay: timeOfDay,
         excessDays: excessDays ? excessDays[0] : excessDays
       };
-    }
-  }, {
-    key: "getTimezoneOffset",
-    value: function getTimezoneOffset() {
-      return (0,_utilityFunctions__WEBPACK_IMPORTED_MODULE_0__.getTimezoneOffset)(this.fromTime, this.toTime, this.duration);
-    }
-  }, {
-    key: "checkMissingExcessDays",
-    value: function checkMissingExcessDays() {
-      if (!this.toTimeDetails.excessDays) {
-        // Flying across the date line can cause edge cases where you have flown for a day, but it's the same day.
-        var _this$duration$split = this.duration.split(/\s+/),
-            _this$duration$split2 = _slicedToArray(_this$duration$split, 2),
-            rawDurationHours = _this$duration$split2[0],
-            rawDurationMinutes = _this$duration$split2[1];
+    } // checkMissingExcessDays(): void {
+    //   if (!this.toTimeDetails.excessDays) {
+    //     // Flying across the date line can cause edge cases where you have flown for a day, but it's the same day.
+    //     const [rawDurationHours, rawDurationMinutes] = this.duration.split(/\s+/);
+    //     const durationHours = Number(rawDurationHours.replace("h", ""));
+    //     const durationMinutes = Number(rawDurationMinutes.replace("m", ""));
+    //
+    //     const arrivalTimeInMinutes =
+    //       ((this.fromTimeDetails.hours % 24) + durationHours) * 60 + durationMinutes + this.fromTimeDetails.minutes;
+    //     const excessDays = Math.floor(arrivalTimeInMinutes / 1440);
+    //     if (excessDays) {
+    //       this.toTimeDetails.excessDays = `+${excessDays}`;
+    //       this.toTime += `+${excessDays}`;
+    //     }
+    //   }
+    // }
 
-        var durationHours = Number(rawDurationHours.replace("h", ""));
-        var durationMinutes = Number(rawDurationMinutes.replace("m", ""));
-        var arrivalTimeInMinutes = (this.fromTimeDetails.hours % 24 + durationHours) * 60 + durationMinutes + this.fromTimeDetails.minutes;
-        var excessDays = Math.floor(arrivalTimeInMinutes / 1440);
-
-        if (excessDays) {
-          this.toTimeDetails.excessDays = "+".concat(excessDays);
-          this.toTime += "+".concat(excessDays);
-        }
-      }
-    }
   }]);
 
   return FlightLeg;
@@ -996,6 +1020,104 @@ var getDurationInMinutes = function getDurationInMinutes(duration) {
 
   var durationMinutes = remainder.trim().split("m")[0] || 0;
   return Number(durationMinutes) + Number(durationHours) * 60;
+};
+
+/***/ }),
+
+/***/ "./src/shared/utilities/getFormatted12HourClockTimeFromTimeDetails.ts":
+/*!****************************************************************************!*\
+  !*** ./src/shared/utilities/getFormatted12HourClockTimeFromTimeDetails.ts ***!
+  \****************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "getFormatted12HourClockTimeFromTimeDetails": () => (/* binding */ getFormatted12HourClockTimeFromTimeDetails)
+/* harmony export */ });
+var getFormatted12HourClockTimeFromTimeDetails = function getFormatted12HourClockTimeFromTimeDetails(_ref) {
+  var timeDetails = _ref.timeDetails;
+  var minutes = "".concat(timeDetails.minutes);
+
+  if (minutes.length === 1) {
+    minutes = "0".concat(minutes);
+  }
+
+  var output = "".concat(timeDetails.displayHours, ":").concat(minutes).concat(timeDetails.timeOfDay);
+
+  if (timeDetails.excessDays) {
+    output = "".concat(output).concat(timeDetails.excessDays);
+  }
+
+  return output;
+};
+
+/***/ }),
+
+/***/ "./src/shared/utilities/getTimeDetailsFromMinutes.ts":
+/*!***********************************************************!*\
+  !*** ./src/shared/utilities/getTimeDetailsFromMinutes.ts ***!
+  \***********************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "getTimeDetailsFromMinutes": () => (/* binding */ getTimeDetailsFromMinutes)
+/* harmony export */ });
+var getTimeDetailsFromMinutes = function getTimeDetailsFromMinutes(_ref) {
+  var minutes = _ref.minutes;
+  var elapsedDays = Math.floor(minutes / 1440);
+  minutes -= elapsedDays * 1440;
+  var elapsedHours = Math.floor(minutes / 60);
+  minutes = minutes - elapsedHours * 60;
+  var displayHours = elapsedHours % 12;
+
+  if (displayHours === 0) {
+    displayHours = 12;
+  }
+
+  return {
+    hours: elapsedHours,
+    excessDays: elapsedDays ? "+".concat(elapsedDays) : null,
+    minutes: minutes,
+    displayHours: displayHours,
+    timeOfDay: elapsedHours >= 12 ? "pm" : "am"
+  };
+};
+
+/***/ }),
+
+/***/ "./src/shared/utilities/getTimeStringFromDate.ts":
+/*!*******************************************************!*\
+  !*** ./src/shared/utilities/getTimeStringFromDate.ts ***!
+  \*******************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "getTimeStringFromDate": () => (/* binding */ getTimeStringFromDate)
+/* harmony export */ });
+/* harmony import */ var date_fns__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! date-fns */ "./node_modules/date-fns/esm/differenceInDays/index.js");
+/* harmony import */ var date_fns__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! date-fns */ "./node_modules/date-fns/esm/startOfDay/index.js");
+/* harmony import */ var date_fns_tz__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! date-fns-tz */ "./node_modules/date-fns-tz/esm/format/index.js");
+
+
+var getTimeStringFromDate = function getTimeStringFromDate(_ref) {
+  var date = _ref.date,
+      previousFlightDate = _ref.previousFlightDate;
+  var value = (0,date_fns_tz__WEBPACK_IMPORTED_MODULE_0__.default)(date, "h:mmaaa");
+
+  if (previousFlightDate) {
+    var excessDays = Math.abs((0,date_fns__WEBPACK_IMPORTED_MODULE_1__.default)((0,date_fns__WEBPACK_IMPORTED_MODULE_2__.default)(date), (0,date_fns__WEBPACK_IMPORTED_MODULE_2__.default)(previousFlightDate)));
+
+    if (excessDays) {
+      value = "".concat(value, "+").concat(excessDays);
+    }
+  }
+
+  return value;
 };
 
 /***/ }),
@@ -1232,6 +1354,7 @@ __webpack_require__.r(__webpack_exports__);
 
 var getFlightLegs = function getFlightLegs(_ref) {
   var flight = _ref.flight;
+  var elapsedTimezoneOffset = 0;
   return flight.segments.map(function (_ref2) {
     var stopsDetails = _ref2.stopsDetails;
     return stopsDetails.map(function (stop) {
@@ -1242,7 +1365,7 @@ var getFlightLegs = function getFlightLegs(_ref) {
           formattedDepartureDateTime = _getFormattedFlightTi.formattedDepartureDateTime,
           formattedArrivalDateTime = _getFormattedFlightTi.formattedArrivalDateTime;
 
-      return new _shared_types_FlightLeg__WEBPACK_IMPORTED_MODULE_0__.FlightLeg({
+      var leg = new _shared_types_FlightLeg__WEBPACK_IMPORTED_MODULE_0__.FlightLeg({
         fromTime: formattedDepartureDateTime,
         toTime: formattedArrivalDateTime,
         operatingAirline: "Southwest",
@@ -1250,8 +1373,11 @@ var getFlightLegs = function getFlightLegs(_ref) {
           minutes: stop.legDuration
         }),
         from: stop.originationAirportCode,
-        to: stop.destinationAirportCode
+        to: stop.destinationAirportCode,
+        elapsedTimezoneOffset: elapsedTimezoneOffset
       });
+      elapsedTimezoneOffset += leg.timezoneOffset;
+      return leg;
     });
   }).flat();
 };
@@ -9553,12 +9679,12 @@ var __webpack_exports__ = {};
   !*** ./src/southwest/contentScript.ts ***!
   \****************************************/
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _ui_clearSelections__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./ui/clearSelections */ "./src/southwest/ui/clearSelections.ts");
-/* harmony import */ var _shared_events__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../shared/events */ "./src/shared/events/index.ts");
-/* harmony import */ var _shared_ui_backToSearch__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../shared/ui/backToSearch */ "./src/shared/ui/backToSearch.ts");
-/* harmony import */ var _parser_parseFlights__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./parser/parseFlights */ "./src/southwest/parser/parseFlights.ts");
-/* harmony import */ var _parser_setFlightIds__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./parser/setFlightIds */ "./src/southwest/parser/setFlightIds.ts");
-/* harmony import */ var _parser_waitForLoading__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./parser/waitForLoading */ "./src/southwest/parser/waitForLoading.ts");
+/* harmony import */ var _shared_events__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../shared/events */ "./src/shared/events/index.ts");
+/* harmony import */ var _shared_ui_backToSearch__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../shared/ui/backToSearch */ "./src/shared/ui/backToSearch.ts");
+/* harmony import */ var _parser_parseFlights__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./parser/parseFlights */ "./src/southwest/parser/parseFlights.ts");
+/* harmony import */ var _parser_setFlightIds__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./parser/setFlightIds */ "./src/southwest/parser/setFlightIds.ts");
+/* harmony import */ var _parser_waitForLoading__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./parser/waitForLoading */ "./src/southwest/parser/waitForLoading.ts");
+/* harmony import */ var _ui_clearSelections__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./ui/clearSelections */ "./src/southwest/ui/clearSelections.ts");
 /* harmony import */ var _ui_highlightFlightCard__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./ui/highlightFlightCard */ "./src/southwest/ui/highlightFlightCard.ts");
 function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
 
@@ -9566,10 +9692,10 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
-
 Sentry.init({
   dsn: "https://d7f3363dd3774a64ad700b4523bcb789@o407795.ingest.sentry.io/5277451"
 });
+
 
 
 
@@ -9588,22 +9714,22 @@ chrome.runtime.onMessage.addListener( /*#__PURE__*/function () {
           // eslint-disable-next-line @typescript-eslint/ban-ts-comment
           // @ts-ignore
           window.Sentry.captureException(error);
-          (0,_shared_events__WEBPACK_IMPORTED_MODULE_1__.sendFailedScraper)("southwest", error, "ALL");
+          (0,_shared_events__WEBPACK_IMPORTED_MODULE_0__.sendFailedScraper)("southwest", error, "ALL");
         }
 
         break;
 
       case "HIGHLIGHT_FLIGHT":
-        yield (0,_parser_setFlightIds__WEBPACK_IMPORTED_MODULE_4__.setFlightIds)();
+        yield (0,_parser_setFlightIds__WEBPACK_IMPORTED_MODULE_3__.setFlightIds)();
         yield (0,_ui_highlightFlightCard__WEBPACK_IMPORTED_MODULE_6__.highlightFlightCard)({
           departureId: message.selectedDepartureId,
           returnId: message.selectedReturnId
         });
-        (0,_shared_ui_backToSearch__WEBPACK_IMPORTED_MODULE_2__.addBackToSearchButton)();
+        (0,_shared_ui_backToSearch__WEBPACK_IMPORTED_MODULE_1__.addBackToSearchButton)();
         break;
 
       case "CLEAR_SELECTION":
-        (0,_ui_clearSelections__WEBPACK_IMPORTED_MODULE_0__.clearSelections)();
+        (0,_ui_clearSelections__WEBPACK_IMPORTED_MODULE_5__.clearSelections)();
         chrome.runtime.sendMessage({
           event: "PROVIDER_READY",
           provider: "southwest"
@@ -9622,14 +9748,14 @@ chrome.runtime.onMessage.addListener( /*#__PURE__*/function () {
 
 var getFlightResults = /*#__PURE__*/function () {
   var _ref2 = _asyncToGenerator(function* () {
-    yield (0,_parser_waitForLoading__WEBPACK_IMPORTED_MODULE_5__.waitForLoading)();
+    yield (0,_parser_waitForLoading__WEBPACK_IMPORTED_MODULE_4__.waitForLoading)();
     var id = window.setInterval(function () {
       var searchResults = JSON.parse(window.sessionStorage.getItem("AirBookingSearchResultsSearchStore-searchResults-v1") || "{}");
 
       if (searchResults && searchResults.searchResults) {
-        (0,_parser_parseFlights__WEBPACK_IMPORTED_MODULE_3__.parseFlights)(searchResults.searchResults);
+        (0,_parser_parseFlights__WEBPACK_IMPORTED_MODULE_2__.parseFlights)(searchResults.searchResults);
         window.clearInterval(id);
-        (0,_shared_events__WEBPACK_IMPORTED_MODULE_1__.sendScraperComplete)("southwest", "BOTH");
+        (0,_shared_events__WEBPACK_IMPORTED_MODULE_0__.sendScraperComplete)("southwest", "BOTH");
       }
     }, 500);
   });

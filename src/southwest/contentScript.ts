@@ -1,7 +1,5 @@
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
-import { clearSelections } from "./ui/clearSelections";
-
 Sentry.init({
   dsn: "https://d7f3363dd3774a64ad700b4523bcb789@o407795.ingest.sentry.io/5277451",
 });
@@ -11,6 +9,7 @@ import { addBackToSearchButton } from "../shared/ui/backToSearch";
 import { parseFlights } from "./parser/parseFlights";
 import { setFlightIds } from "./parser/setFlightIds";
 import { waitForLoading } from "./parser/waitForLoading";
+import { clearSelections } from "./ui/clearSelections";
 import { highlightFlightCard } from "./ui/highlightFlightCard";
 
 chrome.runtime.onMessage.addListener(async function (message) {

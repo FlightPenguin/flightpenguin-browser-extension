@@ -3,6 +3,9 @@ import { addDays, addHours, addMinutes, parse } from "date-fns";
 import { convertTimeTo24HourClock, getTimezoneOffset } from "../../utilityFunctions";
 import AirlineMap from "../nameMaps/airlineMap";
 import { getDurationInMinutes } from "../utilities/getDurationInMinutes";
+import { getFormatted12HourClockTimeFromTimeDetails } from "../utilities/getFormatted12HourClockTimeFromTimeDetails";
+import { getTimeDetailsFromMinutes } from "../utilities/getTimeDetailsFromMinutes";
+import { getTimeStringFromDate } from "../utilities/getTimeStringFromDate";
 import { FlightLeg } from "./FlightLeg";
 import { FlightTimeDetails } from "./FlightTimeDetails";
 
@@ -24,6 +27,8 @@ export class FlightDetails {
   toTimeDetails: FlightTimeDetails;
   fromDateTime: Date;
   toDateTime: Date;
+  toLocalTime: string;
+  toLocalTimeDetails: FlightTimeDetails;
   duration: string;
   layovers: FlightLeg[];
   operatingAirline?: string | null;
@@ -41,13 +46,10 @@ export class FlightDetails {
     layovers,
     departureDate,
   }: FlightDetailsInput) {
-    this.fromTime = fromTime;
-    this.fromTimeDetails = this.getTimeDetails(fromTime);
-    this.fromDateTime = this.getFlightDateTime(departureDate, this.fromTimeDetails);
-    this.toTime = toTime;
-    this.toTimeDetails = this.getTimeDetails(toTime);
-    this.toDateTime = this.getDepartureDateTime(this.fromDateTime, duration);
+    this.id = this.getFlightPenguinId();
+    this.timezoneOffset = getTimezoneOffset(fromTime, toTime, duration);
     this.duration = duration;
+
     if (operatingAirline) {
       this.operatingAirline = AirlineMap.getAirlineName(operatingAirline);
       this.operatingAirlineDetails = operatingAirline ? AirlineMap.getAirlineDetails(operatingAirline) : null;
@@ -58,8 +60,16 @@ export class FlightDetails {
       this.marketingAirlineDetails = marketingAirline ? AirlineMap.getAirlineDetails(marketingAirline) : null;
     }
     this.layovers = layovers;
-    this.timezoneOffset = this.getTimezoneOffset();
-    this.id = this.getFlightPenguinId();
+
+    this.fromTime = fromTime;
+    this.fromTimeDetails = this.getTimeDetails(fromTime);
+    this.fromDateTime = this.getFlightDateTime(departureDate, this.fromTimeDetails);
+
+    this.toLocalTime = toTime;
+    this.toLocalTimeDetails = this.getTimeDetails(toTime);
+    this.toDateTime = this.getArrivalDateTime(this.fromDateTime, duration);
+    this.toTime = getTimeStringFromDate({ date: this.toDateTime, previousFlightDate: this.fromDateTime });
+    this.toTimeDetails = this.getTimeDetails(this.toTime);
 
     this.checkMissingExcessDays();
   }
@@ -94,7 +104,7 @@ export class FlightDetails {
     return flightDateTime;
   }
 
-  getDepartureDateTime(departureDateTime: Date, duration: string): Date {
+  getArrivalDateTime(departureDateTime: Date, duration: string): Date {
     const durationMinutes = getDurationInMinutes(duration);
     return addMinutes(departureDateTime, durationMinutes);
   }

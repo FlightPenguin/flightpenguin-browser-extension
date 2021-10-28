@@ -8,6 +8,7 @@ interface GetFlightLegsProps {
 }
 
 export const getFlightLegs = ({ flight }: GetFlightLegsProps): FlightLeg[] => {
+  let elapsedTimezoneOffset = 0;
   return flight.segments
     .map(({ stopsDetails }) => {
       return stopsDetails.map((stop) => {
@@ -16,14 +17,17 @@ export const getFlightLegs = ({ flight }: GetFlightLegsProps): FlightLeg[] => {
           southwestArrivalDateTime: stop.arrivalDateTime,
         });
 
-        return new FlightLeg({
+        const leg = new FlightLeg({
           fromTime: formattedDepartureDateTime,
           toTime: formattedArrivalDateTime,
           operatingAirline: "Southwest",
           duration: getDurationValue({ minutes: stop.legDuration }),
           from: stop.originationAirportCode,
           to: stop.destinationAirportCode,
+          elapsedTimezoneOffset,
         });
+        elapsedTimezoneOffset += leg.timezoneOffset;
+        return leg;
       });
     })
     .flat();

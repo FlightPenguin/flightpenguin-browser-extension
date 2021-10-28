@@ -1,5 +1,8 @@
 import { convertTimeTo24HourClock, getTimezoneOffset } from "../../utilityFunctions";
 import AirlineMap from "../nameMaps/airlineMap";
+import { getDurationInMinutes } from "../utilities/getDurationInMinutes";
+import { getFormatted12HourClockTimeFromTimeDetails } from "../utilities/getFormatted12HourClockTimeFromTimeDetails";
+import { getTimeDetailsFromMinutes } from "../utilities/getTimeDetailsFromMinutes";
 import { FlightTimeDetails } from "./FlightTimeDetails";
 
 export interface FlightLegInput {
@@ -9,31 +12,72 @@ export interface FlightLegInput {
   to: string;
   operatingAirline: string;
   duration: string;
+  elapsedTimezoneOffset?: number;
 }
 
 export class FlightLeg {
   fromTime: string;
+  fromTimeDetails: FlightTimeDetails;
+  fromLocalTime: string;
+  fromLocalTimeDetails: FlightTimeDetails;
+
   toTime: string;
+  toTimeDetails: FlightTimeDetails;
+  toLocalTime: string;
+  toLocalTimeDetails: FlightTimeDetails;
+
   from: string;
   to: string;
-  operatingAirline: string;
   duration: string;
+  durationMinutes: number;
+
+  operatingAirline: string;
   operatingAirlineDetails: { display: string; color: string };
-  fromTimeDetails: FlightTimeDetails;
-  toTimeDetails: FlightTimeDetails;
+
   timezoneOffset: number;
 
-  constructor({ fromTime, toTime, from, to, operatingAirline, duration }: FlightLegInput) {
-    this.fromTime = fromTime;
-    this.fromTimeDetails = this.getTimeDetails(fromTime);
-    this.toTime = toTime;
-    this.toTimeDetails = this.getTimeDetails(toTime);
+  constructor({ fromTime, toTime, from, to, operatingAirline, duration, elapsedTimezoneOffset = 0 }: FlightLegInput) {
+    this.duration = duration;
+    this.durationMinutes = getDurationInMinutes(duration);
+    this.timezoneOffset = getTimezoneOffset(fromTime, toTime, duration);
+
+    this.fromLocalTime = fromTime;
+    this.fromLocalTimeDetails = this.getTimeDetails(fromTime);
+    const { time: departureTime, timeDetails: departureTimeDetails } = this.getTimeInTimezone(
+      this.fromLocalTimeDetails,
+      elapsedTimezoneOffset,
+    );
+    this.fromTime = departureTime;
+    this.fromTimeDetails = departureTimeDetails;
+
+    const { time: arrivalTime, timeDetails: arrivalTimeDetails } = this.getTimeInTimezone(
+      this.fromLocalTimeDetails,
+      this.durationMinutes + elapsedTimezoneOffset,
+    );
+    this.toTime = arrivalTime;
+    this.toTimeDetails = arrivalTimeDetails;
+    this.toLocalTime = toTime;
+    this.toLocalTimeDetails = this.getTimeDetails(toTime);
+
     this.from = from;
     this.to = to;
     this.operatingAirline = operatingAirline;
-    this.duration = duration;
     this.operatingAirlineDetails = AirlineMap.getAirlineDetails(operatingAirline);
-    this.timezoneOffset = this.getTimezoneOffset();
+  }
+
+  getTimeInTimezone(
+    flightTimeDetails: FlightTimeDetails,
+    minutes: number,
+  ): { time: string; timeDetails: FlightTimeDetails } {
+    const departureMinutes = flightTimeDetails.hours * 60 + flightTimeDetails.minutes; // do I need excess days?!?
+    const elapsedMinutes = minutes + departureMinutes;
+
+    const timeDetails = getTimeDetailsFromMinutes({ minutes: elapsedMinutes });
+
+    return {
+      timeDetails,
+      time: getFormatted12HourClockTimeFromTimeDetails({ timeDetails }),
+    };
   }
 
   getTimeDetails(time: string): FlightTimeDetails {
@@ -51,24 +95,20 @@ export class FlightLeg {
     };
   }
 
-  getTimezoneOffset(): number {
-    return getTimezoneOffset(this.fromTime, this.toTime, this.duration);
-  }
-
-  checkMissingExcessDays(): void {
-    if (!this.toTimeDetails.excessDays) {
-      // Flying across the date line can cause edge cases where you have flown for a day, but it's the same day.
-      const [rawDurationHours, rawDurationMinutes] = this.duration.split(/\s+/);
-      const durationHours = Number(rawDurationHours.replace("h", ""));
-      const durationMinutes = Number(rawDurationMinutes.replace("m", ""));
-
-      const arrivalTimeInMinutes =
-        ((this.fromTimeDetails.hours % 24) + durationHours) * 60 + durationMinutes + this.fromTimeDetails.minutes;
-      const excessDays = Math.floor(arrivalTimeInMinutes / 1440);
-      if (excessDays) {
-        this.toTimeDetails.excessDays = `+${excessDays}`;
-        this.toTime += `+${excessDays}`;
-      }
-    }
-  }
+  // checkMissingExcessDays(): void {
+  //   if (!this.toTimeDetails.excessDays) {
+  //     // Flying across the date line can cause edge cases where you have flown for a day, but it's the same day.
+  //     const [rawDurationHours, rawDurationMinutes] = this.duration.split(/\s+/);
+  //     const durationHours = Number(rawDurationHours.replace("h", ""));
+  //     const durationMinutes = Number(rawDurationMinutes.replace("m", ""));
+  //
+  //     const arrivalTimeInMinutes =
+  //       ((this.fromTimeDetails.hours % 24) + durationHours) * 60 + durationMinutes + this.fromTimeDetails.minutes;
+  //     const excessDays = Math.floor(arrivalTimeInMinutes / 1440);
+  //     if (excessDays) {
+  //       this.toTimeDetails.excessDays = `+${excessDays}`;
+  //       this.toTime += `+${excessDays}`;
+  //     }
+  //   }
+  // }
 }
