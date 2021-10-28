@@ -1179,6 +1179,12 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 var handleNoFlightsFound = function handleNoFlightsFound(providerManager, providerName, searchType) {
   providerManager.setSuccessful(providerName, searchType);
+  providerManager.sendMessageToIndexPage({
+    event: "SCRAPER_COMPLETE",
+    providerName: providerName,
+    status: "SUCCESS"
+  });
+  providerManager.closeWindow(providerName);
 
   if (providerManager.isComplete(searchType)) {
     var flightType = searchType === "BOTH" ? "DEPARTURE" : searchType;
