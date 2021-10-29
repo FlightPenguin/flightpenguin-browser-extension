@@ -15,7 +15,9 @@ export const getFlightSegments = (
   if (layoversWithStops.length === 0) {
     layoversWithStops.push({
       fromTime: flight.fromTime,
+      fromLocalTime: flight.fromLocalTime,
       toTime: flight.toTime,
+      toLocalTime: flight.toLocalTime,
       from: tripStartAirport,
       to: tripEndAirport,
       isLayoverStop: false,

@@ -1,6 +1,9 @@
 interface FlightSegmentInput {
   fromTime: string;
+  fromLocalTime: string;
   toTime: string;
+  toLocalTime: string;
+  duration: string;
   from: string;
   to: string;
   isLayoverStop: boolean;
@@ -16,7 +19,10 @@ interface FlightSegmentInput {
 
 export class FlightSegment {
   fromTime: string;
+  fromLocalTime: string;
   toTime: string;
+  toLocalTime: string;
+  duration: string;
   from: string;
   to: string;
   isLayoverStop: boolean;
@@ -28,31 +34,31 @@ export class FlightSegment {
     startPosition: number;
     width: number;
   };
-  name: string;
   id: string;
 
-  constructor({ fromTime, toTime, from, to, isLayoverStop, operatingAirline, layout }: FlightSegmentInput) {
+  constructor({
+    fromTime,
+    fromLocalTime,
+    toTime,
+    toLocalTime,
+    duration,
+    from,
+    to,
+    isLayoverStop,
+    operatingAirline,
+    layout,
+  }: FlightSegmentInput) {
     this.fromTime = fromTime;
+    this.fromLocalTime = fromLocalTime;
     this.toTime = toTime;
+    this.toLocalTime = toLocalTime;
+    this.duration = duration;
     this.from = from;
     this.to = to;
     this.isLayoverStop = isLayoverStop;
     this.operatingAirline = operatingAirline;
     this.layout = layout;
-    this.name = this.getDisplayName();
     this.id = this.getSegmentId();
-  }
-
-  getDisplayName() {
-    let name = `${this.operatingAirline.display} ${this.fromTime} `;
-    if (!this.isLayoverStop) {
-      name += `(${this.from}) `;
-    }
-    name += `- ${this.toTime}`;
-    if (!this.isLayoverStop) {
-      name += ` (${this.to})`;
-    }
-    return name;
   }
 
   getSegmentId() {

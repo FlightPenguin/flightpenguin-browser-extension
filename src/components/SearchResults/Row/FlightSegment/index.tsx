@@ -2,6 +2,7 @@ import { Box, Text, Tooltip } from "bumbag";
 import React from "react";
 
 import { FlightSegment } from "./FlightSegment";
+import { getFlightSegmentTooltipText } from "./utilities/getFlightSegmentTooltipText";
 
 interface FlightSegmentBoxProps {
   flightSegment: FlightSegment;
@@ -14,7 +15,7 @@ export const FlightSegmentBox = ({ flightSegment, left }: FlightSegmentBoxProps)
       display="flex"
       width={`${flightSegment.layout.width}px`}
       left={`${flightSegment.layout.startPosition - left}px`}
-      key={`flight-segment-${flightSegment.name}`}
+      key={`flight-segment-${flightSegment.id}`}
       height="30px"
       position="absolute"
       tabIndex={-1}
@@ -29,7 +30,15 @@ export const FlightSegmentBox = ({ flightSegment, left }: FlightSegmentBoxProps)
         }
         backgroundColor={flightSegment.operatingAirline.color}
       >
-        <Tooltip content={flightSegment.name} hasArrow placement="bottom" tabIndex={-1}>
+        <Tooltip
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
+          content={getFlightSegmentTooltipText(flightSegment)}
+          hasArrow
+          placement="bottom"
+          tabIndex={-1}
+          tooltipContentProps={{ whiteSpace: "pre" }}
+        >
           <Box width={`${flightSegment.layout.width}px`}>
             <Text>&nbsp;</Text>
           </Box>
