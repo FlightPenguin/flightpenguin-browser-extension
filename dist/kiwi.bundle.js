@@ -358,10 +358,7 @@ var getFlightLayovers = function getFlightLayovers(modal, flightType) {
       toTime: arrivalTime,
       operatingAirline: flightSegment.operatingAirline,
       duration: flightSegment.durationText
-    }); // if (flightLeg.fromTime.toLowerCase().startsWith("11:29a") && flightLeg.toTime.toLowerCase().startsWith("1:31p")) {
-    //   debugger;
-    // }
-
+    });
     previousFlightSegment = flightSegment;
     return flightLeg;
   });
