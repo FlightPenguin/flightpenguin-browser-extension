@@ -86,7 +86,7 @@ function Flight(
   this.operatingAirline = cleanupAirline(this.operatingAirline);
 
   // marketing airline is unique, not operating
-  this.id = `${this.fromTime}-${this.toTime}-${markAirline}`;
+  this.id = `${this.fromLocalTime}-${this.toLocalTime}-${markAirline}`;
   this.duration = duration;
   this.durationMinutes = convertDurationToMinutes(duration);
   this.layovers = layovers || [];

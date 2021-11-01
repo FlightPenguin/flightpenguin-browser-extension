@@ -1676,7 +1676,7 @@ function Flight(fromTime, fromTimeDetails, fromDateTime, fromLocalTime, toTime, 
 
   this.operatingAirline = cleanupAirline(this.operatingAirline); // marketing airline is unique, not operating
 
-  this.id = "".concat(this.fromTime, "-").concat(this.toTime, "-").concat(markAirline);
+  this.id = "".concat(this.fromLocalTime, "-").concat(this.toLocalTime, "-").concat(markAirline);
   this.duration = duration;
   this.durationMinutes = (0,_utilityFunctions_js__WEBPACK_IMPORTED_MODULE_4__.convertDurationToMinutes)(duration);
   this.layovers = layovers || [];

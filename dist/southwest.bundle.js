@@ -1578,14 +1578,6 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "setFlightIds": () => (/* binding */ setFlightIds)
 /* harmony export */ });
 /* harmony import */ var _shared_helpers__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../shared/helpers */ "./src/shared/helpers.js");
-function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _unsupportedIterableToArray(arr) || _nonIterableSpread(); }
-
-function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
-
-function _iterableToArray(iter) { if (typeof Symbol !== "undefined" && Symbol.iterator in Object(iter)) return Array.from(iter); }
-
-function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) return _arrayLikeToArray(arr); }
-
 function _slicedToArray(arr, i) { return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _unsupportedIterableToArray(arr, i) || _nonIterableRest(); }
 
 function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
@@ -1601,6 +1593,7 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
 
 var CONTAINER_SELECTOR = ".transition-content.price-matrix--details-area ul";
 var TIME_CONTAINER_SELECTOR = ".time--value";
+var NEXT_DAY_SELECTOR = ".flight-next-day-indicator";
 var setFlightIds = function setFlightIds() {
   var _ref = document.querySelectorAll(CONTAINER_SELECTOR),
       _ref2 = _slicedToArray(_ref, 2),
@@ -1614,21 +1607,26 @@ var setFlightIds = function setFlightIds() {
 var setContainerFlightIds = function setContainerFlightIds(container) {
   var flightCards = Array.from(container.childNodes);
   flightCards.forEach(function (flightCard) {
-    try {
-      var _map = _toConsumableArray(flightCard.querySelectorAll(TIME_CONTAINER_SELECTOR)).map(function (element) {
-        return element.textContent;
-      }),
-          _map2 = _slicedToArray(_map, 2),
-          fromTimeRaw = _map2[0],
-          toTimeRaw = _map2[1];
+    var _departureContainer$p, _returnContainer$pare;
 
-      var fromTime = (0,_shared_helpers__WEBPACK_IMPORTED_MODULE_0__.standardizeTimeString)(fromTimeRaw).replace("departs", "");
-      var toTime = (0,_shared_helpers__WEBPACK_IMPORTED_MODULE_0__.standardizeTimeString)(toTimeRaw).replace("arrives", "");
-      flightCard.dataset.fpid = [fromTime, toTime, "Southwest"].join("-");
-    } catch (e) {
-      console.log(flightCard);
-      console.log(e);
+    var _flightCard$querySele = flightCard.querySelectorAll(TIME_CONTAINER_SELECTOR),
+        _flightCard$querySele2 = _slicedToArray(_flightCard$querySele, 2),
+        departureContainer = _flightCard$querySele2[0],
+        returnContainer = _flightCard$querySele2[1];
+
+    var fromTime = (0,_shared_helpers__WEBPACK_IMPORTED_MODULE_0__.standardizeTimeString)(departureContainer.textContent).replace("departs", "");
+
+    if ((_departureContainer$p = departureContainer.parentElement) !== null && _departureContainer$p !== void 0 && _departureContainer$p.querySelector(NEXT_DAY_SELECTOR)) {
+      fromTime = "".concat(fromTime, "+1");
     }
+
+    var toTime = (0,_shared_helpers__WEBPACK_IMPORTED_MODULE_0__.standardizeTimeString)(returnContainer.textContent).replace("arrives", "");
+
+    if ((_returnContainer$pare = returnContainer.parentElement) !== null && _returnContainer$pare !== void 0 && _returnContainer$pare.querySelector(NEXT_DAY_SELECTOR)) {
+      toTime = "".concat(toTime, "+1");
+    }
+
+    flightCard.dataset.fpid = [fromTime, toTime, "Southwest"].join("-");
   });
 };
 
