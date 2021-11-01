@@ -3,8 +3,6 @@ import { addDays, addHours, addMinutes, parse } from "date-fns";
 import { convertTimeTo24HourClock, getTimezoneOffset } from "../../utilityFunctions";
 import AirlineMap from "../nameMaps/airlineMap";
 import { getDurationInMinutes } from "../utilities/getDurationInMinutes";
-import { getFormatted12HourClockTimeFromTimeDetails } from "../utilities/getFormatted12HourClockTimeFromTimeDetails";
-import { getTimeDetailsFromMinutes } from "../utilities/getTimeDetailsFromMinutes";
 import { getTimeStringFromDate } from "../utilities/getTimeStringFromDate";
 import { FlightLeg } from "./FlightLeg";
 import { FlightTimeDetails } from "./FlightTimeDetails";
@@ -27,6 +25,8 @@ export class FlightDetails {
   toTimeDetails: FlightTimeDetails;
   fromDateTime: Date;
   toDateTime: Date;
+  fromLocalTime: string;
+  fromLocalTimeDetails: FlightTimeDetails;
   toLocalTime: string;
   toLocalTimeDetails: FlightTimeDetails;
   duration: string;
@@ -46,7 +46,6 @@ export class FlightDetails {
     layovers,
     departureDate,
   }: FlightDetailsInput) {
-    this.id = this.getFlightPenguinId();
     this.timezoneOffset = getTimezoneOffset(fromTime, toTime, duration);
     this.duration = duration;
 
@@ -64,6 +63,8 @@ export class FlightDetails {
     this.fromTime = fromTime;
     this.fromTimeDetails = this.getTimeDetails(fromTime);
     this.fromDateTime = this.getFlightDateTime(departureDate, this.fromTimeDetails);
+    this.fromLocalTime = this.fromTime; // de facto origin of flight is local time... may be different when doing multicity
+    this.fromLocalTimeDetails = this.fromTimeDetails;
 
     this.toLocalTime = toTime;
     this.toLocalTimeDetails = this.getTimeDetails(toTime);
@@ -71,6 +72,7 @@ export class FlightDetails {
     this.toTime = getTimeStringFromDate({ date: this.toDateTime, previousFlightDate: this.fromDateTime });
     this.toTimeDetails = this.getTimeDetails(this.toTime);
 
+    this.id = this.getFlightPenguinId();
     this.checkMissingExcessDays();
   }
 
@@ -112,7 +114,7 @@ export class FlightDetails {
   getFlightPenguinId(): string {
     const airline = this.operatingAirline ? this.operatingAirline : this.marketingAirline;
 
-    return `${this.fromTime}-${this.toTime}-${airline}`;
+    return `${this.fromTime}-${this.toLocalTime}-${airline}`;
   }
 
   getTimezoneOffset(): number {

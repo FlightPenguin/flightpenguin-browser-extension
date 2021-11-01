@@ -1871,7 +1871,6 @@ var FlightDetails = /*#__PURE__*/function () {
 
     _classCallCheck(this, FlightDetails);
 
-    this.id = this.getFlightPenguinId();
     this.timezoneOffset = (0,_utilityFunctions__WEBPACK_IMPORTED_MODULE_0__.getTimezoneOffset)(fromTime, toTime, duration);
     this.duration = duration;
 
@@ -1889,6 +1888,9 @@ var FlightDetails = /*#__PURE__*/function () {
     this.fromTime = fromTime;
     this.fromTimeDetails = this.getTimeDetails(fromTime);
     this.fromDateTime = this.getFlightDateTime(departureDate, this.fromTimeDetails);
+    this.fromLocalTime = this.fromTime; // de facto origin of flight is local time... may be different when doing multicity
+
+    this.fromLocalTimeDetails = this.fromTimeDetails;
     this.toLocalTime = toTime;
     this.toLocalTimeDetails = this.getTimeDetails(toTime);
     this.toDateTime = this.getArrivalDateTime(this.fromDateTime, duration);
@@ -1897,6 +1899,7 @@ var FlightDetails = /*#__PURE__*/function () {
       previousFlightDate: this.fromDateTime
     });
     this.toTimeDetails = this.getTimeDetails(this.toTime);
+    this.id = this.getFlightPenguinId();
     this.checkMissingExcessDays();
   }
 
@@ -1949,7 +1952,7 @@ var FlightDetails = /*#__PURE__*/function () {
     key: "getFlightPenguinId",
     value: function getFlightPenguinId() {
       var airline = this.operatingAirline ? this.operatingAirline : this.marketingAirline;
-      return "".concat(this.fromTime, "-").concat(this.toTime, "-").concat(airline);
+      return "".concat(this.fromTime, "-").concat(this.toLocalTime, "-").concat(airline);
     }
   }, {
     key: "getTimezoneOffset",
