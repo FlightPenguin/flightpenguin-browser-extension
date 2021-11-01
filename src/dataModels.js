@@ -27,6 +27,7 @@ import { convertDurationToMinutes, getTimeDetails, getTimezoneOffset } from "./u
  * @param {string} marketingAirline
  * @param {string} duration
  * @param {Object[]} layovers
+ * @param {number} timezoneOffset
  */
 function Flight(
   fromTime,
@@ -41,6 +42,7 @@ function Flight(
   marketingAirline,
   duration,
   layovers,
+  timezoneOffset,
 ) {
   this.fromTime = fromTime;
   this.toTime = toTime;
@@ -89,7 +91,9 @@ function Flight(
   this.durationMinutes = convertDurationToMinutes(duration);
   this.layovers = layovers || [];
   this.itinIds = [];
-  this.timezoneOffset = this.calculateTimezoneOffset();
+  this.timezoneOffset = timezoneOffset;
+
+  this.updateLayovers();
 }
 
 function cleanupAirline(airline) {
@@ -112,21 +116,16 @@ function cleanupAirline(airline) {
   return AirlineMap.getAirlineDetails(shortAirlineName.replace("  ", " "));
 }
 
-Flight.prototype.calculateTimezoneOffset = function () {
-  let totalTimezoneOffset = 0;
-
-  if (!this.layovers.length) {
-    totalTimezoneOffset = getTimezoneOffset(this.fromTime, this.toTime, this.duration);
-  } else {
-    const layovers = this.layovers.map(({ fromTime, toTime, duration, operatingAirline }, idx) => {
-      totalTimezoneOffset += getTimezoneOffset(fromTime, toTime, duration);
+Flight.prototype.updateLayovers = function () {
+  if (this.layovers.length) {
+    const layovers = this.layovers.map(({ fromTime, toTime, duration, operatingAirline, timezoneOffset }, idx) => {
       return {
         ...this.layovers[idx],
         fromTimeDetails: getTimeDetails(fromTime),
         toTimeDetails: getTimeDetails(toTime),
         duration: duration,
         operatingAirline: cleanupAirline(operatingAirline),
-        timezoneOffset: totalTimezoneOffset,
+        timezoneOffset: timezoneOffset,
         isLayoverStop: false,
       };
     });
@@ -150,6 +149,7 @@ Flight.prototype.calculateTimezoneOffset = function () {
         durationInMinutes,
         from,
         to,
+        timezoneOffset: 0,
         isLayoverStop: true,
         operatingAirline: {
           display: `Layover at ${from}.`,
@@ -160,7 +160,6 @@ Flight.prototype.calculateTimezoneOffset = function () {
     layoversWithStops.push(layovers[layovers.length - 1]);
     this.layovers = layoversWithStops;
   }
-  return totalTimezoneOffset;
 };
 // TODO
 // Flight.prototype.addLayover = function(layover) {
@@ -228,6 +227,7 @@ function Itin(depFlight, retFlight, fare, currency, provider, windowId, tabId, m
       depFlight.marketingAirline,
       depFlight.duration,
       depFlight.layovers,
+      depFlight.timezoneOffset,
     );
   }
 
@@ -245,6 +245,7 @@ function Itin(depFlight, retFlight, fare, currency, provider, windowId, tabId, m
       retFlight.marketingAirline,
       retFlight.duration,
       retFlight.layovers,
+      retFlight.timezoneOffset,
     );
     this.id = `${this.depFlight.id}-${this.retFlight.id}`;
   } else {
