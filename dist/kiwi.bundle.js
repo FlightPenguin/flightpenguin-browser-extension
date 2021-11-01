@@ -2039,7 +2039,7 @@ var FlightLeg = /*#__PURE__*/function () {
     this.fromTime = departureTime;
     this.fromTimeDetails = departureTimeDetails;
 
-    var _this$getTimeInTimezo2 = this.getTimeInTimezone(this.fromLocalTimeDetails, this.durationMinutes + elapsedTimezoneOffset),
+    var _this$getTimeInTimezo2 = this.getTimeInTimezone(this.fromTimeDetails, this.durationMinutes),
         arrivalTime = _this$getTimeInTimezo2.time,
         arrivalTimeDetails = _this$getTimeInTimezo2.timeDetails;
 
@@ -2056,8 +2056,7 @@ var FlightLeg = /*#__PURE__*/function () {
   _createClass(FlightLeg, [{
     key: "getTimeInTimezone",
     value: function getTimeInTimezone(flightTimeDetails, minutes) {
-      var departureMinutes = flightTimeDetails.hours * 60 + flightTimeDetails.minutes; // do I need excess days?!?
-
+      var departureMinutes = flightTimeDetails.hours * 60 + flightTimeDetails.minutes;
       var elapsedMinutes = minutes + departureMinutes;
       var timeDetails = (0,_utilities_getTimeDetailsFromMinutes__WEBPACK_IMPORTED_MODULE_4__.getTimeDetailsFromMinutes)({
         minutes: elapsedMinutes
@@ -2087,23 +2086,7 @@ var FlightLeg = /*#__PURE__*/function () {
         timeOfDay: timeOfDay,
         excessDays: excessDays ? excessDays[0] : excessDays
       };
-    } // checkMissingExcessDays(): void {
-    //   if (!this.toTimeDetails.excessDays) {
-    //     // Flying across the date line can cause edge cases where you have flown for a day, but it's the same day.
-    //     const [rawDurationHours, rawDurationMinutes] = this.duration.split(/\s+/);
-    //     const durationHours = Number(rawDurationHours.replace("h", ""));
-    //     const durationMinutes = Number(rawDurationMinutes.replace("m", ""));
-    //
-    //     const arrivalTimeInMinutes =
-    //       ((this.fromTimeDetails.hours % 24) + durationHours) * 60 + durationMinutes + this.fromTimeDetails.minutes;
-    //     const excessDays = Math.floor(arrivalTimeInMinutes / 1440);
-    //     if (excessDays) {
-    //       this.toTimeDetails.excessDays = `+${excessDays}`;
-    //       this.toTime += `+${excessDays}`;
-    //     }
-    //   }
-    // }
-
+    }
   }]);
 
   return FlightLeg;

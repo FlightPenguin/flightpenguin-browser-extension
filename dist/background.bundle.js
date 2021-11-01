@@ -1626,21 +1626,26 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
  * @param {string} fromTime
  * @param {FlightTimeDetails} fromTimeDetails
  * @param {Date} fromDateTime
+ * @param {string} fromLocalTime
  * @param {string} toTime
  * @param {FlightTimeDetails} toTimeDetails
  * @param {Date} toDateTime
+ * @param {string} toLocalTime
  * @param {string} operatingAirline
  * @param {string} marketingAirline
  * @param {string} duration
+ * @param {Object[]} layovers
  */
 
-function Flight(fromTime, fromTimeDetails, fromDateTime, toTime, toTimeDetails, toDateTime, operatingAirline, marketingAirline, duration, layovers) {
+function Flight(fromTime, fromTimeDetails, fromDateTime, fromLocalTime, toTime, toTimeDetails, toDateTime, toLocalTime, operatingAirline, marketingAirline, duration, layovers) {
   this.fromTime = fromTime;
   this.toTime = toTime;
   this.fromTimeDetails = fromTimeDetails;
   this.toTimeDetails = toTimeDetails;
   this.fromDateTime = fromDateTime;
   this.toDateTime = toDateTime;
+  this.fromLocalTime = fromLocalTime;
+  this.toLocalTime = toLocalTime;
   var opAirline = operatingAirline ? operatingAirline.replace("Operated by", "").replace("Partially operated by", "") : operatingAirline;
   opAirline = _shared_nameMaps_airlineMap_js__WEBPACK_IMPORTED_MODULE_2__.default.getAirlineName(opAirline);
   var markAirline = _shared_nameMaps_airlineMap_js__WEBPACK_IMPORTED_MODULE_2__.default.getAirlineName(marketingAirline); // operating airline is what is primarily displayed
@@ -1721,7 +1726,8 @@ Flight.prototype.calculateTimezoneOffset = function () {
         toTimeDetails: (0,_utilityFunctions_js__WEBPACK_IMPORTED_MODULE_4__.getTimeDetails)(toTime),
         duration: duration,
         operatingAirline: cleanupAirline(operatingAirline),
-        timezoneOffset: totalTimezoneOffset
+        timezoneOffset: totalTimezoneOffset,
+        isLayoverStop: false
       });
     });
     var layoversWithStops = [];
@@ -1730,23 +1736,26 @@ Flight.prototype.calculateTimezoneOffset = function () {
       var previousFlight = layovers[i];
       var nextFlight = layovers[i + 1];
       var fromTime = previousFlight.toTime,
-          from = previousFlight.to;
+          from = previousFlight.to,
+          fromLocalTime = previousFlight.toLocalTime,
+          fromTimeDetails = previousFlight.toTimeDetails;
       var toTime = nextFlight.fromTime,
-          to = nextFlight.from;
-      var fromTimeDetails = (0,_utilityFunctions_js__WEBPACK_IMPORTED_MODULE_4__.getTimeDetails)(fromTime);
-      var toTimeDetails = (0,_utilityFunctions_js__WEBPACK_IMPORTED_MODULE_4__.getTimeDetails)(toTime);
+          to = nextFlight.from,
+          toLocalTime = nextFlight.fromLocalTime,
+          toTimeDetails = nextFlight.fromTimeDetails;
 
       var _getCalculatedDuratio = (0,shared_utilities_getCalculatedDuration__WEBPACK_IMPORTED_MODULE_0__.getCalculatedDuration)(fromTimeDetails, toTimeDetails),
           durationInMinutes = _getCalculatedDuratio.durationInMinutes,
           duration = _getCalculatedDuratio.duration;
 
-      toTimeDetails.hours * 60 + toTimeDetails.minutes - (fromTimeDetails.hours * 60 - fromTimeDetails.minutes);
       layoversWithStops.push(previousFlight);
       layoversWithStops.push({
         fromTime: fromTime,
         fromTimeDetails: fromTimeDetails,
+        fromLocalTime: fromLocalTime,
         toTime: toTime,
         toTimeDetails: toTimeDetails,
+        toLocalTime: toLocalTime,
         duration: duration,
         durationInMinutes: durationInMinutes,
         from: from,
@@ -1830,11 +1839,11 @@ function Itin(depFlight, retFlight, fare, currency, provider, windowId, tabId, m
   if (makeRetFlightOnly) {
     this.depFlight = depFlight;
   } else {
-    this.depFlight = new Flight(depFlight.fromTime, depFlight.fromTimeDetails, depFlight.fromDateTime, depFlight.toTime, depFlight.toTimeDetails, depFlight.toDateTime, depFlight.operatingAirline, depFlight.marketingAirline, depFlight.duration, depFlight.layovers);
+    this.depFlight = new Flight(depFlight.fromTime, depFlight.fromTimeDetails, depFlight.fromDateTime, depFlight.fromLocalTime, depFlight.toTime, depFlight.toTimeDetails, depFlight.toDateTime, depFlight.toLocalTime, depFlight.operatingAirline, depFlight.marketingAirline, depFlight.duration, depFlight.layovers);
   }
 
   if (retFlight) {
-    this.retFlight = new Flight(retFlight.fromTime, retFlight.fromTimeDetails, retFlight.fromDateTime, retFlight.toTime, retFlight.toTimeDetails, retFlight.toDateTime, retFlight.operatingAirline, retFlight.marketingAirline, retFlight.duration, retFlight.layovers);
+    this.retFlight = new Flight(retFlight.fromTime, retFlight.fromTimeDetails, retFlight.fromDateTime, retFlight.fromLocalTime, retFlight.toTime, retFlight.toTimeDetails, retFlight.toDateTime, retFlight.toLocalTime, retFlight.operatingAirline, retFlight.marketingAirline, retFlight.duration, retFlight.layovers);
     this.id = "".concat(this.depFlight.id, "-").concat(this.retFlight.id);
   } else {
     this.id = this.depFlight.id;
@@ -2477,12 +2486,20 @@ var getCalculatedDuration = function getCalculatedDuration(fromTimeDetails, toTi
     endHours += 24;
   }
 
-  var durationInMinutes = endHours * 60 + toTimeDetails.minutes - (fromTimeDetails.hours * 60 - fromTimeDetails.minutes);
+  var durationInMinutes = endHours * 60 + toTimeDetails.minutes - (fromTimeDetails.hours * 60 + fromTimeDetails.minutes);
   var durationHours = Math.floor(durationInMinutes / 60);
   var durationMinutes = durationInMinutes - durationHours * 60;
+  var duration;
+
+  if (durationHours && !durationMinutes) {
+    duration = "".concat(durationHours, "h");
+  } else {
+    duration = durationHours ? "".concat(durationHours, "h ").concat(durationMinutes, "m") : "".concat(durationMinutes, "m");
+  }
+
   return {
     durationInMinutes: durationInMinutes,
-    duration: "".concat(durationHours, "h ").concat(durationMinutes, "m")
+    duration: duration
   };
 };
 

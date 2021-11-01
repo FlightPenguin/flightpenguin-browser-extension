@@ -18,20 +18,25 @@ import { convertDurationToMinutes, getTimeDetails, getTimezoneOffset } from "./u
  * @param {string} fromTime
  * @param {FlightTimeDetails} fromTimeDetails
  * @param {Date} fromDateTime
+ * @param {string} fromLocalTime
  * @param {string} toTime
  * @param {FlightTimeDetails} toTimeDetails
  * @param {Date} toDateTime
+ * @param {string} toLocalTime
  * @param {string} operatingAirline
  * @param {string} marketingAirline
  * @param {string} duration
+ * @param {Object[]} layovers
  */
 function Flight(
   fromTime,
   fromTimeDetails,
   fromDateTime,
+  fromLocalTime,
   toTime,
   toTimeDetails,
   toDateTime,
+  toLocalTime,
   operatingAirline,
   marketingAirline,
   duration,
@@ -45,6 +50,9 @@ function Flight(
 
   this.fromDateTime = fromDateTime;
   this.toDateTime = toDateTime;
+
+  this.fromLocalTime = fromLocalTime;
+  this.toLocalTime = toLocalTime;
 
   let opAirline = operatingAirline
     ? operatingAirline.replace("Operated by", "").replace("Partially operated by", "")
@@ -119,25 +127,25 @@ Flight.prototype.calculateTimezoneOffset = function () {
         duration: duration,
         operatingAirline: cleanupAirline(operatingAirline),
         timezoneOffset: totalTimezoneOffset,
+        isLayoverStop: false,
       };
     });
     const layoversWithStops = [];
     for (let i = 0; i < layovers.length - 1; i++) {
       const previousFlight = layovers[i];
       const nextFlight = layovers[i + 1];
-      let { toTime: fromTime, to: from } = previousFlight;
-      let { fromTime: toTime, from: to } = nextFlight;
-      const fromTimeDetails = getTimeDetails(fromTime);
-      const toTimeDetails = getTimeDetails(toTime);
+      let { toTime: fromTime, to: from, toLocalTime: fromLocalTime, toTimeDetails: fromTimeDetails } = previousFlight;
+      let { fromTime: toTime, from: to, fromLocalTime: toLocalTime, fromTimeDetails: toTimeDetails } = nextFlight;
       const { durationInMinutes, duration } = getCalculatedDuration(fromTimeDetails, toTimeDetails);
-      toTimeDetails.hours * 60 + toTimeDetails.minutes - (fromTimeDetails.hours * 60 - fromTimeDetails.minutes);
 
       layoversWithStops.push(previousFlight);
       layoversWithStops.push({
         fromTime,
         fromTimeDetails,
+        fromLocalTime,
         toTime,
         toTimeDetails,
+        toLocalTime,
         duration,
         durationInMinutes,
         from,
@@ -211,9 +219,11 @@ function Itin(depFlight, retFlight, fare, currency, provider, windowId, tabId, m
       depFlight.fromTime,
       depFlight.fromTimeDetails,
       depFlight.fromDateTime,
+      depFlight.fromLocalTime,
       depFlight.toTime,
       depFlight.toTimeDetails,
       depFlight.toDateTime,
+      depFlight.toLocalTime,
       depFlight.operatingAirline,
       depFlight.marketingAirline,
       depFlight.duration,
@@ -226,9 +236,11 @@ function Itin(depFlight, retFlight, fare, currency, provider, windowId, tabId, m
       retFlight.fromTime,
       retFlight.fromTimeDetails,
       retFlight.fromDateTime,
+      retFlight.fromLocalTime,
       retFlight.toTime,
       retFlight.toTimeDetails,
       retFlight.toDateTime,
+      retFlight.toLocalTime,
       retFlight.operatingAirline,
       retFlight.marketingAirline,
       retFlight.duration,
