@@ -11,6 +11,7 @@ export const getLegDetails = (
   legIndex: number,
   formData: FlightSearchFormData,
   isReturn: boolean,
+  elapsedTimezoneOffset: number,
   previousLegDetails?: FlightLeg,
 ): FlightLeg => {
   const originDate = isReturn ? formData.toDate : formData.fromDate;
@@ -37,6 +38,7 @@ export const getLegDetails = (
     to: getArrivalAirport(arrival),
     operatingAirline: getOperatingAirline(details?.children[1]),
     duration: getDuration(details?.children[0]),
+    elapsedTimezoneOffset,
   });
 };
 

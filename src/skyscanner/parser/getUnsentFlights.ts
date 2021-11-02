@@ -58,5 +58,5 @@ const setFlightId = (flightCard: HTMLElement, flight: UnprocessedFlightSearchRes
 };
 
 const getFlightDatasetId = (flight: FlightDetails) => {
-  return [flight.fromTime, flight.toTime, flight.marketingAirline].join("-");
+  return [flight.fromTime, flight.toLocalTime, flight.marketingAirline].join("-");
 };

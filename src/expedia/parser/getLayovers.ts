@@ -23,9 +23,11 @@ export const getLayovers = async (
   }
 
   const layovers = [];
+  let elapsedTimezoneOffset = 0;
   for (const [index, leg] of legs.entries()) {
-    const details = getLegDetails(leg, index, formData, isReturn, layovers[layovers.length - 1]);
+    const details = getLegDetails(leg, index, formData, isReturn, elapsedTimezoneOffset, layovers[layovers.length - 1]);
     layovers.push(details);
+    elapsedTimezoneOffset += details.timezoneOffset;
   }
 
   if (!layovers.length) {

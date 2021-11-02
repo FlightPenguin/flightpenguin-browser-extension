@@ -1907,7 +1907,7 @@ var setFlightId = function setFlightId(flightCard, flight) {
 };
 
 var getFlightDatasetId = function getFlightDatasetId(flight) {
-  return [flight.fromTime, flight.toTime, flight.marketingAirline].join("-");
+  return [flight.fromTime, flight.toLocalTime, flight.marketingAirline].join("-");
 };
 
 /***/ }),

@@ -399,7 +399,7 @@ var shouldSkipCard = function shouldSkipCard(flightCard) {
 };
 
 var getFlightDatasetId = function getFlightDatasetId(flight) {
-  return [flight.fromTime, flight.toTime, flight.marketingAirline].join("-");
+  return [flight.fromTime, flight.toLocalTime, flight.marketingAirline].join("-");
 };
 
 /***/ }),
@@ -460,6 +460,7 @@ var getLayovers = /*#__PURE__*/function () {
     }
 
     var layovers = [];
+    var elapsedTimezoneOffset = 0;
 
     var _iterator = _createForOfIteratorHelper(legs.entries()),
         _step;
@@ -470,8 +471,9 @@ var getLayovers = /*#__PURE__*/function () {
             index = _step$value[0],
             leg = _step$value[1];
 
-        var details = (0,_getLegDetails__WEBPACK_IMPORTED_MODULE_2__.getLegDetails)(leg, index, formData, isReturn, layovers[layovers.length - 1]);
+        var details = (0,_getLegDetails__WEBPACK_IMPORTED_MODULE_2__.getLegDetails)(leg, index, formData, isReturn, elapsedTimezoneOffset, layovers[layovers.length - 1]);
         layovers.push(details);
+        elapsedTimezoneOffset += details.timezoneOffset;
       }
     } catch (err) {
       _iterator.e(err);
@@ -528,7 +530,7 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
 
 
 
-var getLegDetails = function getLegDetails(leg, legIndex, formData, isReturn, previousLegDetails) {
+var getLegDetails = function getLegDetails(leg, legIndex, formData, isReturn, elapsedTimezoneOffset, previousLegDetails) {
   var originDate = isReturn ? formData.toDate : formData.fromDate;
   var legDepartureDate = getLegDepartureDate(previousLegDetails, originDate);
 
@@ -557,7 +559,8 @@ var getLegDetails = function getLegDetails(leg, legIndex, formData, isReturn, pr
     from: getDepartureAirport(departure),
     to: getArrivalAirport(arrival),
     operatingAirline: getOperatingAirline(details === null || details === void 0 ? void 0 : details.children[1]),
-    duration: getDuration(details === null || details === void 0 ? void 0 : details.children[0])
+    duration: getDuration(details === null || details === void 0 ? void 0 : details.children[0]),
+    elapsedTimezoneOffset: elapsedTimezoneOffset
   });
 };
 
