@@ -1,6 +1,6 @@
 import { MissingElementLookupError, MissingFieldParserError, ParserError } from "../../shared/errors";
 import { standardizeTimeString } from "../../shared/helpers";
-import { FlightLeg } from "../../shared/types/FlightLeg";
+import { FlightLeg, FlightLegInput } from "../../shared/types/FlightLeg";
 import { waitForAppearance } from "../../shared/utilities/waitFor";
 
 const LEG_DETAILS_SELECTOR = "[class*='LegSegmentSummary_container']";
@@ -14,21 +14,24 @@ export const getFlightLayovers = (legContainer: HTMLElement): FlightLeg[] => {
 
   const layovers = [] as FlightLeg[];
   const legDetailsContainers = legContainer.querySelectorAll(LEG_INFORMATION_SELECTOR) as NodeListOf<HTMLElement>;
-  let previous = {} as FlightLeg;
+  let elapsedTimezoneOffset = 0;
+  let input = { elapsedTimezoneOffset } as FlightLegInput;
   for (const container of legDetailsContainers) {
     if (container.className.startsWith("Airline")) {
       const { operatingAirline } = getAirlines(container);
-      previous.operatingAirline = operatingAirline;
+      input.operatingAirline = operatingAirline;
     } else if (container.className.startsWith("LegSeg")) {
       const { arrivalTime, departureTime, duration } = getTimes(container);
       const { arrivalAirport, departureAirport } = getAirports(container);
-      previous.duration = duration;
-      previous.from = departureAirport;
-      previous.to = arrivalAirport;
-      previous.fromTime = departureTime;
-      previous.toTime = arrivalTime;
-      layovers.push(previous);
-      previous = {} as FlightLeg;
+      input.duration = duration;
+      input.from = departureAirport;
+      input.to = arrivalAirport;
+      input.fromTime = departureTime;
+      input.toTime = arrivalTime;
+      const flightLeg = new FlightLeg(input);
+      layovers.push(flightLeg);
+      elapsedTimezoneOffset += flightLeg.timezoneOffset;
+      input = { elapsedTimezoneOffset } as FlightLegInput;
     } else {
       throw new ParserError(`Unexpected case: ${container.className}`);
     }

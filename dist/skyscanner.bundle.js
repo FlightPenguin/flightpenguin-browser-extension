@@ -1337,7 +1337,8 @@ var waitForInvisible = /*#__PURE__*/function () {
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "getFlight": () => (/* binding */ getFlight)
+/* harmony export */   "getFlight": () => (/* binding */ getFlight),
+/* harmony export */   "getOneWayResult": () => (/* binding */ getOneWayResult)
 /* harmony export */ });
 /* harmony import */ var _shared_errors__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../shared/errors */ "./src/shared/errors.ts");
 /* harmony import */ var _shared_helpers__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../shared/helpers */ "./src/shared/helpers.js");
@@ -1372,45 +1373,9 @@ var getFlight = /*#__PURE__*/function () {
   var _ref = _asyncToGenerator(function* (flightCard, formData) {
     var fare = getFare(flightCard);
     var departureFlight = getFlightDetails(flightCard, "DEPARTURE");
-    var returnFlight = getFlightDetails(flightCard, "ARRIVAL");
-
-    var _ref2 = isNonstop(flightCard) ? {
-      departureLayovers: [new _shared_types_FlightLeg__WEBPACK_IMPORTED_MODULE_4__.FlightLeg({
-        duration: departureFlight.duration,
-        from: formData.from,
-        fromTime: departureFlight.fromTime,
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
-        operatingAirline: departureFlight.operatingAirline || departureFlight.marketingAirline,
-        toTime: departureFlight.toTime,
-        to: formData.to
-      })],
-      returnLayovers: [new _shared_types_FlightLeg__WEBPACK_IMPORTED_MODULE_4__.FlightLeg({
-        duration: returnFlight.duration,
-        from: formData.to,
-        fromTime: returnFlight.fromTime,
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
-        operatingAirline: returnFlight.operatingAirline || returnFlight.marketingAirline,
-        toTime: returnFlight.toTime,
-        to: formData.from
-      })]
-    } : yield (0,_getLayovers__WEBPACK_IMPORTED_MODULE_5__.getLayovers)(flightCard),
-        departureLayovers = _ref2.departureLayovers,
-        returnLayovers = _ref2.returnLayovers;
-
+    var result = formData.roundtrip ? yield getRoundtripResult(flightCard, departureFlight, formData, fare) : yield getOneWayResult(flightCard, departureFlight, formData, fare);
     setFlightCardVisited(flightCard);
-    return {
-      departureFlight: new _shared_types_FlightDetails__WEBPACK_IMPORTED_MODULE_3__.FlightDetails(_objectSpread(_objectSpread({}, departureFlight), {}, {
-        layovers: departureLayovers,
-        departureDate: formData.fromDate
-      })),
-      returnFlight: new _shared_types_FlightDetails__WEBPACK_IMPORTED_MODULE_3__.FlightDetails(_objectSpread(_objectSpread({}, returnFlight), {}, {
-        layovers: returnLayovers,
-        departureDate: formData.toDate
-      })),
-      fare: fare
-    };
+    return result;
   });
 
   return function getFlight(_x, _x2) {
@@ -1423,13 +1388,19 @@ var setFlightCardVisited = function setFlightCardVisited(flightCard) {
 };
 
 var getFare = function getFare(flightCard) {
-  var fare = flightCard.querySelector(FARE_SELECTOR);
+  var fareElement = flightCard.querySelector(FARE_SELECTOR);
 
-  if (!fare) {
+  if (!fareElement) {
     throw new _shared_errors__WEBPACK_IMPORTED_MODULE_0__.MissingElementLookupError("Unable to find fare in card");
   }
 
-  return fare.textContent;
+  var fare = fareElement.textContent;
+
+  if (!fare) {
+    throw new _shared_errors__WEBPACK_IMPORTED_MODULE_0__.MissingFieldParserError("Unable to extract fare from container");
+  }
+
+  return fare;
 };
 
 var isNonstop = function isNonstop(flightCard) {
@@ -1540,6 +1511,84 @@ var getDurationTime = function getDurationTime(flightContainer) {
   return duration;
 };
 
+var getRoundtripResult = /*#__PURE__*/function () {
+  var _ref2 = _asyncToGenerator(function* (flightCard, departureFlight, formData, fare) {
+    var returnFlight = getFlightDetails(flightCard, "ARRIVAL");
+
+    var _ref3 = isNonstop(flightCard) ? {
+      departureLayovers: [new _shared_types_FlightLeg__WEBPACK_IMPORTED_MODULE_4__.FlightLeg({
+        duration: departureFlight.duration,
+        from: formData.from,
+        fromTime: departureFlight.fromTime,
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
+        operatingAirline: departureFlight.operatingAirline || departureFlight.marketingAirline,
+        toTime: departureFlight.toTime,
+        to: formData.to
+      })],
+      returnLayovers: [new _shared_types_FlightLeg__WEBPACK_IMPORTED_MODULE_4__.FlightLeg({
+        duration: returnFlight.duration,
+        from: formData.to,
+        fromTime: returnFlight.fromTime,
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
+        operatingAirline: returnFlight.operatingAirline || returnFlight.marketingAirline,
+        toTime: returnFlight.toTime,
+        to: formData.from
+      })]
+    } : yield (0,_getLayovers__WEBPACK_IMPORTED_MODULE_5__.getLayovers)(flightCard),
+        departureLayovers = _ref3.departureLayovers,
+        returnLayovers = _ref3.returnLayovers;
+
+    return {
+      departureFlight: new _shared_types_FlightDetails__WEBPACK_IMPORTED_MODULE_3__.FlightDetails(_objectSpread(_objectSpread({}, departureFlight), {}, {
+        layovers: departureLayovers,
+        departureDate: formData.fromDate
+      })),
+      returnFlight: new _shared_types_FlightDetails__WEBPACK_IMPORTED_MODULE_3__.FlightDetails(_objectSpread(_objectSpread({}, returnFlight), {}, {
+        layovers: returnLayovers,
+        departureDate: formData.toDate
+      })),
+      fare: fare
+    };
+  });
+
+  return function getRoundtripResult(_x3, _x4, _x5, _x6) {
+    return _ref2.apply(this, arguments);
+  };
+}();
+
+var getOneWayResult = /*#__PURE__*/function () {
+  var _ref4 = _asyncToGenerator(function* (flightCard, departureFlight, formData, fare) {
+    var _ref5 = isNonstop(flightCard) ? {
+      departureLayovers: [new _shared_types_FlightLeg__WEBPACK_IMPORTED_MODULE_4__.FlightLeg({
+        duration: departureFlight.duration,
+        from: formData.from,
+        fromTime: departureFlight.fromTime,
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
+        operatingAirline: departureFlight.operatingAirline || departureFlight.marketingAirline,
+        toTime: departureFlight.toTime,
+        to: formData.to
+      })]
+    } : yield (0,_getLayovers__WEBPACK_IMPORTED_MODULE_5__.getLayovers)(flightCard),
+        departureLayovers = _ref5.departureLayovers;
+
+    return {
+      departureFlight: new _shared_types_FlightDetails__WEBPACK_IMPORTED_MODULE_3__.FlightDetails(_objectSpread(_objectSpread({}, departureFlight), {}, {
+        layovers: departureLayovers,
+        departureDate: formData.fromDate
+      })),
+      returnFlight: null,
+      fare: fare
+    };
+  });
+
+  return function getOneWayResult(_x7, _x8, _x9, _x10) {
+    return _ref4.apply(this, arguments);
+  };
+}();
+
 /***/ }),
 
 /***/ "./src/skyscanner/parser/getFlightLayovers.ts":
@@ -1555,7 +1604,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /* harmony import */ var _shared_errors__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../shared/errors */ "./src/shared/errors.ts");
 /* harmony import */ var _shared_helpers__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../shared/helpers */ "./src/shared/helpers.js");
-/* harmony import */ var _shared_utilities_waitFor__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../shared/utilities/waitFor */ "./src/shared/utilities/waitFor.ts");
+/* harmony import */ var _shared_types_FlightLeg__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../shared/types/FlightLeg */ "./src/shared/types/FlightLeg.ts");
+/* harmony import */ var _shared_utilities_waitFor__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../shared/utilities/waitFor */ "./src/shared/utilities/waitFor.ts");
 function _slicedToArray(arr, i) { return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _unsupportedIterableToArray(arr, i) || _nonIterableRest(); }
 
 function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
@@ -1573,6 +1623,7 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
 
 
 
+
 var LEG_DETAILS_SELECTOR = "[class*='LegSegmentSummary_container']";
 var LEG_INFORMATION_SELECTOR = "[class*='AirlineLogoTitle_container'],[class*='LegSegmentDetails_container']";
 var TIMES_SELECTOR = "[class*='Times_segment']";
@@ -1581,10 +1632,13 @@ var getFlightLayovers = function getFlightLayovers(legContainer) {
   var _legContainer$querySe;
 
   (_legContainer$querySe = legContainer.querySelector("button")) === null || _legContainer$querySe === void 0 ? void 0 : _legContainer$querySe.click();
-  (0,_shared_utilities_waitFor__WEBPACK_IMPORTED_MODULE_2__.waitForAppearance)(500, LEG_DETAILS_SELECTOR, legContainer);
+  (0,_shared_utilities_waitFor__WEBPACK_IMPORTED_MODULE_3__.waitForAppearance)(500, LEG_DETAILS_SELECTOR, legContainer);
   var layovers = [];
   var legDetailsContainers = legContainer.querySelectorAll(LEG_INFORMATION_SELECTOR);
-  var previous = {};
+  var elapsedTimezoneOffset = 0;
+  var input = {
+    elapsedTimezoneOffset: elapsedTimezoneOffset
+  };
 
   var _iterator = _createForOfIteratorHelper(legDetailsContainers),
       _step;
@@ -1597,7 +1651,7 @@ var getFlightLayovers = function getFlightLayovers(legContainer) {
         var _getAirlines = getAirlines(container),
             operatingAirline = _getAirlines.operatingAirline;
 
-        previous.operatingAirline = operatingAirline;
+        input.operatingAirline = operatingAirline;
       } else if (container.className.startsWith("LegSeg")) {
         var _getTimes = getTimes(container),
             arrivalTime = _getTimes.arrivalTime,
@@ -1608,13 +1662,17 @@ var getFlightLayovers = function getFlightLayovers(legContainer) {
             arrivalAirport = _getAirports.arrivalAirport,
             departureAirport = _getAirports.departureAirport;
 
-        previous.duration = duration;
-        previous.from = departureAirport;
-        previous.to = arrivalAirport;
-        previous.fromTime = departureTime;
-        previous.toTime = arrivalTime;
-        layovers.push(previous);
-        previous = {};
+        input.duration = duration;
+        input.from = departureAirport;
+        input.to = arrivalAirport;
+        input.fromTime = departureTime;
+        input.toTime = arrivalTime;
+        var flightLeg = new _shared_types_FlightLeg__WEBPACK_IMPORTED_MODULE_2__.FlightLeg(input);
+        layovers.push(flightLeg);
+        elapsedTimezoneOffset += flightLeg.timezoneOffset;
+        input = {
+          elapsedTimezoneOffset: elapsedTimezoneOffset
+        };
       } else {
         throw new _shared_errors__WEBPACK_IMPORTED_MODULE_0__.ParserError("Unexpected case: ".concat(container.className));
       }
@@ -1772,7 +1830,7 @@ var getLayovers = /*#__PURE__*/function () {
         returnLegContainer = _ref3[1];
 
     var departureLayovers = (0,_getFlightLayovers__WEBPACK_IMPORTED_MODULE_1__.getFlightLayovers)(departureLegContainer);
-    var returnLayovers = (0,_getFlightLayovers__WEBPACK_IMPORTED_MODULE_1__.getFlightLayovers)(returnLegContainer);
+    var returnLayovers = returnLegContainer ? (0,_getFlightLayovers__WEBPACK_IMPORTED_MODULE_1__.getFlightLayovers)(returnLegContainer) : [];
     yield closeFlightDetails(flightCard);
     return {
       departureLayovers: departureLayovers,
@@ -1902,8 +1960,14 @@ var shouldSkipCard = function shouldSkipCard(flightCard) {
 
 var setFlightId = function setFlightId(flightCard, flight) {
   var departureId = getFlightDatasetId(flight.departureFlight);
-  var returnId = getFlightDatasetId(flight.returnFlight);
-  flightCard.dataset.fpid = "".concat(departureId, "-").concat(returnId);
+  var flightId = "".concat(departureId);
+
+  if (flight.returnFlight) {
+    var returnId = getFlightDatasetId(flight.returnFlight);
+    flightId = "".concat(departureId, "-").concat(returnId);
+  }
+
+  flightCard.dataset.fpid = flightId;
 };
 
 var getFlightDatasetId = function getFlightDatasetId(flight) {
@@ -2099,7 +2163,12 @@ var getFlightCard = function getFlightCard(selectedFlightId, selectedReturnId) {
     throw new _shared_errors__WEBPACK_IMPORTED_MODULE_0__.ParserError("Unable to find flights in highlighting");
   }
 
-  var flightId = "".concat(selectedFlightId, "-").concat(selectedReturnId);
+  var flightId = "".concat(selectedFlightId);
+
+  if (selectedReturnId) {
+    flightId = "".concat(selectedFlightId, "-").concat(selectedReturnId);
+  }
+
   var flightCard = (0,_shared_utilities_findMatchingDOMNode__WEBPACK_IMPORTED_MODULE_2__.findMatchingDOMNode)(_toConsumableArray(flightCards), flightId);
 
   if (!flightCard) {
@@ -9684,8 +9753,8 @@ var __webpack_exports__ = {};
   !*** ./src/skyscanner/contentScript.js ***!
   \*****************************************/
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _shared_ui_backToSearch__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../shared/ui/backToSearch */ "./src/shared/ui/backToSearch.ts");
-/* harmony import */ var _shared_events__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../shared/events */ "./src/shared/events/index.ts");
+/* harmony import */ var _shared_events__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../shared/events */ "./src/shared/events/index.ts");
+/* harmony import */ var _shared_ui_backToSearch__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../shared/ui/backToSearch */ "./src/shared/ui/backToSearch.ts");
 /* harmony import */ var _parser_getUnsentFlights__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./parser/getUnsentFlights */ "./src/skyscanner/parser/getUnsentFlights.ts");
 /* harmony import */ var _ui_closePopupModal__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./ui/closePopupModal */ "./src/skyscanner/ui/closePopupModal.ts");
 /* harmony import */ var _ui_getMoreResults__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./ui/getMoreResults */ "./src/skyscanner/ui/getMoreResults.ts");
@@ -9694,10 +9763,10 @@ function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try
 
 function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
 
-
 window.Sentry.init({
   dsn: "https://d7f3363dd3774a64ad700b4523bcb789@o407795.ingest.sentry.io/5277451"
 });
+
 
 
 
@@ -9715,7 +9784,7 @@ chrome.runtime.onMessage.addListener( /*#__PURE__*/function () {
         continueScraping = false;
         (0,_ui_closePopupModal__WEBPACK_IMPORTED_MODULE_3__.closePopupModal)();
         yield (0,_ui_highlightFlightCard__WEBPACK_IMPORTED_MODULE_5__.highlightFlightCard)(message.selectedDepartureId, message.selectedReturnId);
-        (0,_shared_ui_backToSearch__WEBPACK_IMPORTED_MODULE_0__.addBackToSearchButton)();
+        (0,_shared_ui_backToSearch__WEBPACK_IMPORTED_MODULE_1__.addBackToSearchButton)();
         break;
 
       default:
@@ -9739,23 +9808,23 @@ var scrapeFlights = /*#__PURE__*/function () {
         var unsentFlights = yield (0,_parser_getUnsentFlights__WEBPACK_IMPORTED_MODULE_2__.getUnsentFlights)(formData);
 
         if (unsentFlights) {
-          (0,_shared_events__WEBPACK_IMPORTED_MODULE_1__.sendFlightsEvent)("skyscanner", unsentFlights);
+          (0,_shared_events__WEBPACK_IMPORTED_MODULE_0__.sendFlightsEvent)("skyscanner", unsentFlights);
           totalFlightCount += unsentFlights.length;
           yield (0,_ui_getMoreResults__WEBPACK_IMPORTED_MODULE_4__.getMoreResults)();
         } else if (totalFlightCount === 0) {
-          (0,_shared_events__WEBPACK_IMPORTED_MODULE_1__.sendNoFlightsEvent)("skyscanner", "BOTH");
+          (0,_shared_events__WEBPACK_IMPORTED_MODULE_0__.sendNoFlightsEvent)("skyscanner", "BOTH");
           hasMoreFlights = false;
         } else {
           hasMoreFlights = false;
         }
       }
 
-      (0,_shared_events__WEBPACK_IMPORTED_MODULE_1__.sendScraperComplete)("skyscanner", "BOTH");
+      (0,_shared_events__WEBPACK_IMPORTED_MODULE_0__.sendScraperComplete)("skyscanner", "BOTH");
     } catch (error) {
       window.Sentry.captureException(error);
 
       if (!totalFlightCount) {
-        (0,_shared_events__WEBPACK_IMPORTED_MODULE_1__.sendFailedScraper)("skyscanner", error, "BOTH");
+        (0,_shared_events__WEBPACK_IMPORTED_MODULE_0__.sendFailedScraper)("skyscanner", error, "BOTH");
       }
     }
   });

@@ -1,10 +1,9 @@
-import { addBackToSearchButton } from "../shared/ui/backToSearch";
-
 window.Sentry.init({
   dsn: "https://d7f3363dd3774a64ad700b4523bcb789@o407795.ingest.sentry.io/5277451",
 });
 
 import { sendFailedScraper, sendFlightsEvent, sendNoFlightsEvent, sendScraperComplete } from "../shared/events";
+import { addBackToSearchButton } from "../shared/ui/backToSearch";
 import { getUnsentFlights } from "./parser/getUnsentFlights";
 import { closePopupModal } from "./ui/closePopupModal";
 import { getMoreResults } from "./ui/getMoreResults";

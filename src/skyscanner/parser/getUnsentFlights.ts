@@ -53,8 +53,13 @@ const shouldSkipCard = (flightCard: HTMLElement) => {
 
 const setFlightId = (flightCard: HTMLElement, flight: UnprocessedFlightSearchResult) => {
   const departureId = getFlightDatasetId(flight.departureFlight as FlightDetails);
-  const returnId = getFlightDatasetId(flight.returnFlight as FlightDetails);
-  flightCard.dataset.fpid = `${departureId}-${returnId}`;
+  let flightId = `${departureId}`;
+  if (flight.returnFlight) {
+    const returnId = getFlightDatasetId(flight.returnFlight as FlightDetails);
+    flightId = `${departureId}-${returnId}`;
+  }
+
+  flightCard.dataset.fpid = flightId;
 };
 
 const getFlightDatasetId = (flight: FlightDetails) => {

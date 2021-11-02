@@ -10,7 +10,7 @@ export const getLayovers = async (flightCard: HTMLElement) => {
   ) as NodeListOf<HTMLElement>;
 
   const departureLayovers = getFlightLayovers(departureLegContainer);
-  const returnLayovers = getFlightLayovers(returnLegContainer);
+  const returnLayovers = returnLegContainer ? getFlightLayovers(returnLegContainer) : [];
 
   await closeFlightDetails(flightCard);
 
