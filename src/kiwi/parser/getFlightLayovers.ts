@@ -32,6 +32,7 @@ export const getFlightLayovers = (modal: HTMLDivElement, flightType: FlightType)
   const flightSegments = getFlightSegments(legSection);
 
   let previousFlightSegment: KiwiDetailedFlightSegment;
+  let elapsedTimezoneOffset = 0;
   return flightSegments.map((flightSegment) => {
     const departureTime = getFormattedDepartureTime(flightSegment.departureTime, previousFlightSegment);
     const arrivalTime = getFormattedArrivalTime(flightSegment.departureTime, flightSegment.arrivalTime);
@@ -43,7 +44,9 @@ export const getFlightLayovers = (modal: HTMLDivElement, flightType: FlightType)
       toTime: arrivalTime,
       operatingAirline: flightSegment.operatingAirline,
       duration: flightSegment.durationText,
+      elapsedTimezoneOffset,
     });
+    elapsedTimezoneOffset += flightLeg.timezoneOffset;
     previousFlightSegment = flightSegment;
     return flightLeg;
   });

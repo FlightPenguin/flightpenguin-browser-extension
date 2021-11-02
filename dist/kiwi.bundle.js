@@ -355,6 +355,7 @@ var getFlightLayovers = function getFlightLayovers(modal, flightType) {
   var legSection = getLegSection(modal, flightType);
   var flightSegments = getFlightSegments(legSection);
   var previousFlightSegment;
+  var elapsedTimezoneOffset = 0;
   return flightSegments.map(function (flightSegment) {
     var departureTime = getFormattedDepartureTime(flightSegment.departureTime, previousFlightSegment);
     var arrivalTime = getFormattedArrivalTime(flightSegment.departureTime, flightSegment.arrivalTime);
@@ -364,8 +365,10 @@ var getFlightLayovers = function getFlightLayovers(modal, flightType) {
       to: flightSegment.arrivalAirport.code,
       toTime: arrivalTime,
       operatingAirline: flightSegment.operatingAirline,
-      duration: flightSegment.durationText
+      duration: flightSegment.durationText,
+      elapsedTimezoneOffset: elapsedTimezoneOffset
     });
+    elapsedTimezoneOffset += flightLeg.timezoneOffset;
     previousFlightSegment = flightSegment;
     return flightLeg;
   });
