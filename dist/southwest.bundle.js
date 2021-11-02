@@ -1591,7 +1591,8 @@ function _iterableToArrayLimit(arr, i) { if (typeof Symbol === "undefined" || !(
 function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
 
 
-var CONTAINER_SELECTOR = ".transition-content.price-matrix--details-area ul";
+var CONTAINER_SELECTOR = ".transition-content.price-matrix--details-area";
+var FLIGHT_CARD_SELECTOR = "li.air-booking-select-detail";
 var TIME_CONTAINER_SELECTOR = ".time--value";
 var NEXT_DAY_SELECTOR = ".flight-next-day-indicator";
 var setFlightIds = function setFlightIds() {
@@ -1601,18 +1602,21 @@ var setFlightIds = function setFlightIds() {
       returnContainer = _ref2[1];
 
   setContainerFlightIds(departureContainer);
-  setContainerFlightIds(returnContainer);
+
+  if (returnContainer) {
+    setContainerFlightIds(returnContainer);
+  }
 };
 
 var setContainerFlightIds = function setContainerFlightIds(container) {
-  var flightCards = Array.from(container.childNodes);
+  var flightCards = Array.from(container.querySelectorAll(FLIGHT_CARD_SELECTOR));
   flightCards.forEach(function (flightCard) {
-    var _departureContainer$p, _returnContainer$pare;
+    var _departureContainer$p, _arrivalContainer$par;
 
     var _flightCard$querySele = flightCard.querySelectorAll(TIME_CONTAINER_SELECTOR),
         _flightCard$querySele2 = _slicedToArray(_flightCard$querySele, 2),
         departureContainer = _flightCard$querySele2[0],
-        returnContainer = _flightCard$querySele2[1];
+        arrivalContainer = _flightCard$querySele2[1];
 
     var fromTime = (0,_shared_helpers__WEBPACK_IMPORTED_MODULE_0__.standardizeTimeString)(departureContainer.textContent).replace("departs", "");
 
@@ -1620,9 +1624,9 @@ var setContainerFlightIds = function setContainerFlightIds(container) {
       fromTime = "".concat(fromTime, "+1");
     }
 
-    var toTime = (0,_shared_helpers__WEBPACK_IMPORTED_MODULE_0__.standardizeTimeString)(returnContainer.textContent).replace("arrives", "");
+    var toTime = (0,_shared_helpers__WEBPACK_IMPORTED_MODULE_0__.standardizeTimeString)(arrivalContainer.textContent).replace("arrives", "");
 
-    if ((_returnContainer$pare = returnContainer.parentElement) !== null && _returnContainer$pare !== void 0 && _returnContainer$pare.querySelector(NEXT_DAY_SELECTOR)) {
+    if ((_arrivalContainer$par = arrivalContainer.parentElement) !== null && _arrivalContainer$par !== void 0 && _arrivalContainer$par.querySelector(NEXT_DAY_SELECTOR)) {
       toTime = "".concat(toTime, "+1");
     }
 
