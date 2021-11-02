@@ -3,7 +3,12 @@ import { FlightSearchFormData } from "../../shared/types/FlightSearchFormData";
 import { UnprocessedFlightSearchResult } from "../../shared/types/UnprocessedFlightSearchResult";
 import { getFlight } from "./getFlight";
 
-export const sendFlights = async (flightCards: Node[], formData: FlightSearchFormData): Promise<void> => {
+interface SendFlightsProps {
+  flightCards: Node[];
+  formData: FlightSearchFormData;
+}
+
+export const sendFlights = async ({ flightCards, formData }: SendFlightsProps): Promise<void> => {
   const flights: UnprocessedFlightSearchResult[] = [];
 
   for (const node of flightCards) {
@@ -13,7 +18,7 @@ export const sendFlights = async (flightCards: Node[], formData: FlightSearchFor
       continue;
     }
 
-    const flight = await getFlight(flightCard, formData);
+    const flight = await getFlight({ flightCard, formData });
     flights.push(flight);
   }
 

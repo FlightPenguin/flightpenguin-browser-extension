@@ -74,7 +74,7 @@ const getDuration = (flightCard: HTMLDivElement, flightType: FlightType): string
   const index = flightType === "RETURN" ? 1 : 0;
 
   const durationContainers = flightCard.querySelectorAll(DURATION_CONTAINER_SELECTOR);
-  if (durationContainers.length !== 2) {
+  if (![1, 2].includes(durationContainers.length)) {
     throw new MissingElementLookupError("Unable to locate duration sections properly");
   }
 
@@ -95,7 +95,7 @@ const getOperatingAirline = (layovers: FlightLeg[]): string => {
 const getItineraryContainer = (flightCard: HTMLDivElement, flightType: FlightType): HTMLDivElement => {
   const index = flightType === "RETURN" ? 1 : 0;
   const itineraryContainers = flightCard.querySelectorAll(ITINERARY_CONTAINER_SELECTOR) as NodeListOf<HTMLDivElement>;
-  if (itineraryContainers.length !== 2) {
+  if (![1, 2].includes(itineraryContainers.length)) {
     throw new MissingElementLookupError("Unexpected number of itinerary containers");
   }
   return itineraryContainers[index];

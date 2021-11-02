@@ -29,12 +29,12 @@ const SearchFormSchema = object({
   from: string()
     .min(3, airportCodeHelpText)
     .max(3, airportCodeHelpText)
-    .matches(/[A-Z]{3}/, airportCodeHelpText)
+    .matches(/[a-zA-Z]{3}/, airportCodeHelpText)
     .required("What airport do you want to leave from?"),
   to: string()
     .min(3, airportCodeHelpText)
     .max(3, airportCodeHelpText)
-    .matches(/[A-Z]{3}/, airportCodeHelpText)
+    .matches(/[a-zA-Z]{3}/, airportCodeHelpText)
     .test(
       "not same source and destination",
       "Your source and destination airports cannot be the same.",

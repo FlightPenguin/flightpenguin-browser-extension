@@ -7,18 +7,20 @@ import { getFlightDetails } from "./getFlightDetails";
 
 const FARE_ELEMENT_SELECTOR = "strong[class*='PriceText']";
 
-export const getFlight = async (
-  flightCard: HTMLDivElement,
-  formData: FlightSearchFormData,
-): Promise<UnprocessedFlightSearchResult> => {
+interface GetFlightProps {
+  flightCard: HTMLDivElement;
+  formData: FlightSearchFormData;
+}
+
+export const getFlight = async ({ flightCard, formData }: GetFlightProps): Promise<UnprocessedFlightSearchResult> => {
   const fare = getFare(flightCard);
 
-  const { departureLayovers, returnLayovers } = await getAllLayovers(flightCard);
+  const { departureLayovers, returnLayovers } = await getAllLayovers({ flightCard, roundtrip: formData.roundtrip });
 
   const departureFlight = getFlightDetails(flightCard, "DEPARTURE", departureLayovers, formData);
-  const returnFlight = getFlightDetails(flightCard, "RETURN", returnLayovers, formData);
+  const returnFlight = formData.roundtrip ? getFlightDetails(flightCard, "RETURN", returnLayovers, formData) : null;
 
-  const id = getFlightPenguinId(departureFlight.id, returnFlight.id);
+  const id = getFlightPenguinId(departureFlight.id, formData.roundtrip && returnFlight ? returnFlight.id : null);
   setFlightId(flightCard, id);
 
   return {

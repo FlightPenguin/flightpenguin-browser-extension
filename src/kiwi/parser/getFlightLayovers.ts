@@ -52,7 +52,7 @@ export const getFlightLayovers = (modal: HTMLDivElement, flightType: FlightType)
 const getLegSection = (modal: HTMLDivElement, flightType: FlightType): HTMLDivElement => {
   const index = flightType === "RETURN" ? 1 : 0;
   const legsSections = modal.querySelectorAll(FLIGHT_CONTAINER_SELECTOR);
-  if (legsSections.length !== 2) {
+  if (![1, 2].includes(legsSections.length)) {
     throw new MissingElementLookupError("Unable to locate leg sections properly");
   }
   return legsSections[index] as HTMLDivElement;
