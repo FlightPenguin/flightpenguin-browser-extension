@@ -16,6 +16,7 @@ interface TimelineHeaderProps {
   tzOffset: number;
   onSliderChange: (minDate: Date, maxDate: Date) => void;
   sliderDisabled: boolean;
+  flightCount: number;
 }
 
 const TimelineHeader = ({
@@ -25,6 +26,7 @@ const TimelineHeader = ({
   tzOffset,
   onSliderChange,
   sliderDisabled,
+  flightCount,
 }: TimelineHeaderProps): React.ReactElement => {
   let daysCounter = 0;
   const intervalWidth = flightTimeContainerWidth / (intervals.length - 1);
@@ -69,6 +71,7 @@ const TimelineHeader = ({
         intervalWidth={intervalWidth}
         startDate={startDate}
         onRangeChange={onSliderChange}
+        flightCount={flightCount}
         disabled={sliderDisabled}
       />
     </Box>

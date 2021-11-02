@@ -6,7 +6,7 @@ import { FlightType } from "../../../background/constants";
 import { FlightSearchFormData } from "../../../shared/types/FlightSearchFormData";
 import { ProcessedFlightSearchResult } from "../../../shared/types/ProcessedFlightSearchResult";
 import { ProcessedItinerary } from "../../../shared/types/ProcessedItinerary";
-import { containerWidth } from "../../constants";
+import { containerWidth, rowHeight } from "../../constants";
 import { getPaymentType } from "../../SearchForm/utilities/getPaymentType";
 import { getCheapestItinerary } from "../Container/utilities/getCheapestItinerary";
 import { getFlightPenguinId } from "../Container/utilities/getFlightPenguinId";
@@ -80,7 +80,7 @@ const TimelineGrid = ({
               onScroll={onChildScroll}
               overscanRowCount={8}
               rowCount={flights.length}
-              rowHeight={90}
+              rowHeight={rowHeight}
               rowRenderer={rowRender}
               scrollTop={scrollTop}
               tabIndex={-1}

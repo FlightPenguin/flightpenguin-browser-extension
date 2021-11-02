@@ -17,6 +17,7 @@ interface TimelineSliderProps {
   intervalWidth: number;
   onRangeChange: (minDate: Date, maxDate: Date) => void;
   disabled: boolean;
+  flightCount: number;
 }
 
 const heightValue = 8;
@@ -27,6 +28,7 @@ const TimelineSlider = ({
   intervalWidth,
   onRangeChange,
   disabled,
+  flightCount,
 }: TimelineSliderProps): React.ReactElement => {
   const [touched, setTouched] = useState(false);
 
@@ -63,6 +65,7 @@ const TimelineSlider = ({
               intervals={intervals}
               heightValue={heightValue}
               touched={touched}
+              flightCount={flightCount}
             />
           );
         }}
@@ -98,11 +101,12 @@ export default React.memo(TimelineSlider, (previous, next) => {
   return isEqual(getValuesForMemoCheck(previous), getValuesForMemoCheck(next));
 });
 
-const getValuesForMemoCheck = ({ intervals, startDate, intervalWidth, disabled }: TimelineSliderProps) => {
+const getValuesForMemoCheck = ({ intervals, startDate, intervalWidth, disabled, flightCount }: TimelineSliderProps) => {
   return {
     intervalsCount: intervals.length,
     startDate: startDate,
     intervalWidth: intervalWidth,
     disabled: disabled,
+    flightCount: flightCount,
   };
 };

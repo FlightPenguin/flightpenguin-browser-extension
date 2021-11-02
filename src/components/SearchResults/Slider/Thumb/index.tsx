@@ -1,8 +1,9 @@
-import { Box, Icon, Text, Tooltip } from "bumbag";
+import { Box, Icon, Text } from "bumbag";
 import isEqual from "lodash.isequal";
 import React, { HTMLProps } from "react";
 
 import { getValueInRange } from "../../../../shared/utilities/getValueInRange";
+import { rowHeight } from "../../../constants";
 import { thumbWidthValue, thumbWidthWrapperValue } from "../constants";
 import { getDatetimeByTick } from "../utilities/getDatetimeByTick";
 import { getPositionByTick } from "../utilities/getPositionByTick";
@@ -16,6 +17,7 @@ interface ThumbProps {
   intervals: number[];
   heightValue: number;
   touched: boolean;
+  flightCount: number;
 }
 
 const widthValue = thumbWidthValue;
@@ -30,6 +32,7 @@ const Thumb = ({
   intervals,
   heightValue,
   touched,
+  flightCount,
 }: ThumbProps): React.ReactElement => {
   const heightAdjust = (thumbWidthValue - heightValue) / 2;
   const value = touched
@@ -83,6 +86,15 @@ const Thumb = ({
       <Box marginTop="minor-1" tabIndex={0}>
         <Text fontWeight="700">{formattedTime}</Text>
       </Box>
+      <Box
+        width="100%"
+        background={`linear-gradient(to right, transparent 0%, transparent calc(50% - 3px), black calc(50% - 3px), black calc(50% + 3px), transparent calc(50% + 3px), transparent 100%)`}
+        marginTop="6px"
+        height={`${rowHeight * flightCount}px`}
+        display={flightCount ? "block" : "hidden"}
+      >
+        &nbsp;
+      </Box>
     </Box>
   );
 };
@@ -91,7 +103,15 @@ export default React.memo(Thumb, (previous, next) => {
   return isEqual(getValuesForMemoCheck(previous), getValuesForMemoCheck(next));
 });
 
-const getValuesForMemoCheck = ({ state, props, startDate, intervals, minimumValue, maximumValue }: ThumbProps) => {
+const getValuesForMemoCheck = ({
+  state,
+  props,
+  startDate,
+  intervals,
+  minimumValue,
+  maximumValue,
+  flightCount,
+}: ThumbProps) => {
   return {
     index: state.index,
     value: state.valueNow,
@@ -100,5 +120,6 @@ const getValuesForMemoCheck = ({ state, props, startDate, intervals, minimumValu
     intervals: intervals,
     minimumValue,
     maximumValue,
+    flightCount,
   };
 };

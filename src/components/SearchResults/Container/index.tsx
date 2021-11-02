@@ -147,6 +147,7 @@ const TimelineContainer = ({
             setFilterDateRange({ lowerBound: minDate, upperBound: maxDate });
           }}
           sliderDisabled={!!selectedFlightDetails}
+          flightCount={displayFlights.length} // TODO: limit based on infinite scroll...
         />
       </Box>
       <Box data-name={`${flightType.toLowerCase()}-container`} display="flex">
