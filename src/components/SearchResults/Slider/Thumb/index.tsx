@@ -1,6 +1,6 @@
 import { Box, Icon, Text } from "bumbag";
 import isEqual from "lodash.isequal";
-import React, { HTMLProps } from "react";
+import React, { HTMLProps, useState } from "react";
 
 import { getValueInRange } from "../../../../shared/utilities/getValueInRange";
 import { rowHeight } from "../../../constants";
@@ -34,6 +34,8 @@ const Thumb = ({
   touched,
   flightCount,
 }: ThumbProps): React.ReactElement => {
+  const [inUse, setInUse] = useState(false);
+
   const heightAdjust = (thumbWidthValue - heightValue) / 2;
   const value = touched
     ? getValueInRange({ value: state.valueNow, minimumValue, maximumValue })
@@ -56,9 +58,25 @@ const Thumb = ({
       flexDirection="column"
       key={`thumb-${state.index}`}
       left={`${position}px`}
-      onFocus={props.onFocus}
+      onFocus={(event) => {
+        if (props.onFocus) {
+          props.onFocus(event);
+          setInUse(true);
+        }
+      }}
+      onBlur={() => {
+        setInUse(false);
+      }}
       onTouchStart={props.onTouchStart}
-      onMouseDown={props.onMouseDown}
+      onMouseDown={(event) => {
+        if (props.onMouseDown) {
+          props.onMouseDown(event);
+          setInUse(true);
+        }
+      }}
+      onMouseUp={() => {
+        setInUse(false);
+      }}
       position="absolute"
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
@@ -69,7 +87,7 @@ const Thumb = ({
       width={`${wrapperWidthValue}px`}
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
-      zIndex={`${props.style?.zIndex || 0}`}
+      zIndex={`${inUse ? 100 : 0}`}
     >
       <Box
         display="flex"
@@ -88,12 +106,27 @@ const Thumb = ({
       </Box>
       <Box
         width="100%"
-        background={`linear-gradient(to right, transparent 0%, transparent calc(50% - 3px), black calc(50% - 3px), black calc(50% + 3px), transparent calc(50% + 3px), transparent 100%)`}
         marginTop="6px"
         height={`${rowHeight * flightCount}px`}
-        display={flightCount ? "block" : "hidden"}
+        display={inUse && ![minimumValue, maximumValue].includes(value) ? "flex" : "none"}
+        flexDirection="row"
       >
-        &nbsp;
+        <Box
+          borderRightWidth="3px"
+          borderRightColor="black"
+          borderRightStyle="solid"
+          flexGrow={0}
+          flexShrink={0}
+          flexBasis="50%"
+        />
+        <Box
+          borderLeftWidth="3px"
+          borderLeftColor="black"
+          borderLeftStyle="solid"
+          flexGrow={0}
+          flexShrink={0}
+          flexBasis="50%"
+        />
       </Box>
     </Box>
   );
