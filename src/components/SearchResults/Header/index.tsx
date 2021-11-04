@@ -1,4 +1,4 @@
-import { Box } from "bumbag";
+import { Box, Text } from "bumbag";
 import isEqual from "lodash.isequal";
 import React from "react";
 
@@ -45,22 +45,45 @@ const TimelineHeader = ({
       marginLeft={`-${intervalWidth / 2}px`}
     >
       <Box flexBasis="100%" display="flex" flexDirection="row">
-        {intervals.map((interval, index) => {
+        {!!tzOffset && (
+          <Box
+            className="interval"
+            display="flex"
+            flexDirection="column"
+            justifyContent="flex-end"
+            alignX="center"
+            width={`${intervalWidth}px`}
+            position="relative"
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-ignore
+            left={`-${intervalWidth}px`}
+          >
+            <Text fontSize={timeFontSize} padding="major-1" tabIndex={-1}>
+              &nbsp;
+            </Text>
+            <Text fontSize={timeFontSize} tabIndex={-1} color="info" fontWeight="700" width="100%" textAlign="right">
+              {departureAirportCode}
+            </Text>
+            <Text fontSize={timeFontSize} tabIndex={-1} color="warning" fontWeight="700" width="100%" textAlign="right">
+              {arrivalAirportCode}
+            </Text>
+          </Box>
+        )}
+        {intervals.map((interval) => {
           if (interval % 24 === 0 && interval !== 0) {
             daysCounter += 1;
           }
 
           return (
             <TimeCell
-              index={index}
               interval={interval}
               intervalWidth={intervalWidth}
               tzOffset={tzOffset}
               startDate={startDate}
               daysCounter={daysCounter}
+              timeFontSize={timeFontSize}
               departureAirportCode={departureAirportCode}
               arrivalAirportCode={arrivalAirportCode}
-              timeFontSize={timeFontSize}
               key={`interval-header-${interval}`}
             />
           );
@@ -73,6 +96,7 @@ const TimelineHeader = ({
         onRangeChange={onSliderChange}
         flightCount={flightCount}
         disabled={sliderDisabled}
+        multipleTimezones={!!tzOffset}
       />
     </Box>
   );

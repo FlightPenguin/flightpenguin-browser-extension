@@ -18,6 +18,7 @@ interface ThumbProps {
   heightValue: number;
   touched: boolean;
   flightCount: number;
+  multipleTimezones: boolean;
 }
 
 const widthValue = thumbWidthValue;
@@ -33,6 +34,7 @@ const Thumb = ({
   heightValue,
   touched,
   flightCount,
+  multipleTimezones,
 }: ThumbProps): React.ReactElement => {
   const [inUse, setInUse] = useState(false);
 
@@ -45,6 +47,7 @@ const Thumb = ({
 
   const { formattedDate, formattedTime } = getDatetimeByTick({ startDate, value });
   const position = getPositionByTick({ intervals, value });
+  const color = multipleTimezones ? (state.index === 0 ? "info" : "warning") : "black";
 
   return (
     <Box
@@ -94,7 +97,7 @@ const Thumb = ({
         borderRadius="50%"
         height={`${widthValue}px`}
         width={`${widthValue}px`}
-        backgroundColor="black"
+        backgroundColor={color}
         altitude="400"
         justifyContent="center"
         alignItems="center"
@@ -102,7 +105,9 @@ const Thumb = ({
         <Icon icon={state.index === 0 ? "solid-plane-departure" : "solid-plane-arrival"} color="white" fontSize="300" />
       </Box>
       <Box marginTop="minor-1" tabIndex={0}>
-        <Text fontWeight="700">{formattedTime}</Text>
+        <Text fontWeight="700" color={color}>
+          {formattedTime}
+        </Text>
       </Box>
       <Box
         width="100%"
@@ -113,7 +118,7 @@ const Thumb = ({
       >
         <Box
           borderRightWidth="3px"
-          borderRightColor="black"
+          borderRightColor={color}
           borderRightStyle="solid"
           flexGrow={0}
           flexShrink={0}
@@ -121,7 +126,7 @@ const Thumb = ({
         />
         <Box
           borderLeftWidth="3px"
-          borderLeftColor="black"
+          borderLeftColor={color}
           borderLeftStyle="solid"
           flexGrow={0}
           flexShrink={0}

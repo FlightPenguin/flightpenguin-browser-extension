@@ -18,6 +18,7 @@ interface TimelineSliderProps {
   onRangeChange: (minDate: Date, maxDate: Date) => void;
   disabled: boolean;
   flightCount: number;
+  multipleTimezones: boolean;
 }
 
 const heightValue = 8;
@@ -29,6 +30,7 @@ const TimelineSlider = ({
   onRangeChange,
   disabled,
   flightCount,
+  multipleTimezones,
 }: TimelineSliderProps): React.ReactElement => {
   const [touched, setTouched] = useState(false);
   /*
@@ -80,6 +82,7 @@ const TimelineSlider = ({
               heightValue={heightValue}
               touched={touched}
               flightCount={flightCount}
+              multipleTimezones={multipleTimezones}
             />
           );
         }}

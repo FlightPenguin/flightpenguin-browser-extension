@@ -1,4 +1,4 @@
-import { Box, Text, Tooltip } from "bumbag";
+import { Badge, Box, Text, Tooltip } from "bumbag";
 import { addDays } from "date-fns";
 import React from "react";
 
@@ -6,7 +6,6 @@ import { getWeekdayName } from "../../../shared/utilities/getWeekdayName";
 import { getHeaderTime } from "./utilities/getHeaderTime";
 
 interface TimeCellProps {
-  index: number;
   interval: number;
   intervalWidth: number;
   tzOffset: number;
@@ -23,9 +22,9 @@ export const TimeCell = ({
   tzOffset,
   startDate,
   daysCounter,
-  timeFontSize,
   departureAirportCode,
   arrivalAirportCode,
+  timeFontSize,
 }: TimeCellProps) => {
   const time = getHeaderTime(interval);
   const offsetTime = getHeaderTime(interval, tzOffset);
@@ -42,6 +41,9 @@ export const TimeCell = ({
       alignX="center"
       width={`${intervalWidth}px`}
       position="relative"
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      left={tzOffset ? `-${intervalWidth}px` : "0px"}
     >
       {isMidnight ? (
         <Box position="relative" border="default" padding="major-1" borderRadius="4">
@@ -56,17 +58,26 @@ export const TimeCell = ({
           &nbsp;
         </Text>
       )}
-      {/*<Tooltip content={`Time at ${departureAirportCode}`} hasArrow placement="right">*/}
-      <Text fontSize={timeFontSize} fontWeight={isMidnight ? "700" : "400"} tabIndex={-1}>
-        {time.toLowerCase()}
-      </Text>
-      {/*</Tooltip>*/}
-      {!!tzOffset && (
-        // <Tooltip content={`Time at ${arrivalAirportCode}`} hasArrow placement="right">
-        <Text fontSize={timeFontSize} fontWeight={isMidnight ? "700" : "400"} tabIndex={-1}>
-          {offsetTime.toLowerCase()}
+      <Tooltip
+        content={`Time at ${tzOffset ? departureAirportCode : departureAirportCode + " and " + arrivalAirportCode}`}
+        hasArrow
+        placement="right"
+      >
+        <Text
+          fontSize={timeFontSize}
+          fontWeight={isMidnight ? "700" : "400"}
+          tabIndex={-1}
+          color={tzOffset ? "info" : "black"}
+        >
+          {time.toLowerCase()}
         </Text>
-        // </Tooltip>
+      </Tooltip>
+      {!!tzOffset && (
+        <Tooltip content={`Time at ${arrivalAirportCode}`} hasArrow placement="right">
+          <Text fontSize={timeFontSize} fontWeight={isMidnight ? "700" : "400"} tabIndex={-1} color="warning">
+            {offsetTime.toLowerCase()}
+          </Text>
+        </Tooltip>
       )}
     </Box>
   );
