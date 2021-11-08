@@ -18,7 +18,7 @@ interface TimelineSliderProps {
   onRangeChange: (minDate: Date, maxDate: Date) => void;
   disabled: boolean;
   flightCount: number;
-  multipleTimezones: boolean;
+  timezoneOffset: number;
 }
 
 const heightValue = 8;
@@ -30,7 +30,7 @@ const TimelineSlider = ({
   onRangeChange,
   disabled,
   flightCount,
-  multipleTimezones,
+  timezoneOffset,
 }: TimelineSliderProps): React.ReactElement => {
   const [touched, setTouched] = useState(false);
   /*
@@ -49,7 +49,7 @@ const TimelineSlider = ({
     }
   }, [intervals, touched]);
 
-  const { minimumDate, maximumDate } = getAcceptableDateRange({ intervals, startDate });
+  const { minimumDate, maximumDate } = getAcceptableDateRange({ intervals, startDate, timezoneOffset });
 
   return (
     <Box
@@ -82,7 +82,7 @@ const TimelineSlider = ({
               heightValue={heightValue}
               touched={touched}
               flightCount={flightCount}
-              multipleTimezones={multipleTimezones}
+              timezoneOffset={timezoneOffset}
             />
           );
         }}
@@ -102,7 +102,9 @@ const TimelineSlider = ({
         onChange={(value) => {
           setValues(value);
           const { datetime: lowerBoundary } = getDatetimeByTick({ startDate, value: value[0] });
-          const { datetime: upperBoundary } = getDatetimeByTick({ startDate, value: value[1] });
+          const { datetime: upperBoundary } = getDatetimeByTick({ startDate, value: value[1], timezoneOffset });
+          console.log(lowerBoundary);
+          console.log(upperBoundary);
           onRangeChange(
             getDateValueInRange({ value: lowerBoundary, minimumValue: minimumDate, maximumValue: maximumDate }),
             getDateValueInRange({ value: upperBoundary, minimumValue: minimumDate, maximumValue: maximumDate }),

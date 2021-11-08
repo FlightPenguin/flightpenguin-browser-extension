@@ -195,7 +195,7 @@ const TimelineRow = ({
           backgroundColor="white"
           color={arrivalTextColor}
         >
-          {flight.toTime}
+          {flight.toLocalTime}
           {!!flight.timezoneOffset && (
             <Badge isAttached palette="warning">
               {to}

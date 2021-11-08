@@ -96,7 +96,7 @@ const TimelineHeader = ({
         onRangeChange={onSliderChange}
         flightCount={flightCount}
         disabled={sliderDisabled}
-        multipleTimezones={!!tzOffset}
+        timezoneOffset={tzOffset}
       />
     </Box>
   );

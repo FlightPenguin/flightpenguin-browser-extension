@@ -23,6 +23,7 @@ import { convertDurationToMinutes, getTimeDetails, getTimezoneOffset } from "./u
  * @param {FlightTimeDetails} toTimeDetails
  * @param {Date} toDateTime
  * @param {string} toLocalTime
+ * @param {Date} toLocalDateTime
  * @param {string} operatingAirline
  * @param {string} marketingAirline
  * @param {string} duration
@@ -38,6 +39,7 @@ function Flight(
   toTimeDetails,
   toDateTime,
   toLocalTime,
+  toLocalDateTime,
   operatingAirline,
   marketingAirline,
   duration,
@@ -55,6 +57,7 @@ function Flight(
 
   this.fromLocalTime = fromLocalTime;
   this.toLocalTime = toLocalTime;
+  this.toLocalDateTime = toLocalDateTime;
 
   let opAirline = operatingAirline
     ? operatingAirline.replace("Operated by", "").replace("Partially operated by", "")
@@ -223,6 +226,7 @@ function Itin(depFlight, retFlight, fare, currency, provider, windowId, tabId, m
       depFlight.toTimeDetails,
       depFlight.toDateTime,
       depFlight.toLocalTime,
+      depFlight.toLocalDateTime,
       depFlight.operatingAirline,
       depFlight.marketingAirline,
       depFlight.duration,
@@ -241,6 +245,7 @@ function Itin(depFlight, retFlight, fare, currency, provider, windowId, tabId, m
       retFlight.toTimeDetails,
       retFlight.toDateTime,
       retFlight.toLocalTime,
+      depFlight.toLocalDateTime,
       retFlight.operatingAirline,
       retFlight.marketingAirline,
       retFlight.duration,

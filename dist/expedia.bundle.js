@@ -1575,10 +1575,10 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "FlightDetails": () => (/* binding */ FlightDetails)
 /* harmony export */ });
-/* harmony import */ var date_fns__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! date-fns */ "./node_modules/date-fns/esm/parse/index.js");
-/* harmony import */ var date_fns__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! date-fns */ "./node_modules/date-fns/esm/addDays/index.js");
-/* harmony import */ var date_fns__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! date-fns */ "./node_modules/date-fns/esm/addHours/index.js");
-/* harmony import */ var date_fns__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! date-fns */ "./node_modules/date-fns/esm/addMinutes/index.js");
+/* harmony import */ var date_fns__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! date-fns */ "./node_modules/date-fns/esm/addMinutes/index.js");
+/* harmony import */ var date_fns__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! date-fns */ "./node_modules/date-fns/esm/parse/index.js");
+/* harmony import */ var date_fns__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! date-fns */ "./node_modules/date-fns/esm/addDays/index.js");
+/* harmony import */ var date_fns__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! date-fns */ "./node_modules/date-fns/esm/addHours/index.js");
 /* harmony import */ var _utilityFunctions__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../utilityFunctions */ "./src/utilityFunctions.js");
 /* harmony import */ var _nameMaps_airlineMap__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../nameMaps/airlineMap */ "./src/shared/nameMaps/airlineMap.js");
 /* harmony import */ var _utilities_getDurationInMinutes__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../utilities/getDurationInMinutes */ "./src/shared/utilities/getDurationInMinutes.ts");
@@ -1595,6 +1595,11 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
 
 
 var FlightDetails = /*#__PURE__*/function () {
+  // presentation strings
+  // legacy time details objects
+  // actual dates, timezones set to whatever the local browser's timezone is.
+  // de facto this is local date time...
+  // localized timezone objects to the airport's time zone.
   function FlightDetails(_ref) {
     var fromTime = _ref.fromTime,
         toTime = _ref.toTime,
@@ -1626,14 +1631,15 @@ var FlightDetails = /*#__PURE__*/function () {
     this.fromLocalTime = this.fromTime; // de facto origin of flight is local time... may be different when doing multicity
 
     this.fromLocalTimeDetails = this.fromTimeDetails;
-    this.toLocalTime = toTime;
-    this.toLocalTimeDetails = this.getTimeDetails(toTime);
     this.toDateTime = this.getArrivalDateTime(this.fromDateTime, duration);
     this.toTime = (0,_utilities_getTimeStringFromDate__WEBPACK_IMPORTED_MODULE_3__.getTimeStringFromDate)({
       date: this.toDateTime,
       previousFlightDate: this.fromDateTime
     });
     this.toTimeDetails = this.getTimeDetails(this.toTime);
+    this.toLocalTime = toTime;
+    this.toLocalTimeDetails = this.getTimeDetails(toTime);
+    this.toLocalDateTime = (0,date_fns__WEBPACK_IMPORTED_MODULE_4__.default)(this.toDateTime, this.timezoneOffset * -1);
     this.id = this.getFlightPenguinId();
     this.checkMissingExcessDays();
   }
@@ -1660,19 +1666,19 @@ var FlightDetails = /*#__PURE__*/function () {
   }, {
     key: "getFlightDateTime",
     value: function getFlightDateTime(departureDate, timeDetails) {
-      var flightDateTime = (0,date_fns__WEBPACK_IMPORTED_MODULE_4__.default)(departureDate, "yyyy-MM-dd", new Date());
+      var flightDateTime = (0,date_fns__WEBPACK_IMPORTED_MODULE_5__.default)(departureDate, "yyyy-MM-dd", new Date());
 
       if (timeDetails.excessDays) {
         var excessDays = Number(timeDetails.excessDays.split("+").slice(-1)[0]);
-        flightDateTime = (0,date_fns__WEBPACK_IMPORTED_MODULE_5__.default)(flightDateTime, excessDays);
+        flightDateTime = (0,date_fns__WEBPACK_IMPORTED_MODULE_6__.default)(flightDateTime, excessDays);
       }
 
       if (timeDetails.hours) {
-        flightDateTime = (0,date_fns__WEBPACK_IMPORTED_MODULE_6__.default)(flightDateTime, timeDetails.hours);
+        flightDateTime = (0,date_fns__WEBPACK_IMPORTED_MODULE_7__.default)(flightDateTime, timeDetails.hours);
       }
 
       if (timeDetails.minutes) {
-        flightDateTime = (0,date_fns__WEBPACK_IMPORTED_MODULE_7__.default)(flightDateTime, timeDetails.minutes);
+        flightDateTime = (0,date_fns__WEBPACK_IMPORTED_MODULE_4__.default)(flightDateTime, timeDetails.minutes);
       }
 
       return flightDateTime;
@@ -1681,7 +1687,7 @@ var FlightDetails = /*#__PURE__*/function () {
     key: "getArrivalDateTime",
     value: function getArrivalDateTime(departureDateTime, duration) {
       var durationMinutes = (0,_utilities_getDurationInMinutes__WEBPACK_IMPORTED_MODULE_2__.getDurationInMinutes)(duration);
-      return (0,date_fns__WEBPACK_IMPORTED_MODULE_7__.default)(departureDateTime, durationMinutes);
+      return (0,date_fns__WEBPACK_IMPORTED_MODULE_4__.default)(departureDateTime, durationMinutes);
     }
   }, {
     key: "getFlightPenguinId",

@@ -3,6 +3,7 @@ import { addMinutes, format } from "date-fns";
 interface GetDatetimeByTickProps {
   startDate: Date;
   value: number;
+  timezoneOffset?: number;
 }
 
 interface GetDatetimeByTickOutput {
@@ -12,8 +13,16 @@ interface GetDatetimeByTickOutput {
   datetime: Date;
 }
 
-export const getDatetimeByTick = ({ startDate, value }: GetDatetimeByTickProps): GetDatetimeByTickOutput => {
-  const datetime = addMinutes(startDate, value * 15);
+export const getDatetimeByTick = ({
+  startDate,
+  value,
+  timezoneOffset,
+}: GetDatetimeByTickProps): GetDatetimeByTickOutput => {
+  let datetime = addMinutes(startDate, value * 15);
+  if (timezoneOffset) {
+    datetime = addMinutes(datetime, timezoneOffset * -1);
+  }
+
   let formattableDatetime = datetime;
 
   // for now, we will 'fix' DST differences by ignoring DST.

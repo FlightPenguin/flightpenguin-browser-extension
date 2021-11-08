@@ -10,6 +10,7 @@ export interface ProcessedFlightSearchResult {
   toDateTime: Date;
   toTimeDetails: FlightTimeDetails;
   toLocalTime: string;
+  toLocalDateTime: Date;
   operatingAirline: AirlineDetails;
   marketingAirlineText?: string;
   id: string;

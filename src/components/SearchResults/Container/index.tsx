@@ -13,10 +13,10 @@ import TimelineGrid from "../Grid";
 import TimelineHeader from "../Header";
 import TimelineTitle from "../Title";
 import _skeletonItineraries from "./skeletonItineraries.json";
-import { getFilteredFlightsByArrivalTime } from "./utilities/getFilteredFlightsByArrivalTime";
-import { getFilteredFlightsByDepartureTime } from "./utilities/getFilteredFlightsByDepartureTime";
 import { getIntervalInfo } from "./utilities/getIntervalInfo";
 import { getSkeletonItinerariesWithFlightDates } from "./utilities/getSkeletonItinerariesWithFlightDates";
+import { isFlightArrivingBeforeTime } from "./utilities/isFlightArrivingBeforeTime";
+import { isFlightDepartingAfterTime } from "./utilities/isFlightDepartingAfterTime";
 
 interface TimelimeContainerProps {
   flightType: "DEPARTURE" | "RETURN";
@@ -73,7 +73,7 @@ const TimelineContainer = ({
       return;
     }
     // filter
-    flights.forEach((flight) => {
+    const filteredFlights = flights.filter((flight) => {
       // These coercions are necessary due to object passing from thread to thread...
       if (!(flight.fromDateTime instanceof Date)) {
         flight.fromDateTime = parseISO(flight.fromDateTime);
@@ -81,15 +81,14 @@ const TimelineContainer = ({
       if (!(flight.toDateTime instanceof Date)) {
         flight.toDateTime = parseISO(flight.toDateTime);
       }
-    });
-    let filteredFlights = flights;
-    filteredFlights = getFilteredFlightsByArrivalTime({
-      flights: filteredFlights,
-      datetime: filterDateRange.upperBound,
-    });
-    filteredFlights = getFilteredFlightsByDepartureTime({
-      flights: filteredFlights,
-      datetime: filterDateRange.lowerBound,
+      if (!(flight.toLocalDateTime instanceof Date)) {
+        flight.toLocalDateTime = parseISO(flight.toLocalDateTime);
+      }
+
+      return (
+        isFlightArrivingBeforeTime({ flight, datetime: filterDateRange.upperBound }) &&
+        isFlightDepartingAfterTime({ flight, datetime: filterDateRange.lowerBound })
+      );
     });
 
     // sort / unique

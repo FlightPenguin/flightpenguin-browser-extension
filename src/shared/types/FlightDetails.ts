@@ -19,16 +19,21 @@ interface FlightDetailsInput {
 
 export class FlightDetails {
   id: string;
+  // presentation strings
   fromTime: string;
   toTime: string;
+  // legacy time details objects
   fromTimeDetails: FlightTimeDetails;
   toTimeDetails: FlightTimeDetails;
-  fromDateTime: Date;
+  // actual dates, timezones set to whatever the local browser's timezone is.
+  fromDateTime: Date; // de facto this is local date time...
   toDateTime: Date;
+  // localized timezone objects to the airport's time zone.
   fromLocalTime: string;
   fromLocalTimeDetails: FlightTimeDetails;
   toLocalTime: string;
   toLocalTimeDetails: FlightTimeDetails;
+  toLocalDateTime: Date;
   duration: string;
   layovers: FlightLeg[];
   operatingAirline?: string | null;
@@ -66,11 +71,12 @@ export class FlightDetails {
     this.fromLocalTime = this.fromTime; // de facto origin of flight is local time... may be different when doing multicity
     this.fromLocalTimeDetails = this.fromTimeDetails;
 
-    this.toLocalTime = toTime;
-    this.toLocalTimeDetails = this.getTimeDetails(toTime);
     this.toDateTime = this.getArrivalDateTime(this.fromDateTime, duration);
     this.toTime = getTimeStringFromDate({ date: this.toDateTime, previousFlightDate: this.fromDateTime });
     this.toTimeDetails = this.getTimeDetails(this.toTime);
+    this.toLocalTime = toTime;
+    this.toLocalTimeDetails = this.getTimeDetails(toTime);
+    this.toLocalDateTime = addMinutes(this.toDateTime, this.timezoneOffset * -1);
 
     this.id = this.getFlightPenguinId();
     this.checkMissingExcessDays();

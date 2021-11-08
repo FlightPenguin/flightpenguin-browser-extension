@@ -628,10 +628,8 @@ var PROVIDERS_NEEDING_RETURNS = [// force expansion
 "expedia"];
 var PROVIDERS_SUPPORTING_POINTS_SEARCH = ["expedia"];
 var SUPPORTED_PROVIDERS = [// force expansion
-// "expedia",
-// "kiwi",
-// "skyscanner",
-"southwest"]; // eslint-disable-next-line @typescript-eslint/no-empty-function
+"expedia", // "kiwi",
+"skyscanner", "southwest"]; // eslint-disable-next-line @typescript-eslint/no-empty-function
 
 var DEFAULT_ON_READY_FUNCTION = function DEFAULT_ON_READY_FUNCTION() {};
 var CabinMap = {
@@ -1631,6 +1629,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
  * @param {FlightTimeDetails} toTimeDetails
  * @param {Date} toDateTime
  * @param {string} toLocalTime
+ * @param {Date} toLocalDateTime
  * @param {string} operatingAirline
  * @param {string} marketingAirline
  * @param {string} duration
@@ -1638,7 +1637,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
  * @param {number} timezoneOffset
  */
 
-function Flight(fromTime, fromTimeDetails, fromDateTime, fromLocalTime, toTime, toTimeDetails, toDateTime, toLocalTime, operatingAirline, marketingAirline, duration, layovers, timezoneOffset) {
+function Flight(fromTime, fromTimeDetails, fromDateTime, fromLocalTime, toTime, toTimeDetails, toDateTime, toLocalTime, toLocalDateTime, operatingAirline, marketingAirline, duration, layovers, timezoneOffset) {
   this.fromTime = fromTime;
   this.toTime = toTime;
   this.fromTimeDetails = fromTimeDetails;
@@ -1647,6 +1646,7 @@ function Flight(fromTime, fromTimeDetails, fromDateTime, fromLocalTime, toTime, 
   this.toDateTime = toDateTime;
   this.fromLocalTime = fromLocalTime;
   this.toLocalTime = toLocalTime;
+  this.toLocalDateTime = toLocalDateTime;
   var opAirline = operatingAirline ? operatingAirline.replace("Operated by", "").replace("Partially operated by", "") : operatingAirline;
   opAirline = _shared_nameMaps_airlineMap_js__WEBPACK_IMPORTED_MODULE_2__.default.getAirlineName(opAirline);
   var markAirline = _shared_nameMaps_airlineMap_js__WEBPACK_IMPORTED_MODULE_2__.default.getAirlineName(marketingAirline); // operating airline is what is primarily displayed
@@ -1836,11 +1836,11 @@ function Itin(depFlight, retFlight, fare, currency, provider, windowId, tabId, m
   if (makeRetFlightOnly) {
     this.depFlight = depFlight;
   } else {
-    this.depFlight = new Flight(depFlight.fromTime, depFlight.fromTimeDetails, depFlight.fromDateTime, depFlight.fromLocalTime, depFlight.toTime, depFlight.toTimeDetails, depFlight.toDateTime, depFlight.toLocalTime, depFlight.operatingAirline, depFlight.marketingAirline, depFlight.duration, depFlight.layovers, depFlight.timezoneOffset);
+    this.depFlight = new Flight(depFlight.fromTime, depFlight.fromTimeDetails, depFlight.fromDateTime, depFlight.fromLocalTime, depFlight.toTime, depFlight.toTimeDetails, depFlight.toDateTime, depFlight.toLocalTime, depFlight.toLocalDateTime, depFlight.operatingAirline, depFlight.marketingAirline, depFlight.duration, depFlight.layovers, depFlight.timezoneOffset);
   }
 
   if (retFlight) {
-    this.retFlight = new Flight(retFlight.fromTime, retFlight.fromTimeDetails, retFlight.fromDateTime, retFlight.fromLocalTime, retFlight.toTime, retFlight.toTimeDetails, retFlight.toDateTime, retFlight.toLocalTime, retFlight.operatingAirline, retFlight.marketingAirline, retFlight.duration, retFlight.layovers, retFlight.timezoneOffset);
+    this.retFlight = new Flight(retFlight.fromTime, retFlight.fromTimeDetails, retFlight.fromDateTime, retFlight.fromLocalTime, retFlight.toTime, retFlight.toTimeDetails, retFlight.toDateTime, retFlight.toLocalTime, depFlight.toLocalDateTime, retFlight.operatingAirline, retFlight.marketingAirline, retFlight.duration, retFlight.layovers, retFlight.timezoneOffset);
     this.id = "".concat(this.depFlight.id, "-").concat(this.retFlight.id);
   } else {
     this.id = this.depFlight.id;
