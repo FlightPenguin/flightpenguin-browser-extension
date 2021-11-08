@@ -355,11 +355,12 @@ var getFlightLayovers = function getFlightLayovers(modal, flightType) {
   var legSection = getLegSection(modal, flightType);
   var flightSegments = getFlightSegments(legSection);
   var previousFlightSegment;
+  var previousFlightLeg;
   var elapsedTimezoneOffset = 0;
   return flightSegments.map(function (flightSegment) {
     var departureTime = getFormattedDepartureTime(flightSegment.departureTime, previousFlightSegment);
     var arrivalTime = getFormattedArrivalTime(flightSegment.departureTime, flightSegment.arrivalTime);
-    var flightLeg = new _shared_types_FlightLeg__WEBPACK_IMPORTED_MODULE_1__.FlightLeg({
+    var input = {
       from: flightSegment.departureAirport.code,
       fromTime: departureTime,
       to: flightSegment.arrivalAirport.code,
@@ -367,9 +368,20 @@ var getFlightLayovers = function getFlightLayovers(modal, flightType) {
       operatingAirline: flightSegment.operatingAirline,
       duration: flightSegment.durationText,
       elapsedTimezoneOffset: elapsedTimezoneOffset
-    });
+    };
+    var flightLeg = new _shared_types_FlightLeg__WEBPACK_IMPORTED_MODULE_1__.FlightLeg(input);
+
+    if (previousFlightLeg && previousFlightLeg.toTimeDetails.hours > flightLeg.fromTimeDetails.hours && (flightLeg.fromTimeDetails.excessDays === null || previousFlightLeg.toTimeDetails.excessDayCount <= flightLeg.fromTimeDetails.excessDayCount)) {
+      console.log(flightLeg);
+      console.log(previousFlightLeg); // handle when missing +1 day...
+
+      input.fromTime = "".concat(departureTime, "+1");
+      flightLeg = new _shared_types_FlightLeg__WEBPACK_IMPORTED_MODULE_1__.FlightLeg(input);
+    }
+
     elapsedTimezoneOffset += flightLeg.timezoneOffset;
     previousFlightSegment = flightSegment;
+    previousFlightLeg = flightLeg;
     return flightLeg;
   });
 };
@@ -1954,7 +1966,8 @@ var FlightDetails = /*#__PURE__*/function () {
         displayHours: displayHours,
         minutes: minutes,
         timeOfDay: timeOfDay,
-        excessDays: excessDays ? excessDays[0] : excessDays
+        excessDays: excessDays ? excessDays[0] : excessDays,
+        excessDayCount: excessDays ? Number(excessDays[0].split("+").slice(-1)[0].trim()) : 0
       };
     }
   }, {
@@ -2119,7 +2132,8 @@ var FlightLeg = /*#__PURE__*/function () {
         displayHours: displayHours,
         minutes: minutes,
         timeOfDay: timeOfDay,
-        excessDays: excessDays ? excessDays[0] : excessDays
+        excessDays: excessDays ? excessDays[0] : excessDays,
+        excessDayCount: excessDays ? Number(excessDays[0].split("+").slice(-1)[0].trim()) : 0
       };
     }
   }]);

@@ -747,7 +747,8 @@ var FlightDetails = /*#__PURE__*/function () {
         displayHours: displayHours,
         minutes: minutes,
         timeOfDay: timeOfDay,
-        excessDays: excessDays ? excessDays[0] : excessDays
+        excessDays: excessDays ? excessDays[0] : excessDays,
+        excessDayCount: excessDays ? Number(excessDays[0].split("+").slice(-1)[0].trim()) : 0
       };
     }
   }, {
@@ -912,7 +913,8 @@ var FlightLeg = /*#__PURE__*/function () {
         displayHours: displayHours,
         minutes: minutes,
         timeOfDay: timeOfDay,
-        excessDays: excessDays ? excessDays[0] : excessDays
+        excessDays: excessDays ? excessDays[0] : excessDays,
+        excessDayCount: excessDays ? Number(excessDays[0].split("+").slice(-1)[0].trim()) : 0
       };
     }
   }]);
@@ -1681,7 +1683,7 @@ var getFlightLayovers = function getFlightLayovers(legContainer) {
         var flightLeg = new _shared_types_FlightLeg__WEBPACK_IMPORTED_MODULE_2__.FlightLeg(input);
         var previousLayover = layovers.slice(-1)[0];
 
-        if (previousLayover && previousLayover.toTimeDetails.hours > flightLeg.fromTimeDetails.hours && previousLayover.toTimeDetails.excessDays === null) {
+        if (previousLayover && previousLayover.toTimeDetails.hours > flightLeg.fromTimeDetails.hours && (flightLeg.fromTimeDetails.excessDays === null || previousLayover.toTimeDetails.excessDays === flightLeg.fromTimeDetails.excessDays)) {
           // handle when missing +1 day...
           input.fromTime = "".concat(departureTime, "+1");
           flightLeg = new _shared_types_FlightLeg__WEBPACK_IMPORTED_MODULE_2__.FlightLeg(input);

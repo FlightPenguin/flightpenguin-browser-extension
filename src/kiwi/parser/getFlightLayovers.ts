@@ -32,12 +32,12 @@ export const getFlightLayovers = (modal: HTMLDivElement, flightType: FlightType)
   const flightSegments = getFlightSegments(legSection);
 
   let previousFlightSegment: KiwiDetailedFlightSegment;
+  let previousFlightLeg: FlightLeg;
   let elapsedTimezoneOffset = 0;
   return flightSegments.map((flightSegment) => {
     const departureTime = getFormattedDepartureTime(flightSegment.departureTime, previousFlightSegment);
     const arrivalTime = getFormattedArrivalTime(flightSegment.departureTime, flightSegment.arrivalTime);
-
-    const flightLeg = new FlightLeg({
+    const input = {
       from: flightSegment.departureAirport.code,
       fromTime: departureTime,
       to: flightSegment.arrivalAirport.code,
@@ -45,9 +45,26 @@ export const getFlightLayovers = (modal: HTMLDivElement, flightType: FlightType)
       operatingAirline: flightSegment.operatingAirline,
       duration: flightSegment.durationText,
       elapsedTimezoneOffset,
-    });
+    };
+
+    let flightLeg = new FlightLeg(input);
+    if (
+      previousFlightLeg &&
+      previousFlightLeg.toTimeDetails.hours > flightLeg.fromTimeDetails.hours &&
+      (flightLeg.fromTimeDetails.excessDays === null ||
+        previousFlightLeg.toTimeDetails.excessDayCount <= flightLeg.fromTimeDetails.excessDayCount)
+    ) {
+      console.log(flightLeg);
+      console.log(previousFlightLeg);
+
+      // handle when missing +1 day...
+      input.fromTime = `${departureTime}+1`;
+      flightLeg = new FlightLeg(input);
+    }
+
     elapsedTimezoneOffset += flightLeg.timezoneOffset;
     previousFlightSegment = flightSegment;
+    previousFlightLeg = flightLeg;
     return flightLeg;
   });
 };

@@ -1665,7 +1665,8 @@ var FlightDetails = /*#__PURE__*/function () {
         displayHours: displayHours,
         minutes: minutes,
         timeOfDay: timeOfDay,
-        excessDays: excessDays ? excessDays[0] : excessDays
+        excessDays: excessDays ? excessDays[0] : excessDays,
+        excessDayCount: excessDays ? Number(excessDays[0].split("+").slice(-1)[0].trim()) : 0
       };
     }
   }, {
@@ -1830,7 +1831,8 @@ var FlightLeg = /*#__PURE__*/function () {
         displayHours: displayHours,
         minutes: minutes,
         timeOfDay: timeOfDay,
-        excessDays: excessDays ? excessDays[0] : excessDays
+        excessDays: excessDays ? excessDays[0] : excessDays,
+        excessDayCount: excessDays ? Number(excessDays[0].split("+").slice(-1)[0].trim()) : 0
       };
     }
   }]);

@@ -94,6 +94,7 @@ export class FlightDetails {
       minutes,
       timeOfDay,
       excessDays: excessDays ? excessDays[0] : excessDays,
+      excessDayCount: excessDays ? Number(excessDays[0].split("+").slice(-1)[0].trim()) : 0,
     };
   }
 

@@ -8,14 +8,16 @@
 				"displayHours": 8,
 				"minutes": 0,
 				"timeOfDay": "am",
-				"excessDays": null
+				"excessDays": null,
+				"excessDayCount": 0
 			},
 			"toTimeDetails": {
 				"hours": 9,
 				"displayHours": 9,
 				"minutes": 30,
 				"timeOfDay": "am",
-				"excessDays": null
+				"excessDays": null,
+				"excessDayCount": 0
 			},
 			"operatingAirline": {
 				"display": "Southwest",
@@ -40,14 +42,16 @@
 				"displayHours": 1,
 				"minutes": 0,
 				"timeOfDay": "pm",
-				"excessDays": null
+				"excessDays": null,
+				"excessDayCount": 0
 			},
 			"toTimeDetails": {
 				"hours": 14,
 				"displayHours": 2,
 				"minutes": 30,
 				"timeOfDay": "pm",
-				"excessDays": null
+				"excessDays": null,
+				"excessDayCount": 0
 			},
 			"operatingAirline": {
 				"display": "Southwest",
@@ -79,14 +83,16 @@
 				"displayHours": 5,
 				"minutes": 0,
 				"timeOfDay": "am",
-				"excessDays": null
+				"excessDays": null,
+				"excessDayCount": 0
 			},
 			"toTimeDetails": {
 				"hours": 7,
 				"displayHours": 7,
 				"minutes": 0,
 				"timeOfDay": "am",
-				"excessDays": null
+				"excessDays": null,
+				"excessDayCount": 0
 			},
 			"operatingAirline": {
 				"display": "jetBlue",
@@ -111,14 +117,16 @@
 				"displayHours": 6,
 				"minutes": 0,
 				"timeOfDay": "am",
-				"excessDays": null
+				"excessDays": null,
+				"excessDayCount": 0
 			},
 			"toTimeDetails": {
 				"hours": 8,
 				"displayHours": 8,
 				"minutes": 0,
 				"timeOfDay": "am",
-				"excessDays": null
+				"excessDays": null,
+				"excessDayCount": 0
 			},
 			"operatingAirline": {
 				"display": "jetBlue",
@@ -150,14 +158,16 @@
 				"displayHours": 5,
 				"minutes": 5,
 				"timeOfDay": "pm",
-				"excessDays": null
+				"excessDays": null,
+				"excessDayCount": 0
 			},
 			"toTimeDetails": {
 				"hours": 20,
 				"displayHours": 8,
 				"minutes": 45,
 				"timeOfDay": "pm",
-				"excessDays": null
+				"excessDays": null,
+				"excessDayCount": 0
 			},
 			"operatingAirline": {
 				"display": "United",
@@ -223,14 +233,16 @@
 				"displayHours": 1,
 				"minutes": 5,
 				"timeOfDay": "pm",
-				"excessDays": null
+				"excessDays": null,
+				"excessDayCount": 0
 			},
 			"toTimeDetails": {
 				"hours": 18,
 				"displayHours": 6,
 				"minutes": 0,
 				"timeOfDay": "pm",
-				"excessDays": null
+				"excessDays": null,
+				"excessDayCount": 0
 			},
 			"operatingAirline": {
 				"display": "United",
@@ -303,14 +315,16 @@
 				"displayHours": 11,
 				"minutes": 50,
 				"timeOfDay": "am",
-				"excessDays": null
+				"excessDays": null,
+				"excessDayCount": 0
 			},
 			"toTimeDetails": {
 				"hours": 16,
 				"displayHours": 4,
 				"minutes": 45,
 				"timeOfDay": "pm",
-				"excessDays": null
+				"excessDays": null,
+				"excessDayCount": 0
 			},
 			"operatingAirline": {
 				"display": "Delta",
@@ -376,14 +390,16 @@
 				"displayHours": 1,
 				"minutes": 35,
 				"timeOfDay": "pm",
-				"excessDays": null
+				"excessDays": null,
+				"excessDayCount": 0
 			},
 			"toTimeDetails": {
 				"hours": 20,
 				"displayHours": 8,
 				"minutes": 0,
 				"timeOfDay": "pm",
-				"excessDays": null
+				"excessDays": null,
+				"excessDayCount": 0
 			},
 			"operatingAirline": {
 				"display": "Delta",
