@@ -103,8 +103,6 @@ const TimelineSlider = ({
           setValues(value);
           const { datetime: lowerBoundary } = getDatetimeByTick({ startDate, value: value[0] });
           const { datetime: upperBoundary } = getDatetimeByTick({ startDate, value: value[1], timezoneOffset });
-          console.log(lowerBoundary);
-          console.log(upperBoundary);
           onRangeChange(
             getDateValueInRange({ value: lowerBoundary, minimumValue: minimumDate, maximumValue: maximumDate }),
             getDateValueInRange({ value: upperBoundary, minimumValue: minimumDate, maximumValue: maximumDate }),
