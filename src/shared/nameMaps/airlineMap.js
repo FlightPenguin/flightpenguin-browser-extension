@@ -36,6 +36,7 @@ const AirlineMap = {
     "Frontier Airlines": { display: "Frontier", color: "#378055", code: "F9" },
     // "Volaris": { display: "Volaris", color: "#84417B", code: "Y4" }, // Seems like Priceline doeesn't show Volaris
     Interjet: { display: "Interjet", color: "#A8A8A8", code: "4O" },
+    Icelandair: { display: "Icelandair", color: "#043C84", code: "FI" },
     // "Allegiant": { display: "Allegiant", color: "#CAB83D", code: "G4" }, // Seems like Priceline doesn't show Allegiant
     "Hawaiian Airlines": { display: "Hawaiian", color: "#4D388A", code: "HA" },
     // "VivaAerobus": { display: "VivaAerobus", color: "", code: "" }, // Seems like Priceline doesn't show VivaAerobus
