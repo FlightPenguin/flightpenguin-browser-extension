@@ -25,7 +25,10 @@ const getFlightCard = (selectedFlightId: string, selectedReturnId: string) => {
     throw new ParserError("Unable to find flights in highlighting");
   }
 
-  const flightId = `${selectedFlightId}-${selectedReturnId}`;
+  let flightId = `${selectedFlightId}`;
+  if (selectedReturnId) {
+    flightId = `${selectedFlightId}-${selectedReturnId}`;
+  }
   const flightCard = findMatchingDOMNode([...flightCards], flightId);
   if (!flightCard) {
     throw new MissingElementLookupError("Unable to find flight to highlight");

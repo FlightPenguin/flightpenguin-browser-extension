@@ -1,4 +1,4 @@
-import { Box, List, Tag, Text } from "bumbag";
+import { Badge, Box, List, Tag, Text } from "bumbag";
 import isEqual from "lodash.isequal";
 import React, { useEffect, useState } from "react";
 
@@ -87,6 +87,8 @@ const TimelineRow = ({
       };
   const showWhenSelected = selected ? "visible" : "hidden";
   const skeletonBlur = skeleton ? `blur(8px)` : "";
+  const arrivalTextColor = flight.timezoneOffset ? "warning" : "black";
+  const departureTextColor = flight.timezoneOffset ? "info" : "black";
 
   return (
     <List.Item
@@ -171,8 +173,14 @@ const TimelineRow = ({
           _groupHover={selected ? {} : { visibility: "visible" }}
           _groupFocus={selected ? {} : { visibility: "visible" }}
           backgroundColor="white"
+          color={departureTextColor}
         >
           {flight.fromTime}
+          {!!flight.timezoneOffset && (
+            <Badge isAttached palette="info">
+              {from}
+            </Badge>
+          )}
         </Tag>
         <Tag
           palette="text"
@@ -185,8 +193,14 @@ const TimelineRow = ({
           _groupHover={selected ? {} : { visibility: "visible" }}
           _groupFocus={selected ? {} : { visibility: "visible" }}
           backgroundColor="white"
+          color={arrivalTextColor}
         >
-          {flight.toTime}
+          {flight.toLocalTime}
+          {!!flight.timezoneOffset && (
+            <Badge isAttached palette="warning">
+              {to}
+            </Badge>
+          )}
         </Tag>
       </Box>
     </List.Item>

@@ -1,6 +1,7 @@
 import { MissingElementLookupError, MissingFieldParserError } from "../../shared/errors";
 import { standardizeTimeString } from "../../shared/helpers";
 import AirlineMap from "../../shared/nameMaps/airlineMap";
+import { FlightDetails } from "../../shared/types/FlightDetails";
 import { FlightLeg } from "../../shared/types/FlightLeg";
 import { FlightSearchFormData } from "../../shared/types/FlightSearchFormData";
 import { UnprocessedFlightSearchResult } from "../../shared/types/UnprocessedFlightSearchResult";
@@ -23,63 +24,45 @@ export const getFlight = async (
   const fare = getFare(flightCard);
 
   const departureFlight = getFlightDetails(flightCard, "DEPARTURE");
-  const returnFlight = getFlightDetails(flightCard, "ARRIVAL");
-
-  const { departureLayovers, returnLayovers } = isNonstop(flightCard)
-    ? {
-        departureLayovers: [
-          new FlightLeg({
-            duration: departureFlight.duration,
-            from: formData.from,
-            fromTime: departureFlight.fromTime,
-            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-            // @ts-ignore
-            operatingAirline: departureFlight.operatingAirline || departureFlight.marketingAirline,
-            toTime: departureFlight.toTime,
-            to: formData.to,
-          }),
-        ],
-        returnLayovers: [
-          new FlightLeg({
-            duration: returnFlight.duration,
-            from: formData.to,
-            fromTime: returnFlight.fromTime,
-            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-            // @ts-ignore
-            operatingAirline: returnFlight.operatingAirline || returnFlight.marketingAirline,
-            toTime: returnFlight.toTime,
-            to: formData.from,
-          }),
-        ],
-      }
-    : await getLayovers(flightCard);
-
+  const result = formData.roundtrip
+    ? await getRoundtripResult(flightCard, departureFlight, formData, fare)
+    : await getOneWayResult(flightCard, departureFlight, formData, fare);
   setFlightCardVisited(flightCard);
-  return {
-    departureFlight: { ...departureFlight, layovers: departureLayovers },
-    returnFlight: { ...returnFlight, layovers: returnLayovers },
-    fare,
-  } as UnprocessedFlightSearchResult;
+  return result;
 };
 
 const setFlightCardVisited = (flightCard: HTMLElement) => {
   flightCard.dataset.visited = "true";
 };
 
-const getFare = (flightCard: HTMLElement) => {
-  const fare = flightCard.querySelector(FARE_SELECTOR);
-  if (!fare) {
+const getFare = (flightCard: HTMLElement): string => {
+  const fareElement = flightCard.querySelector(FARE_SELECTOR);
+  if (!fareElement) {
     throw new MissingElementLookupError("Unable to find fare in card");
   }
 
-  return fare.textContent;
+  const fare = fareElement.textContent;
+  if (!fare) {
+    throw new MissingFieldParserError("Unable to extract fare from container");
+  }
+
+  return fare;
 };
 
 const isNonstop = (flightCard: HTMLElement) => {
   return !STOP_REGEX.test(flightCard.textContent || "");
 };
 
-const getFlightDetails = (flightCard: HTMLElement, type: "DEPARTURE" | "ARRIVAL") => {
+const getFlightDetails = (
+  flightCard: HTMLElement,
+  type: "DEPARTURE" | "ARRIVAL",
+): {
+  marketingAirline: string | undefined;
+  operatingAirline: string | null | undefined;
+  fromTime: string;
+  toTime: string;
+  duration: string;
+} => {
   const index = type === "DEPARTURE" ? 0 : 1;
   const flightContainer = flightCard.querySelectorAll(DETAILS_SELECTOR)[index] as HTMLElement;
   if (!flightContainer) {
@@ -160,4 +143,95 @@ const getDurationTime = (flightContainer: HTMLElement) => {
   }
 
   return duration;
+};
+
+const getRoundtripResult = async (
+  flightCard: HTMLElement,
+  departureFlight: {
+    marketingAirline: string | undefined;
+    operatingAirline: string | null | undefined;
+    fromTime: string;
+    toTime: string;
+    duration: string;
+  },
+  formData: FlightSearchFormData,
+  fare: string,
+): Promise<UnprocessedFlightSearchResult> => {
+  const returnFlight = getFlightDetails(flightCard, "ARRIVAL");
+  const { departureLayovers, returnLayovers } = isNonstop(flightCard)
+    ? {
+        departureLayovers: [
+          new FlightLeg({
+            duration: departureFlight.duration,
+            from: formData.from,
+            fromTime: departureFlight.fromTime,
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-ignore
+            operatingAirline: departureFlight.operatingAirline || departureFlight.marketingAirline,
+            toTime: departureFlight.toTime,
+            to: formData.to,
+          }),
+        ],
+        returnLayovers: [
+          new FlightLeg({
+            duration: returnFlight.duration,
+            from: formData.to,
+            fromTime: returnFlight.fromTime,
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-ignore
+            operatingAirline: returnFlight.operatingAirline || returnFlight.marketingAirline,
+            toTime: returnFlight.toTime,
+            to: formData.from,
+          }),
+        ],
+      }
+    : await getLayovers(flightCard);
+  return {
+    departureFlight: new FlightDetails({
+      ...departureFlight,
+      layovers: departureLayovers,
+      departureDate: formData.fromDate,
+    }),
+    returnFlight: new FlightDetails({ ...returnFlight, layovers: returnLayovers, departureDate: formData.toDate }),
+    fare,
+  } as UnprocessedFlightSearchResult;
+};
+
+export const getOneWayResult = async (
+  flightCard: HTMLElement,
+  departureFlight: {
+    marketingAirline: string | undefined;
+    operatingAirline: string | null | undefined;
+    fromTime: string;
+    toTime: string;
+    duration: string;
+  },
+  formData: FlightSearchFormData,
+  fare: string,
+): Promise<UnprocessedFlightSearchResult> => {
+  const { departureLayovers } = isNonstop(flightCard)
+    ? {
+        departureLayovers: [
+          new FlightLeg({
+            duration: departureFlight.duration,
+            from: formData.from,
+            fromTime: departureFlight.fromTime,
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-ignore
+            operatingAirline: departureFlight.operatingAirline || departureFlight.marketingAirline,
+            toTime: departureFlight.toTime,
+            to: formData.to,
+          }),
+        ],
+      }
+    : await getLayovers(flightCard);
+  return {
+    departureFlight: new FlightDetails({
+      ...departureFlight,
+      layovers: departureLayovers,
+      departureDate: formData.fromDate,
+    }),
+    returnFlight: null,
+    fare,
+  } as UnprocessedFlightSearchResult;
 };

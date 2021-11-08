@@ -17,8 +17,8 @@ export const getFlight = async ({ flightCard, formData }: GetFlightProps): Promi
 
   const { departureLayovers, returnLayovers } = await getAllLayovers({ flightCard, roundtrip: formData.roundtrip });
 
-  const departureFlight = getFlightDetails(flightCard, "DEPARTURE", departureLayovers);
-  const returnFlight = formData.roundtrip ? getFlightDetails(flightCard, "RETURN", returnLayovers) : null;
+  const departureFlight = getFlightDetails(flightCard, "DEPARTURE", departureLayovers, formData);
+  const returnFlight = formData.roundtrip ? getFlightDetails(flightCard, "RETURN", returnLayovers, formData) : null;
 
   const id = getFlightPenguinId(departureFlight.id, formData.roundtrip && returnFlight ? returnFlight.id : null);
   setFlightId(flightCard, id);

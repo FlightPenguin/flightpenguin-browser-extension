@@ -16,17 +16,48 @@ import { convertDurationToMinutes, getTimeDetails, getTimezoneOffset } from "./u
  *  layovers: [Layover] // TODO
  * }
  * @param {string} fromTime
+ * @param {FlightTimeDetails} fromTimeDetails
+ * @param {Date} fromDateTime
+ * @param {string} fromLocalTime
  * @param {string} toTime
+ * @param {FlightTimeDetails} toTimeDetails
+ * @param {Date} toDateTime
+ * @param {string} toLocalTime
+ * @param {Date} toLocalDateTime
  * @param {string} operatingAirline
  * @param {string} marketingAirline
  * @param {string} duration
+ * @param {Object[]} layovers
+ * @param {number} timezoneOffset
  */
-function Flight(fromTime, toTime, operatingAirline, marketingAirline, duration, layovers) {
+function Flight(
+  fromTime,
+  fromTimeDetails,
+  fromDateTime,
+  fromLocalTime,
+  toTime,
+  toTimeDetails,
+  toDateTime,
+  toLocalTime,
+  toLocalDateTime,
+  operatingAirline,
+  marketingAirline,
+  duration,
+  layovers,
+  timezoneOffset,
+) {
   this.fromTime = fromTime;
   this.toTime = toTime;
 
-  this.fromTimeDetails = getTimeDetails(fromTime);
-  this.toTimeDetails = getTimeDetails(toTime);
+  this.fromTimeDetails = fromTimeDetails;
+  this.toTimeDetails = toTimeDetails;
+
+  this.fromDateTime = fromDateTime;
+  this.toDateTime = toDateTime;
+
+  this.fromLocalTime = fromLocalTime;
+  this.toLocalTime = toLocalTime;
+  this.toLocalDateTime = toLocalDateTime;
 
   let opAirline = operatingAirline
     ? operatingAirline.replace("Operated by", "").replace("Partially operated by", "")
@@ -58,12 +89,14 @@ function Flight(fromTime, toTime, operatingAirline, marketingAirline, duration, 
   this.operatingAirline = cleanupAirline(this.operatingAirline);
 
   // marketing airline is unique, not operating
-  this.id = `${this.fromTime}-${this.toTime}-${markAirline}`;
+  this.id = `${this.fromLocalTime}-${this.toLocalTime}-${markAirline}`;
   this.duration = duration;
   this.durationMinutes = convertDurationToMinutes(duration);
   this.layovers = layovers || [];
   this.itinIds = [];
-  this.timezoneOffset = this.calculateTimezoneOffset();
+  this.timezoneOffset = timezoneOffset;
+
+  this.updateLayovers();
 }
 
 function cleanupAirline(airline) {
@@ -86,44 +119,40 @@ function cleanupAirline(airline) {
   return AirlineMap.getAirlineDetails(shortAirlineName.replace("  ", " "));
 }
 
-Flight.prototype.calculateTimezoneOffset = function () {
-  let totalTimezoneOffset = 0;
-
-  if (!this.layovers.length) {
-    totalTimezoneOffset = getTimezoneOffset(this.fromTime, this.toTime, this.duration);
-  } else {
-    const layovers = this.layovers.map(({ fromTime, toTime, duration, operatingAirline }, idx) => {
-      totalTimezoneOffset += getTimezoneOffset(fromTime, toTime, duration);
+Flight.prototype.updateLayovers = function () {
+  if (this.layovers.length) {
+    const layovers = this.layovers.map(({ fromTime, toTime, duration, operatingAirline, timezoneOffset }, idx) => {
       return {
         ...this.layovers[idx],
         fromTimeDetails: getTimeDetails(fromTime),
         toTimeDetails: getTimeDetails(toTime),
         duration: duration,
         operatingAirline: cleanupAirline(operatingAirline),
-        timezoneOffset: totalTimezoneOffset,
+        timezoneOffset: timezoneOffset,
+        isLayoverStop: false,
       };
     });
     const layoversWithStops = [];
     for (let i = 0; i < layovers.length - 1; i++) {
       const previousFlight = layovers[i];
       const nextFlight = layovers[i + 1];
-      let { toTime: fromTime, to: from } = previousFlight;
-      let { fromTime: toTime, from: to } = nextFlight;
-      const fromTimeDetails = getTimeDetails(fromTime);
-      const toTimeDetails = getTimeDetails(toTime);
+      let { toTime: fromTime, to: from, toLocalTime: fromLocalTime, toTimeDetails: fromTimeDetails } = previousFlight;
+      let { fromTime: toTime, from: to, fromLocalTime: toLocalTime, fromTimeDetails: toTimeDetails } = nextFlight;
       const { durationInMinutes, duration } = getCalculatedDuration(fromTimeDetails, toTimeDetails);
-      toTimeDetails.hours * 60 + toTimeDetails.minutes - (fromTimeDetails.hours * 60 - fromTimeDetails.minutes);
 
       layoversWithStops.push(previousFlight);
       layoversWithStops.push({
         fromTime,
         fromTimeDetails,
+        fromLocalTime,
         toTime,
         toTimeDetails,
+        toLocalTime,
         duration,
         durationInMinutes,
         from,
         to,
+        timezoneOffset: 0,
         isLayoverStop: true,
         operatingAirline: {
           display: `Layover at ${from}.`,
@@ -134,7 +163,6 @@ Flight.prototype.calculateTimezoneOffset = function () {
     layoversWithStops.push(layovers[layovers.length - 1]);
     this.layovers = layoversWithStops;
   }
-  return totalTimezoneOffset;
 };
 // TODO
 // Flight.prototype.addLayover = function(layover) {
@@ -191,22 +219,38 @@ function Itin(depFlight, retFlight, fare, currency, provider, windowId, tabId, m
   } else {
     this.depFlight = new Flight(
       depFlight.fromTime,
+      depFlight.fromTimeDetails,
+      depFlight.fromDateTime,
+      depFlight.fromLocalTime,
       depFlight.toTime,
+      depFlight.toTimeDetails,
+      depFlight.toDateTime,
+      depFlight.toLocalTime,
+      depFlight.toLocalDateTime,
       depFlight.operatingAirline,
       depFlight.marketingAirline,
       depFlight.duration,
       depFlight.layovers,
+      depFlight.timezoneOffset,
     );
   }
 
   if (retFlight) {
     this.retFlight = new Flight(
       retFlight.fromTime,
+      retFlight.fromTimeDetails,
+      retFlight.fromDateTime,
+      retFlight.fromLocalTime,
       retFlight.toTime,
+      retFlight.toTimeDetails,
+      retFlight.toDateTime,
+      retFlight.toLocalTime,
+      depFlight.toLocalDateTime,
       retFlight.operatingAirline,
       retFlight.marketingAirline,
       retFlight.duration,
       retFlight.layovers,
+      retFlight.timezoneOffset,
     );
     this.id = `${this.depFlight.id}-${this.retFlight.id}`;
   } else {

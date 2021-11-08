@@ -15,7 +15,9 @@ export const getFlightSegments = (
   if (layoversWithStops.length === 0) {
     layoversWithStops.push({
       fromTime: flight.fromTime,
+      fromLocalTime: flight.fromLocalTime,
       toTime: flight.toTime,
+      toLocalTime: flight.toLocalTime,
       from: tripStartAirport,
       to: tripEndAirport,
       isLayoverStop: false,
@@ -50,16 +52,16 @@ export const getFlightSegments = (
     }
 
     // eslint-disable-next-line prefer-const
-    let { width, startX } = getPosition(
-      layover.fromTime,
-      layover.toTime,
+    let { width, startX } = getPosition({
+      fromTime: layover.fromTime,
+      toTime: layover.toTime,
       startDayOffset,
       endDayOffset,
       increment,
       startHourOffset,
       intervalCount,
       containerWidth,
-    );
+    });
 
     if (layover.isLayoverStop) {
       width += 1;

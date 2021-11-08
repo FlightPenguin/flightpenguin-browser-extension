@@ -6,7 +6,8 @@ const defaultEntry = {
   background: "./src/background.js",
   index: "./src/index.js",
   skyscanner: "./src/skyscanner/contentScript.js",
-  southwest: "./src/southwest/contentScript.js",
+  southwest: "./src/southwest/contentScript.ts",
+  southwestEmpty: "./src/southwest/emptyResultsContentScript.ts",
   expedia: "./src/expedia/contentScript.js",
   kiwi: "./src/kiwi/contentScript.ts",
 };
@@ -40,7 +41,7 @@ const basePlugins = [
   new ProgressPlugin({}),
   new DefinePlugin({
     "process.env.BUMBAG_ENV": JSON.stringify("not test"),
-    "process.env.VERSION": "1.6.1",
+    "process.env.VERSION": "1.7.0",
   }),
 ];
 

@@ -13,10 +13,17 @@ export const getCalculatedDuration = (
   }
 
   const durationInMinutes =
-    endHours * 60 + toTimeDetails.minutes - (fromTimeDetails.hours * 60 - fromTimeDetails.minutes);
+    endHours * 60 + toTimeDetails.minutes - (fromTimeDetails.hours * 60 + fromTimeDetails.minutes);
 
   const durationHours = Math.floor(durationInMinutes / 60);
   const durationMinutes = durationInMinutes - durationHours * 60;
 
-  return { durationInMinutes, duration: `${durationHours}h ${durationMinutes}m` };
+  let duration;
+  if (durationHours && !durationMinutes) {
+    duration = `${durationHours}h`;
+  } else {
+    duration = durationHours ? `${durationHours}h ${durationMinutes}m` : `${durationMinutes}m`;
+  }
+
+  return { durationInMinutes, duration };
 };

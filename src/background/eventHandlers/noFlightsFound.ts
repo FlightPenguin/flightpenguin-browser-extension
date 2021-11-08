@@ -7,8 +7,11 @@ export const handleNoFlightsFound = (
   searchType: SearchType,
 ): void => {
   providerManager.setSuccessful(providerName, searchType);
+  providerManager.sendMessageToIndexPage({ event: "SCRAPER_COMPLETE", providerName: providerName, status: "SUCCESS" });
+  providerManager.closeWindow(providerName);
   if (providerManager.isComplete(searchType)) {
-    providerManager.sendMessageToIndexPage({ event: "NO_FLIGHTS_FOUND_CLIENT" });
+    const flightType = searchType === "BOTH" ? "DEPARTURE" : searchType;
+    providerManager.sendMessageToIndexPage({ event: "SCRAPING_COMPLETED", searchType: flightType }, 3000);
     providerManager.closeWindows();
   }
 };
