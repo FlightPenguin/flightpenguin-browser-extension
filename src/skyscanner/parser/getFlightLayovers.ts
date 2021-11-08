@@ -28,7 +28,19 @@ export const getFlightLayovers = (legContainer: HTMLElement): FlightLeg[] => {
       input.to = arrivalAirport;
       input.fromTime = departureTime;
       input.toTime = arrivalTime;
-      const flightLeg = new FlightLeg(input);
+      let flightLeg = new FlightLeg(input);
+
+      const previousLayover = layovers.slice(-1)[0];
+      if (
+        previousLayover &&
+        previousLayover.toTimeDetails.hours > flightLeg.fromTimeDetails.hours &&
+        previousLayover.toTimeDetails.excessDays === null
+      ) {
+        // handle when missing +1 day...
+        input.fromTime = `${departureTime}+1`;
+        flightLeg = new FlightLeg(input);
+      }
+
       layovers.push(flightLeg);
       elapsedTimezoneOffset += flightLeg.timezoneOffset;
       input = { elapsedTimezoneOffset } as FlightLegInput;

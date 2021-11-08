@@ -12,7 +12,7 @@ const FLIGHT_CARD_SELECTOR = "[class*='FlightsTicket_container'] [role='button']
 
 export const getUnsentFlights = async (
   formData: FlightSearchFormData,
-  loadingTimeout = 30_000,
+  loadingTimeout = 30000,
 ): Promise<UnprocessedFlightSearchResult[]> => {
   await waitForAppearance(loadingTimeout, "body");
   if (isCaptcha()) {
