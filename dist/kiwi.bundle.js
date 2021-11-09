@@ -916,7 +916,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _shared_errors__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../shared/errors */ "./src/shared/errors.ts");
 
 var findFlightCard = function findFlightCard(id) {
-  var desiredFlightCardSelector = "div[data-fpid=\"".concat(id, "\"]");
+  var desiredFlightCardSelector = "div[data-fpid*='".concat(id, "']");
   var flightCard = document.querySelector(desiredFlightCardSelector);
 
   if (!flightCard) {
