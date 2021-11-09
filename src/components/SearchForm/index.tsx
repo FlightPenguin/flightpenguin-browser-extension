@@ -53,17 +53,21 @@ const SearchFormSchema = object({
       const fromDate = getParsedDate(value as string);
       return fromDate <= maxDate;
     }),
-  toDate: string()
-    .required("What day do you want to leave on?")
-    .test("future end date", "Your return flight cannot start before your departure flight.", (value, ctx) => {
-      const toDate = getParsedDate(value as string);
-      const fromDate = getParsedDate(ctx.parent.fromDate);
-      return toDate >= fromDate;
-    })
-    .test("not too future start date", "We cannot look up flights this far in the future.", (value) => {
-      const toDate = getParsedDate(value as string);
-      return toDate <= maxDate;
-    }),
+  toDate: string().when("roundtrip", {
+    is: true,
+    then: string()
+      .required("What day do you want to leave on?")
+      .test("future end date", "Your return flight cannot start before your departure flight.", (value, ctx) => {
+        const toDate = getParsedDate(value as string);
+        const fromDate = getParsedDate(ctx.parent.fromDate);
+        return toDate >= fromDate;
+      })
+      .test("not too future start date", "We cannot look up flights this far in the future.", (value) => {
+        const toDate = getParsedDate(value as string);
+        return toDate <= maxDate;
+      }),
+    otherwise: string().nullable(),
+  }),
   numPax: number()
     .required("How many people will be travelling on this flight?")
     .min(1, "You must always have at least one passenger.")
@@ -118,7 +122,7 @@ export const SearchForm = ({ onSubmit, initialValues = defaultInitialValues }: S
               from: values.from.toUpperCase(),
               fromDate: getChromeFormatDate(values.fromDate),
               to: values.to.toUpperCase(),
-              toDate: getChromeFormatDate(values.toDate),
+              toDate: values.toDate ? getChromeFormatDate(values.toDate) : "",
               searchByPoints: getBooleanFromString(values.searchByPoints),
               pointsType: pointsType,
             };
