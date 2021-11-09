@@ -30,6 +30,7 @@ export const getFlightSegments = (
   let startDayOffset = 0;
   let endDayOffset = 0;
 
+  let previousLayover: FlightSegment;
   return layoversWithStops.map((layover) => {
     if (endDayOffset > startDayOffset) {
       startDayOffset = endDayOffset;
@@ -66,6 +67,12 @@ export const getFlightSegments = (
     if (layover.isLayoverStop) {
       width += 1;
     }
-    return new FlightSegment({ ...layover, layout: { width: width, startPosition: startX } });
+    if (previousLayover) {
+      startX = previousLayover.layout.startPosition + previousLayover.layout.width;
+    }
+
+    const flightSegment = new FlightSegment({ ...layover, layout: { width: width, startPosition: startX } });
+    previousLayover = flightSegment;
+    return flightSegment;
   });
 };
