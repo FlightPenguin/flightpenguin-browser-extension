@@ -2277,7 +2277,7 @@ var AirlineMap = {
     },
     Lufthansa: {
       display: "Lufthansa",
-      color: "#EFB95D",
+      color: "#0A1D3D",
       code: "LH"
     },
     SWISS: {
@@ -2311,6 +2311,11 @@ var AirlineMap = {
       code: "EK"
     },
     "KLM-Royal Dutch Airlines": {
+      display: "KLM",
+      color: "#44A0DC",
+      code: "KL"
+    },
+    "KLM Royal Dutch Airlines": {
       display: "KLM",
       color: "#44A0DC",
       code: "KL"
@@ -2383,6 +2388,21 @@ var AirlineMap = {
       display: "Breeze Airways",
       color: "#ABC3EB",
       code: "MX"
+    },
+    "Virgin Atlantic": {
+      display: "Virgin Atlantic",
+      color: "#AA1C2A",
+      code: "VS"
+    },
+    "Virgin Atlantic Airways": {
+      display: "Virgin Atlantic",
+      color: "#AA1C2A",
+      code: "VS"
+    },
+    Finnair: {
+      display: "Finnair",
+      color: "#7F1F89",
+      code: "AY"
     }
   },
   getAirlineName: function getAirlineName(airlineName) {

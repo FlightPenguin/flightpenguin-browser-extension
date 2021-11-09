@@ -57,7 +57,7 @@ const AirlineMap = {
       color: "#93ACCA",
       code: "CZ",
     },
-    Lufthansa: { display: "Lufthansa", color: "#EFB95D", code: "LH" },
+    Lufthansa: { display: "Lufthansa", color: "#0A1D3D", code: "LH" },
     SWISS: { display: "Swiss", color: "#D42D21", code: "LX" },
     "China Eastern Airlines": {
       display: "China Eastern",
@@ -69,6 +69,7 @@ const AirlineMap = {
     "Air China": { display: "Air China", color: "#DF524B", code: "CA" },
     "Emirates Airlines": { display: "Emirates", color: "#CF534F", code: "EK" },
     "KLM-Royal Dutch Airlines": { display: "KLM", color: "#44A0DC", code: "KL" },
+    "KLM Royal Dutch Airlines": { display: "KLM", color: "#44A0DC", code: "KL" },
     "Air France": { display: "Air France", color: "#DB3832", code: "AF" },
     "Turkish Airlines": { display: "Turkish", color: "#DB3832", code: "TK" },
     "Cathay Pacific": { display: "Cathay", color: "#2A645A", code: "CX" },
@@ -83,6 +84,9 @@ const AirlineMap = {
     "Singapore Airlines": { display: "Singapore", color: "#EFA952", code: "SQ" },
     "ANA (All Nippon Airways)": { display: "ANA", color: "#0f4a8d" },
     "Breeze Airways": { display: "Breeze Airways", color: "#ABC3EB", code: "MX" },
+    "Virgin Atlantic": { display: "Virgin Atlantic", color: "#AA1C2A", code: "VS" },
+    "Virgin Atlantic Airways": { display: "Virgin Atlantic", color: "#AA1C2A", code: "VS" },
+    Finnair: { display: "Finnair", color: "#7F1F89", code: "AY" },
   },
   getAirlineName: function (airlineName) {
     if (!airlineName || typeof airlineName !== "string") {
