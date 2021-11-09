@@ -1,7 +1,7 @@
 import { Box, Button, Card, FieldStack, FieldWrapper, Input, RadioGroup, Select, Switch } from "bumbag";
-import { addDays, endOfDay, nextSunday, startOfDay } from "date-fns";
+import { addDays, endOfDay, max, nextSunday, startOfDay } from "date-fns";
 import { Field as FormikField, Form, Formik } from "formik";
-import React from "react";
+import React, { useState } from "react";
 import { boolean, mixed, number, object, string } from "yup";
 
 import { CabinMap } from "../../background/constants";
@@ -10,7 +10,8 @@ import { CardType, PointsMap, searchFormWidth } from "../constants";
 import { getFieldState, getParsedDate, getValidationText } from "../utilities/forms";
 import { disableNonAlphaInput } from "../utilities/forms/disableNonAlphaInput";
 import { getBooleanFromString } from "../utilities/forms/getBooleanFromString";
-import { getChromeFormatDate } from "../utilities/forms/getChromeFormatDate";
+import { getChromeFormattedDateFromDate } from "../utilities/forms/getChromeFormattedDateFromDate";
+import { getChromeFormattedDateFromString } from "../utilities/forms/getChromeFormattedDateFromString";
 import { getFormattedDate } from "../utilities/forms/getFormattedDate";
 import { getPrettyRewardsCardName } from "../utilities/forms/getPrettyRewardsCardName";
 import { getStandardizedFormatDate } from "../utilities/forms/getStandardizedFormatDate";
@@ -106,6 +107,12 @@ interface SearchFormProps {
 }
 
 export const SearchForm = ({ onSubmit, initialValues = defaultInitialValues }: SearchFormProps): React.ReactElement => {
+  const [toDateBounds, setToDateBounds] = useState({
+    minimum: getChromeFormattedDateFromDate(fridayAfterNext),
+    maximum: getChromeFormattedDateFromDate(maxDate),
+  });
+  console.log(JSON.stringify(toDateBounds));
+
   return (
     <Box className="search-form-wrapper" alignX="center">
       <Card maxWidth={`${searchFormWidth}px`}>
@@ -120,9 +127,9 @@ export const SearchForm = ({ onSubmit, initialValues = defaultInitialValues }: S
             const cleanValues = {
               ...values,
               from: values.from.toUpperCase(),
-              fromDate: getChromeFormatDate(values.fromDate),
+              fromDate: getChromeFormattedDateFromString(values.fromDate),
               to: values.to.toUpperCase(),
-              toDate: values.toDate ? getChromeFormatDate(values.toDate) : "",
+              toDate: values.toDate ? getChromeFormattedDateFromString(values.toDate) : "",
               searchByPoints: getBooleanFromString(values.searchByPoints),
               pointsType: pointsType,
             };
@@ -182,7 +189,6 @@ export const SearchForm = ({ onSubmit, initialValues = defaultInitialValues }: S
                         target.placeholder = "";
                         return formik.handleChange(event);
                       }}
-                      // eslint-disable-next-line sonarjs/no-identical-functions
                       onBlur={(event: Event) => {
                         const target = event.target as HTMLInputElement;
                         target.placeholder = "";
@@ -234,16 +240,41 @@ export const SearchForm = ({ onSubmit, initialValues = defaultInitialValues }: S
                       type="text"
                       autoComplete="off"
                       hasFieldWrapper={true}
-                      onChange={formik.handleChange}
-                      onBlur={(event: Event) => {
+                      onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+                        formik.handleChange(event);
+                      }}
+                      onBlur={async (event: React.FocusEvent<HTMLInputElement>) => {
                         const target = event.target as HTMLInputElement;
                         target.type = "text";
+                        const input = event.currentTarget?.value;
 
-                        const value = isValidDateInputString(target.value)
-                          ? getStandardizedFormatDate(target.value)
-                          : initialValues.fromDate;
+                        const maximumTo = getChromeFormattedDateFromDate(maxDate);
+                        let minimumTo: string;
+                        let value;
+                        if (isValidDateInputString(input)) {
+                          value = getStandardizedFormatDate(input);
+                          minimumTo = getChromeFormattedDateFromString(input);
 
-                        formik.setFieldValue("fromDate", value);
+                          const departureDate = getParsedDate(input);
+                          const arrivalDate = formik.values.toDate
+                            ? getParsedDate(formik.values.toDate)
+                            : getFormattedDate(nextSunday(fridayAfterNext));
+
+                          if (arrivalDate && departureDate > arrivalDate) {
+                            const guessArrivalPreference = getFormattedDate(nextSunday(departureDate));
+                            await formik.setFieldValue("toDate", guessArrivalPreference, true);
+                            await formik.setFieldError("toDate", "Your arrival date was automatically changed.");
+                          }
+                        } else {
+                          value = initialValues.fromDate;
+                          minimumTo = getChromeFormattedDateFromDate(today);
+                        }
+                        formik.setFieldValue("fromDate", value, true);
+                        setToDateBounds({
+                          minimum: minimumTo,
+                          maximum: maximumTo,
+                        });
+
                         formik.handleBlur(event);
                       }}
                       onFocus={(event: Event) => {
@@ -252,10 +283,12 @@ export const SearchForm = ({ onSubmit, initialValues = defaultInitialValues }: S
 
                         target.type = "date";
                         if (currentValue) {
-                          target.value = getChromeFormatDate(currentValue);
+                          target.value = getChromeFormattedDateFromString(currentValue);
                         }
                       }}
                       disabled={formik.isSubmitting}
+                      min={getChromeFormattedDateFromDate(today)}
+                      max={getChromeFormattedDateFromDate(maxDate)}
                       containLabel
                     />
                   </FieldWrapper>
@@ -271,30 +304,46 @@ export const SearchForm = ({ onSubmit, initialValues = defaultInitialValues }: S
                         type="text"
                         autoComplete="off"
                         hasFieldWrapper={true}
-                        onChange={formik.handleChange}
-                        onBlur={(event: Event) => {
+                        onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+                          formik.handleChange(event);
+                        }}
+                        onBlur={async (event: React.FocusEvent<HTMLInputElement>) => {
                           const target = event.target as HTMLInputElement;
                           target.type = "text";
+                          const input = event.currentTarget?.value;
 
-                          const value = isValidDateInputString(target.value)
-                            ? getStandardizedFormatDate(target.value)
-                            : initialValues.fromDate;
+                          let value;
+                          if (isValidDateInputString(input)) {
+                            value = getStandardizedFormatDate(input);
 
+                            const arrivalDate = getParsedDate(input);
+                            const departureDate = formik.values.fromDate
+                              ? getParsedDate(formik.values.fromDate)
+                              : getFormattedDate(nextSunday(fridayAfterNext));
+
+                            if (departureDate && departureDate > arrivalDate) {
+                              const guessDeparturePreference = getFormattedDate(max([addDays(arrivalDate, -2), today]));
+                              await formik.setFieldValue("fromDate", guessDeparturePreference, true);
+                            }
+                          } else {
+                            value = initialValues.fromDate;
+                          }
                           formik.setFieldValue("toDate", value);
                           formik.handleBlur(event);
                         }}
-                        // eslint-disable-next-line sonarjs/no-identical-functions
                         onFocus={(event: Event) => {
                           const target = event.target as HTMLInputElement;
                           const currentValue = target.value;
 
                           target.type = "date";
                           if (currentValue) {
-                            target.value = getChromeFormatDate(currentValue);
+                            target.value = getChromeFormattedDateFromString(currentValue);
                           }
                         }}
                         disabled={formik.isSubmitting}
                         group="role"
+                        min={toDateBounds.minimum}
+                        max={toDateBounds.maximum}
                         containLabel
                       />
                     </FieldWrapper>
