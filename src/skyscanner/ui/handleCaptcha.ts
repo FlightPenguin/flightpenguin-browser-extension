@@ -3,8 +3,11 @@ import { waitForAppearance } from "../../shared/utilities/waitFor";
 
 const SEARCH_PAGE_SHELL_SELECTOR = "#pagewrap";
 
-export const handleCaptcha = async () => {
-  const iframes = document.querySelectorAll("iframe");
+export const handleCaptcha = async (doc?: HTMLDocument) => {
+  if (!doc) {
+    doc = document;
+  }
+  const iframes = doc.querySelectorAll("iframe");
   if (!iframes) {
     throw new MissingElementLookupError("Unable to locate iframes in captcha page");
   }
