@@ -16,7 +16,7 @@ const getModuleRules = ({ mode }: { mode: "production" | "development" }) => [
   {
     test: /\.(js|jsx|ts|tsx)$/,
     loader: "babel-loader",
-    exclude: /node_modules/,
+    exclude: /node_modules\/(?!bumbag)/,
   },
   {
     test: /\.css$/,
@@ -41,7 +41,7 @@ const basePlugins = [
   new ProgressPlugin({}),
   new DefinePlugin({
     "process.env.BUMBAG_ENV": JSON.stringify("not test"),
-    "process.env.VERSION": "1.7.2",
+    "process.env.VERSION": "1.7.4",
   }),
 ];
 

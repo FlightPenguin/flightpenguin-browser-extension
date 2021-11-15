@@ -17,8 +17,6 @@ export const SearchPage = (): React.ReactElement => {
   const [showUpdate, setShowUpdate] = useState(true);
 
   useEffect(() => {
-    console.log("Update!");
-
     chrome.runtime.onMessage.addListener((message) => {
       console.debug(message);
       switch (message.event) {
@@ -45,6 +43,8 @@ export const SearchPage = (): React.ReactElement => {
             initialValues={
               formData && {
                 ...formData,
+                from: { value: formData.from, label: formData.from },
+                to: { value: formData.to, label: formData.to },
                 cabin: formData?.cabin || "econ",
                 fromDate: getStandardizedFormatDate(formData.fromDate),
                 toDate: getStandardizedFormatDate(formData.toDate),
