@@ -129,13 +129,14 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "ProviderManager": () => (/* binding */ ProviderManager)
 /* harmony export */ });
-/* harmony import */ var _expedia_mappings_getUrl__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../expedia/mappings/getUrl */ "./src/expedia/mappings/getUrl.ts");
-/* harmony import */ var _kiwi_mappings_getUrl__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../kiwi/mappings/getUrl */ "./src/kiwi/mappings/getUrl.ts");
-/* harmony import */ var _shared_pause__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../shared/pause */ "./src/shared/pause.ts");
-/* harmony import */ var _skyscanner_mappings_getUrl__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../skyscanner/mappings/getUrl */ "./src/skyscanner/mappings/getUrl.ts");
-/* harmony import */ var _southwest_mappings_getUrl__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../southwest/mappings/getUrl */ "./src/southwest/mappings/getUrl.ts");
-/* harmony import */ var _constants__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./constants */ "./src/background/constants.ts");
-/* harmony import */ var _state__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./state */ "./src/background/state/index.ts");
+/* harmony import */ var _components_utilities_geography_setPositionData__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../components/utilities/geography/setPositionData */ "./src/components/utilities/geography/setPositionData.ts");
+/* harmony import */ var _expedia_mappings_getUrl__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../expedia/mappings/getUrl */ "./src/expedia/mappings/getUrl.ts");
+/* harmony import */ var _kiwi_mappings_getUrl__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../kiwi/mappings/getUrl */ "./src/kiwi/mappings/getUrl.ts");
+/* harmony import */ var _shared_pause__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../shared/pause */ "./src/shared/pause.ts");
+/* harmony import */ var _skyscanner_mappings_getUrl__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../skyscanner/mappings/getUrl */ "./src/skyscanner/mappings/getUrl.ts");
+/* harmony import */ var _southwest_mappings_getUrl__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../southwest/mappings/getUrl */ "./src/southwest/mappings/getUrl.ts");
+/* harmony import */ var _constants__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./constants */ "./src/background/constants.ts");
+/* harmony import */ var _state__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./state */ "./src/background/state/index.ts");
 function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
 
 function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
@@ -153,13 +154,14 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
 
 
 
+
 var terminalStates = ["FAILED", "SUCCESS"];
 var successStates = ["SUCCESS"];
 var providerURLBaseMap = {
-  southwest: _southwest_mappings_getUrl__WEBPACK_IMPORTED_MODULE_4__.getUrl,
-  skyscanner: _skyscanner_mappings_getUrl__WEBPACK_IMPORTED_MODULE_3__.getUrl,
-  expedia: _expedia_mappings_getUrl__WEBPACK_IMPORTED_MODULE_0__.getUrl,
-  kiwi: _kiwi_mappings_getUrl__WEBPACK_IMPORTED_MODULE_1__.getUrl
+  southwest: _southwest_mappings_getUrl__WEBPACK_IMPORTED_MODULE_5__.getUrl,
+  skyscanner: _skyscanner_mappings_getUrl__WEBPACK_IMPORTED_MODULE_4__.getUrl,
+  expedia: _expedia_mappings_getUrl__WEBPACK_IMPORTED_MODULE_1__.getUrl,
+  kiwi: _kiwi_mappings_getUrl__WEBPACK_IMPORTED_MODULE_2__.getUrl
 };
 var ProviderManager = /*#__PURE__*/function () {
   function ProviderManager() {
@@ -214,7 +216,7 @@ var ProviderManager = /*#__PURE__*/function () {
     key: "setFormData",
     value: function setFormData(formData) {
       this.formData = formData;
-      this.knownProviders = this.formData.searchByPoints ? _constants__WEBPACK_IMPORTED_MODULE_5__.PROVIDERS_SUPPORTING_POINTS_SEARCH : _constants__WEBPACK_IMPORTED_MODULE_5__.SUPPORTED_PROVIDERS;
+      this.knownProviders = this.formData.searchByPoints ? _constants__WEBPACK_IMPORTED_MODULE_6__.PROVIDERS_SUPPORTING_POINTS_SEARCH : _constants__WEBPACK_IMPORTED_MODULE_6__.SUPPORTED_PROVIDERS;
       this.setDefault();
     }
   }, {
@@ -448,7 +450,7 @@ var ProviderManager = /*#__PURE__*/function () {
           departureStatus: "PENDING",
           returnStatus: "PENDING",
           ready: true,
-          onReady: _constants__WEBPACK_IMPORTED_MODULE_5__.DEFAULT_ON_READY_FUNCTION,
+          onReady: _constants__WEBPACK_IMPORTED_MODULE_6__.DEFAULT_ON_READY_FUNCTION,
           timer: null
         };
       });
@@ -523,13 +525,14 @@ var ProviderManager = /*#__PURE__*/function () {
     value: function setPrimaryTab() {
       var _this6 = this;
 
-      (0,_state__WEBPACK_IMPORTED_MODULE_6__.isExtensionOpen)({
+      (0,_state__WEBPACK_IMPORTED_MODULE_7__.isExtensionOpen)({
         extensionOpenCallback: function extensionOpenCallback(tab) {
           _this6.primaryTab = tab;
+          (0,_components_utilities_geography_setPositionData__WEBPACK_IMPORTED_MODULE_0__.setPositionData)();
         },
         extensionClosedCallback: function extensionClosedCallback() {
           // Simpler than polling for status...
-          (0,_shared_pause__WEBPACK_IMPORTED_MODULE_2__.pause)(500).then(function () {
+          (0,_shared_pause__WEBPACK_IMPORTED_MODULE_3__.pause)(500).then(function () {
             _this6.setPrimaryTab();
           });
         }
@@ -1600,6 +1603,137 @@ var updateExtensionIfRequired = function updateExtensionIfRequired() {
     if (details === "update_available") {
       chrome.runtime.reload();
     }
+  });
+};
+
+/***/ }),
+
+/***/ "./src/components/utilities/geography/constants.ts":
+/*!*********************************************************!*\
+  !*** ./src/components/utilities/geography/constants.ts ***!
+  \*********************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "STORAGE_COORDINATES_KEY_NAME": () => (/* binding */ STORAGE_COORDINATES_KEY_NAME),
+/* harmony export */   "STORAGE_NEARBY_AIRPORTS_KEY_NAME": () => (/* binding */ STORAGE_NEARBY_AIRPORTS_KEY_NAME)
+/* harmony export */ });
+var STORAGE_COORDINATES_KEY_NAME = "geolocation";
+var STORAGE_NEARBY_AIRPORTS_KEY_NAME = "nearby-airports";
+
+/***/ }),
+
+/***/ "./src/components/utilities/geography/getNearbyAirportData.ts":
+/*!********************************************************************!*\
+  !*** ./src/components/utilities/geography/getNearbyAirportData.ts ***!
+  \********************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "getNearbyAirportData": () => (/* binding */ getNearbyAirportData)
+/* harmony export */ });
+/* harmony import */ var _auth_getAuthToken__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../auth/getAuthToken */ "./src/auth/getAuthToken.ts");
+function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
+
+function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
+
+
+var getNearbyAirportData = /*#__PURE__*/function () {
+  var _ref2 = _asyncToGenerator(function* (_ref) {
+    var coordinates = _ref.coordinates,
+        page = _ref.page;
+    var accessToken = yield (0,_auth_getAuthToken__WEBPACK_IMPORTED_MODULE_0__.getAuthToken)();
+    var response = yield fetch("http://localhost:3000/api/airport/location?latitude=".concat(coordinates.coords.latitude, "&longitude=").concat(coordinates.coords.longitude, "&page=").concat(page), {
+      method: "GET",
+      credentials: "include",
+      mode: "cors",
+      headers: new Headers({
+        "Content-Type": "application/json",
+        Authorization: "Bearer ".concat(accessToken)
+      })
+    });
+
+    if (response.status === 200) {
+      var rawAirports = yield response.json();
+      var airports = rawAirports.results.map(function (record) {
+        return {
+          key: record.iataCode,
+          label: record.iataCode,
+          name: record.displayName,
+          location: record.displayLocation,
+          value: record.iataCode
+        };
+      });
+      return {
+        options: airports
+      };
+    } else {
+      throw new Error("".concat(response.status, ": ").concat(response.json()));
+    }
+  });
+
+  return function getNearbyAirportData(_x) {
+    return _ref2.apply(this, arguments);
+  };
+}();
+
+/***/ }),
+
+/***/ "./src/components/utilities/geography/setPositionData.ts":
+/*!***************************************************************!*\
+  !*** ./src/components/utilities/geography/setPositionData.ts ***!
+  \***************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "setPositionData": () => (/* binding */ setPositionData)
+/* harmony export */ });
+/* harmony import */ var _constants__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./constants */ "./src/components/utilities/geography/constants.ts");
+/* harmony import */ var _getNearbyAirportData__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./getNearbyAirportData */ "./src/components/utilities/geography/getNearbyAirportData.ts");
+function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
+
+function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
+
+
+
+
+var setLocalStorage = /*#__PURE__*/function () {
+  var _ref = _asyncToGenerator(function* (point) {
+    localStorage.setItem(_constants__WEBPACK_IMPORTED_MODULE_0__.STORAGE_COORDINATES_KEY_NAME, JSON.stringify(point));
+    var nearbyAirports = yield (0,_getNearbyAirportData__WEBPACK_IMPORTED_MODULE_1__.getNearbyAirportData)({
+      coordinates: point,
+      page: 0
+    });
+
+    if (nearbyAirports.options.length) {
+      localStorage.setItem(_constants__WEBPACK_IMPORTED_MODULE_0__.STORAGE_NEARBY_AIRPORTS_KEY_NAME, JSON.stringify(nearbyAirports));
+    }
+  });
+
+  return function setLocalStorage(_x) {
+    return _ref.apply(this, arguments);
+  };
+}();
+
+var clearLocalStorage = function clearLocalStorage(error) {
+  localStorage.removeItem(_constants__WEBPACK_IMPORTED_MODULE_0__.STORAGE_COORDINATES_KEY_NAME);
+  localStorage.removeItem(_constants__WEBPACK_IMPORTED_MODULE_0__.STORAGE_NEARBY_AIRPORTS_KEY_NAME);
+  throw error;
+};
+
+var setPositionData = function setPositionData() {
+  navigator.geolocation.getCurrentPosition(setLocalStorage, clearLocalStorage, {
+    enableHighAccuracy: false,
+    timeout: 1000,
+    // 1s
+    maximumAge: 7200000 // 2h
+
   });
 };
 

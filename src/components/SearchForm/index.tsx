@@ -17,6 +17,7 @@ import { getFormattedDate } from "../utilities/forms/getFormattedDate";
 import { getPrettyRewardsCardName } from "../utilities/forms/getPrettyRewardsCardName";
 import { getStandardizedFormatDate } from "../utilities/forms/getStandardizedFormatDate";
 import { isValidDateInputString } from "../utilities/forms/isValidDateInputString";
+import { getNearestRelevantAirport } from "../utilities/geography/getNearestRelevantAirport";
 import { Airport } from "./api/airports/Airport";
 import { getAirportData } from "./api/airports/getAirportData";
 import { getFridayAfterNext } from "./utilities/getFridayAfterNext";
@@ -118,13 +119,10 @@ interface SearchFormProps {
 }
 
 export const SearchForm = ({ onSubmit, initialValues = defaultInitialValues }: SearchFormProps): React.ReactElement => {
-  const [fromValue, setFromValue] = useState<Airport>({
-    value: "SFO",
-    label: "SFO",
-    location: "San Francisco, CA, USA",
-    key: "SFO",
-    name: "San Fransisco International Airport",
-  });
+  const nearestAirport = getNearestRelevantAirport();
+  initialValues.from = nearestAirport;
+
+  const [fromValue, setFromValue] = useState<Airport>(nearestAirport);
   const [toValue, setToValue] = useState<Airport | null>({
     value: "",
     label: "",
