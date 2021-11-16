@@ -179,6 +179,7 @@ export const SearchForm = ({ onSubmit, initialValues = defaultInitialValues }: S
                       cacheKey="fromAirport"
                       component={SelectMenu.Formik}
                       containLabel
+                      debounceInterval={300}
                       defer
                       disableClear
                       disabled={formik.isSubmitting}
@@ -220,6 +221,7 @@ export const SearchForm = ({ onSubmit, initialValues = defaultInitialValues }: S
                       cacheKey="toAirport"
                       component={SelectMenu.Formik}
                       containLabel
+                      debounceInterval={300}
                       defer
                       disableClear
                       disabled={formik.isSubmitting}
