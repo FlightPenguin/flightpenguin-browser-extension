@@ -1,5 +1,3 @@
-import { startOfToday } from "date-fns";
-
 import { getAuthToken } from "../../../../auth/getAuthToken";
 import ORIGIN from "../../../../config";
 import { Airport } from "./Airport";
@@ -10,6 +8,10 @@ interface GetAirportDataProps {
 }
 
 export const getAirportData = async ({ search, page }: GetAirportDataProps): Promise<{ options: Airport[] }> => {
+  if (search.length === 0) {
+    return { options: [] };
+  }
+
   const accessToken = await getAuthToken();
   const response = await fetch(`http://localhost:3000/api/airport/search?search=${search}&page=${page}`, {
     method: "GET",
@@ -23,7 +25,7 @@ export const getAirportData = async ({ search, page }: GetAirportDataProps): Pro
 
   if (response.status === 200) {
     const rawAirports = await response.json();
-    const airports = rawAirports.results.map((record: any) => {
+    const airports = rawAirports.map((record: any) => {
       return {
         key: record.iataCode,
         label: record.iataCode,

@@ -1659,7 +1659,7 @@ var getNearbyAirportData = /*#__PURE__*/function () {
 
     if (response.status === 200) {
       var rawAirports = yield response.json();
-      var airports = rawAirports.results.map(function (record) {
+      var airports = rawAirports.map(function (record) {
         return {
           key: record.iataCode,
           label: record.iataCode,

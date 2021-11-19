@@ -27,7 +27,7 @@ export const getNearbyAirportData = async ({
 
   if (response.status === 200) {
     const rawAirports = await response.json();
-    const airports = rawAirports.results.map((record: any) => {
+    const airports = rawAirports.map((record: any) => {
       return {
         key: record.iataCode,
         label: record.iataCode,
