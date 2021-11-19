@@ -49,7 +49,13 @@ chrome.runtime.onMessage.addListener(function (message, sender, reply) {
       handleScraperSuccess(providerManager, message.providerName, message.searchType);
       break;
     case "FAILED_SCRAPER":
-      handleScraperFailed(providerManager, message.providerName, message.description, message.searchType);
+      handleScraperFailed(
+        providerManager,
+        message.providerName,
+        message.description,
+        message.searchType,
+        message.windowConfig,
+      );
       break;
     case "FLIGHT_RESULTS_RECEIVED":
       handleFlightResultsReceived(providerManager, message.flights, message.provider);
@@ -62,9 +68,6 @@ chrome.runtime.onMessage.addListener(function (message, sender, reply) {
       break;
     case "HIGHLIGHT_TAB":
       handleHighlightTab(providerManager, message.selectedDepartureId, message.selectedReturnId);
-      break;
-    case "SEND_BEGIN_EVENT":
-      handleDispatchBeginParsing(providerManager, message.provider, 2000);
       break;
     case "PROVIDER_READY":
       handleProviderReady(providerManager, message.provider);

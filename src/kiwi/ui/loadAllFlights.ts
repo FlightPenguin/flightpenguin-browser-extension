@@ -1,4 +1,3 @@
-import { MissingFieldParserError } from "../../shared/errors";
 import { pause } from "../../shared/pause";
 import { waitForDisappearance } from "../../shared/utilities/waitFor";
 import { getFlightContainer } from "../parser/getFlightContainer";
