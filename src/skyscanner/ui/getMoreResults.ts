@@ -2,7 +2,7 @@ import { waitForAppearance, waitForDisappearance } from "../../shared/utilities/
 
 const UNPROCESSED_FLIGHTS_SELECTOR = "[class*='FlightsTicket_container'] [role='button']:not([data-visited='true'])";
 
-export const getMoreResults = async (loadingTimeout = 7500): Promise<void> => {
+export const getMoreResults = async (loadingTimeout = 30000): Promise<void> => {
   await useShowMoreResultsButton(loadingTimeout);
   window.scrollTo(window.scrollX, document.body.offsetHeight);
   await waitForAppearance(loadingTimeout, UNPROCESSED_FLIGHTS_SELECTOR);
