@@ -16,7 +16,7 @@ import {
 } from "./constants";
 import { isExtensionOpen } from "./state";
 
-type StatusType = "PENDING" | "PARTIAL_RETURN_CONTINUING" | "FAILED" | "SUCCESS";
+type StatusType = "PENDING" | "PARSING" | "PARTIAL_RETURN_CONTINUING" | "FAILED" | "SUCCESS";
 
 interface ProviderState {
   departureStatus: StatusType;
@@ -26,6 +26,7 @@ interface ProviderState {
   ready: boolean;
   onReady: () => void;
   timer: ReturnType<typeof setTimeout> | null;
+  attempts: number;
 }
 
 const terminalStates = ["FAILED", "SUCCESS"];
@@ -120,6 +121,11 @@ export class ProviderManager {
 
   setPending(providerName: string, searchType: SearchType): void {
     this.setStatus(providerName, "PENDING", searchType);
+  }
+
+  setParsing(providerName: string, searchType: SearchType): void {
+    this.setStatus(providerName, "PARSING", searchType);
+    this.incrementParsingAttempts(providerName);
   }
 
   setFailed(providerName: string, searchType: SearchType): void {
@@ -275,6 +281,7 @@ export class ProviderManager {
         ready: true,
         onReady: DEFAULT_ON_READY_FUNCTION,
         timer: null,
+        attempts: 0,
       };
     });
     this.itineraries = {};
@@ -335,6 +342,8 @@ export class ProviderManager {
   }
 
   createWindow(url: string, provider: string, windowConfig: WindowConfig, message: any): Promise<void> {
+    this.setParsing(provider, "BOTH"); // de facto starting...
+
     const { height, width, left, top } = windowConfig;
     // eslint-disable-next-line @typescript-eslint/no-this-alias
     const that = this;
@@ -399,6 +408,26 @@ export class ProviderManager {
       setTimeout(() => {
         chrome.tabs.sendMessage(primaryTabId, message);
       }, delay);
+    }
+  }
+
+  incrementParsingAttempts(providerName: string): void {
+    this.state[providerName].attempts += 1;
+  }
+
+  retry(providerName: string, windowConfig: WindowConfig): boolean {
+    this.closeWindow(providerName);
+    const primaryWindowId = this.getPrimaryWindowId();
+    if (this.state[providerName].attempts < 2 && !!this.formData && primaryWindowId) {
+      const url = providerURLBaseMap[providerName](this.formData);
+      const message = { event: "BEGIN_PARSING", message: this.formData };
+      const promise = this.createWindow(url, providerName, windowConfig, message);
+      promise.then(() => {
+        chrome.windows.update(primaryWindowId, { focused: true });
+      });
+      return true;
+    } else {
+      return false;
     }
   }
 }

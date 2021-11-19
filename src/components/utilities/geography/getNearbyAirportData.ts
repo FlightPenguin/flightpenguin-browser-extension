@@ -13,7 +13,7 @@ export const getNearbyAirportData = async ({
 }: GetNearbyAirportDataProps): Promise<{ options: Airport[] }> => {
   const accessToken = await getAuthToken();
   const response = await fetch(
-    `http://localhost:3000/api/airport/location?latitude=${coordinates.coords.latitude}&longitude=${coordinates.coords.longitude}&page=${page}`,
+    `${ORIGIN}/api/airport/location?latitude=${coordinates.coords.latitude}&longitude=${coordinates.coords.longitude}&page=${page}`,
     {
       method: "GET",
       credentials: "include",

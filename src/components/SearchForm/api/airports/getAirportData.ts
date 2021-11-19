@@ -13,7 +13,7 @@ export const getAirportData = async ({ search, page }: GetAirportDataProps): Pro
   }
 
   const accessToken = await getAuthToken();
-  const response = await fetch(`http://localhost:3000/api/airport/search?search=${search}&page=${page}`, {
+  const response = await fetch(`${ORIGIN}/api/airport/search?search=${search}&page=${page}`, {
     method: "GET",
     credentials: "include",
     mode: "cors",
