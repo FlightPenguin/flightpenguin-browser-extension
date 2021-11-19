@@ -136,7 +136,7 @@ export const SearchForm = ({ onSubmit, initialValues = defaultInitialValues }: S
   });
 
   const getAirports = useCallback(async ({ page, searchText }) => {
-    return getAirportData({ page: page - 1, search: searchText });
+    return getAirportData({ page: page - 1, search: searchText.trim() });
   }, []);
 
   return (
