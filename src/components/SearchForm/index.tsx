@@ -20,6 +20,7 @@ import { isValidDateInputString } from "../utilities/forms/isValidDateInputStrin
 import { getNearestRelevantAirport } from "../utilities/geography/getNearestRelevantAirport";
 import { Airport } from "./api/airports/Airport";
 import { getAirportData } from "./api/airports/getAirportData";
+import { MatchedLabel } from "./components/SelectMenu/MatchedLabel";
 import { getFridayAfterNext } from "./utilities/getFridayAfterNext";
 import { sendFormDataToBackground } from "./utilities/sendFormDataToBackground";
 
@@ -135,7 +136,7 @@ export const SearchForm = ({ onSubmit, initialValues = defaultInitialValues }: S
     maximum: getChromeFormattedDateFromDate(maxDate),
   });
   const [airportSearchText, setAirportSearchText] = useState("");
-
+  console.log(airportSearchText);
   const getAirports = useCallback(
     async ({ page, searchText }) => {
       setAirportSearchText(searchText);
@@ -192,9 +193,7 @@ export const SearchForm = ({ onSubmit, initialValues = defaultInitialValues }: S
                       label="Starting airport"
                       loadOptions={getAirports}
                       name="from"
-                      pagination
                       onBlur={(event: React.ChangeEvent) => {
-                        setAirportSearchText("");
                         if (Object.keys(event).length) {
                           formik.handleBlur(event);
                         } else {
@@ -209,25 +208,11 @@ export const SearchForm = ({ onSubmit, initialValues = defaultInitialValues }: S
                       onKeyPress={(event: KeyboardEvent) => {
                         disableNonAlphaInput(event, true);
                       }}
-                      renderLoading={() => {
-                        /* https://github.com/jxom/bumbag-ui/issues/175
-                         There appears to be an issue with the timeout properly handling state.
-                         So, hide the damn thing 'cause loading is pretty quick.
-                         */
-                        return <></>;
-                      }}
-                      renderLoadingMore={() => {
-                        /* https://github.com/jxom/bumbag-ui/issues/175
-                         There appears to be an issue with the timeout properly handling state.
-                         So, hide the damn thing 'cause loading is pretty quick.
-                         */
-                        return <></>;
-                      }}
                       renderOption={({ option: airport }: { option: Airport }) => (
                         <React.Fragment>
-                          <Text>{airport.name}</Text>
+                          <MatchedLabel label={airport.name} searchText={airportSearchText} />
                           <br />
-                          <Text fontSize="100">{airport.location}</Text>
+                          <MatchedLabel label={airport.location} searchText={airportSearchText} fontSize="100" />
                         </React.Fragment>
                       )}
                       searchInputProps={{ placeholder: "Where are you leaving from?", autoFocus: true }}
@@ -250,9 +235,7 @@ export const SearchForm = ({ onSubmit, initialValues = defaultInitialValues }: S
                       label="Destination airport"
                       loadOptions={getAirports}
                       name="to"
-                      pagination
                       onBlur={(event: React.ChangeEvent) => {
-                        setAirportSearchText("");
                         if (Object.keys(event).length) {
                           formik.handleBlur(event);
                         } else {
@@ -267,26 +250,12 @@ export const SearchForm = ({ onSubmit, initialValues = defaultInitialValues }: S
                       onKeyPress={(event: KeyboardEvent) => {
                         disableNonAlphaInput(event, true);
                       }}
-                      renderLoading={() => {
-                        /* https://github.com/jxom/bumbag-ui/issues/175
-                         There appears to be an issue with the timeout properly handling state.
-                         So, hide the damn thing 'cause loading is pretty quick.
-                         */
-                        return <></>;
-                      }}
-                      renderLoadingMore={() => {
-                        /* https://github.com/jxom/bumbag-ui/issues/175
-                         There appears to be an issue with the timeout properly handling state.
-                         So, hide the damn thing 'cause loading is pretty quick.
-                         */
-                        return <></>;
-                      }}
                       renderOption={({ option: airport }: { option: Airport }) => (
-                        <Box tabIndex={0}>
-                          <Text>{airport.name}</Text>
+                        <React.Fragment>
+                          <MatchedLabel label={airport.name} searchText={airportSearchText} />
                           <br />
-                          <Text fontSize="100">{airport.location}</Text>
-                        </Box>
+                          <MatchedLabel label={airport.location} searchText={airportSearchText} fontSize="100" />
+                        </React.Fragment>
                       )}
                       searchInputProps={{ placeholder: "Where are you going to?", autoFocus: true }}
                       value={toValue}
