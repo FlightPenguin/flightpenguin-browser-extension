@@ -134,10 +134,15 @@ export const SearchForm = ({ onSubmit, initialValues = defaultInitialValues }: S
     minimum: getChromeFormattedDateFromDate(fridayAfterNext),
     maximum: getChromeFormattedDateFromDate(maxDate),
   });
+  const [airportSearchText, setAirportSearchText] = useState("");
 
-  const getAirports = useCallback(async ({ page, searchText }) => {
-    return getAirportData({ page: page - 1, search: searchText.trim() });
-  }, []);
+  const getAirports = useCallback(
+    async ({ page, searchText }) => {
+      setAirportSearchText(searchText);
+      return getAirportData({ page: page - 1, search: searchText.trim() });
+    },
+    [setAirportSearchText],
+  );
 
   return (
     <Box className="search-form-wrapper" alignX="center">
@@ -181,6 +186,7 @@ export const SearchForm = ({ onSubmit, initialValues = defaultInitialValues }: S
                       defer
                       disableClear
                       disabled={formik.isSubmitting}
+                      emptyText={airportSearchText.length ? "No results found." : "Type to start searching."}
                       hasFieldWrapper={true}
                       hasSearch
                       label="Starting airport"
@@ -188,6 +194,7 @@ export const SearchForm = ({ onSubmit, initialValues = defaultInitialValues }: S
                       name="from"
                       pagination
                       onBlur={(event: React.ChangeEvent) => {
+                        setAirportSearchText("");
                         if (Object.keys(event).length) {
                           formik.handleBlur(event);
                         } else {
@@ -202,6 +209,20 @@ export const SearchForm = ({ onSubmit, initialValues = defaultInitialValues }: S
                       onKeyPress={(event: KeyboardEvent) => {
                         disableNonAlphaInput(event, true);
                       }}
+                      renderLoading={() => {
+                        /* https://github.com/jxom/bumbag-ui/issues/175
+                         There appears to be an issue with the timeout properly handling state.
+                         So, hide the damn thing 'cause loading is pretty quick.
+                         */
+                        return <></>;
+                      }}
+                      renderLoadingMore={() => {
+                        /* https://github.com/jxom/bumbag-ui/issues/175
+                         There appears to be an issue with the timeout properly handling state.
+                         So, hide the damn thing 'cause loading is pretty quick.
+                         */
+                        return <></>;
+                      }}
                       renderOption={({ option: airport }: { option: Airport }) => (
                         <React.Fragment>
                           <Text>{airport.name}</Text>
@@ -209,7 +230,7 @@ export const SearchForm = ({ onSubmit, initialValues = defaultInitialValues }: S
                           <Text fontSize="100">{airport.location}</Text>
                         </React.Fragment>
                       )}
-                      searchInputProps={{ placeholder: "Where are you leaving from?" }}
+                      searchInputProps={{ placeholder: "Where are you leaving from?", autoFocus: true }}
                       value={fromValue}
                     />
                   </FieldWrapper>
@@ -223,6 +244,7 @@ export const SearchForm = ({ onSubmit, initialValues = defaultInitialValues }: S
                       defer
                       disableClear
                       disabled={formik.isSubmitting}
+                      emptyText={airportSearchText.length ? "No results found." : "Type to start searching."}
                       hasFieldWrapper={true}
                       hasSearch
                       label="Destination airport"
@@ -230,6 +252,7 @@ export const SearchForm = ({ onSubmit, initialValues = defaultInitialValues }: S
                       name="to"
                       pagination
                       onBlur={(event: React.ChangeEvent) => {
+                        setAirportSearchText("");
                         if (Object.keys(event).length) {
                           formik.handleBlur(event);
                         } else {
@@ -244,14 +267,28 @@ export const SearchForm = ({ onSubmit, initialValues = defaultInitialValues }: S
                       onKeyPress={(event: KeyboardEvent) => {
                         disableNonAlphaInput(event, true);
                       }}
+                      renderLoading={() => {
+                        /* https://github.com/jxom/bumbag-ui/issues/175
+                         There appears to be an issue with the timeout properly handling state.
+                         So, hide the damn thing 'cause loading is pretty quick.
+                         */
+                        return <></>;
+                      }}
+                      renderLoadingMore={() => {
+                        /* https://github.com/jxom/bumbag-ui/issues/175
+                         There appears to be an issue with the timeout properly handling state.
+                         So, hide the damn thing 'cause loading is pretty quick.
+                         */
+                        return <></>;
+                      }}
                       renderOption={({ option: airport }: { option: Airport }) => (
-                        <React.Fragment>
+                        <Box tabIndex={0}>
                           <Text>{airport.name}</Text>
                           <br />
                           <Text fontSize="100">{airport.location}</Text>
-                        </React.Fragment>
+                        </Box>
                       )}
-                      searchInputProps={{ placeholder: "Where are you going to?" }}
+                      searchInputProps={{ placeholder: "Where are you going to?", autoFocus: true }}
                       value={toValue}
                     />
                   </FieldWrapper>
