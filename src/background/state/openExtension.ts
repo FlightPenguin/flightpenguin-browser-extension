@@ -1,5 +1,6 @@
 import { getSubscriptionValidity } from "../../auth";
 import { getAuthToken } from "../../auth/getAuthToken";
+import { setPositionData } from "../../components/utilities/geography/setPositionData";
 import ORIGIN from "../../config";
 import { isExtensionOpen } from "./isExtensionOpen";
 
@@ -9,6 +10,7 @@ export const openExtension = async (): Promise<void> => {
     const token = await getAuthToken();
     const { status } = await getSubscriptionValidity(token);
     if (status) {
+      await setPositionData();
       isExtensionOpen({
         extensionOpenCallback: handleExtensionOpen,
         extensionClosedCallback: handleExtensionNotOpen,

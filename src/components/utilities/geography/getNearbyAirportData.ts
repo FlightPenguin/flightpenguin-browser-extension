@@ -3,17 +3,17 @@ import ORIGIN from "../../../config";
 import { Airport } from "../../SearchForm/api/airports/Airport";
 
 interface GetNearbyAirportDataProps {
-  coordinates: GeolocationPosition;
+  position: GeolocationPosition;
   page: number;
 }
 
 export const getNearbyAirportData = async ({
-  coordinates,
+  position,
   page,
 }: GetNearbyAirportDataProps): Promise<{ options: Airport[] }> => {
   const accessToken = await getAuthToken();
   const response = await fetch(
-    `${ORIGIN}/api/airport/location?latitude=${coordinates.coords.latitude}&longitude=${coordinates.coords.longitude}&page=${page}`,
+    `${ORIGIN}/api/airport/location?latitude=${position.coords.latitude}&longitude=${position.coords.longitude}&page=${page}`,
     {
       method: "GET",
       credentials: "include",

@@ -129,14 +129,13 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "ProviderManager": () => (/* binding */ ProviderManager)
 /* harmony export */ });
-/* harmony import */ var _components_utilities_geography_setPositionData__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../components/utilities/geography/setPositionData */ "./src/components/utilities/geography/setPositionData.ts");
-/* harmony import */ var _expedia_mappings_getUrl__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../expedia/mappings/getUrl */ "./src/expedia/mappings/getUrl.ts");
-/* harmony import */ var _kiwi_mappings_getUrl__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../kiwi/mappings/getUrl */ "./src/kiwi/mappings/getUrl.ts");
-/* harmony import */ var _shared_pause__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../shared/pause */ "./src/shared/pause.ts");
-/* harmony import */ var _skyscanner_mappings_getUrl__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../skyscanner/mappings/getUrl */ "./src/skyscanner/mappings/getUrl.ts");
-/* harmony import */ var _southwest_mappings_getUrl__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../southwest/mappings/getUrl */ "./src/southwest/mappings/getUrl.ts");
-/* harmony import */ var _constants__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./constants */ "./src/background/constants.ts");
-/* harmony import */ var _state__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./state */ "./src/background/state/index.ts");
+/* harmony import */ var _expedia_mappings_getUrl__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../expedia/mappings/getUrl */ "./src/expedia/mappings/getUrl.ts");
+/* harmony import */ var _kiwi_mappings_getUrl__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../kiwi/mappings/getUrl */ "./src/kiwi/mappings/getUrl.ts");
+/* harmony import */ var _shared_pause__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../shared/pause */ "./src/shared/pause.ts");
+/* harmony import */ var _skyscanner_mappings_getUrl__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../skyscanner/mappings/getUrl */ "./src/skyscanner/mappings/getUrl.ts");
+/* harmony import */ var _southwest_mappings_getUrl__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../southwest/mappings/getUrl */ "./src/southwest/mappings/getUrl.ts");
+/* harmony import */ var _constants__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./constants */ "./src/background/constants.ts");
+/* harmony import */ var _state__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./state */ "./src/background/state/index.ts");
 function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
 
 function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
@@ -154,14 +153,13 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
 
 
 
-
 var terminalStates = ["FAILED", "SUCCESS"];
 var successStates = ["SUCCESS"];
 var providerURLBaseMap = {
-  southwest: _southwest_mappings_getUrl__WEBPACK_IMPORTED_MODULE_5__.getUrl,
-  skyscanner: _skyscanner_mappings_getUrl__WEBPACK_IMPORTED_MODULE_4__.getUrl,
-  expedia: _expedia_mappings_getUrl__WEBPACK_IMPORTED_MODULE_1__.getUrl,
-  kiwi: _kiwi_mappings_getUrl__WEBPACK_IMPORTED_MODULE_2__.getUrl
+  southwest: _southwest_mappings_getUrl__WEBPACK_IMPORTED_MODULE_4__.getUrl,
+  skyscanner: _skyscanner_mappings_getUrl__WEBPACK_IMPORTED_MODULE_3__.getUrl,
+  expedia: _expedia_mappings_getUrl__WEBPACK_IMPORTED_MODULE_0__.getUrl,
+  kiwi: _kiwi_mappings_getUrl__WEBPACK_IMPORTED_MODULE_1__.getUrl
 };
 var ProviderManager = /*#__PURE__*/function () {
   function ProviderManager() {
@@ -216,7 +214,7 @@ var ProviderManager = /*#__PURE__*/function () {
     key: "setFormData",
     value: function setFormData(formData) {
       this.formData = formData;
-      this.knownProviders = this.formData.searchByPoints ? _constants__WEBPACK_IMPORTED_MODULE_6__.PROVIDERS_SUPPORTING_POINTS_SEARCH : _constants__WEBPACK_IMPORTED_MODULE_6__.SUPPORTED_PROVIDERS;
+      this.knownProviders = this.formData.searchByPoints ? _constants__WEBPACK_IMPORTED_MODULE_5__.PROVIDERS_SUPPORTING_POINTS_SEARCH : _constants__WEBPACK_IMPORTED_MODULE_5__.SUPPORTED_PROVIDERS;
       this.setDefault();
     }
   }, {
@@ -456,7 +454,7 @@ var ProviderManager = /*#__PURE__*/function () {
           departureStatus: "PENDING",
           returnStatus: "PENDING",
           ready: true,
-          onReady: _constants__WEBPACK_IMPORTED_MODULE_6__.DEFAULT_ON_READY_FUNCTION,
+          onReady: _constants__WEBPACK_IMPORTED_MODULE_5__.DEFAULT_ON_READY_FUNCTION,
           timer: null,
           attempts: 0
         };
@@ -532,14 +530,13 @@ var ProviderManager = /*#__PURE__*/function () {
     value: function setPrimaryTab() {
       var _this6 = this;
 
-      (0,_state__WEBPACK_IMPORTED_MODULE_7__.isExtensionOpen)({
+      (0,_state__WEBPACK_IMPORTED_MODULE_6__.isExtensionOpen)({
         extensionOpenCallback: function extensionOpenCallback(tab) {
           _this6.primaryTab = tab;
-          (0,_components_utilities_geography_setPositionData__WEBPACK_IMPORTED_MODULE_0__.setPositionData)();
         },
         extensionClosedCallback: function extensionClosedCallback() {
           // Simpler than polling for status...
-          (0,_shared_pause__WEBPACK_IMPORTED_MODULE_3__.pause)(500).then(function () {
+          (0,_shared_pause__WEBPACK_IMPORTED_MODULE_2__.pause)(500).then(function () {
             _this6.setPrimaryTab();
           });
         }
@@ -1529,11 +1526,13 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /* harmony import */ var _auth__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../auth */ "./src/auth/index.js");
 /* harmony import */ var _auth_getAuthToken__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../auth/getAuthToken */ "./src/auth/getAuthToken.ts");
-/* harmony import */ var _config__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../config */ "./src/config.js");
-/* harmony import */ var _isExtensionOpen__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./isExtensionOpen */ "./src/background/state/isExtensionOpen.ts");
+/* harmony import */ var _components_utilities_geography_setPositionData__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../components/utilities/geography/setPositionData */ "./src/components/utilities/geography/setPositionData.ts");
+/* harmony import */ var _config__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../config */ "./src/config.js");
+/* harmony import */ var _isExtensionOpen__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./isExtensionOpen */ "./src/background/state/isExtensionOpen.ts");
 function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
 
 function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
+
 
 
 
@@ -1549,18 +1548,19 @@ var openExtension = /*#__PURE__*/function () {
           status = _yield$getSubscriptio.status;
 
       if (status) {
-        (0,_isExtensionOpen__WEBPACK_IMPORTED_MODULE_3__.isExtensionOpen)({
+        yield (0,_components_utilities_geography_setPositionData__WEBPACK_IMPORTED_MODULE_2__.setPositionData)();
+        (0,_isExtensionOpen__WEBPACK_IMPORTED_MODULE_4__.isExtensionOpen)({
           extensionOpenCallback: handleExtensionOpen,
           extensionClosedCallback: handleExtensionNotOpen
         });
       } else {
         chrome.tabs.create({
-          url: _config__WEBPACK_IMPORTED_MODULE_2__.default
+          url: _config__WEBPACK_IMPORTED_MODULE_3__.default
         });
       }
     } catch (e) {
       chrome.tabs.create({
-        url: _config__WEBPACK_IMPORTED_MODULE_2__.default
+        url: _config__WEBPACK_IMPORTED_MODULE_3__.default
       });
     } finally {
       enableExtension();
@@ -1654,10 +1654,10 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 
 var getNearbyAirportData = /*#__PURE__*/function () {
   var _ref2 = _asyncToGenerator(function* (_ref) {
-    var coordinates = _ref.coordinates,
+    var position = _ref.position,
         page = _ref.page;
     var accessToken = yield (0,_auth_getAuthToken__WEBPACK_IMPORTED_MODULE_0__.getAuthToken)();
-    var response = yield fetch("".concat(_config__WEBPACK_IMPORTED_MODULE_1__.default, "/api/airport/location?latitude=").concat(coordinates.coords.latitude, "&longitude=").concat(coordinates.coords.longitude, "&page=").concat(page), {
+    var response = yield fetch("".concat(_config__WEBPACK_IMPORTED_MODULE_1__.default, "/api/airport/location?latitude=").concat(position.coords.latitude, "&longitude=").concat(position.coords.longitude, "&page=").concat(page), {
       method: "GET",
       credentials: "include",
       mode: "cors",
@@ -1713,11 +1713,10 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 
 
 
-var setLocalStorage = /*#__PURE__*/function () {
-  var _ref = _asyncToGenerator(function* (point) {
-    localStorage.setItem(_constants__WEBPACK_IMPORTED_MODULE_0__.STORAGE_COORDINATES_KEY_NAME, JSON.stringify(point));
+var setLocalStorageForAirports = /*#__PURE__*/function () {
+  var _ref = _asyncToGenerator(function* (position) {
     var nearbyAirports = yield (0,_getNearbyAirportData__WEBPACK_IMPORTED_MODULE_1__.getNearbyAirportData)({
-      coordinates: point,
+      position: position,
       page: 0
     });
 
@@ -1726,26 +1725,39 @@ var setLocalStorage = /*#__PURE__*/function () {
     }
   });
 
-  return function setLocalStorage(_x) {
+  return function setLocalStorageForAirports(_x) {
     return _ref.apply(this, arguments);
   };
 }();
 
-var clearLocalStorage = function clearLocalStorage(error) {
-  localStorage.removeItem(_constants__WEBPACK_IMPORTED_MODULE_0__.STORAGE_COORDINATES_KEY_NAME);
-  localStorage.removeItem(_constants__WEBPACK_IMPORTED_MODULE_0__.STORAGE_NEARBY_AIRPORTS_KEY_NAME);
-  throw error;
-};
+var getPositionData = /*#__PURE__*/function () {
+  var _ref2 = _asyncToGenerator(function* () {
+    return new Promise(function (resolve, reject) {
+      return navigator.geolocation.getCurrentPosition(resolve, reject, {
+        enableHighAccuracy: false,
+        timeout: 1000,
+        // 1s
+        maximumAge: 7200000 // 2h
 
-var setPositionData = function setPositionData() {
-  navigator.geolocation.getCurrentPosition(setLocalStorage, clearLocalStorage, {
-    enableHighAccuracy: false,
-    timeout: 1000,
-    // 1s
-    maximumAge: 7200000 // 2h
-
+      });
+    });
   });
-};
+
+  return function getPositionData() {
+    return _ref2.apply(this, arguments);
+  };
+}();
+
+var setPositionData = /*#__PURE__*/function () {
+  var _ref3 = _asyncToGenerator(function* () {
+    var position = yield getPositionData();
+    yield setLocalStorageForAirports(position);
+  });
+
+  return function setPositionData() {
+    return _ref3.apply(this, arguments);
+  };
+}();
 
 /***/ }),
 

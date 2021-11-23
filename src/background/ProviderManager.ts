@@ -330,7 +330,6 @@ export class ProviderManager {
     isExtensionOpen({
       extensionOpenCallback: (tab) => {
         this.primaryTab = tab;
-        setPositionData();
       },
       extensionClosedCallback: () => {
         // Simpler than polling for status...
