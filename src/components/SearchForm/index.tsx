@@ -422,7 +422,7 @@ export const SearchForm = ({ onSubmit, initialValues = defaultInitialValues }: S
                       onChange={formik.handleChange}
                       onBlur={formik.handleBlur}
                       disabled={formik.isSubmitting}
-                      after={<Input.Icon icon="solid-user" fontSize="300" color="black" />}
+                      after={<Input.Icon icon="solid-user" color="black" top="2px" />}
                       containLabel
                     />
                   </FieldWrapper>
