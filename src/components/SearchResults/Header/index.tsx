@@ -3,7 +3,6 @@ import isEqual from "lodash.isequal";
 import React from "react";
 
 import { FlightSearchFormData } from "../../../shared/types/FlightSearchFormData";
-import { flightTimeContainerWidth } from "../../constants";
 import TimelineSlider from "../Slider";
 import { TimeCell } from "./TimeCell";
 import { getFlightInfo } from "./utilities/getFlightInfo";
@@ -17,6 +16,7 @@ interface TimelineHeaderProps {
   onSliderChange: (minDate: Date, maxDate: Date) => void;
   sliderDisabled: boolean;
   flightCount: number;
+  flightTimeContainerWidth: number;
 }
 
 const TimelineHeader = ({
@@ -27,6 +27,7 @@ const TimelineHeader = ({
   onSliderChange,
   sliderDisabled,
   flightCount,
+  flightTimeContainerWidth,
 }: TimelineHeaderProps): React.ReactElement => {
   let daysCounter = 0;
   const intervalWidth = flightTimeContainerWidth / (intervals.length - 1);
@@ -97,6 +98,7 @@ const TimelineHeader = ({
         flightCount={flightCount}
         disabled={sliderDisabled}
         timezoneOffset={tzOffset}
+        flightTimeContainerWidth={flightTimeContainerWidth}
       />
     </Box>
   );

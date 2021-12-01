@@ -13,9 +13,10 @@ import { FlightSelection } from "./FlightSelection";
 
 interface SearchResultsProps {
   formData: FlightSearchFormData;
+  resultsContainerWidth: number;
 }
 
-export const SearchResults = ({ formData }: SearchResultsProps): React.ReactElement => {
+export const SearchResults = ({ formData, resultsContainerWidth }: SearchResultsProps): React.ReactElement => {
   const [flights, setFlights] = useDebounce<{
     itineraries: { [keyof: string]: ProcessedItinerary };
     departureFlights: ProcessedFlightSearchResult[];
@@ -74,6 +75,7 @@ export const SearchResults = ({ formData }: SearchResultsProps): React.ReactElem
         flights={flights.departureFlights}
         formData={formData}
         loading={!departuresComplete}
+        resultsContainerWidth={resultsContainerWidth}
         onSelection={(details) => {
           setDepartureFlightDetails(details);
 
@@ -98,6 +100,7 @@ export const SearchResults = ({ formData }: SearchResultsProps): React.ReactElem
             flights={flights.returnFlights}
             formData={formData}
             loading={!returnsComplete}
+            resultsContainerWidth={resultsContainerWidth}
             onSelection={(details) => {
               setReturnFlightDetails(details);
 

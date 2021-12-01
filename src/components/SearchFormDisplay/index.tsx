@@ -4,22 +4,22 @@ import React, { useState } from "react";
 
 import { CabinMap } from "../../background/constants";
 import { FlightSearchFormData } from "../../shared/types/FlightSearchFormData";
-import { containerWidth, sidePaddingWidth } from "../constants";
 import { Cabin } from "../icons";
 import { getPrettyRewardsCardName } from "../utilities/forms/getPrettyRewardsCardName";
 import { getStandardizedFormatDate } from "../utilities/forms/getStandardizedFormatDate";
 
 interface SearchFormDisplayProps {
+  containerWidth: number;
   formData: FlightSearchFormData;
   onUpdateClick: () => void;
 }
 
-const SearchFormDisplay = ({ formData, onUpdateClick }: SearchFormDisplayProps): React.ReactElement => {
+const SearchFormDisplay = ({ containerWidth, formData, onUpdateClick }: SearchFormDisplayProps): React.ReactElement => {
   const [disabled, setDisabled] = useState(false);
 
   return (
     <Box className="form-data-container" alignX="center">
-      <Box use="section" width={`${containerWidth + sidePaddingWidth * 2}px`}>
+      <Box use="section" width={`${containerWidth}px`}>
         <Box display="flex" flex="row" flexWrap="nowrap" justifyContent="space-between" altitude="400">
           <Box display="flex" boxSizing="border-box" whiteSpace="nowrap" alignX="center" padding="major-1">
             <Box>
@@ -130,5 +130,12 @@ const SearchFormDisplay = ({ formData, onUpdateClick }: SearchFormDisplayProps):
 };
 
 export default React.memo(SearchFormDisplay, (previous, next) => {
-  return isEqual(previous, next);
+  return isEqual(getValuesForMemoCheck(previous), getValuesForMemoCheck(next));
 });
+
+const getValuesForMemoCheck = ({ formData, containerWidth }: SearchFormDisplayProps) => {
+  return {
+    formData,
+    containerWidth,
+  };
+};

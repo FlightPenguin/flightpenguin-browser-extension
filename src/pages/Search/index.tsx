@@ -1,7 +1,6 @@
 import { PageContent, PageWithHeader } from "bumbag";
 import React, { useEffect, useState } from "react";
 
-import { containerWidth, searchFormWidth, sidePaddingWidth } from "../../components/constants";
 import NavigationBar from "../../components/NavigationBar";
 import { SearchForm } from "../../components/SearchForm";
 import SearchFormDisplay from "../../components/SearchFormDisplay";
@@ -10,11 +9,15 @@ import { UpdateNotificationAlert } from "../../components/UpdateNotificationAler
 import { getStandardizedFormatDate } from "../../components/utilities/forms/getStandardizedFormatDate";
 import { sendIndexUnload } from "../../shared/events/sendIndexUnload";
 import { FlightSearchFormData } from "../../shared/types/FlightSearchFormData";
+import { getFormContainerWidth } from "./utils/getFormContainerWidth";
+import { getResultsContainerWidth } from "./utils/getResultsContainerWidth";
 
 export const SearchPage = (): React.ReactElement => {
   const [formData, setFormData] = useState<FlightSearchFormData | undefined>(undefined);
   const [showForm, setShowForm] = useState(true);
   const [showUpdate, setShowUpdate] = useState(true);
+  const [formContainerWidth, setFormContainerWidth] = useState(getFormContainerWidth());
+  const [resultsContainerWidth, setResultsContainerWidth] = useState(getResultsContainerWidth());
 
   useEffect(() => {
     chrome.runtime.onMessage.addListener((message) => {
@@ -29,12 +32,22 @@ export const SearchPage = (): React.ReactElement => {
     });
   }, [setShowUpdate]);
 
+  useEffect(() => {
+    const handleResize = () => {
+      setResultsContainerWidth(getResultsContainerWidth());
+      setFormContainerWidth(getFormContainerWidth());
+    };
+
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, [setResultsContainerWidth]);
+
   return (
     <PageWithHeader header={<NavigationBar />}>
       <PageContent breakpoint="desktop" paddingY={{ default: "major-5" }}>
         {!showUpdate && (
           <UpdateNotificationAlert
-            width={`${showForm ? searchFormWidth : containerWidth + sidePaddingWidth * 2}px`}
+            width={`${showForm ? formContainerWidth : resultsContainerWidth}px`}
             marginBottom="50px"
           />
         )}
@@ -55,18 +68,20 @@ export const SearchPage = (): React.ReactElement => {
               setFormData(values);
               setShowForm(false);
             }}
+            containerWidth={formContainerWidth}
           />
         )}
         {!showForm && !!formData && (
           <>
             <SearchFormDisplay
+              containerWidth={resultsContainerWidth}
               formData={formData}
               onUpdateClick={() => {
                 setShowForm(true);
                 sendIndexUnload();
               }}
             />
-            <SearchResults formData={formData} />
+            <SearchResults formData={formData} resultsContainerWidth={resultsContainerWidth} />
           </>
         )}
       </PageContent>

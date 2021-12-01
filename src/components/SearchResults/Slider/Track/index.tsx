@@ -12,6 +12,7 @@ interface TrackProps {
   touched: boolean;
   minimumValue: number;
   maximumValue: number;
+  flightTimeContainerWidth: number;
 }
 
 const Track = ({
@@ -22,10 +23,11 @@ const Track = ({
   touched,
   minimumValue,
   maximumValue,
+  flightTimeContainerWidth,
 }: TrackProps): React.ReactElement => {
   const value = touched ? state.value : [minimumValue, maximumValue];
 
-  const { left, right } = getTrackPosition({ value: value, index: state.index, intervals });
+  const { left, right } = getTrackPosition({ value: value, index: state.index, flightTimeContainerWidth, intervals });
 
   return (
     <Box
@@ -46,7 +48,14 @@ export default React.memo(Track, (previous, next) => {
   return isEqual(getValuesForMemoCheck(previous), getValuesForMemoCheck(next));
 });
 
-const getValuesForMemoCheck = ({ state, props, intervals, minimumValue, maximumValue }: TrackProps) => {
+const getValuesForMemoCheck = ({
+  state,
+  props,
+  intervals,
+  minimumValue,
+  maximumValue,
+  flightTimeContainerWidth,
+}: TrackProps) => {
   return {
     index: state.index,
     left: props.style?.left,
@@ -54,5 +63,6 @@ const getValuesForMemoCheck = ({ state, props, intervals, minimumValue, maximumV
     intervals,
     minimumValue,
     maximumValue,
+    flightTimeContainerWidth,
   };
 };

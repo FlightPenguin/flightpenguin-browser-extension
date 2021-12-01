@@ -4,7 +4,6 @@ import React, { useEffect, useState } from "react";
 import ReactSlider from "react-slider";
 
 import { getDateValueInRange } from "../../../shared/utilities/getDateValueInRange";
-import { flightTimeContainerWidth } from "../../constants";
 import Thumb from "./Thumb";
 import Track from "./Track";
 import { getAcceptableDateRange } from "./utilities/getAcceptableDateRange";
@@ -19,6 +18,7 @@ interface TimelineSliderProps {
   disabled: boolean;
   flightCount: number;
   timezoneOffset: number;
+  flightTimeContainerWidth: number;
 }
 
 const heightValue = 8;
@@ -31,6 +31,7 @@ const TimelineSlider = ({
   disabled,
   flightCount,
   timezoneOffset,
+  flightTimeContainerWidth,
 }: TimelineSliderProps): React.ReactElement => {
   const [touched, setTouched] = useState(false);
   /*
@@ -83,6 +84,7 @@ const TimelineSlider = ({
               touched={touched}
               flightCount={flightCount}
               timezoneOffset={timezoneOffset}
+              flightTimeContainerWidth={flightTimeContainerWidth}
             />
           );
         }}
@@ -96,6 +98,7 @@ const TimelineSlider = ({
               minimumValue={0}
               maximumValue={ticks}
               touched={touched}
+              flightTimeContainerWidth={flightTimeContainerWidth}
             />
           );
         }}
@@ -119,12 +122,20 @@ export default React.memo(TimelineSlider, (previous, next) => {
   return isEqual(getValuesForMemoCheck(previous), getValuesForMemoCheck(next));
 });
 
-const getValuesForMemoCheck = ({ intervals, startDate, intervalWidth, disabled, flightCount }: TimelineSliderProps) => {
+const getValuesForMemoCheck = ({
+  intervals,
+  startDate,
+  intervalWidth,
+  disabled,
+  flightCount,
+  flightTimeContainerWidth,
+}: TimelineSliderProps) => {
   return {
     intervalsCount: intervals.length,
     startDate: startDate,
     intervalWidth: intervalWidth,
     disabled: disabled,
     flightCount: flightCount,
+    flightTimeContainerWidth: flightTimeContainerWidth,
   };
 };

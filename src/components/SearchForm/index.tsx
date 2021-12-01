@@ -1,4 +1,4 @@
-import { Box, Button, Card, FieldStack, FieldWrapper, Input, RadioGroup, Select, Switch, Text } from "bumbag";
+import { Box, Button, Card, FieldStack, FieldWrapper, Input, RadioGroup, Select, Switch } from "bumbag";
 import { SelectMenu } from "bumbag/src/SelectMenu";
 import { addDays, endOfDay, max, nextSunday, startOfDay } from "date-fns";
 import { Field as FormikField, Form, Formik } from "formik";
@@ -7,7 +7,7 @@ import { boolean, mixed, number, object, string } from "yup";
 
 import { CabinMap } from "../../background/constants";
 import { FlightSearchFormData } from "../../shared/types/FlightSearchFormData";
-import { CardType, PointsMap, searchFormWidth } from "../constants";
+import { CardType, PointsMap } from "../constants";
 import { getFieldState, getParsedDate, getValidationText } from "../utilities/forms";
 import { disableNonAlphaInput } from "../utilities/forms/disableNonAlphaInput";
 import { getBooleanFromString } from "../utilities/forms/getBooleanFromString";
@@ -115,11 +115,16 @@ const defaultInitialValues: FormState = {
 };
 
 interface SearchFormProps {
+  containerWidth: number;
   onSubmit: (values: FlightSearchFormData) => void;
   initialValues?: FormState;
 }
 
-export const SearchForm = ({ onSubmit, initialValues = defaultInitialValues }: SearchFormProps): React.ReactElement => {
+export const SearchForm = ({
+  containerWidth,
+  onSubmit,
+  initialValues = defaultInitialValues,
+}: SearchFormProps): React.ReactElement => {
   const nearestAirport = getNearestRelevantAirport();
   initialValues.from = nearestAirport;
 
@@ -136,7 +141,6 @@ export const SearchForm = ({ onSubmit, initialValues = defaultInitialValues }: S
     maximum: getChromeFormattedDateFromDate(maxDate),
   });
   const [airportSearchText, setAirportSearchText] = useState("");
-  console.log(airportSearchText);
   const getAirports = useCallback(
     async ({ page, searchText }) => {
       setAirportSearchText(searchText);
@@ -147,7 +151,7 @@ export const SearchForm = ({ onSubmit, initialValues = defaultInitialValues }: S
 
   return (
     <Box className="search-form-wrapper" alignX="center">
-      <Card maxWidth={`${searchFormWidth}px`}>
+      <Card maxWidth={`${containerWidth}px`}>
         <Formik
           initialValues={initialValues}
           validateOnBlur={true}
