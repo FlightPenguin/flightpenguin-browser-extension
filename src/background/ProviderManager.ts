@@ -1,3 +1,4 @@
+import { setPositionData } from "../components/utilities/geography/setPositionData";
 import { getUrl as getExpediaUrl } from "../expedia/mappings/getUrl";
 import { getUrl as getKiwiUrl } from "../kiwi/mappings/getUrl";
 import { pause } from "../shared/pause";

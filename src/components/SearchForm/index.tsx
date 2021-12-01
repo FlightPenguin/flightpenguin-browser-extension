@@ -1,7 +1,8 @@
-import { Box, Button, Card, FieldStack, FieldWrapper, Input, RadioGroup, Select, Switch } from "bumbag";
+import { Box, Button, Card, FieldStack, FieldWrapper, Input, RadioGroup, Select, Switch, Text } from "bumbag";
+import { SelectMenu } from "bumbag/src/SelectMenu";
 import { addDays, endOfDay, max, nextSunday, startOfDay } from "date-fns";
 import { Field as FormikField, Form, Formik } from "formik";
-import React, { useState } from "react";
+import React, { useCallback, useState } from "react";
 import { boolean, mixed, number, object, string } from "yup";
 
 import { CabinMap } from "../../background/constants";
@@ -16,10 +17,13 @@ import { getFormattedDate } from "../utilities/forms/getFormattedDate";
 import { getPrettyRewardsCardName } from "../utilities/forms/getPrettyRewardsCardName";
 import { getStandardizedFormatDate } from "../utilities/forms/getStandardizedFormatDate";
 import { isValidDateInputString } from "../utilities/forms/isValidDateInputString";
+import { getNearestRelevantAirport } from "../utilities/geography/getNearestRelevantAirport";
+import { Airport } from "./api/airports/Airport";
+import { getAirportData } from "./api/airports/getAirportData";
+import { MatchedLabel } from "./components/SelectMenu/MatchedLabel";
 import { getFridayAfterNext } from "./utilities/getFridayAfterNext";
 import { sendFormDataToBackground } from "./utilities/sendFormDataToBackground";
 
-const airportCodeHelpText = "Airport codes must be three uppercase letters (e.g. SFO).";
 const cabinHelpText = "You must select a cabin type.";
 
 const today = startOfDay(new Date());
@@ -27,23 +31,26 @@ const maxDate = addDays(endOfDay(new Date()), 345);
 const fridayAfterNext = getFridayAfterNext();
 
 const SearchFormSchema = object({
-  from: string()
-    .min(3, airportCodeHelpText)
-    .max(3, airportCodeHelpText)
-    .matches(/[a-zA-Z]{3}/, airportCodeHelpText)
-    .required("What airport do you want to leave from?"),
-  to: string()
-    .min(3, airportCodeHelpText)
-    .max(3, airportCodeHelpText)
-    .matches(/[a-zA-Z]{3}/, airportCodeHelpText)
+  from: object({
+    value: string(),
+    label: string(),
+  }).test("value defined", "What airport do you want to leave from?", (value, ctx) => {
+    return !!value?.value;
+  }),
+  to: object({
+    value: string(),
+    label: string(),
+  })
+    .test("value defined", "What airport do you want to arrive at?", (value, ctx) => {
+      return !!value?.value;
+    })
     .test(
       "not same source and destination",
       "Your source and destination airports cannot be the same.",
       (value, ctx) => {
-        return value !== ctx.parent.from;
+        return value.value !== ctx.parent.from.value;
       },
-    )
-    .required("What airport do you want to leave from?"),
+    ),
   fromDate: string()
     .required("What day do you want to leave on?")
     .test("future start date", "Your flight cannot start in the past.", (value) => {
@@ -90,8 +97,14 @@ const SearchFormSchema = object({
 
 type FormState = ReturnType<typeof SearchFormSchema.validateSync>;
 const defaultInitialValues: FormState = {
-  from: "",
-  to: "",
+  from: {
+    value: "SFO",
+    label: "SFO",
+  },
+  to: {
+    value: "",
+    label: "",
+  },
   fromDate: getFormattedDate(fridayAfterNext),
   toDate: getFormattedDate(nextSunday(fridayAfterNext)),
   numPax: 1,
@@ -107,11 +120,30 @@ interface SearchFormProps {
 }
 
 export const SearchForm = ({ onSubmit, initialValues = defaultInitialValues }: SearchFormProps): React.ReactElement => {
+  const nearestAirport = getNearestRelevantAirport();
+  initialValues.from = nearestAirport;
+
+  const [fromValue, setFromValue] = useState<Airport>(nearestAirport);
+  const [toValue, setToValue] = useState<Airport | null>({
+    value: "",
+    label: "",
+    location: "",
+    key: "",
+    name: "",
+  });
   const [toDateBounds, setToDateBounds] = useState({
     minimum: getChromeFormattedDateFromDate(fridayAfterNext),
     maximum: getChromeFormattedDateFromDate(maxDate),
   });
-  console.log(JSON.stringify(toDateBounds));
+  const [airportSearchText, setAirportSearchText] = useState("");
+  console.log(airportSearchText);
+  const getAirports = useCallback(
+    async ({ page, searchText }) => {
+      setAirportSearchText(searchText);
+      return getAirportData({ page: page - 1, search: searchText.trim() });
+    },
+    [setAirportSearchText],
+  );
 
   return (
     <Box className="search-form-wrapper" alignX="center">
@@ -126,9 +158,9 @@ export const SearchForm = ({ onSubmit, initialValues = defaultInitialValues }: S
 
             const cleanValues = {
               ...values,
-              from: values.from.toUpperCase(),
+              from: values.from.value?.toUpperCase() || "",
               fromDate: getChromeFormattedDateFromString(values.fromDate),
-              to: values.to.toUpperCase(),
+              to: values.to.value?.toUpperCase() || "",
               toDate: values.toDate ? getChromeFormattedDateFromString(values.toDate) : "",
               searchByPoints: getBooleanFromString(values.searchByPoints),
               pointsType: pointsType,
@@ -147,64 +179,86 @@ export const SearchForm = ({ onSubmit, initialValues = defaultInitialValues }: S
                     validationText={getValidationText(formik, "from")}
                   >
                     <FormikField
-                      component={Input.Formik}
-                      name="from"
-                      label="Starting airport code"
                       after={<Input.Icon icon="solid-plane-departure" fontSize="300" color="black" />}
-                      autoComplete="off"
-                      hasFieldWrapper={true}
-                      onChange={(event: Event) => {
-                        const target = event.target as HTMLInputElement;
-                        target.placeholder = "";
-                        return formik.handleChange(event);
-                      }}
-                      onBlur={(event: Event) => {
-                        const target = event.target as HTMLInputElement;
-                        target.placeholder = "";
-                        return formik.handleBlur(event);
-                      }}
-                      onFocus={(event: Event) => {
-                        const target = event.target as HTMLInputElement;
-                        target.placeholder = "SFO";
-                      }}
-                      maxLength="3"
-                      minLength="3"
-                      onKeyPress={(event: KeyboardEvent) => {
-                        disableNonAlphaInput(event);
-                      }}
-                      disabled={formik.isSubmitting}
+                      cacheKey="fromAirport"
+                      component={SelectMenu.Formik}
                       containLabel
+                      debounceInterval={300}
+                      defer
+                      disableClear
+                      disabled={formik.isSubmitting}
+                      emptyText={airportSearchText.length ? "No results found." : "Type to start searching."}
+                      hasFieldWrapper={true}
+                      hasSearch
+                      label="Starting airport"
+                      loadOptions={getAirports}
+                      name="from"
+                      onBlur={(event: React.ChangeEvent) => {
+                        if (Object.keys(event).length) {
+                          formik.handleBlur(event);
+                        } else {
+                          // bumbag generates stupid blur events during setup...
+                          formik.setFieldTouched("from", false);
+                        }
+                      }}
+                      onChange={(selection: Airport) => {
+                        setFromValue(selection);
+                        formik.setFieldValue("from", selection);
+                      }}
+                      onKeyPress={(event: KeyboardEvent) => {
+                        disableNonAlphaInput(event, true);
+                      }}
+                      renderOption={({ option: airport }: { option: Airport }) => (
+                        <React.Fragment>
+                          <MatchedLabel label={airport.name} searchText={airportSearchText} />
+                          <br />
+                          <MatchedLabel label={airport.location} searchText={airportSearchText} fontSize="100" />
+                        </React.Fragment>
+                      )}
+                      searchInputProps={{ placeholder: "Where are you leaving from?", autoFocus: true }}
+                      value={fromValue}
                     />
                   </FieldWrapper>
                   <FieldWrapper state={getFieldState(formik, "to")} validationText={getValidationText(formik, "to")}>
                     <FormikField
-                      component={Input.Formik}
-                      name="to"
-                      label="Destination airport code"
                       after={<Input.Icon icon="solid-plane-arrival" fontSize="300" color="black" />}
-                      autoComplete="off"
-                      hasFieldWrapper={true}
-                      onChange={(event: Event) => {
-                        const target = event.target as HTMLInputElement;
-                        target.placeholder = "";
-                        return formik.handleChange(event);
-                      }}
-                      onBlur={(event: Event) => {
-                        const target = event.target as HTMLInputElement;
-                        target.placeholder = "";
-                        return formik.handleBlur(event);
-                      }}
-                      onFocus={(event: Event) => {
-                        const target = event.target as HTMLInputElement;
-                        target.placeholder = "LAX";
-                      }}
-                      disabled={formik.isSubmitting}
-                      maxLength="3"
-                      minLength="3"
-                      onKeyPress={(event: KeyboardEvent) => {
-                        disableNonAlphaInput(event);
-                      }}
+                      cacheKey="toAirport"
+                      component={SelectMenu.Formik}
                       containLabel
+                      debounceInterval={300}
+                      defer
+                      disableClear
+                      disabled={formik.isSubmitting}
+                      emptyText={airportSearchText.length ? "No results found." : "Type to start searching."}
+                      hasFieldWrapper={true}
+                      hasSearch
+                      label="Destination airport"
+                      loadOptions={getAirports}
+                      name="to"
+                      onBlur={(event: React.ChangeEvent) => {
+                        if (Object.keys(event).length) {
+                          formik.handleBlur(event);
+                        } else {
+                          // bumbag generates stupid blur events during setup...
+                          formik.setFieldTouched("to", false);
+                        }
+                      }}
+                      onChange={(selection: Airport) => {
+                        setToValue(selection);
+                        formik.setFieldValue("to", selection);
+                      }}
+                      onKeyPress={(event: KeyboardEvent) => {
+                        disableNonAlphaInput(event, true);
+                      }}
+                      renderOption={({ option: airport }: { option: Airport }) => (
+                        <React.Fragment>
+                          <MatchedLabel label={airport.name} searchText={airportSearchText} />
+                          <br />
+                          <MatchedLabel label={airport.location} searchText={airportSearchText} fontSize="100" />
+                        </React.Fragment>
+                      )}
+                      searchInputProps={{ placeholder: "Where are you going to?", autoFocus: true }}
+                      value={toValue}
                     />
                   </FieldWrapper>
                 </FieldStack>
@@ -368,7 +422,7 @@ export const SearchForm = ({ onSubmit, initialValues = defaultInitialValues }: S
                       onChange={formik.handleChange}
                       onBlur={formik.handleBlur}
                       disabled={formik.isSubmitting}
-                      after={<Input.Icon icon="solid-user" fontSize="300" color="black" />}
+                      after={<Input.Icon icon="solid-user" color="black" top="2px" />}
                       containLabel
                     />
                   </FieldWrapper>

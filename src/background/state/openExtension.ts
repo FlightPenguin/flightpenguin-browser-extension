@@ -1,27 +1,29 @@
 import { getSubscriptionValidity } from "../../auth";
+import { getAuthToken } from "../../auth/getAuthToken";
+import { setPositionData } from "../../components/utilities/geography/setPositionData";
 import ORIGIN from "../../config";
 import { isExtensionOpen } from "./isExtensionOpen";
 
-export const openExtension = (): void => {
-  disableExtension();
-  chrome.identity.getAuthToken({ interactive: true }, async (token) => {
-    try {
-      const { status } = await getSubscriptionValidity(token);
-      if (status) {
-        isExtensionOpen({
-          extensionOpenCallback: handleExtensionOpen,
-          extensionClosedCallback: handleExtensionNotOpen,
-        });
-      } else {
-        chrome.tabs.create({ url: ORIGIN });
-      }
-    } catch {
+export const openExtension = async (): Promise<void> => {
+  try {
+    disableExtension();
+    const token = await getAuthToken();
+    const { status } = await getSubscriptionValidity(token);
+    if (status) {
+      await setPositionData();
+      isExtensionOpen({
+        extensionOpenCallback: handleExtensionOpen,
+        extensionClosedCallback: handleExtensionNotOpen,
+      });
+    } else {
       chrome.tabs.create({ url: ORIGIN });
-    } finally {
-      enableExtension();
-      updateExtensionIfRequired();
     }
-  });
+  } catch (e) {
+    chrome.tabs.create({ url: ORIGIN });
+  } finally {
+    enableExtension();
+    updateExtensionIfRequired();
+  }
 };
 
 const disableExtension = () => {

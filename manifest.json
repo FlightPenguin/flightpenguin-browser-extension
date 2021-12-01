@@ -1,6 +1,6 @@
 {
   "name": "FlightPenguin",
-  "version": "1.7.4",
+  "version": "1.7.5",
   "description": "Search flights",
   "background": {
     "page": "src/background.html",
@@ -54,7 +54,7 @@
       ]
     }
   ],
-  "permissions": ["tabs", "identity", "identity.email", "https://www.googleapis.com/", "https://subscribe.flightpenguin.com/"],
+  "permissions": ["tabs", "identity", "identity.email", "geolocation", "https://www.googleapis.com/", "https://subscribe.flightpenguin.com/"],
   "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEArDtt/DK1/yBIYUu7ZR99hwrIRFcQ0vNxo4Nj68vAgYniaNaKas5nbmcyW5gmadkz7fJ5EfiMmDa4ZMl4iYsIdeCW32OGczxoAIGqK27lI9jRG/sgaFa8Mm0p926f/D2TPYmZya2fvLn+yvu5sWqWHWhTKbYAcFUQk1L179NYeTGhN6T6DGIemXrSulpExmvcgMIOsvazLAzbI4QdSdUWbMQSL4DEhfD3rpO3CaTkmH0DcwrphI8dGPwsVYK1YZUJsJ2ccSjn3m2H8U55/Iw4v+sS4JrxMnxabrY+g9lIbXe8iDLMSjrV9HNIamy2FMKj9EQBuDOJ9J/qGVt3RuRaRwIDAQAB",
   "oauth2": {
     "client_id": "82466302556-jujsfqptcild0kjidp1tspr9pghdva92.apps.googleusercontent.com",

@@ -59,6 +59,7 @@ const AirlineMap = {
     },
     Lufthansa: { display: "Lufthansa", color: "#0A1D3D", code: "LH" },
     SWISS: { display: "Swiss", color: "#D42D21", code: "LX" },
+    "Swiss International Air Lines": { display: "Swiss", color: "#D42D21", code: "LX" },
     "China Eastern Airlines": {
       display: "China Eastern",
       color: "#A9545F",
