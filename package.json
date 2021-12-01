@@ -59,7 +59,7 @@
   "dependencies": {
     "@fortawesome/free-regular-svg-icons": "^5.15.4",
     "@react-hook/debounce": "^4.0.0",
-    "bumbag": "^2.7.14",
+    "bumbag": "^2.7.15",
     "date-fns": "^2.23.0",
     "date-fns-tz": "^1.1.6",
     "decimal.js-light": "^2.5.1",
