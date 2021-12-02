@@ -1,5 +1,7 @@
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
+import { setScraperFlag } from "../shared/utilities/isScraperFlag";
+
 Sentry.init({
   dsn: "https://d7f3363dd3774a64ad700b4523bcb789@o407795.ingest.sentry.io/5277451",
 });
@@ -17,6 +19,7 @@ chrome.runtime.onMessage.addListener(async function (message) {
   switch (message.event) {
     case "BEGIN_PARSING":
       try {
+        setScraperFlag();
         await getFlightResults();
       } catch (error) {
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
