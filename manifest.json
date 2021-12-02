@@ -1,6 +1,6 @@
 {
   "name": "FlightPenguin",
-  "version": "1.7.5",
+  "version": "1.8.0",
   "description": "Search flights",
   "background": {
     "page": "src/background.html",
@@ -52,9 +52,78 @@
       "js": [
         "dist/kiwi.bundle.js"
       ]
+    },
+    {
+      "matches": [
+        "*://*.aa.com/*",
+        "*://*.aeromexico.com/*",
+        "*://*.aircanada.com/*",
+        "*://*.airchina.com/*",
+        "*://*.alaskaairlines.com/*",
+        "*://*.allegiantair.com/*",
+        "*://*.ana.co.jp/*",
+        "*://*.ba.com/*",
+        "*://*.airfrance.com/*",
+        "*://*.cheapoair.com/*",
+        "*://*.csair.com/*",
+        "*://*.ctrip.com/*",
+        "*://*.delta.com/*",
+        "*://*.easyjet.com/*",
+        "*://*.emirates.com/*",
+        "*://*.expedia.com/*",
+        "*://*.flyfrontier.com/*",
+        "*://*.goibibo.com/*",
+        "*://*.hawaiianairlines.com/*",
+        "*://*.hurb.com/*",
+        "*://*.iberia.com/*",
+        "*://*.jalan.net/*",
+        "*://*.jetblue.com/*",
+        "*://*.jsx.com/*",
+        "*://*.kayak.com/*",
+        "*://*.kiwi.com/*",
+        "*://*.klm.com/*",
+        "*://*.latamairlines.com/*",
+        "*://*.lufthansa.com/*",
+        "*://*.makemytrip.com/*",
+        "*://*.momondo.com/*",
+        "*://*.orbitz.com/*",
+        "*://*.priceline.com/*",
+        "*://*.ryanair.com/*",
+        "*://*.skiplagged.com/*",
+        "*://*.skyscanner.com/*",
+        "*://*.spirit.com/*",
+        "*://*.southwest.com/*",
+        "*://*.suncountry.com/*",
+        "*://*.travel.rakuten.co.jp/*",
+        "*://*.tripadvisor.com/CheapFlightsHome*",
+        "*://*.tripadvisor.co.uk/CheapFlightsHome*",
+        "*://*.turkishairlines.com/*",
+        "*://*.united.com/*",
+        "*://*.vivaaerobus.com/*",
+        "*://*.volaris.com/*",
+        "*://*.westjet.com/*"
+      ],
+      "exclude_matches": [
+        "https://www.southwest.com/air/booking/select.html?*",
+        "https://www.southwest.com/air/booking/index.html?*",
+        "https://www.skyscanner.com/transport/flights/*",
+        "https://www.skyscanner.com/transport/flights-from/*",
+        "https://www.expedia.com/Flights-Search?*",
+        "https://www.kiwi.com/us/search/results/*"
+      ],
+      "js": [
+        "dist/generic.bundle.js"
+      ]
     }
   ],
-  "permissions": ["tabs", "identity", "identity.email", "geolocation", "https://www.googleapis.com/", "https://subscribe.flightpenguin.com/"],
+  "permissions": [
+    "tabs",
+    "identity",
+    "identity.email",
+    "geolocation",
+    "https://www.googleapis.com/",
+    "https://subscribe.flightpenguin.com/"
+  ],
   "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEArDtt/DK1/yBIYUu7ZR99hwrIRFcQ0vNxo4Nj68vAgYniaNaKas5nbmcyW5gmadkz7fJ5EfiMmDa4ZMl4iYsIdeCW32OGczxoAIGqK27lI9jRG/sgaFa8Mm0p926f/D2TPYmZya2fvLn+yvu5sWqWHWhTKbYAcFUQk1L179NYeTGhN6T6DGIemXrSulpExmvcgMIOsvazLAzbI4QdSdUWbMQSL4DEhfD3rpO3CaTkmH0DcwrphI8dGPwsVYK1YZUJsJ2ccSjn3m2H8U55/Iw4v+sS4JrxMnxabrY+g9lIbXe8iDLMSjrV9HNIamy2FMKj9EQBuDOJ9J/qGVt3RuRaRwIDAQAB",
   "oauth2": {
     "client_id": "82466302556-jujsfqptcild0kjidp1tspr9pghdva92.apps.googleusercontent.com",

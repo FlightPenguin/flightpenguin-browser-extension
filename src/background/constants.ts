@@ -1,3 +1,5 @@
+export const EXTENSION_URL = "chrome-extension://nofndgfpjopdpbcejgdpikmpdehlekac/index.html";
+
 export const PROVIDERS_NEEDING_RETURNS = [
   // force expansion
   "expedia",

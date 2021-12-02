@@ -7,7 +7,6 @@ Sentry.init({
 import {
   handleClearSelections,
   handleDepartureSelected,
-  handleDispatchBeginParsing,
   handleFlightResultsReceived,
   handleFlightReturnResultsReceived,
   handleFocusWebpage,
@@ -15,6 +14,7 @@ import {
   handleHighlightTab,
   handleIndexUnloaded,
   handleNoFlightsFound,
+  handleOpenExtensionRequest,
   handleProviderReady,
   handleScraperFailed,
   handleScraperSuccess,
@@ -36,7 +36,7 @@ const providerManager = new ProviderManager();
 
 ExtensionUpdateAvailableHandler(providerManager);
 
-chrome.runtime.onMessage.addListener(function (message, sender, reply) {
+chrome.runtime.onMessage.addListener(async function (message, sender, reply) {
   console.debug(message);
   switch (message.event) {
     case "FORM_DATA_RECEIVED":
@@ -83,6 +83,9 @@ chrome.runtime.onMessage.addListener(function (message, sender, reply) {
       break;
     case "UPDATE_NOW":
       handleUpdateRequest();
+      break;
+    case "OPEN_EXTENSION":
+      await handleOpenExtensionRequest(sender);
       break;
     default:
       window.Sentry.captureException(new Error(message));

@@ -8,8 +8,9 @@ import {
   faSearch,
   faUser,
 } from "@fortawesome/free-solid-svg-icons";
+import { ThemeConfig } from "bumbag";
 
-export const FlightPenguinTheme = {
+export const FlightPenguinTheme: ThemeConfig = {
   icons: {
     iconSets: [
       {
