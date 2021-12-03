@@ -1,5 +1,5 @@
 import { getAuthToken } from "../../../auth/getAuthToken";
-import ORIGIN from "../../../config";
+import { API_HOST } from "../../../background/constants";
 import { Airport } from "../../SearchForm/api/airports/Airport";
 
 interface GetNearbyAirportDataProps {
@@ -13,7 +13,7 @@ export const getNearbyAirportData = async ({
 }: GetNearbyAirportDataProps): Promise<{ options: Airport[] }> => {
   const accessToken = await getAuthToken();
   const response = await fetch(
-    `${ORIGIN}/api/airport/location?latitude=${position.coords.latitude}&longitude=${position.coords.longitude}&page=${page}`,
+    `${API_HOST}/api/airport/location?latitude=${position.coords.latitude}&longitude=${position.coords.longitude}&page=${page}`,
     {
       method: "GET",
       credentials: "include",

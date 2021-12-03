@@ -1,5 +1,5 @@
 import { getAuthToken } from "../../../../auth/getAuthToken";
-import ORIGIN from "../../../../config";
+import { API_HOST } from "../../../../background/constants";
 import { Airport } from "./Airport";
 
 interface GetAirportDataProps {
@@ -13,7 +13,7 @@ export const getAirportData = async ({ search, page }: GetAirportDataProps): Pro
   }
 
   const accessToken = await getAuthToken();
-  const response = await fetch(`${ORIGIN}/api/airport/search?search=${search}&page=${page}`, {
+  const response = await fetch(`${API_HOST}/api/airport/search?search=${search}&page=${page}`, {
     method: "GET",
     credentials: "include",
     mode: "cors",

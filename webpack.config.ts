@@ -42,7 +42,7 @@ const basePlugins = [
   new ProgressPlugin({}),
   new DefinePlugin({
     "process.env.BUMBAG_ENV": JSON.stringify("not test"),
-    "process.env.VERSION": "1.8.1",
+    "process.env.VERSION": JSON.stringify("1.8.2"),
   }),
 ];
 
@@ -59,7 +59,7 @@ export const development: Configuration = {
     ...defaultEntry,
   },
   output: baseOutput,
-  plugins: [...basePlugins, new DefinePlugin({ "process.env.EXTENSION_ENV": "development" })],
+  plugins: [...basePlugins, new DefinePlugin({ "process.env.EXTENSION_ENV": JSON.stringify("development") })],
   resolve: baseResolve,
   devtool: false,
   module: {
@@ -73,7 +73,7 @@ export const production: Configuration = {
   entry: { ...defaultEntry },
   output: baseOutput,
   devtool: false,
-  plugins: [...basePlugins, new DefinePlugin({ "process.env.EXTENSION_ENV": "production" })],
+  plugins: [...basePlugins, new DefinePlugin({ "process.env.EXTENSION_ENV": JSON.stringify("production") })],
   module: {
     rules: getModuleRules({ mode: "production" }),
   },
