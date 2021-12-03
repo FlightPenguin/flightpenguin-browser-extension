@@ -82,14 +82,6 @@ export class ProviderManager {
     return this.primaryTab?.id;
   }
 
-  getPrimaryTabIndex(): number | undefined {
-    return this.primaryTab?.index;
-  }
-
-  getPrimaryWindowId(): number | undefined {
-    return this.primaryTab?.windowId;
-  }
-
   setFormData(formData: FlightSearchFormData): void {
     this.formData = formData;
     this.knownProviders = this.formData.searchByPoints ? PROVIDERS_SUPPORTING_POINTS_SEARCH : SUPPORTED_PROVIDERS;
@@ -348,10 +340,9 @@ export class ProviderManager {
     const that = this;
     return new Promise<void>((resolve) => {
       chrome.windows.create({ url, focused: false, height, width, left, top }, async (window) => {
-        if (window && window.tabs && that.primaryTab?.windowId !== null && that.primaryTab?.windowId !== undefined) {
-          // update again for chrome on windows, to move results window to foreground
-          chrome.windows.update(that.primaryTab.windowId, { focused: true });
+        this.setPrimaryTabAsFocus();
 
+        if (window && window.tabs) {
           that.setTab(provider, window.tabs[0]);
           that.setWindow(provider, window);
 
@@ -384,21 +375,18 @@ export class ProviderManager {
 
   searchForResults(formData: FlightSearchFormData, windowConfig: WindowConfig): void {
     this.setFormData(formData);
-    const primaryWindowId = this?.primaryTab?.windowId;
     const message = { event: "BEGIN_PARSING", formData };
-    if (primaryWindowId !== undefined && primaryWindowId !== null) {
-      const promises = this.knownProviders.map((provider) => {
-        const url = providerURLBaseMap[provider](formData);
-        // Open url in a new window.
-        // Not a new tab because we can't read results from inactive tabs (browser powers down inactive tabs).
-        return this.createWindow(url, provider, windowConfig, message);
-      });
+    const promises = this.knownProviders.map((provider) => {
+      const url = providerURLBaseMap[provider](formData);
+      // Open url in a new window.
+      // Not a new tab because we can't read results from inactive tabs (browser powers down inactive tabs).
+      return this.createWindow(url, provider, windowConfig, message);
+    });
 
-      Promise.all(promises).then(() => {
-        // update again for chrome on windows, to move results window to foreground
-        chrome.windows.update(primaryWindowId, { focused: true });
-      });
-    }
+    Promise.all(promises).then(() => {
+      // update again for chrome on windows, to move results window to foreground
+      this.setPrimaryTabAsFocus();
+    });
   }
 
   sendMessageToIndexPage(message: any, delay = 0): void {
@@ -416,17 +404,31 @@ export class ProviderManager {
 
   retry(providerName: string, windowConfig: WindowConfig): boolean {
     this.closeWindow(providerName);
-    const primaryWindowId = this.getPrimaryWindowId();
-    if (this.state[providerName].attempts < 2 && !!this.formData && primaryWindowId) {
+    if (this.state[providerName].attempts < 2 && !!this.formData) {
       const url = providerURLBaseMap[providerName](this.formData);
       const message = { event: "BEGIN_PARSING", message: this.formData };
       const promise = this.createWindow(url, providerName, windowConfig, message);
       promise.then(() => {
-        chrome.windows.update(primaryWindowId, { focused: true });
+        this.setPrimaryTabAsFocus();
       });
       return true;
     } else {
       return false;
+    }
+  }
+
+  setPrimaryTabAsFocus(): void {
+    /*
+     * Chrome's tab API focuses the tab and doesn't care if the window is in focus.
+     * This will focus the tab & the window!
+     * Worse yet, the tab object does not fire an update event when the window changes, so always use callbacks!
+     */
+    if (this.primaryTab && this.primaryTab?.id) {
+      chrome.tabs.update(this.primaryTab.id, { active: true }, (tab) => {
+        if (tab?.windowId) {
+          chrome.windows.update(tab.windowId, { focused: true });
+        }
+      });
     }
   }
 }
