@@ -1,7 +1,7 @@
-import ORIGIN from "../config";
+import { API_HOST } from "../background/constants";
 
 export function getSubscriptionValidity(accessToken) {
-  return fetch(`${ORIGIN}/api/subscription/status`, {
+  return fetch(`${API_HOST}/api/subscription/status`, {
     method: "GET",
     credentials: "include",
     mode: "cors",

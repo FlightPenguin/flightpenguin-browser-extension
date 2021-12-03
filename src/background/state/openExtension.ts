@@ -1,7 +1,7 @@
 import { getSubscriptionValidity } from "../../auth";
 import { getAuthToken } from "../../auth/getAuthToken";
 import { setPositionData } from "../../components/utilities/geography/setPositionData";
-import ORIGIN from "../../config";
+import { API_HOST } from "../constants";
 import { isExtensionOpen } from "./isExtensionOpen";
 
 export const openExtension = async (): Promise<void> => {
@@ -16,10 +16,10 @@ export const openExtension = async (): Promise<void> => {
         extensionClosedCallback: handleExtensionNotOpen,
       });
     } else {
-      chrome.tabs.create({ url: ORIGIN });
+      chrome.tabs.create({ url: API_HOST });
     }
   } catch (e) {
-    chrome.tabs.create({ url: ORIGIN });
+    chrome.tabs.create({ url: API_HOST });
   } finally {
     enableExtension();
     updateExtensionIfRequired();
