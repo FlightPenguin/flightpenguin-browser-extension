@@ -101,6 +101,17 @@ export class ProviderManager {
   }
 
   setStatus(providerName: string, status: StatusType, searchType: SearchType) {
+    if (!this.state[providerName]) {
+      this.state[providerName] = {
+        departureStatus: "PENDING",
+        returnStatus: "PENDING",
+        ready: true,
+        onReady: DEFAULT_ON_READY_FUNCTION,
+        timer: null,
+        attempts: 0,
+      };
+    }
+
     if (searchType === "DEPARTURE") {
       this.state[providerName]["departureStatus"] = status;
     } else if (searchType === "RETURN") {

@@ -22,7 +22,7 @@ const LIST_CARD_FARE_SELECTOR = ".uitk-price-subtext";
 
 export const getFlights = async (
   selectedFlight = null,
-  loadingTimeout = 75000,
+  loadingTimeout = 120000,
   formData: FlightSearchFormData,
 ): Promise<UnprocessedFlightSearchResult[]> => {
   // beware - make sure you're on the right page before waiting for elements to go away...
