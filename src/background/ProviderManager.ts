@@ -390,12 +390,18 @@ export class ProviderManager {
   }
 
   sendMessageToIndexPage(message: any, delay = 0): void {
-    const primaryTabId = this.getPrimaryTabId();
-    if (primaryTabId !== null && primaryTabId !== undefined) {
-      setTimeout(() => {
-        chrome.tabs.sendMessage(primaryTabId, message);
-      }, delay);
-    }
+    const url = `chrome-extension://${chrome.runtime.id}/index.html`;
+
+    chrome.tabs.query({ url }, (tabs) => {
+      if (tabs && tabs.length) {
+        const primaryTabId = tabs[0]?.id;
+        if (primaryTabId) {
+          setTimeout(() => {
+            chrome.tabs.sendMessage(primaryTabId, message);
+          }, delay);
+        }
+      }
+    });
   }
 
   incrementParsingAttempts(providerName: string): void {
@@ -423,12 +429,19 @@ export class ProviderManager {
      * This will focus the tab & the window!
      * Worse yet, the tab object does not fire an update event when the window changes, so always use callbacks!
      */
-    if (this.primaryTab && this.primaryTab?.id) {
-      chrome.tabs.update(this.primaryTab.id, { active: true }, (tab) => {
-        if (tab?.windowId) {
-          chrome.windows.update(tab.windowId, { focused: true });
+    const url = `chrome-extension://${chrome.runtime.id}/index.html`;
+
+    chrome.tabs.query({ url }, (tabs) => {
+      if (tabs && tabs.length) {
+        const primaryTab = tabs[0];
+        if (primaryTab.id) {
+          chrome.tabs.update(primaryTab.id, { active: true }, (tab) => {
+            if (tab?.windowId) {
+              chrome.windows.update(tab.windowId, { focused: true });
+            }
+          });
         }
-      });
-    }
+      }
+    });
   }
 }

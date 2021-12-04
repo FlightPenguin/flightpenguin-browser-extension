@@ -4,4 +4,5 @@ export const focusTab = (windowId: number, tabId: number) => {
       selected: true,
     });
   });
+  1;
 };
