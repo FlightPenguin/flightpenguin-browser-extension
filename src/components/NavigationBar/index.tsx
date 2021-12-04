@@ -27,12 +27,12 @@ const NavigationBar = () => {
                   <DropdownMenu.Group title="Profile" cursor="default">
                     <DropdownMenu.Item
                       style={{ whiteSpace: "nowrap" }}
-                      use={Link}
+                      // use={Link}
                       iconBefore="solid-user"
                       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
                       // @ts-ignore
-                      href="https://subscribe.flightpenguin.com"
-                      target="_blank"
+                      // href="https://subscribe.flightpenguin.com"
+                      // target="_blank"
                     >
                       {profileInfo.email}
                     </DropdownMenu.Item>
