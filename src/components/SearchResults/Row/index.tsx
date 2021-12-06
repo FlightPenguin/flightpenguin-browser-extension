@@ -178,7 +178,7 @@ const TimelineRow = ({
           {flight.fromTime}
           {!!flight.timezoneOffset && (
             <Badge isAttached palette="info">
-              {from}
+              {flightType === "DEPARTURE" ? from : to}
             </Badge>
           )}
         </Tag>
@@ -198,7 +198,7 @@ const TimelineRow = ({
           {flight.toLocalTime}
           {!!flight.timezoneOffset && (
             <Badge isAttached palette="warning">
-              {to}
+              {flightType === "DEPARTURE" ? to : from}
             </Badge>
           )}
         </Tag>
