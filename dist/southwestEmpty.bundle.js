@@ -1,1 +1,0 @@
-(()=>{"use strict";var e,s;e="southwest",s="BOTH",chrome.runtime.sendMessage({event:"NO_FLIGHTS_FOUND",provider:e,searchType:s})})();
