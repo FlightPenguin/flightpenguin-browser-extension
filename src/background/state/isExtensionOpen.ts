@@ -1,3 +1,5 @@
+import { getExtensionUrl } from "../../shared/utilities/getExtensionUrl";
+
 interface Properties {
   extensionOpenCallback: (tab: chrome.tabs.Tab) => any;
   extensionClosedCallback: () => any;
@@ -13,9 +15,4 @@ export const isExtensionOpen = ({ extensionOpenCallback, extensionClosedCallback
       extensionClosedCallback();
     }
   });
-};
-
-const getExtensionUrl = () => {
-  const extensionId = chrome.runtime.id;
-  return `chrome-extension://${extensionId}/index.html`;
 };

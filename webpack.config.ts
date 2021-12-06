@@ -11,6 +11,7 @@ const defaultEntry = {
   expedia: "./src/expedia/contentScript.js",
   kiwi: "./src/kiwi/contentScript.ts",
   generic: "./src/generic/contentScript.ts",
+  flightpenguin: "./src/flightpenguin/contentScript.ts",
 };
 
 const getModuleRules = ({ mode }: { mode: "production" | "development" }) => [
@@ -42,7 +43,7 @@ const basePlugins = [
   new ProgressPlugin({}),
   new DefinePlugin({
     "process.env.BUMBAG_ENV": JSON.stringify("not test"),
-    "process.env.VERSION": "1.8.7",
+    "process.env.VERSION": "1.8.8",
   }),
 ];
 
