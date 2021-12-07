@@ -11,7 +11,7 @@ export const getNearbyAirportData = async ({
   position,
   page,
 }: GetNearbyAirportDataProps): Promise<{ options: Airport[] }> => {
-  const accessToken = await getAuthToken();
+  const accessToken = await getAuthToken(false);
   const response = await fetch(
     `${API_HOST}/api/airport/location?latitude=${position.coords.latitude}&longitude=${position.coords.longitude}&page=${page}`,
     {
@@ -37,7 +37,6 @@ export const getNearbyAirportData = async ({
       };
     }) as Airport[];
     return { options: airports };
-  } else {
-    throw new Error(`${response.status}: ${response.json()}`);
   }
+  return { options: [] };
 };

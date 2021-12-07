@@ -2,7 +2,7 @@ import { Provider as BumbagProvider } from "bumbag";
 import * as React from "react";
 import ReactDom from "react-dom";
 
-import { OfferFlightSearchModal } from "../components/OfferFlightSearchModal";
+import { OfferFlightSearchModal } from "../components/Modals/";
 import { FlightPenguinTheme } from "../components/utilities/bumbag/theme";
 import { isScraperFlag } from "../shared/utilities/isScraperFlag";
 

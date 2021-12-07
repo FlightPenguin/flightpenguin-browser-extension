@@ -7,12 +7,15 @@ interface GetAirportDataProps {
   page: number;
 }
 
-export const getAirportData = async ({ search, page }: GetAirportDataProps): Promise<{ options: Airport[] }> => {
+export const getAirportData = async ({
+  search,
+  page,
+}: GetAirportDataProps): Promise<{ options: Airport[]; status: boolean }> => {
   if (search.length === 0) {
-    return { options: [] };
+    return { options: [], status: true };
   }
 
-  const accessToken = await getAuthToken();
+  const accessToken = await getAuthToken(false);
   const response = await fetch(`${API_HOST}/api/airport/search?search=${search}&page=${page}`, {
     method: "GET",
     credentials: "include",
@@ -34,8 +37,7 @@ export const getAirportData = async ({ search, page }: GetAirportDataProps): Pro
         value: record.iataCode,
       };
     }) as Airport[];
-    return { options: airports };
-  } else {
-    throw new Error(`${response.status}: ${response.json()}`);
+    return { options: airports, status: true };
   }
+  return { options: [], status: false };
 };

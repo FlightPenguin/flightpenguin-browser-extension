@@ -1,10 +1,10 @@
-export const getAuthToken = async (): Promise<string> => {
-  return await getAuthTokenPromise();
+export const getAuthToken = async (interactive = true): Promise<string> => {
+  return await getAuthTokenPromise(interactive);
 };
 
-const getAuthTokenPromise = (): Promise<string> => {
+const getAuthTokenPromise = (interactive: boolean): Promise<string> => {
   return new Promise((resolve) => {
-    chrome.identity.getAuthToken({ interactive: true }, (token) => {
+    chrome.identity.getAuthToken({ interactive }, (token) => {
       resolve(token);
     });
   });

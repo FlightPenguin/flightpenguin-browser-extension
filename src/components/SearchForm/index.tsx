@@ -7,6 +7,7 @@ import { boolean, mixed, number, object, string } from "yup";
 
 import { CabinMap } from "../../background/constants";
 import { FlightSearchFormData } from "../../shared/types/FlightSearchFormData";
+import { setRecentlyInstalled } from "../../shared/utilities/recentlyInstalledManager";
 import { CardType, PointsMap, searchFormWidth } from "../constants";
 import { getFieldState, getParsedDate, getValidationText } from "../utilities/forms";
 import { disableNonAlphaInput } from "../utilities/forms/disableNonAlphaInput";
@@ -136,7 +137,6 @@ export const SearchForm = ({ onSubmit, initialValues = defaultInitialValues }: S
     maximum: getChromeFormattedDateFromDate(maxDate),
   });
   const [airportSearchText, setAirportSearchText] = useState("");
-  console.log(airportSearchText);
   const getAirports = useCallback(
     async ({ page, searchText }) => {
       setAirportSearchText(searchText);
@@ -168,6 +168,8 @@ export const SearchForm = ({ onSubmit, initialValues = defaultInitialValues }: S
 
             sendFormDataToBackground(cleanValues);
             onSubmit(cleanValues);
+
+            setRecentlyInstalled(false);
           }}
         >
           {(formik) => {

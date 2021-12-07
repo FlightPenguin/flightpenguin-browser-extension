@@ -1,29 +1,15 @@
-import { getSubscriptionValidity } from "../../auth";
-import { getAuthToken } from "../../auth/getAuthToken";
 import { setPositionData } from "../../components/utilities/geography/setPositionData";
-import { API_HOST } from "../constants";
 import { isExtensionOpen } from "./isExtensionOpen";
 
 export const openExtension = async (): Promise<void> => {
-  try {
-    disableExtension();
-    const token = await getAuthToken();
-    const { status } = await getSubscriptionValidity(token);
-    if (status) {
-      await setPositionData();
-      isExtensionOpen({
-        extensionOpenCallback: handleExtensionOpen,
-        extensionClosedCallback: handleExtensionNotOpen,
-      });
-    } else {
-      chrome.tabs.create({ url: API_HOST });
-    }
-  } catch (e) {
-    chrome.tabs.create({ url: API_HOST });
-  } finally {
-    enableExtension();
-    updateExtensionIfRequired();
-  }
+  disableExtension();
+  await setPositionData();
+  isExtensionOpen({
+    extensionOpenCallback: handleExtensionOpen,
+    extensionClosedCallback: handleExtensionNotOpen,
+  });
+  enableExtension();
+  updateExtensionIfRequired();
 };
 
 const disableExtension = () => {
