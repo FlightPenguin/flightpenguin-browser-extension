@@ -19,11 +19,11 @@ chrome.runtime.onMessage.addListener(async function (message) {
         if (flightContainer) {
           await loadAllFlights();
         }
-        sendScraperComplete("kiwi", "DEPARTURE");
+        sendScraperComplete("kiwi", "BOTH");
       } catch (error) {
         console.error(error);
         // window.Sentry.captureException(error);  // TODO: Sentry setup
-        sendFailedScraper("kiwi", error, "DEPARTURE");
+        sendFailedScraper("kiwi", error, "BOTH");
       }
       break;
     case "HIGHLIGHT_FLIGHT":
