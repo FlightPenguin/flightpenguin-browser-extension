@@ -73,7 +73,7 @@ export const SearchResults = ({ formData }: SearchResultsProps): React.ReactElem
         itineraries={flights.itineraries}
         flights={flights.departureFlights}
         formData={formData}
-        loading={!departuresComplete}
+        loading={!!departureFlightDetails || !departuresComplete}
         onSelection={(details) => {
           setDepartureFlightDetails(details);
 
@@ -97,7 +97,7 @@ export const SearchResults = ({ formData }: SearchResultsProps): React.ReactElem
             itineraries={flights.itineraries}
             flights={flights.returnFlights}
             formData={formData}
-            loading={!returnsComplete}
+            loading={!!returnFlightDetails || !returnsComplete}
             onSelection={(details) => {
               setReturnFlightDetails(details);
 
