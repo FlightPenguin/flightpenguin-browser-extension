@@ -4,6 +4,7 @@ import { getUrl as getKiwiUrl } from "../kiwi/mappings/getUrl";
 import { pause } from "../shared/pause";
 import { FlightSearchFormData } from "../shared/types/FlightSearchFormData";
 import { Itinerary } from "../shared/types/Itinerary";
+import { MessageResponse } from "../shared/types/MessageResponse";
 import { WindowConfig } from "../shared/types/WindowConfig";
 import { getUrl as getSkyscannerUrl } from "../skyscanner/mappings/getUrl";
 import { getUrl as getSouthwestUrl } from "../southwest/mappings/getUrl";
@@ -210,13 +211,13 @@ export class ProviderManager {
 
   isDepartureSuccessful(): boolean {
     return this.knownProviders.every((providerName) => {
-      this.isProviderDepartureSuccessful(providerName);
+      return this.isProviderDepartureSuccessful(providerName);
     });
   }
 
   isReturnSuccessful(): boolean {
     return this.knownProviders.every((providerName) => {
-      this.isProviderReturnSuccessful(providerName);
+      return this.isProviderReturnSuccessful(providerName);
     });
   }
 
@@ -343,7 +344,13 @@ export class ProviderManager {
     });
   }
 
-  createWindow(url: string, provider: string, windowConfig: WindowConfig, message: any): Promise<void> {
+  createWindow(
+    url: string,
+    provider: string,
+    windowConfig: WindowConfig,
+    message: Record<string, unknown>,
+    messageResponseCallback: (response: MessageResponse | null) => void,
+  ): Promise<void> {
     this.setParsing(provider, "BOTH"); // de facto starting...
 
     const { height, width, left, top } = windowConfig;
@@ -360,7 +367,9 @@ export class ProviderManager {
           chrome.tabs.onUpdated.addListener(function listener(tabId, info) {
             if (info.status === "complete" && tabId === that.getTabId(provider)) {
               chrome.tabs.onUpdated.removeListener(listener);
-              chrome.tabs.sendMessage(tabId, message);
+              chrome.tabs.sendMessage(tabId, message, {}, (response) => {
+                messageResponseCallback(response);
+              });
               resolve();
             }
           });
@@ -387,11 +396,25 @@ export class ProviderManager {
   searchForResults(formData: FlightSearchFormData, windowConfig: WindowConfig): void {
     this.setFormData(formData);
     const message = { event: "BEGIN_PARSING", formData };
-    const promises = this.knownProviders.map((provider) => {
-      const url = providerURLBaseMap[provider](formData);
+    const promises = this.knownProviders.map((providerName) => {
+      const url = providerURLBaseMap[providerName](formData);
       // Open url in a new window.
       // Not a new tab because we can't read results from inactive tabs (browser powers down inactive tabs).
-      return this.createWindow(url, provider, windowConfig, message);
+      return this.createWindow(url, providerName, windowConfig, message, (response: MessageResponse | null) => {
+        console.debug(response);
+        if (!response || !response.received) {
+          this.setFailed(providerName, "DEPARTURE");
+          this.sendMessageToIndexPage({
+            event: "SCRAPER_COMPLETE",
+            providerName: providerName,
+            status: "FAILED",
+          });
+          this.closeWindow(providerName);
+          if (this.isComplete("DEPARTURE")) {
+            this.sendMessageToIndexPage({ event: "SCRAPING_COMPLETED", searchType: "DEPARTURE" }, 3000);
+          }
+        }
+      });
     });
 
     Promise.all(promises).then(() => {
@@ -419,12 +442,26 @@ export class ProviderManager {
     this.state[providerName].attempts += 1;
   }
 
-  retry(providerName: string, windowConfig: WindowConfig): boolean {
+  retry(providerName: string, windowConfig: WindowConfig, searchType: SearchType): boolean {
     this.closeWindow(providerName);
-    if (this.state[providerName].attempts < 2 && !!this.formData) {
+    if (this.state[providerName].attempts < 2 && !!this.formData && ["DEPARTURE", "BOTH"].includes(searchType)) {
       const url = providerURLBaseMap[providerName](this.formData);
       const message = { event: "BEGIN_PARSING", message: this.formData };
-      const promise = this.createWindow(url, providerName, windowConfig, message);
+      const promise = this.createWindow(url, providerName, windowConfig, message, (response) => {
+        console.debug(response);
+        if (!response || !response.received) {
+          this.setFailed(providerName, searchType);
+          this.sendMessageToIndexPage({
+            event: "SCRAPER_COMPLETE",
+            providerName: providerName,
+            status: "FAILED",
+          });
+          this.closeWindow(providerName);
+          if (this.isComplete(searchType)) {
+            this.sendMessageToIndexPage({ event: "SCRAPING_COMPLETED", searchType }, 3000);
+          }
+        }
+      });
       promise.then(() => {
         this.setPrimaryTabAsFocus();
       });

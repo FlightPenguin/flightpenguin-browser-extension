@@ -38,27 +38,28 @@ const requestNoRoundtripProviderReturns = (
   for (const providerName of departureProviders) {
     const tabId = providerManager.getTabId(providerName);
     if (tabId !== null && tabId !== undefined) {
-      const getReturns = () => {
-        chrome.tabs.sendMessage(tabId, {
+      chrome.tabs.sendMessage(
+        tabId,
+        {
           event: "GET_RETURN_FLIGHTS",
           departure,
           itin: departureItineraries[departureProviders.indexOf(providerName)],
-        });
-
-        providerManager.setTimer(providerName, 10000, () => {
-          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-          // @ts-ignore
-          Sentry.captureException(new Error(`Scraper failed for ${providerName} return flights`), {
-            extra: providerManager.getFormData(),
-          });
-        });
-      };
-
-      if (providerManager.getReady(providerName)) {
-        getReturns();
-      } else {
-        providerManager.setOnReady(providerName, getReturns);
-      }
+        },
+        (response) => {
+          if (!response || !response.received) {
+            providerManager.setFailed(providerName, "RETURN");
+            providerManager.sendMessageToIndexPage({
+              event: "SCRAPER_COMPLETE",
+              providerName: providerName,
+              status: "FAILED",
+            });
+            providerManager.closeWindow(providerName);
+            if (providerManager.isComplete("RETURN")) {
+              providerManager.sendMessageToIndexPage({ event: "SCRAPING_COMPLETED", searchType: "RETURN" }, 3000);
+            }
+          }
+        },
+      );
     }
   }
 };

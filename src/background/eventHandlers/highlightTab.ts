@@ -1,3 +1,4 @@
+import { MessageResponse } from "../../shared/types/MessageResponse";
 import { ProviderManager } from "../ProviderManager";
 
 export const handleHighlightTab = (providerManager: ProviderManager, departureId: string, returnId: string) => {
@@ -18,12 +19,22 @@ function highlightTab(providerManager: ProviderManager, itinerary: any) {
   const windowId = providerManager.getWindowId(itinerary.provider);
   if (windowId !== null && windowId !== undefined && itinerary.tabId !== null && itinerary.tabId !== undefined) {
     chrome.windows.update(windowId, { focused: true }, (win) => {
-      chrome.tabs.sendMessage(itinerary.tabId, {
-        event: "HIGHLIGHT_FLIGHT",
-        selectedDepartureId: itinerary.depFlight.id,
-        selectedReturnId: itinerary.retFlight ? itinerary.retFlight.id : "",
-        provider: itinerary.provider,
-      });
+      chrome.tabs.sendMessage(
+        itinerary.tabId,
+        {
+          event: "HIGHLIGHT_FLIGHT",
+          selectedDepartureId: itinerary.depFlight.id,
+          selectedReturnId: itinerary.retFlight ? itinerary.retFlight.id : "",
+          provider: itinerary.provider,
+        },
+        (response: MessageResponse) => {
+          console.debug(response);
+          if (!response || !response.received) {
+            providerManager.closeWindows();
+            providerManager.sendMessageToIndexPage({ event: "HIGHLIGHT_TAB_FAILED" });
+          }
+        },
+      );
 
       chrome.tabs.update(itinerary.tabId, {
         selected: true,

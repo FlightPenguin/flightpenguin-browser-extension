@@ -36,7 +36,8 @@ const providerManager = new ProviderManager();
 
 ExtensionUpdateAvailableHandler(providerManager);
 
-chrome.runtime.onMessage.addListener(async function (message, sender, reply) {
+chrome.runtime.onMessage.addListener(async function (message, sender, sendResponse) {
+  sendResponse({ received: true, responderName: "background" });
   console.debug(message);
   switch (message.event) {
     case "FORM_DATA_RECEIVED":
