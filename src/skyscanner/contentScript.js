@@ -11,7 +11,9 @@ import { highlightFlightCard } from "./ui/highlightFlightCard";
 
 let continueScraping = true;
 
-chrome.runtime.onMessage.addListener(async function (message) {
+chrome.runtime.onMessage.addListener(async function (message, sender, sendResponse) {
+  sendResponse({ received: true, responderName: "skyscanner" });
+  console.debug(message);
   switch (message.event) {
     case "BEGIN_PARSING":
       await scrapeFlights(message.formData);

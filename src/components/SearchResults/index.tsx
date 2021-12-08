@@ -1,5 +1,5 @@
 import { useDebounce } from "@react-hook/debounce";
-import { Box } from "bumbag";
+import { Alert, Box, Button } from "bumbag";
 import React, { useEffect, useState } from "react";
 
 import { sendHighlightTab } from "../../shared/events";
@@ -8,6 +8,7 @@ import { sendIndexUnload } from "../../shared/events/sendIndexUnload";
 import { FlightSearchFormData } from "../../shared/types/FlightSearchFormData";
 import { ProcessedFlightSearchResult } from "../../shared/types/ProcessedFlightSearchResult";
 import { ProcessedItinerary } from "../../shared/types/ProcessedItinerary";
+import { sendFormDataToBackground } from "../SearchForm/utilities/sendFormDataToBackground";
 import TimelineContainer from "./Container";
 import { FlightSelection } from "./FlightSelection";
 
@@ -34,9 +35,12 @@ export const SearchResults = ({ formData }: SearchResultsProps): React.ReactElem
   const [returnsComplete, setReturnsComplete] = useState(false);
   const [departureFlightDetails, setDepartureFlightDetails] = useState<FlightSelection | null>(null);
   const [returnFlightDetails, setReturnFlightDetails] = useState<FlightSelection | null>(null);
+  const [tabInteractionFailed, setTabInteractionFailed] = useState(false);
+  const [searchAgainDisabled, setSearchAgainDisabled] = useState(false);
 
   useEffect(() => {
-    chrome.runtime.onMessage.addListener((message) => {
+    chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+      sendResponse({ received: true, responderName: "searchResults" });
       console.debug(message);
       switch (message.event) {
         case "FLIGHT_RESULTS_FOR_CLIENT":
@@ -54,6 +58,9 @@ export const SearchResults = ({ formData }: SearchResultsProps): React.ReactElem
             setDeparturesComplete(true);
           }
           break;
+        case "HIGHLIGHT_TAB_FAILED":
+          setTabInteractionFailed(true);
+          break;
         default:
           break;
       }
@@ -66,6 +73,43 @@ export const SearchResults = ({ formData }: SearchResultsProps): React.ReactElem
     });
   });
 
+  if (tabInteractionFailed) {
+    return (
+      <Box alignX="center" marginTop="major-6">
+        <Alert title="Booking failed" type="danger">
+          <Box width="100%">
+            Flight Penguin opens windows in the background to search flight booking sites. We can't show your flight
+            because this window is closed.
+          </Box>
+          <Box width="100%" marginTop="major-1">
+            <Button
+              disabled={searchAgainDisabled}
+              palette="primary"
+              onClick={() => {
+                setSearchAgainDisabled(true);
+                setFlights({
+                  itineraries: {},
+                  departureFlights: [],
+                  returnFlights: [],
+                });
+                setDeparturesComplete(false);
+                setReturnsComplete(false);
+                setDepartureFlightDetails(null);
+                setReturnFlightDetails(null);
+                setTabInteractionFailed(false);
+
+                sendFormDataToBackground(formData);
+                setSearchAgainDisabled(false);
+              }}
+            >
+              Try again
+            </Button>
+          </Box>
+        </Alert>
+      </Box>
+    );
+  }
+
   return (
     <Box className="search-results-container" alignX="center" paddingTop="50px">
       <TimelineContainer
@@ -73,7 +117,7 @@ export const SearchResults = ({ formData }: SearchResultsProps): React.ReactElem
         itineraries={flights.itineraries}
         flights={flights.departureFlights}
         formData={formData}
-        loading={!!departureFlightDetails || !departuresComplete}
+        loading={!departureFlightDetails && !departuresComplete}
         onSelection={(details) => {
           setDepartureFlightDetails(details);
 
@@ -97,7 +141,7 @@ export const SearchResults = ({ formData }: SearchResultsProps): React.ReactElem
             itineraries={flights.itineraries}
             flights={flights.returnFlights}
             formData={formData}
-            loading={!!returnFlightDetails || !returnsComplete}
+            loading={!returnFlightDetails && !returnsComplete}
             onSelection={(details) => {
               setReturnFlightDetails(details);
 

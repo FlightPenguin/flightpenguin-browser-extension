@@ -8,10 +8,11 @@ export const handleScraperFailed = (
   errorDescription: string,
   searchType: SearchType,
   windowConfig: WindowConfig,
+  sender: chrome.runtime.MessageSender,
   close = true,
 ) => {
   providerManager.setFailed(providerName, searchType);
-  const isRetrying = providerManager.retry(providerName, windowConfig);
+  const isRetrying = providerManager.retry(providerName, windowConfig, searchType);
   if (!isRetrying) {
     providerManager.sendMessageToIndexPage({ event: "SCRAPER_COMPLETE", providerName: providerName, status: "FAILED" });
     if (close) {

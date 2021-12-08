@@ -9,7 +9,8 @@ import { loadAllFlights, stopScrollingNow } from "./ui/loadAllFlights";
 let observer: FlightObserver | null = null;
 let flightContainer: HTMLDivElement | null;
 
-chrome.runtime.onMessage.addListener(async function (message) {
+chrome.runtime.onMessage.addListener(async function (message, sender, sendResponse) {
+  sendResponse({ received: true, responderName: "kiwi" });
   console.debug(message);
   switch (message.event) {
     case "BEGIN_PARSING":

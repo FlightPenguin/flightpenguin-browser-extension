@@ -14,7 +14,8 @@ import { waitForLoading } from "./parser/waitForLoading";
 import { clearSelections } from "./ui/clearSelections";
 import { highlightFlightCard } from "./ui/highlightFlightCard";
 
-chrome.runtime.onMessage.addListener(async function (message) {
+chrome.runtime.onMessage.addListener(async function (message, sender, sendResponse) {
+  sendResponse({ received: true, responderName: "southwest" });
   console.debug(message);
   switch (message.event) {
     case "BEGIN_PARSING":
