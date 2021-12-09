@@ -7,7 +7,7 @@ import { LoginModal, WelcomeModal } from "../../components/Modals";
 import NavigationBar from "../../components/NavigationBar";
 import { SearchForm } from "../../components/SearchForm";
 import SearchFormDisplay from "../../components/SearchFormDisplay";
-import { SearchResults } from "../../components/SearchResults";
+import SearchResults from "../../components/SearchResults";
 import { UpdateNotificationAlert } from "../../components/UpdateNotificationAlert";
 import { getStandardizedFormatDate } from "../../components/utilities/forms/getStandardizedFormatDate";
 import { sendIndexUnload } from "../../shared/events/sendIndexUnload";

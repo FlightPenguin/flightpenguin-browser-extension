@@ -1,5 +1,6 @@
 import { useDebounce } from "@react-hook/debounce";
 import { Alert, Box, Button } from "bumbag";
+import isEqual from "lodash.isequal";
 import React, { useEffect, useState } from "react";
 
 import { sendHighlightTab } from "../../shared/events";
@@ -16,7 +17,7 @@ interface SearchResultsProps {
   formData: FlightSearchFormData;
 }
 
-export const SearchResults = ({ formData }: SearchResultsProps): React.ReactElement => {
+const SearchResults = ({ formData }: SearchResultsProps): React.ReactElement => {
   const [flights, setFlights] = useDebounce<{
     itineraries: { [keyof: string]: ProcessedItinerary };
     departureFlights: ProcessedFlightSearchResult[];
@@ -65,7 +66,7 @@ export const SearchResults = ({ formData }: SearchResultsProps): React.ReactElem
           break;
       }
     });
-  }, [setFlights]);
+  }, []);
 
   useEffect(() => {
     window.addEventListener("beforeunload", function () {
@@ -156,3 +157,7 @@ export const SearchResults = ({ formData }: SearchResultsProps): React.ReactElem
     </Box>
   );
 };
+
+export default React.memo(SearchResults, (previous, next) => {
+  return isEqual(previous, next);
+});
