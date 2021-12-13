@@ -6,14 +6,25 @@ interface FlightObserverProps {
   formData: FlightSearchFormData;
 }
 
+const FLIGHT_CARD_SELECTOR = "div[data-testid*='u-flight-card']";
+
 export class FlightObserver {
   private observer: MutationObserver;
 
   constructor({ formData }: FlightObserverProps) {
     this.observer = new MutationObserver(async function (mutations) {
-      let flightCards: HTMLElement[] = [];
+      const flightCards: HTMLDivElement[] = [];
       for (const mutation of mutations) {
-        flightCards = flightCards.concat(Array.from(mutation.addedNodes as NodeListOf<HTMLElement>));
+        Array.from(mutation.addedNodes as NodeListOf<HTMLElement>).forEach((element) => {
+          if (element.dataset?.index) {
+            flightCards.push(element as HTMLDivElement);
+          } else {
+            const parent = element.closest(FLIGHT_CARD_SELECTOR);
+            if (parent) {
+              flightCards.push(parent as HTMLDivElement);
+            }
+          }
+        });
       }
       const complete = await sendFlights({ flightCards, formData: formData });
       if (complete) {

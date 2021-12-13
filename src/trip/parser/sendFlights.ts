@@ -15,31 +15,35 @@ const UNRETRIEVED_SELECTOR = "div.list-placeholder";
 export const sendFlights = async ({ flightCards, formData }: SendFlightsProps): Promise<boolean> => {
   const flights: UnprocessedFlightSearchResult[] = [];
 
+  let lastFlightCard;
   for (const node of flightCards) {
     const flightCard = node as HTMLDivElement;
     const { skip, hide } = shouldSkipCard(flightCard);
     if (skip) {
       if (hide) {
         flightCard.style.display = "none";
-        flightCard.dataset.visited = "true";
+        flightCard.dataset.fpVisited = "true";
       }
       continue;
     }
 
     const flight = await getFlight({ flightCard, formData });
     flights.push(flight);
+    lastFlightCard = flightCard;
   }
 
   if (flights.length) {
     sendFlightsEvent("trip", flights);
   }
 
-  const lastFlightCard = Array.from(flightCards as HTMLDivElement[]).slice(-1)[0];
-  const complete = isComplete(lastFlightCard);
-  if (!complete) {
-    scrollToCardOrBottom(lastFlightCard);
+  if (lastFlightCard) {
+    const complete = isComplete(lastFlightCard);
+    if (!complete) {
+      await scrollToCardOrBottom(lastFlightCard);
+    }
+    return complete;
   }
-  return complete;
+  return false;
 };
 
 const shouldSkipCard = (flightCard: HTMLDivElement): { skip: boolean; hide: boolean } => {
@@ -52,8 +56,8 @@ const shouldSkipCard = (flightCard: HTMLDivElement): { skip: boolean; hide: bool
   return { skip: false, hide: false };
 };
 
-const scrollToCardOrBottom = (flightCard: HTMLDivElement): void => {
-  if (stopScrollingCheck(false)) {
+const scrollToCardOrBottom = async (flightCard: HTMLDivElement): Promise<void> => {
+  if (await stopScrollingCheck(false)) {
     return;
   }
   flightCard.scrollIntoView({ behavior: "smooth" });

@@ -61,5 +61,5 @@ export const getFlight = async ({ flightCard, formData }: GetFlightProps): Promi
 
 const setFlightId = (flightCard: HTMLDivElement, id: string) => {
   flightCard.dataset.fpid = id;
-  flightCard.dataset.visited = "true";
+  flightCard.dataset.fpVisited = "true";
 };
