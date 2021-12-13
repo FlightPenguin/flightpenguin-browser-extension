@@ -8,7 +8,7 @@ export const getUrl = (formData: FlightSearchFormData): string => {
   const tripType = roundtrip ? "RT" : "OW";
   const cabinValue = cabinMap[cabin || "econ"];
 
-  let url = `https://www.trip.com/flights/${from}-to-${to}/tickets-${from}-${to}?FlightWay=${tripType}&class=${cabinValue}&Quantity=${numPax}&ddate=${fromDate}`;
+  let url = `https://www.trip.com/flights/${from}-to-${to}/tickets-${from}-${to}?FlightWay=${tripType}&class=${cabinValue}&Quantity=${numPax}&ddate=${fromDate}&dcity=${from}%2C${from}&acity=${to}%2C${to}`;
   if (roundtrip) {
     url += `&rdate=${toDate}`;
   }
