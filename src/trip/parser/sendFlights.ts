@@ -1,7 +1,7 @@
 import { sendFlightsEvent } from "../../shared/events";
 import { FlightSearchFormData } from "../../shared/types/FlightSearchFormData";
 import { UnprocessedFlightSearchResult } from "../../shared/types/UnprocessedFlightSearchResult";
-import { stopScrollingCheck } from "../ui/stopScrolling";
+import { stopScrollingCheck, stopScrollingNow } from "../ui/stopScrolling";
 import { getFlight } from "./getFlight";
 import { isComplete } from "./isParsingComplete";
 
@@ -10,10 +10,16 @@ interface SendFlightsProps {
   formData: FlightSearchFormData;
 }
 
+interface SendFlightsResults {
+  complete: boolean;
+  idToIndexMap: Record<string, string>;
+}
+
 const UNRETRIEVED_SELECTOR = "div.list-placeholder";
 
-export const sendFlights = async ({ flightCards, formData }: SendFlightsProps): Promise<boolean> => {
+export const sendFlights = async ({ flightCards, formData }: SendFlightsProps): Promise<SendFlightsResults> => {
   const flights: UnprocessedFlightSearchResult[] = [];
+  const idToIndexMap: Record<string, string> = {};
 
   let lastFlightCard;
   for (const node of flightCards) {
@@ -29,6 +35,10 @@ export const sendFlights = async ({ flightCards, formData }: SendFlightsProps): 
 
     const flight = await getFlight({ flightCard, formData });
     flights.push(flight);
+    if (flight.id && flightCard.dataset.index) {
+      idToIndexMap[flight.id] = flightCard.dataset.index;
+    }
+
     lastFlightCard = flightCard;
   }
 
@@ -38,12 +48,14 @@ export const sendFlights = async ({ flightCards, formData }: SendFlightsProps): 
 
   if (lastFlightCard) {
     const complete = isComplete(lastFlightCard);
-    if (!complete) {
+    if (complete) {
+      stopScrollingNow("Reached max flights");
+    } else {
       await scrollToCardOrBottom(lastFlightCard);
     }
-    return complete;
+    return { complete, idToIndexMap };
   }
-  return false;
+  return { complete: false, idToIndexMap };
 };
 
 const shouldSkipCard = (flightCard: HTMLDivElement): { skip: boolean; hide: boolean } => {

@@ -10,8 +10,13 @@ const FLIGHT_CARD_SELECTOR = "div[data-testid*='u-flight-card']";
 
 export class FlightObserver {
   private observer: MutationObserver;
+  private flightPenguinIdToIndexMap: { [keyOf: string]: string };
 
   constructor({ formData }: FlightObserverProps) {
+    this.flightPenguinIdToIndexMap = {};
+
+    // eslint-disable-next-line @typescript-eslint/no-this-alias
+    const that = this;
     this.observer = new MutationObserver(async function (mutations) {
       const flightCards: HTMLDivElement[] = [];
       for (const mutation of mutations) {
@@ -19,16 +24,21 @@ export class FlightObserver {
           if (element.dataset?.index) {
             flightCards.push(element as HTMLDivElement);
           } else {
-            const parent = element.closest(FLIGHT_CARD_SELECTOR);
-            if (parent) {
+            const parent = !!element && !!element.closest && (element.closest(FLIGHT_CARD_SELECTOR) as HTMLElement);
+            if (parent && !parent.dataset?.fpVisited && !parent.dataset.fpid) {
+              // TODO: Solve revisiting items causes synchronocity issues with the modal.
               flightCards.push(parent as HTMLDivElement);
             }
           }
         });
       }
-      const complete = await sendFlights({ flightCards, formData: formData });
+      const { complete, idToIndexMap: batchMap } = await sendFlights({ flightCards, formData: formData });
+      Object.entries(batchMap).forEach(([flightPenguinId, indexValue]) => {
+        that.flightPenguinIdToIndexMap[flightPenguinId] = indexValue;
+      });
       if (complete) {
         sendScraperComplete("trip", "BOTH");
+        that.endObservation();
       }
     });
   }
@@ -39,5 +49,9 @@ export class FlightObserver {
 
   endObservation(): void {
     this.observer.disconnect();
+  }
+
+  getFlightIndex(flightPenguinId: string) {
+    return this.flightPenguinIdToIndexMap[flightPenguinId];
   }
 }

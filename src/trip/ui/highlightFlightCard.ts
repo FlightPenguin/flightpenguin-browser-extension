@@ -4,10 +4,10 @@ import { removeFlightCardHighlight } from "./removeFlightCardHighlight";
 import { removeRefreshPricesModal } from "./removeRefreshPricesModal";
 import { scrollToFlightCard } from "./scrollToFlightCard";
 
-export const highlightFlightCard = async (selectedFlightId: string): Promise<void> => {
+export const highlightFlightCard = async (flightIndex: string): Promise<void> => {
   removeRefreshPricesModal();
   removeFlightCardHighlight();
-  const flightCard = await findFlightCard(selectedFlightId);
+  const flightCard = await findFlightCard(flightIndex);
   highlightSelectedElement(flightCard);
   scrollToFlightCard(flightCard);
   removeRefreshPricesModal();
