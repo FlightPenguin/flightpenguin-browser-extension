@@ -36,7 +36,6 @@ const successStates = ["SUCCESS"];
 const providerURLBaseMap: { [key: string]: (formData: FlightSearchFormData) => string } = {
   trip: getTripUrl,
   southwest: getSouthwestUrl,
-  skyscanner: getSkyscannerUrl,
   expedia: getExpediaUrl,
   kiwi: getKiwiUrl,
 };

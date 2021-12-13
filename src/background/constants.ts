@@ -9,7 +9,6 @@ export const SUPPORTED_PROVIDERS = [
   // force expansion
   // "expedia",
   // "kiwi",
-  // "skyscanner",
   // "southwest",
   "trip",
 ];
