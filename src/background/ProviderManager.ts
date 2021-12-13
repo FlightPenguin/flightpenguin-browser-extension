@@ -1,4 +1,3 @@
-import { setPositionData } from "../components/utilities/geography/setPositionData";
 import { getUrl as getExpediaUrl } from "../expedia/mappings/getUrl";
 import { getUrl as getKiwiUrl } from "../kiwi/mappings/getUrl";
 import { pause } from "../shared/pause";
@@ -8,6 +7,7 @@ import { MessageResponse } from "../shared/types/MessageResponse";
 import { WindowConfig } from "../shared/types/WindowConfig";
 import { getUrl as getSkyscannerUrl } from "../skyscanner/mappings/getUrl";
 import { getUrl as getSouthwestUrl } from "../southwest/mappings/getUrl";
+import { getUrl as getTripUrl } from "../trip/mappings/getUrl";
 import {
   DEFAULT_ON_READY_FUNCTION,
   FlightType,
@@ -34,6 +34,7 @@ const terminalStates = ["FAILED", "SUCCESS"];
 const successStates = ["SUCCESS"];
 
 const providerURLBaseMap: { [key: string]: (formData: FlightSearchFormData) => string } = {
+  trip: getTripUrl,
   southwest: getSouthwestUrl,
   skyscanner: getSkyscannerUrl,
   expedia: getExpediaUrl,

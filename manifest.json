@@ -39,6 +39,14 @@
       ]
     },
     {
+      "matches": ["https://www.trip.com/flights/*"],
+      "css": ["src/shared/contentScript.css"],
+      "js": [
+        "src/shared/sentry.js",
+        "dist/trip.bundle.js"
+      ]
+    },
+    {
       "matches": ["https://www.expedia.com/Flights-Search?*"],
       "css": ["src/shared/contentScript.css"],
       "js": [
