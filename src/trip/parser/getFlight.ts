@@ -11,6 +11,11 @@ interface GetFlightProps {
 }
 
 export const getFlight = async ({ flightCard, formData }: GetFlightProps): Promise<UnprocessedFlightSearchResult> => {
+  // if (flightCard.dataset?.fpVisited) {
+  //   // This is an update...
+  //   debugger;
+  // }
+
   const flightCardDetails = getFlightCardData(flightCard, formData.roundtrip);
   const layoverDetails = await getModalData(flightCard, formData.roundtrip, formData.fromDate);
 

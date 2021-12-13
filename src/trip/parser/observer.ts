@@ -25,8 +25,7 @@ export class FlightObserver {
             flightCards.push(element as HTMLDivElement);
           } else {
             const parent = !!element && !!element.closest && (element.closest(FLIGHT_CARD_SELECTOR) as HTMLElement);
-            if (parent && !parent.dataset?.fpVisited && !parent.dataset.fpid) {
-              // TODO: Solve revisiting items causes synchronocity issues with the modal.
+            if (parent) {
               flightCards.push(parent as HTMLDivElement);
             }
           }

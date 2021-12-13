@@ -6,6 +6,8 @@ import { getAirlineNames } from "./getAirlineNames";
 import { getAirportCodes } from "./getAirportCodes";
 import { getFlightDuration } from "./getFlightDuration";
 import { getFlightTimes } from "./getFlightTimes";
+import { getParsedModalHtml } from "./getParsedModalHtml";
+import { setModalHtml } from "./setModalHtml";
 
 interface LayoversData {
   departure: FlightLeg[];
@@ -21,7 +23,9 @@ export const getModalData = async (
   roundtrip: boolean,
   departureDate: string,
 ): Promise<LayoversData> => {
-  const modal = await openModal(flightCard);
+  // minimize time modal is open
+  await setModalHtml(flightCard);
+  const modal = getParsedModalHtml(flightCard);
 
   const [departureContainer, returnContainer] = modal.querySelectorAll(DETAILS_CONTAINER_SELECTOR);
 
@@ -40,7 +44,6 @@ export const getModalData = async (
       }
     : { departure: getLayoverDetails(departureContainer as HTMLDivElement, departureDate) };
 
-  await closeModal(modal);
   return data;
 };
 
