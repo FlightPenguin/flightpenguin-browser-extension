@@ -1,13 +1,12 @@
 import { sendFailedScraper, sendScraperComplete } from "../shared/events";
 import { addBackToSearchButton } from "../shared/ui/backToSearch";
+import { stopScrollingNow } from "../shared/ui/stopScrolling";
 import { getFlightContainer } from "./parser/getFlightContainer";
 import { FlightObserver } from "./parser/observer";
 import { getFlightPenguinId } from "./shared/getFlightPenguinId";
 import { highlightFlightCard } from "./ui/highlightFlightCard";
-import { loadAllFlights, stopScrollingNow } from "./ui/loadAllFlights";
 
 let observer: FlightObserver | null = null;
-let flightContainer: HTMLDivElement | null;
 
 chrome.runtime.onMessage.addListener(async function (message, sender, sendResponse) {
   sendResponse({ received: true, responderName: "kiwi" });
@@ -16,11 +15,7 @@ chrome.runtime.onMessage.addListener(async function (message, sender, sendRespon
     case "BEGIN_PARSING":
       try {
         observer = new FlightObserver({ formData: message.formData });
-        flightContainer = await attachObserver(observer);
-        if (flightContainer) {
-          await loadAllFlights();
-        }
-        sendScraperComplete("kiwi", "BOTH");
+        await attachObserver(observer);
       } catch (error) {
         console.error(error);
         // window.Sentry.captureException(error);  // TODO: Sentry setup
@@ -42,3 +37,4 @@ const attachObserver = async (observer: FlightObserver): Promise<HTMLDivElement 
   observer.beginObservation(flightContainer);
   return flightContainer;
 };
+4;
