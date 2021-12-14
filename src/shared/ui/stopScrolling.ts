@@ -1,4 +1,4 @@
-import { waitForDisappearance } from "../../shared/utilities/waitFor";
+import { waitForDisappearance } from "../utilities/waitFor";
 
 const STOP_SCROLLING_ID = "stop-scrolling";
 const STOP_SCROLLING_SELECTOR = `div#${STOP_SCROLLING_ID}`;

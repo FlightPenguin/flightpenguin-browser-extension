@@ -1,7 +1,7 @@
 import { sendFlightsEvent } from "../../shared/events";
 import { FlightSearchFormData } from "../../shared/types/FlightSearchFormData";
 import { UnprocessedFlightSearchResult } from "../../shared/types/UnprocessedFlightSearchResult";
-import { stopScrollingCheck, stopScrollingNow } from "../ui/stopScrolling";
+import { stopScrollingCheck, stopScrollingNow } from "../../shared/ui/stopScrolling";
 import { getFlight } from "./getFlight";
 import { isComplete } from "./isParsingComplete";
 
@@ -72,10 +72,17 @@ const scrollToCardOrBottom = async (flightCard: HTMLDivElement): Promise<void> =
   if (await stopScrollingCheck(false)) {
     return;
   }
-  flightCard.scrollIntoView({ behavior: "smooth" });
+  console.log("Scrolling to card");
+  flightCard.scrollIntoView({
+    behavior: "smooth",
+    // puts element at top
+    block: "start",
+    inline: "nearest",
+  });
 
   const cardBottomPx = window.pageYOffset + flightCard.getBoundingClientRect().bottom;
-  if (cardBottomPx >= document.body.scrollHeight * 0.9) {
+  if (cardBottomPx >= document.body.scrollHeight * 0.85) {
+    console.log("scrolling to bottom");
     window.scrollTo({ top: document.body.scrollHeight, behavior: "smooth" });
   }
 };

@@ -1,6 +1,6 @@
-import { MissingElementLookupError } from "../../../shared/errors";
+import { MissingElementLookupError } from "../errors";
 
-export const getParsedModalHtml = (flightCard: HTMLDivElement) => {
+export const getParsedModalHtml = (flightCard: HTMLDivElement): Document => {
   const rawText = flightCard.dataset.fpModalHtml;
   if (!rawText) {
     throw new MissingElementLookupError("Unable to extract flight card modal data");

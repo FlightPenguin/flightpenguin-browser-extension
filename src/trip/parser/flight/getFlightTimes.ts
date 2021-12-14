@@ -19,8 +19,8 @@ export const getFlightTimes = (container: HTMLDivElement): { arrivalTime: string
     throw new MissingFieldParserError(`Unable to extract tokens from ${rawText}`);
   }
 
-  return {
-    departureTime: getFormatted12HourClockTimeFrom24HourClockTime(tokens[0]),
-    arrivalTime: getFormatted12HourClockTimeFrom24HourClockTime(tokens[1]),
-  };
+  const departureTime = getFormatted12HourClockTimeFrom24HourClockTime(tokens[0].replace(/d$/, ""));
+  const arrivalTime = getFormatted12HourClockTimeFrom24HourClockTime(tokens[1].replace(/d$/, ""));
+
+  return { departureTime, arrivalTime };
 };

@@ -1,12 +1,10 @@
 import { getParsedDate } from "../../../components/utilities/forms";
+import { getParsedModalHtml } from "../../../shared/parser/getParsedModalHtml";
 import { FlightLeg } from "../../../shared/types/FlightLeg";
-import { closeModal } from "../../ui/closeModal";
-import { openModal } from "../../ui/openModal";
 import { getAirlineNames } from "./getAirlineNames";
 import { getAirportCodes } from "./getAirportCodes";
 import { getFlightDuration } from "./getFlightDuration";
 import { getFlightTimes } from "./getFlightTimes";
-import { getParsedModalHtml } from "./getParsedModalHtml";
 import { setModalHtml } from "./setModalHtml";
 
 interface LayoversData {
