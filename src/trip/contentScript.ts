@@ -24,6 +24,7 @@ chrome.runtime.onMessage.addListener(async function (message, sender, sendRespon
       }
       break;
     case "HIGHLIGHT_FLIGHT":
+      observer?.endObservation();
       await highlightFlight(message.selectedDepartureId, message.selectedReturnId);
       break;
     default:
