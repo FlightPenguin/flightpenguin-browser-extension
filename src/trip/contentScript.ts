@@ -1,6 +1,7 @@
 import { sendFailedScraper } from "../shared/events";
 import { addBackToSearchButton } from "../shared/ui/backToSearch";
 import { stopScrollingNow } from "../shared/ui/stopScrolling";
+import { suppressOfferFlightPenguinPopup } from "../shared/utilities/suppressOfferFlightPenguinPopup";
 import { getFlightContainer } from "./parser/getFlightContainer";
 import { FlightObserver } from "./parser/observer";
 import { getFlightPenguinId } from "./shared/getFlightPenguinId";
@@ -13,6 +14,7 @@ chrome.runtime.onMessage.addListener(async function (message, sender, sendRespon
   switch (message.event) {
     case "BEGIN_PARSING":
       try {
+        suppressOfferFlightPenguinPopup();
         observer = new FlightObserver({ formData: message.formData });
         await attachObserver(observer);
       } catch (error) {

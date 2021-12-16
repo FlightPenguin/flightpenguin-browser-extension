@@ -8,6 +8,7 @@ Sentry.init({
 
 import { sendFailedScraper, sendScraperComplete } from "../shared/events";
 import { addBackToSearchButton } from "../shared/ui/backToSearch";
+import { suppressOfferFlightPenguinPopup } from "../shared/utilities/suppressOfferFlightPenguinPopup";
 import { parseFlights } from "./parser/parseFlights";
 import { setFlightIds } from "./parser/setFlightIds";
 import { waitForLoading } from "./parser/waitForLoading";
@@ -20,6 +21,7 @@ chrome.runtime.onMessage.addListener(async function (message, sender, sendRespon
   switch (message.event) {
     case "BEGIN_PARSING":
       try {
+        suppressOfferFlightPenguinPopup();
         setScraperFlag();
         await getFlightResults();
       } catch (error) {

@@ -4,6 +4,8 @@ window.Sentry.init({
   dsn: "https://d7f3363dd3774a64ad700b4523bcb789@o407795.ingest.sentry.io/5277451",
 });
 
+import { suppressOfferFlightPenguinPopup } from "shared/utilities/suppressOfferFlightPenguinPopup";
+
 import {
   sendFailedScraper,
   sendFlightsEvent,
@@ -22,6 +24,7 @@ chrome.runtime.onMessage.addListener(async function (message, sender, sendRespon
   console.debug(message);
   switch (message.event) {
     case "BEGIN_PARSING":
+      suppressOfferFlightPenguinPopup();
       formData = message.formData;
       await scrapeDepartureFlights(formData);
       break;
