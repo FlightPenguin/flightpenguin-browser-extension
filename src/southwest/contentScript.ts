@@ -1,13 +1,12 @@
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
-import { setScraperFlag } from "../shared/utilities/isScraperFlag";
-
 Sentry.init({
   dsn: "https://d7f3363dd3774a64ad700b4523bcb789@o407795.ingest.sentry.io/5277451",
 });
 
 import { sendFailedScraper, sendScraperComplete } from "../shared/events";
 import { addBackToSearchButton } from "../shared/ui/backToSearch";
+import { setScraperFlag } from "../shared/utilities/isScraperFlag";
 import { suppressOfferFlightPenguinPopup } from "../shared/utilities/suppressOfferFlightPenguinPopup";
 import { parseFlights } from "./parser/parseFlights";
 import { setFlightIds } from "./parser/setFlightIds";

@@ -15,18 +15,33 @@ export const handleDepartureSelected = (providerManager: ProviderManager, depart
   */
   const { itineraries } = providerManager.getItineraries();
   const departureItineraries = departure.itinIds.flatMap((itinId: string) => itineraries[itinId]);
-  const departureProviders = departureItineraries.map((itinerary: any) => itinerary.provider);
+  const departureProviders = [...new Set(departureItineraries.map((itinerary: any) => itinerary.provider))] as string[];
   providerManager.setSelectedProviders(departureProviders);
 
-  if (hasReturnProviders(departureProviders)) {
-    requestNoRoundtripProviderReturns(departure, providerManager, departureProviders, departureItineraries);
-  } else {
-    getRoundtripProviderReturns(departure, providerManager);
+  const { returnsIncluded: providersNotNeedingReturns, noReturnsIncluded: providersNeedingReturns } =
+    getProvidersByType(departureProviders);
+  if (providersNeedingReturns) {
+    console.log("needs returns");
+    requestNoRoundtripProviderReturns(departure, providerManager, providersNeedingReturns, departureItineraries);
+  }
+  if (providersNotNeedingReturns) {
+    console.log("No need for returns");
+    getRoundtripProviderReturns(departure, providerManager, providersNotNeedingReturns);
   }
 };
 
-const hasReturnProviders = (departureProviders: string[]) => {
-  return PROVIDERS_NEEDING_RETURNS.some((providerName: string) => departureProviders.includes(providerName));
+const getProvidersByType = (
+  departureProviders: string[],
+): { returnsIncluded: string[]; noReturnsIncluded: string[] } => {
+  const returnsIncluded = [] as string[];
+  const noReturnsIncluded = [] as string[];
+
+  departureProviders.forEach((providerName) => {
+    PROVIDERS_NEEDING_RETURNS.includes(providerName)
+      ? noReturnsIncluded.push(providerName)
+      : returnsIncluded.push(providerName);
+  });
+  return { returnsIncluded, noReturnsIncluded };
 };
 
 const requestNoRoundtripProviderReturns = (
@@ -64,11 +79,21 @@ const requestNoRoundtripProviderReturns = (
   }
 };
 
-const getRoundtripProviderReturns = (departure: any, providerManager: ProviderManager) => {
+const getRoundtripProviderReturns = (
+  departure: any,
+  providerManager: ProviderManager,
+  departureProviders: string[],
+) => {
   const { itineraries } = providerManager.getItineraries();
+  const filteredItineraries = Object.fromEntries(
+    Object.entries(itineraries).filter(([id, itinerary]) => {
+      return departureProviders.includes(itinerary.provider);
+    }),
+  );
+
   const returnList = sortFlights(
-    findReturnFlights(departure, itineraries),
-    itineraries,
+    findReturnFlights(departure, filteredItineraries),
+    filteredItineraries,
     providerManager.getFormCabinValue(),
   );
   providerManager.addReturns(returnList);
@@ -76,9 +101,13 @@ const getRoundtripProviderReturns = (departure: any, providerManager: ProviderMa
   const message = {
     event: "RETURN_FLIGHTS_FOR_CLIENT",
     flights: {
-      departureList: sortFlights(providerManager.getDepartures(), itineraries, providerManager.getFormCabinValue()),
+      departureList: sortFlights(
+        providerManager.getDepartures(),
+        filteredItineraries,
+        providerManager.getFormCabinValue(),
+      ),
       returnList: providerManager.getReturns(),
-      itins: itineraries,
+      itins: filteredItineraries,
       updatedAt: new Date(),
     },
     formData: providerManager.getFormData(),
