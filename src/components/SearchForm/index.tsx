@@ -104,7 +104,7 @@ const defaultInitialValues: FormState = {
   },
   to: {
     value: "",
-    label: "",
+    label: "Where to?",
   },
   fromDate: getFormattedDate(fridayAfterNext),
   toDate: getFormattedDate(nextSunday(fridayAfterNext)),
