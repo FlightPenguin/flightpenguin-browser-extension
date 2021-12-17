@@ -86,7 +86,7 @@ const TimelineContainer = ({
       }
 
       return (
-        isFlightArrivingBeforeTime({ flight, datetime: filterDateRange.upperBound }) &&
+        isFlightArrivingBeforeTime({ flight, datetime: filterDateRange.upperBound, flightType }) &&
         isFlightDepartingAfterTime({ flight, datetime: filterDateRange.lowerBound })
       );
     });

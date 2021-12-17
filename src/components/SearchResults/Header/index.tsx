@@ -84,6 +84,7 @@ const TimelineHeader = ({
               timeFontSize={timeFontSize}
               departureAirportCode={departureAirportCode}
               arrivalAirportCode={arrivalAirportCode}
+              flightType={flightType}
               key={`interval-header-${interval}`}
             />
           );
@@ -97,6 +98,7 @@ const TimelineHeader = ({
         flightCount={flightCount}
         disabled={sliderDisabled}
         timezoneOffset={tzOffset}
+        flightType={flightType}
       />
     </Box>
   );

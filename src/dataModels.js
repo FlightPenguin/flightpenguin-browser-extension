@@ -245,7 +245,7 @@ function Itin(depFlight, retFlight, fare, currency, provider, windowId, tabId, m
       retFlight.toTimeDetails,
       retFlight.toDateTime,
       retFlight.toLocalTime,
-      depFlight.toLocalDateTime,
+      retFlight.toLocalDateTime,
       retFlight.operatingAirline,
       retFlight.marketingAirline,
       retFlight.duration,
