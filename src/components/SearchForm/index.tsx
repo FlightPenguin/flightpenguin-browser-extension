@@ -435,9 +435,12 @@ export const SearchForm = ({ onSubmit, initialValues = defaultInitialValues }: S
                     <FormikField
                       component={Select.Formik}
                       name="cabin"
-                      options={Object.entries(CabinMap).map(([key, val]) => {
-                        return { label: val, value: key };
-                      })}
+                      options={[
+                        { key: 1, label: "Economy", value: "econ" },
+                        { key: 2, label: "Premium Economy", value: "prem_econ" },
+                        { key: 3, label: "Business", value: "business" },
+                        { key: 4, label: "First", value: "first" },
+                      ]}
                       width="100%"
                       autoComplete="off"
                       hasFieldWrapper={true}
