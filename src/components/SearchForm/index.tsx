@@ -2,7 +2,7 @@ import { Box, Button, Card, FieldStack, FieldWrapper, Input, RadioGroup, Select,
 import { SelectMenu } from "bumbag/src/SelectMenu";
 import { addDays, endOfDay, max, nextSunday, startOfDay } from "date-fns";
 import { Field as FormikField, Form, Formik } from "formik";
-import React, { useCallback, useState } from "react";
+import React, { ElementRef, useCallback, useEffect, useRef, useState } from "react";
 import { boolean, mixed, number, object, string } from "yup";
 
 import { CabinMap } from "../../background/constants";
@@ -124,6 +124,10 @@ export const SearchForm = ({ onSubmit, initialValues = defaultInitialValues }: S
   const nearestAirport = getNearestRelevantAirport();
   initialValues.from = nearestAirport;
 
+  const fromAirportRef = useRef<HTMLDivElement>(null);
+  const toAirportRef = useRef<HTMLDivElement>(null);
+  const cabinRef = useRef<HTMLDivElement>(null);
+
   const [fromValue, setFromValue] = useState<Airport>(nearestAirport);
   const [toValue, setToValue] = useState<Airport | null>({
     value: "",
@@ -177,11 +181,13 @@ export const SearchForm = ({ onSubmit, initialValues = defaultInitialValues }: S
               <Form>
                 <FieldStack orientation="horizontal" className="airport-stack" paddingTop="major-3">
                   <FieldWrapper
+                    cursor="default"
                     state={getFieldState(formik, "from")}
                     validationText={getValidationText(formik, "from")}
                   >
                     <FormikField
                       after={<Input.Icon icon="solid-plane-departure" fontSize="300" color="black" />}
+                      buttonProps={{ elementRef: fromAirportRef }}
                       cacheKey="fromAirport"
                       component={SelectMenu.Formik}
                       containLabel
@@ -192,7 +198,18 @@ export const SearchForm = ({ onSubmit, initialValues = defaultInitialValues }: S
                       emptyText={airportSearchText.length ? "No results found." : "Type to start searching."}
                       hasFieldWrapper={true}
                       hasSearch
-                      label="Starting airport"
+                      label={
+                        <Box
+                          onClick={() => {
+                            const elementRef = fromAirportRef.current;
+                            if (elementRef) {
+                              elementRef.click();
+                            }
+                          }}
+                        >
+                          Starting airport
+                        </Box>
+                      }
                       loadOptions={getAirports}
                       name="from"
                       onBlur={(event: React.ChangeEvent) => {
@@ -221,9 +238,20 @@ export const SearchForm = ({ onSubmit, initialValues = defaultInitialValues }: S
                       value={fromValue}
                     />
                   </FieldWrapper>
-                  <FieldWrapper state={getFieldState(formik, "to")} validationText={getValidationText(formik, "to")}>
+                  <FieldWrapper
+                    state={getFieldState(formik, "to")}
+                    validationText={getValidationText(formik, "to")}
+                    cursor="default"
+                    onClick={() => {
+                      const elementRef = toAirportRef.current;
+                      if (elementRef) {
+                        elementRef.click();
+                      }
+                    }}
+                  >
                     <FormikField
                       after={<Input.Icon icon="solid-plane-arrival" fontSize="300" color="black" />}
+                      buttonProps={{ elementRef: toAirportRef }}
                       cacheKey="toAirport"
                       component={SelectMenu.Formik}
                       containLabel
@@ -234,7 +262,18 @@ export const SearchForm = ({ onSubmit, initialValues = defaultInitialValues }: S
                       emptyText={airportSearchText.length ? "No results found." : "Type to start searching."}
                       hasFieldWrapper={true}
                       hasSearch
-                      label="Destination airport"
+                      label={
+                        <Box
+                          onClick={() => {
+                            const elementRef = fromAirportRef.current;
+                            if (elementRef) {
+                              elementRef.click();
+                            }
+                          }}
+                        >
+                          Destination airport
+                        </Box>
+                      }
                       loadOptions={getAirports}
                       name="to"
                       onBlur={(event: React.ChangeEvent) => {
@@ -433,6 +472,7 @@ export const SearchForm = ({ onSubmit, initialValues = defaultInitialValues }: S
                     validationText={getValidationText(formik, "cabin")}
                   >
                     <FormikField
+                      buttonProps={{ elementRef: cabinRef }}
                       component={Select.Formik}
                       name="cabin"
                       options={[
@@ -446,7 +486,18 @@ export const SearchForm = ({ onSubmit, initialValues = defaultInitialValues }: S
                       hasFieldWrapper={true}
                       onChange={formik.handleChange}
                       onBlur={formik.handleBlur}
-                      label="Cabin"
+                      label={
+                        <Box
+                          onClick={() => {
+                            const elementRef = cabinRef.current;
+                            if (elementRef) {
+                              elementRef.click();
+                            }
+                          }}
+                        >
+                          Cabin
+                        </Box>
+                      }
                       disabled={formik.isSubmitting}
                       containLabel
                     />
