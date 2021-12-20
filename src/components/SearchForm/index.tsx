@@ -104,7 +104,7 @@ const defaultInitialValues: FormState = {
   },
   to: {
     value: "",
-    label: "Where to?",
+    label: "",
   },
   fromDate: getFormattedDate(fridayAfterNext),
   toDate: getFormattedDate(nextSunday(fridayAfterNext)),
@@ -470,10 +470,10 @@ export const SearchForm = ({ onSubmit, initialValues = defaultInitialValues }: S
                       component={Select.Formik}
                       name="cabin"
                       options={[
-                        { key: 1, label: "Economy", value: "econ" },
-                        { key: 2, label: "Premium Economy", value: "prem_econ" },
-                        { key: 3, label: "Business", value: "business" },
-                        { key: 4, label: "First", value: "first" },
+                        { label: "Economy", value: "econ" },
+                        { label: "Premium Economy", value: "prem_econ" },
+                        { label: "Business", value: "business" },
+                        { label: "First", value: "first" },
                       ]}
                       width="100%"
                       autoComplete="off"
