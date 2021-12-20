@@ -1,5 +1,5 @@
 import { getParsedDate } from "../../../components/utilities/forms";
-import { getParsedModalHtml } from "../../../shared/parser/getParsedModalHtml";
+import { getParsedModalHtml } from "../../../shared/parser/modal/getParsedModalHtml";
 import { FlightLeg } from "../../../shared/types/FlightLeg";
 import { getAirlineNames } from "./getAirlineNames";
 import { getAirportCodes } from "./getAirportCodes";
@@ -20,10 +20,11 @@ export const getModalData = async (
   flightCard: HTMLDivElement,
   roundtrip: boolean,
   departureDate: string,
+  flightId: string,
 ): Promise<LayoversData> => {
   // minimize time modal is open
-  await setModalHtml(flightCard);
-  const modal = getParsedModalHtml(flightCard);
+  await setModalHtml(flightCard, flightId);
+  const modal = getParsedModalHtml(flightId, "BOTH");
 
   const [departureContainer, returnContainer] = modal.querySelectorAll(DETAILS_CONTAINER_SELECTOR);
 
@@ -35,14 +36,12 @@ export const getModalData = async (
     throw new Error("WTF, have no full details return container but roundtrip flight");
   }
 
-  const data = roundtrip
+  return roundtrip
     ? {
         departure: getLayoverDetails(departureContainer as HTMLDivElement, departureDate),
         return: getLayoverDetails(returnContainer as HTMLDivElement, departureDate),
       }
     : { departure: getLayoverDetails(departureContainer as HTMLDivElement, departureDate) };
-
-  return data;
 };
 
 const getLayoverDetails = (container: HTMLDivElement, rawDepartureDate: string): FlightLeg[] => {

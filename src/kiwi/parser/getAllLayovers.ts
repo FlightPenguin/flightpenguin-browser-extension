@@ -1,5 +1,5 @@
 import { MissingElementLookupError } from "../../shared/errors";
-import { getParsedModalHtml } from "../../shared/parser/getParsedModalHtml";
+import { getParsedModalHtml } from "../../shared/parser/modal/getParsedModalHtml";
 import { FlightLeg } from "../../shared/types/FlightLeg";
 import { setModalHtml } from "../ui/setModalHtml";
 import { getFlightLayovers } from "./getFlightLayovers";

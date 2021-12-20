@@ -1,7 +1,7 @@
+import { getTripId } from "../../shared/parser/getTripId";
 import { FlightDetails } from "../../shared/types/FlightDetails";
 import { FlightSearchFormData } from "../../shared/types/FlightSearchFormData";
 import { UnprocessedFlightSearchResult } from "../../shared/types/UnprocessedFlightSearchResult";
-import { getFlightPenguinId } from "../shared/getFlightPenguinId";
 import { getFlightCardData } from "./flight/getFlightCardData";
 import { getModalData } from "./modal/getModalData";
 
@@ -12,7 +12,24 @@ interface GetFlightProps {
 
 export const getFlight = async ({ flightCard, formData }: GetFlightProps): Promise<UnprocessedFlightSearchResult> => {
   const flightCardDetails = getFlightCardData(flightCard, formData.roundtrip);
-  const layoverDetails = await getModalData(flightCard, formData.roundtrip, formData.fromDate);
+
+  const tripId = getTripId({
+    departureFlight: {
+      arrivalTime: flightCardDetails.departure.arrivalTime,
+      departureTime: flightCardDetails.departure.departureTime,
+      airlineName: flightCardDetails.departure.marketingAirline,
+    },
+    returnFlight:
+      formData.roundtrip && flightCardDetails.return
+        ? {
+            arrivalTime: flightCardDetails.return.arrivalTime,
+            departureTime: flightCardDetails.return.departureTime,
+            airlineName: flightCardDetails.return.marketingAirline,
+          }
+        : null,
+  });
+
+  const layoverDetails = await getModalData(flightCard, formData.roundtrip, formData.fromDate, tripId);
 
   const departureFlight = new FlightDetails({
     departureDate: formData.fromDate,
@@ -48,11 +65,10 @@ export const getFlight = async ({ flightCard, formData }: GetFlightProps): Promi
       })
     : null;
 
-  const id = getFlightPenguinId(departureFlight.id, formData.roundtrip && returnFlight ? returnFlight.id : null);
-  setFlightId(flightCard, id);
+  setFlightId(flightCard, tripId);
 
   return {
-    id,
+    id: tripId,
     departureFlight,
     returnFlight,
     fare: flightCardDetails.fare,

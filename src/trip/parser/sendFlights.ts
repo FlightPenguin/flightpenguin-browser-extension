@@ -1,6 +1,7 @@
 import { sendFlightsEvent } from "../../shared/events";
 import { FlightSearchFormData } from "../../shared/types/FlightSearchFormData";
 import { UnprocessedFlightSearchResult } from "../../shared/types/UnprocessedFlightSearchResult";
+import { scrollToTop } from "../../shared/ui/scrollToTop";
 import { stopScrollingCheck, stopScrollingNow } from "../../shared/ui/stopScrolling";
 import { getFlight } from "./getFlight";
 import { isComplete } from "./isParsingComplete";
@@ -50,6 +51,7 @@ export const sendFlights = async ({ flightCards, formData }: SendFlightsProps): 
     const complete = isComplete(lastFlightCard);
     if (complete) {
       stopScrollingNow("Reached max flights");
+      scrollToTop();
     } else {
       await scrollToCardOrBottom(lastFlightCard);
     }
