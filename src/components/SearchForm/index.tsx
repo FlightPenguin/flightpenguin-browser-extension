@@ -242,12 +242,6 @@ export const SearchForm = ({ onSubmit, initialValues = defaultInitialValues }: S
                     state={getFieldState(formik, "to")}
                     validationText={getValidationText(formik, "to")}
                     cursor="default"
-                    onClick={() => {
-                      const elementRef = toAirportRef.current;
-                      if (elementRef) {
-                        elementRef.click();
-                      }
-                    }}
                   >
                     <FormikField
                       after={<Input.Icon icon="solid-plane-arrival" fontSize="300" color="black" />}
@@ -265,7 +259,7 @@ export const SearchForm = ({ onSubmit, initialValues = defaultInitialValues }: S
                       label={
                         <Box
                           onClick={() => {
-                            const elementRef = fromAirportRef.current;
+                            const elementRef = toAirportRef.current;
                             if (elementRef) {
                               elementRef.click();
                             }
