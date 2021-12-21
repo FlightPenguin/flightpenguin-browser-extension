@@ -1,9 +1,11 @@
+// eslint-disable-next-line no-undef
 Sentry.init({
   dsn: "https://d7f3363dd3774a64ad700b4523bcb789@o407795.ingest.sentry.io/5277451",
 });
 // debugger and console logs can be seen by clicking background.js link for this extension under chrome://extensions,
 // it will open a developer console for this extension and in addition to logs you can see the local storage
 
+import { AnalyticsManager } from "./background/AnalyticsManager";
 import {
   handleClearSelections,
   handleDepartureSelected,
@@ -27,6 +29,8 @@ import {
   ExtensionUninstalledHandler,
   ExtensionUpdateAvailableHandler,
 } from "./background/state";
+
+const analyticsManager = new AnalyticsManager(process.env.GOOGLE_ANALYTICS_TRACKING_ID, false);
 
 ExtensionUninstalledHandler();
 ExtensionInstalledHandler();

@@ -14,7 +14,9 @@
       "window": {}
     },
     "resetMocks": false,
-    "setupFiles": ["jest-localstorage-mock"]
+    "setupFiles": [
+      "jest-localstorage-mock"
+    ]
   },
   "repository": {
     "type": "git",
@@ -27,6 +29,7 @@
   },
   "homepage": "https://github.com/FlightPenguin/browser-extension#readme",
   "devDependencies": {
+    "@analytics/google-analytics": "^0.5.3",
     "@babel/core": "^7.13.10",
     "@babel/preset-env": "^7.13.10",
     "@babel/preset-react": "^7.14.5",
