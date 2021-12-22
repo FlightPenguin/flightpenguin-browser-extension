@@ -1,4 +1,5 @@
 import { sendFailedScraper } from "../shared/events";
+import { sendFailed, sendProcessing } from "../shared/events/analytics/scrapers";
 import { addBackToSearchButton } from "../shared/ui/backToSearch";
 import { stopScrollingNow } from "../shared/ui/stopScrolling";
 import { suppressOfferFlightPenguinPopup } from "../shared/utilities/suppressOfferFlightPenguinPopup";
@@ -15,12 +16,14 @@ chrome.runtime.onMessage.addListener(async function (message, sender, sendRespon
     case "BEGIN_PARSING":
       try {
         suppressOfferFlightPenguinPopup();
+        sendProcessing("trip");
         observer = new FlightObserver({ formData: message.formData });
         await attachObserver(observer);
       } catch (error) {
         console.error(error);
         // window.Sentry.captureException(error);  // TODO: Sentry setup
         sendFailedScraper("trip", error, "ALL");
+        sendFailed("trip");
       }
       break;
     case "HIGHLIGHT_FLIGHT":

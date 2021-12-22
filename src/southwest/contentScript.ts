@@ -5,6 +5,7 @@ Sentry.init({
 });
 
 import { sendFailedScraper, sendScraperComplete } from "../shared/events";
+import { sendFailed, sendProcessing, sendSuccess } from "../shared/events/analytics/scrapers";
 import { addBackToSearchButton } from "../shared/ui/backToSearch";
 import { setScraperFlag } from "../shared/utilities/isScraperFlag";
 import { suppressOfferFlightPenguinPopup } from "../shared/utilities/suppressOfferFlightPenguinPopup";
@@ -21,13 +22,14 @@ chrome.runtime.onMessage.addListener(async function (message, sender, sendRespon
     case "BEGIN_PARSING":
       try {
         suppressOfferFlightPenguinPopup();
-        setScraperFlag();
+        sendProcessing("southwest");
         await getFlightResults();
       } catch (error) {
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore
         window.Sentry.captureException(error);
         sendFailedScraper("southwest", error, "ALL");
+        sendFailed("southwest");
       }
       break;
     case "HIGHLIGHT_FLIGHT":
@@ -51,9 +53,10 @@ const getFlightResults = async () => {
       window.sessionStorage.getItem("AirBookingSearchResultsSearchStore-searchResults-v1") || "{}",
     );
     if (searchResults && searchResults.searchResults) {
-      parseFlights(searchResults.searchResults);
+      const results = parseFlights(searchResults.searchResults);
       window.clearInterval(id);
       sendScraperComplete("southwest", "BOTH");
+      sendSuccess("southwest", results.length);
     }
   }, 500);
 };

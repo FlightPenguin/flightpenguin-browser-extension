@@ -1,4 +1,5 @@
 import { sendScraperComplete } from "../../shared/events";
+import { sendSuccess } from "../../shared/events/analytics/scrapers";
 import { FlightSearchFormData } from "../../shared/types/FlightSearchFormData";
 import { sendFlights } from "./sendFlights";
 
@@ -37,6 +38,7 @@ export class FlightObserver {
       });
       if (complete) {
         sendScraperComplete("trip", "BOTH");
+        sendSuccess("trip", Object.keys(that.flightPenguinIdToIndexMap).length);
       }
     });
   }

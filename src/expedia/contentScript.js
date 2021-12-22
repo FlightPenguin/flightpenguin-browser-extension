@@ -4,6 +4,7 @@ window.Sentry.init({
   dsn: "https://d7f3363dd3774a64ad700b4523bcb789@o407795.ingest.sentry.io/5277451",
 });
 
+import { sendFailed, sendProcessing, sendSuccess } from "shared/events/analytics/scrapers/index";
 import { suppressOfferFlightPenguinPopup } from "shared/utilities/suppressOfferFlightPenguinPopup";
 
 import {
@@ -25,6 +26,7 @@ chrome.runtime.onMessage.addListener(async function (message, sender, sendRespon
   switch (message.event) {
     case "BEGIN_PARSING":
       suppressOfferFlightPenguinPopup();
+      sendProcessing("expedia");
       formData = message.formData;
       await scrapeDepartureFlights(formData);
       break;
@@ -51,12 +53,15 @@ const scrapeDepartureFlights = async (formData) => {
     if (flights) {
       sendFlightsEvent("expedia", flights);
       sendScraperComplete("expedia", "DEPARTURE");
+      sendSuccess("expedia", flights.length);
     } else {
+      sendSuccess("expedia", 0);
       sendNoFlightsEvent("expedia", "DEPARTURE");
     }
   } catch (error) {
     window.Sentry.captureException(error);
     sendFailedScraper("expedia", error, "DEPARTURE");
+    sendFailed("expedia");
   }
 };
 
@@ -73,5 +78,6 @@ const scrapeReturnFlights = async (departure, formData) => {
   } catch (error) {
     window.Sentry.captureException(error);
     sendFailedScraper("expedia", error, "RETURN");
+    sendFailed("expedia");
   }
 };
