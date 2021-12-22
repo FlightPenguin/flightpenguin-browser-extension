@@ -23,19 +23,11 @@
       ]
     },
     {
-      "matches": ["https://www.skyscanner.com/transport/flights/*"],
+      "matches": ["https://www.trip.com/flights/*"],
       "css": ["src/shared/contentScript.css"],
       "js": [
         "src/shared/sentry.js",
-        "dist/skyscanner.bundle.js"
-      ]
-    },
-    {
-      "matches": ["https://www.skyscanner.com/transport/flights-from/*"],
-      "css": ["src/shared/contentScript.css"],
-      "js": [
-        "src/shared/sentry.js",
-        "src/skyscanner/emptySearchContentScript.js"
+        "dist/trip.bundle.js"
       ]
     },
     {
@@ -101,6 +93,7 @@
         "*://*.southwest.com/*",
         "*://*.suncountry.com/*",
         "*://*.travel.rakuten.co.jp/*",
+        "*://*.trip.com/*",
         "*://*.tripadvisor.com/CheapFlightsHome*",
         "*://*.tripadvisor.co.uk/CheapFlightsHome*",
         "*://*.turkishairlines.com/*",
@@ -110,11 +103,9 @@
         "*://*.westjet.com/*"
       ],
       "exclude_matches": [
+        "https://www.trip.com/flights/*",
         "https://www.southwest.com/air/booking/select.html?*",
         "https://www.southwest.com/air/booking/index.html?*",
-        "https://www.skyscanner.com/transport/flights/*",
-        "https://www.skyscanner.com/transport/flights-from/*",
-        "https://www.skyscanner.com/sttc/px/captcha-v2/*",
         "https://www.expedia.com/Flights-Search?*",
         "https://www.kiwi.com/us/search/results/*"
       ],

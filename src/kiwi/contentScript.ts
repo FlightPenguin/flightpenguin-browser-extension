@@ -1,13 +1,13 @@
 import { sendFailedScraper, sendScraperComplete } from "../shared/events";
 import { addBackToSearchButton } from "../shared/ui/backToSearch";
+import { stopScrollingNow } from "../shared/ui/stopScrolling";
+import { suppressOfferFlightPenguinPopup } from "../shared/utilities/suppressOfferFlightPenguinPopup";
 import { getFlightContainer } from "./parser/getFlightContainer";
 import { FlightObserver } from "./parser/observer";
 import { getFlightPenguinId } from "./shared/getFlightPenguinId";
 import { highlightFlightCard } from "./ui/highlightFlightCard";
-import { loadAllFlights, stopScrollingNow } from "./ui/loadAllFlights";
 
 let observer: FlightObserver | null = null;
-let flightContainer: HTMLDivElement | null;
 
 chrome.runtime.onMessage.addListener(async function (message, sender, sendResponse) {
   sendResponse({ received: true, responderName: "kiwi" });
@@ -15,16 +15,13 @@ chrome.runtime.onMessage.addListener(async function (message, sender, sendRespon
   switch (message.event) {
     case "BEGIN_PARSING":
       try {
+        suppressOfferFlightPenguinPopup();
         observer = new FlightObserver({ formData: message.formData });
-        flightContainer = await attachObserver(observer);
-        if (flightContainer) {
-          await loadAllFlights();
-        }
-        sendScraperComplete("kiwi", "BOTH");
+        await attachObserver(observer);
       } catch (error) {
         console.error(error);
         // window.Sentry.captureException(error);  // TODO: Sentry setup
-        sendFailedScraper("kiwi", error, "BOTH");
+        sendFailedScraper("kiwi", error, "ALL");
       }
       break;
     case "HIGHLIGHT_FLIGHT":
@@ -42,3 +39,4 @@ const attachObserver = async (observer: FlightObserver): Promise<HTMLDivElement 
   observer.beginObservation(flightContainer);
   return flightContainer;
 };
+4;

@@ -2,6 +2,7 @@ import { Box, Icon, Text } from "bumbag";
 import isEqual from "lodash.isequal";
 import React, { HTMLProps, useState } from "react";
 
+import { FlightType } from "../../../../background/constants";
 import { getValueInRange } from "../../../../shared/utilities/getValueInRange";
 import { rowHeight } from "../../../constants";
 import { thumbWidthValue, thumbWidthWrapperValue } from "../constants";
@@ -19,6 +20,7 @@ interface ThumbProps {
   touched: boolean;
   flightCount: number;
   timezoneOffset: number;
+  flightType: FlightType;
 }
 
 const widthValue = thumbWidthValue;
@@ -35,6 +37,7 @@ const Thumb = ({
   touched,
   flightCount,
   timezoneOffset,
+  flightType,
 }: ThumbProps): React.ReactElement => {
   const [inUse, setInUse] = useState(false);
 
@@ -49,6 +52,7 @@ const Thumb = ({
     startDate,
     value,
     timezoneOffset: state.index === 1 ? timezoneOffset : 0,
+    flightType,
   });
   const position = getPositionByTick({ intervals, value });
   const color = timezoneOffset ? (state.index === 0 ? "info" : "warning") : "black";
@@ -153,6 +157,7 @@ const getValuesForMemoCheck = ({
   minimumValue,
   maximumValue,
   flightCount,
+  flightType,
 }: ThumbProps) => {
   return {
     index: state.index,
@@ -163,5 +168,6 @@ const getValuesForMemoCheck = ({
     minimumValue,
     maximumValue,
     flightCount,
+    flightType,
   };
 };
