@@ -3,7 +3,7 @@ interface ExceptionInput {
   fatal: boolean;
 }
 
-interface EventInput {
+export interface EventInput {
   category: string;
   action: string;
   label?: string;
@@ -129,7 +129,7 @@ export class AnalyticsManager {
     // This will not send an event, so... send an event to flush both
     this.track({
       category: "authentication",
-      action: "user identified",
+      action: "User identified",
     });
   }
 
