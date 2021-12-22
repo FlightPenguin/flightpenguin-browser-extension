@@ -3,6 +3,7 @@ import { Alert, Box, Button } from "bumbag";
 import isEqual from "lodash.isequal";
 import React, { useEffect, useState } from "react";
 
+import { AnalyticsManager } from "../../background/AnalyticsManager";
 import { sendHighlightTab } from "../../shared/events";
 import { sendClearSelections } from "../../shared/events/sendClearSelections";
 import { sendIndexUnload } from "../../shared/events/sendIndexUnload";
@@ -18,6 +19,8 @@ interface SearchResultsProps {
 }
 
 const SearchResults = ({ formData }: SearchResultsProps): React.ReactElement => {
+  const analytics = new AnalyticsManager(`${process.env.GOOGLE_ANALYTICS_TRACKING_ID}`, false);
+
   const [flights, setFlights] = useDebounce<{
     itineraries: { [keyof: string]: ProcessedItinerary };
     departureFlights: ProcessedFlightSearchResult[];
@@ -122,8 +125,20 @@ const SearchResults = ({ formData }: SearchResultsProps): React.ReactElement => 
         onSelection={(details) => {
           setDepartureFlightDetails(details);
 
+          analytics.track({
+            category: "flight search",
+            action: "departure selection",
+            label: window.location.host,
+          });
+
           if (!formData?.roundtrip) {
             sendHighlightTab(details.flightPenguinId, "");
+
+            analytics.track({
+              category: "flight search",
+              action: "flight selection",
+              label: window.location.host,
+            });
           }
         }}
         onClear={() => {
@@ -147,6 +162,17 @@ const SearchResults = ({ formData }: SearchResultsProps): React.ReactElement => 
               setReturnFlightDetails(details);
 
               sendHighlightTab(departureFlightDetails?.flightPenguinId, details.flightPenguinId);
+
+              analytics.track({
+                category: "flight search",
+                action: "return selection",
+                label: window.location.host,
+              });
+              analytics.track({
+                category: "flight search",
+                action: "flight selection",
+                label: window.location.host,
+              });
             }}
             onClear={() => {
               setReturnFlightDetails(null);
