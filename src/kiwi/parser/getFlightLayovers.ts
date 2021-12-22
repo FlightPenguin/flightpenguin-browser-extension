@@ -54,9 +54,6 @@ export const getFlightLayovers = (modal: HTMLDivElement, flightType: FlightType)
       (flightLeg.fromTimeDetails.excessDays === null ||
         previousFlightLeg.toTimeDetails.excessDayCount <= flightLeg.fromTimeDetails.excessDayCount)
     ) {
-      console.log(flightLeg);
-      console.log(previousFlightLeg);
-
       // handle when missing +1 day...
       input.fromTime = `${departureTime}+1`;
       flightLeg = new FlightLeg(input);

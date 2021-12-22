@@ -12,7 +12,7 @@ export const getLayoverMultiplier = (layover: Layover): number => {
 
   if (isAwfulCarrier(layover)) {
     // riding frontier et al sucks.
-    multiplier += 2.5;
+    multiplier += 1.5;
   }
 
   if (!layover.isLayoverStop) {

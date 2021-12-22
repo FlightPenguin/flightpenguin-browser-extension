@@ -5,11 +5,11 @@ import { Configuration, DefinePlugin, ProgressPlugin } from "webpack";
 const defaultEntry = {
   background: "./src/background.js",
   index: "./src/index.js",
-  skyscanner: "./src/skyscanner/contentScript.js",
   southwest: "./src/southwest/contentScript.ts",
   southwestEmpty: "./src/southwest/emptyResultsContentScript.ts",
   expedia: "./src/expedia/contentScript.js",
   kiwi: "./src/kiwi/contentScript.ts",
+  trip: "./src/trip/contentScript.ts",
   generic: "./src/generic/contentScript.ts",
   flightpenguin: "./src/flightpenguin/contentScript.ts",
 };
@@ -43,7 +43,7 @@ const basePlugins = [
   new ProgressPlugin({}),
   new DefinePlugin({
     "process.env.BUMBAG_ENV": JSON.stringify("not test"),
-    "process.env.VERSION": "1.8.11",
+    "process.env.VERSION": "1.8.12",
     "process.env.GOOGLE_ANALYTICS_TRACKING_ID": JSON.stringify("UA-164337457-1"),
   }),
 ];

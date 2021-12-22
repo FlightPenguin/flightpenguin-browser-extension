@@ -1,9 +1,9 @@
-import { Badge, Box, Text, Tooltip } from "bumbag";
-import { addDays } from "date-fns";
+import { Box, Text, Tooltip } from "bumbag";
+import { addDays, addMinutes, format } from "date-fns";
 import React from "react";
 
+import { FlightType } from "../../../background/constants";
 import { getWeekdayName } from "../../../shared/utilities/getWeekdayName";
-import { getHeaderTime } from "./utilities/getHeaderTime";
 
 interface TimeCellProps {
   interval: number;
@@ -14,6 +14,7 @@ interface TimeCellProps {
   departureAirportCode: string;
   arrivalAirportCode: string;
   timeFontSize: string;
+  flightType: FlightType;
 }
 
 export const TimeCell = ({
@@ -25,12 +26,18 @@ export const TimeCell = ({
   departureAirportCode,
   arrivalAirportCode,
   timeFontSize,
+  flightType,
 }: TimeCellProps) => {
-  const time = getHeaderTime(interval);
-  const offsetTime = getHeaderTime(interval, tzOffset);
-  const isMidnight = time.toUpperCase() === "12 AM";
+  const multiplier = flightType === "DEPARTURE" ? -1 : 1;
 
   const date = addDays(startDate, daysCounter);
+  const minutes = interval * 60;
+  const time = addMinutes(date, minutes);
+  const displayTime = format(time, "h aaa");
+  const offsetTime = addMinutes(time, tzOffset * multiplier);
+  const displayOffsetTime = format(offsetTime, "h aaa");
+
+  const isMidnight = displayTime.toUpperCase() === "12 AM";
 
   return (
     <Box
@@ -69,13 +76,13 @@ export const TimeCell = ({
           tabIndex={-1}
           color={tzOffset ? "info" : "black"}
         >
-          {time.toLowerCase()}
+          {displayTime.toLowerCase()}
         </Text>
       </Tooltip>
       {!!tzOffset && (
         <Tooltip content={`Time at ${arrivalAirportCode}`} hasArrow placement="right">
           <Text fontSize={timeFontSize} fontWeight={isMidnight ? "700" : "400"} tabIndex={-1} color="warning">
-            {offsetTime.toLowerCase()}
+            {displayOffsetTime.toLowerCase()}
           </Text>
         </Tooltip>
       )}

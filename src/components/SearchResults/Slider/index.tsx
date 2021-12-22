@@ -3,6 +3,7 @@ import isEqual from "lodash.isequal";
 import React, { useEffect, useState } from "react";
 import ReactSlider from "react-slider";
 
+import { FlightType } from "../../../background/constants";
 import { getDateValueInRange } from "../../../shared/utilities/getDateValueInRange";
 import { flightTimeContainerWidth } from "../../constants";
 import Thumb from "./Thumb";
@@ -19,6 +20,7 @@ interface TimelineSliderProps {
   disabled: boolean;
   flightCount: number;
   timezoneOffset: number;
+  flightType: FlightType;
 }
 
 const heightValue = 8;
@@ -31,6 +33,7 @@ const TimelineSlider = ({
   disabled,
   flightCount,
   timezoneOffset,
+  flightType,
 }: TimelineSliderProps): React.ReactElement => {
   const [touched, setTouched] = useState(false);
   /*
@@ -83,6 +86,7 @@ const TimelineSlider = ({
               touched={touched}
               flightCount={flightCount}
               timezoneOffset={timezoneOffset}
+              flightType={flightType}
             />
           );
         }}
