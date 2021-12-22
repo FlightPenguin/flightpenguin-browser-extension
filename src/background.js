@@ -35,7 +35,7 @@ const analyticsManager = new AnalyticsManager(`${process.env.GOOGLE_ANALYTICS_TR
 
 ExtensionUninstalledHandler();
 ExtensionInstalledHandler(analyticsManager);
-ExtensionOpenedHandler();
+ExtensionOpenedHandler(analyticsManager);
 
 const providerManager = new ProviderManager();
 
@@ -91,7 +91,7 @@ chrome.runtime.onMessage.addListener(async function (message, sender, sendRespon
       handleUpdateRequest();
       break;
     case "OPEN_EXTENSION":
-      await handleOpenExtensionRequest(sender);
+      await handleOpenExtensionRequest(sender, analyticsManager);
       break;
     case "LOG_ANALYTICS_EVENT":
       handleLogAnalyticsEvent(analyticsManager);
