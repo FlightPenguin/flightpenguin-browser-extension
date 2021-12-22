@@ -6,6 +6,7 @@ export * from "./focusWebpage";
 export * from "./formDataReceived";
 export * from "./highlightTab";
 export * from "./indexUnloaded";
+export * from "./logAnalyticsEvent";
 export * from "./noFlightsFound";
 export * from "./openExtension";
 export * from "./providerReady";

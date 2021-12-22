@@ -15,6 +15,7 @@ import {
   handleFormDataReceived,
   handleHighlightTab,
   handleIndexUnloaded,
+  handleLogAnalyticsEvent,
   handleNoFlightsFound,
   handleOpenExtensionRequest,
   handleProviderReady,
@@ -30,10 +31,10 @@ import {
   ExtensionUpdateAvailableHandler,
 } from "./background/state";
 
-const analyticsManager = new AnalyticsManager(process.env.GOOGLE_ANALYTICS_TRACKING_ID, false);
+const analyticsManager = new AnalyticsManager(`${process.env.GOOGLE_ANALYTICS_TRACKING_ID}`, false);
 
 ExtensionUninstalledHandler();
-ExtensionInstalledHandler();
+ExtensionInstalledHandler(analyticsManager);
 ExtensionOpenedHandler();
 
 const providerManager = new ProviderManager();
@@ -91,6 +92,9 @@ chrome.runtime.onMessage.addListener(async function (message, sender, sendRespon
       break;
     case "OPEN_EXTENSION":
       await handleOpenExtensionRequest(sender);
+      break;
+    case "LOG_ANALYTICS_EVENT":
+      handleLogAnalyticsEvent(analyticsManager);
       break;
     default:
       window.Sentry.captureException(new Error(message));

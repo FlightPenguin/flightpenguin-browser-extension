@@ -44,7 +44,7 @@ const basePlugins = [
   new DefinePlugin({
     "process.env.BUMBAG_ENV": JSON.stringify("not test"),
     "process.env.VERSION": "1.8.11",
-    "process.env.GOOGLE_ANALYTICS_TRACKING_ID": "UA-164337457-1",
+    "process.env.GOOGLE_ANALYTICS_TRACKING_ID": JSON.stringify("UA-164337457-1"),
   }),
 ];
 
