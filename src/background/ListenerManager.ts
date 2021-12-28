@@ -16,9 +16,19 @@ import {
 } from "./eventHandlers";
 import { ProviderManager } from "./ProviderManager";
 
-export const ListenerManager = (providerManager: ProviderManager) => {
+export const ListenerManager = (providerManager: ProviderManager): void => {
   chrome.runtime.onMessage.addListener(async function (message, sender, sendResponse) {
     sendResponse({ received: true, responderName: "background" });
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    Sentry.addBreadcrumb({
+      category: "extension",
+      message: "Received message",
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      level: Sentry.Severity.Debug,
+      data: message,
+    });
     console.debug(message);
     switch (message.event) {
       case "FORM_DATA_RECEIVED":
