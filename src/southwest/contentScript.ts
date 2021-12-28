@@ -27,17 +27,32 @@ chrome.runtime.onMessage.addListener(async function (message, sender, sendRespon
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore
         window.Sentry.captureException(error);
+        console.error(error);
         sendFailedScraper("southwest", error, "ALL");
       }
       break;
     case "HIGHLIGHT_FLIGHT":
-      await setFlightIds();
-      await highlightFlightCard({ departureId: message.selectedDepartureId, returnId: message.selectedReturnId });
-      addBackToSearchButton();
+      try {
+        await setFlightIds();
+        await highlightFlightCard({ departureId: message.selectedDepartureId, returnId: message.selectedReturnId });
+        addBackToSearchButton();
+      } catch (error) {
+        console.error(error);
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
+        window.Sentry.captureException(error);
+      }
       break;
     case "CLEAR_SELECTION":
-      clearSelections();
-      chrome.runtime.sendMessage({ event: "PROVIDER_READY", provider: "southwest" });
+      try {
+        clearSelections();
+        chrome.runtime.sendMessage({ event: "PROVIDER_READY", provider: "southwest" });
+      } catch (error) {
+        console.error(error);
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
+        window.Sentry.captureException(error);
+      }
       break;
     default:
       break;

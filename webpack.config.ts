@@ -1,6 +1,7 @@
 import * as path from "path";
 import * as TerserPlugin from "terser-webpack-plugin";
 import { Configuration, DefinePlugin, ProgressPlugin } from "webpack";
+const EnvkeyWebpackPlugin = require("envkey-webpack-plugin");
 
 const defaultEntry = {
   background: "./src/background.js",
@@ -44,6 +45,10 @@ const basePlugins = [
   new DefinePlugin({
     "process.env.BUMBAG_ENV": JSON.stringify("not test"),
     "process.env.VERSION": "1.8.12",
+  }),
+  new EnvkeyWebpackPlugin({
+    permitted: ["SENTRY_DSN"],
+    dotEnvFile: ".env",
   }),
 ];
 

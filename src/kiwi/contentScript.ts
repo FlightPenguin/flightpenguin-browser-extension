@@ -1,4 +1,10 @@
-import { sendFailedScraper, sendScraperComplete } from "../shared/events";
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
+window.Sentry.init({
+  dsn: process.env.SENTRY_DSN,
+});
+
+import { sendFailedScraper } from "../shared/events";
 import { addBackToSearchButton } from "../shared/ui/backToSearch";
 import { stopScrollingNow } from "../shared/ui/stopScrolling";
 import { suppressOfferFlightPenguinPopup } from "../shared/utilities/suppressOfferFlightPenguinPopup";
@@ -20,14 +26,23 @@ chrome.runtime.onMessage.addListener(async function (message, sender, sendRespon
         await attachObserver(observer);
       } catch (error) {
         console.error(error);
-        // window.Sentry.captureException(error);  // TODO: Sentry setup
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
+        window.Sentry.captureException(error);
         sendFailedScraper("kiwi", error, "ALL");
       }
       break;
     case "HIGHLIGHT_FLIGHT":
-      stopScrollingNow("flight selected");
-      await highlightFlightCard(getFlightPenguinId(message.selectedDepartureId, message.selectedReturnId));
-      addBackToSearchButton();
+      try {
+        stopScrollingNow("flight selected");
+        await highlightFlightCard(getFlightPenguinId(message.selectedDepartureId, message.selectedReturnId));
+        addBackToSearchButton();
+      } catch (error) {
+        console.error(error);
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
+        window.Sentry.captureException(error);
+      }
       break;
     default:
       break;
@@ -39,4 +54,3 @@ const attachObserver = async (observer: FlightObserver): Promise<HTMLDivElement 
   observer.beginObservation(flightContainer);
   return flightContainer;
 };
-4;

@@ -1,7 +1,5 @@
-import { addBackToSearchButton } from "../shared/ui/backToSearch";
-
 window.Sentry.init({
-  dsn: "https://d7f3363dd3774a64ad700b4523bcb789@o407795.ingest.sentry.io/5277451",
+  dsn: process.env.SENTRY_DSN,
 });
 
 import { suppressOfferFlightPenguinPopup } from "shared/utilities/suppressOfferFlightPenguinPopup";
@@ -13,6 +11,7 @@ import {
   sendReturnFlightsEvent,
   sendScraperComplete,
 } from "../shared/events";
+import { addBackToSearchButton } from "../shared/ui/backToSearch";
 import { getFlights } from "./parser/getFlights";
 import { highlightFlightCard } from "./ui/highlightFlightCard";
 import { selectReturnFlight } from "./ui/selectReturnFlight";
