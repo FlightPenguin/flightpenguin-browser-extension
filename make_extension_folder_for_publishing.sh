@@ -102,6 +102,7 @@ copy_file "./src/shared/contentScript.css" "${TARGET_DIR}/src/shared"
 copy_file "./src/shared/sentry.js" "${TARGET_DIR}/src/shared"
 
 copy_directory "./dist" "${TARGET_DIR}"
+copy_directory "./images" "${TARGET_DIR}"
 copy_directory "./src/css" "${TARGET_DIR}/src"
 copy_directory "./src/icons" "${TARGET_DIR}/src"
 
