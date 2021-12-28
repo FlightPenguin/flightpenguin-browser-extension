@@ -63,6 +63,55 @@ build() {
   fi
 }
 
+package() {
+  pushd ${TARGET_DIR}/../ || exit 50
+  zip -rq "${PACKAGE_NAME}.zip" "${PACKAGE_NAME}"
+  exitcode=$?
+  if [ $exitcode -ne 0 ]; then
+    echo "ERROR: Failed to package ${PACKAGE_NAME}"
+    exit 52
+  fi
+  popd || exit 51
+}
+
+push_to_sentry() {
+  pushd ${TARGET_DIR}/../ || exit 60
+  sentry-cli releases files ${VERSION} upload-sourcemaps ${PACKAGE_NAME} --url-prefix "chrome-extension://nofndgfpjopdpbcejgdpikmpdehlekac/"
+
+  exitcode=$?
+  if [ $exitcode -ne 0 ]; then
+    echo "ERROR: Failed to package ${PACKAGE_NAME}"
+    exit 62
+  fi
+  popd || exit 61
+}
+
+load_envkey() {
+  if [ ! -x "/usr/local/bin/envkey-source" ]; then
+    echo "ERROR: envkey not installed/executable"
+    echo "DEBUG: See https://github.com/envkey/envkey-source"
+    exit 70
+  fi
+
+  eval $(envkey-source)
+  exitcode=$?
+  if [ $exitcode -ne 0 ]; then
+    echo "ERROR: Failed to execute envkey-source"
+    exit 71
+  fi
+}
+
+remove_source_maps() {
+  pushd ${TARGET_DIR} || exit 40
+  rm -f ./dist/*.map
+  exitcode=$?
+  if [ $exitcode -ne 0 ]; then
+    echo "ERROR: Failed to package ${PACKAGE_NAME}"
+    exit 42
+  fi
+  popd || exit 41
+}
+
 if [ -z ${VERSION} ]; then
   echo "ERROR: Must provide version string (e.g. bash make_extension_folder_for_publishing.sh x.y.z"
   exit 2
@@ -85,6 +134,7 @@ if [ ${VERSION_COUNT} -ne 1 ]; then
   exit 4
 fi
 
+load_envkey
 build
 
 PACKAGE_NAME="flightpenguin_ext_${VERSION}"
@@ -106,13 +156,8 @@ copy_directory "./images" "${TARGET_DIR}"
 copy_directory "./src/css" "${TARGET_DIR}/src"
 copy_directory "./src/icons" "${TARGET_DIR}/src"
 
-pushd ${TARGET_DIR}/../ || exit 50
-zip -rq "${PACKAGE_NAME}.zip" "${PACKAGE_NAME}"
-exitcode=$?
-if [ $exitcode -ne 0 ]; then
-  echo "ERROR: Failed to package ${PACKAGE_NAME}"
-  exit 52
-fi
-popd || exit 51
+push_to_sentry
+remove_source_maps
+package
 
 echo "Completed packaging ${PACKAGE_NAME}.zip"

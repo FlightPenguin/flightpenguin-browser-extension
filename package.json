@@ -14,7 +14,9 @@
       "window": {}
     },
     "resetMocks": false,
-    "setupFiles": ["jest-localstorage-mock"]
+    "setupFiles": [
+      "jest-localstorage-mock"
+    ]
   },
   "repository": {
     "type": "git",
@@ -31,6 +33,7 @@
     "@babel/preset-env": "^7.13.10",
     "@babel/preset-react": "^7.14.5",
     "@babel/preset-typescript": "^7.15.0",
+    "@sentry/cli": "^1.71.0",
     "@types/chrome": "0.0.147",
     "@types/jest": "^27.0.2",
     "@types/lodash.capitalize": "^4.2.6",

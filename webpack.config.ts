@@ -43,13 +43,14 @@ const basePlugins = [
   new ProgressPlugin({}),
   new DefinePlugin({
     "process.env.BUMBAG_ENV": JSON.stringify("not test"),
-    "process.env.VERSION": "1.8.11",
+    "process.env.VERSION": "1.8.12",
   }),
 ];
 
 const baseOutput = {
   filename: "[name].bundle.js",
   path: path.resolve(__dirname, "dist"),
+  sourceMapFilename: "[file].map",
 };
 
 const baseOptimization = {};
@@ -62,7 +63,7 @@ export const development: Configuration = {
   output: baseOutput,
   plugins: [...basePlugins, new DefinePlugin({ "process.env.EXTENSION_ENV": JSON.stringify("development") })],
   resolve: baseResolve,
-  devtool: false,
+  devtool: "eval-source-map",
   module: {
     rules: getModuleRules({ mode: "development" }),
   },
@@ -73,7 +74,7 @@ export const production: Configuration = {
   mode: "production",
   entry: { ...defaultEntry },
   output: baseOutput,
-  devtool: false,
+  devtool: "source-map",
   plugins: [...basePlugins, new DefinePlugin({ "process.env.EXTENSION_ENV": JSON.stringify("production") })],
   module: {
     rules: getModuleRules({ mode: "production" }),
@@ -91,6 +92,7 @@ export const production: Configuration = {
           format: {
             comments: false,
           },
+          sourceMaps: true,
         },
       }),
     ],
