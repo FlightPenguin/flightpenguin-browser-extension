@@ -2,6 +2,7 @@ import { ListenerManager } from "./background/ListenerManager";
 
 window.Sentry.init({
   dsn: process.env.SENTRY_DSN,
+  environment: `${process.env.EXTENSION_ENV}`,
 });
 // debugger and console logs can be seen by clicking background.js link for this extension under chrome://extensions,
 // it will open a developer console for this extension and in addition to logs you can see the local storage

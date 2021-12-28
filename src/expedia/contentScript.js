@@ -1,5 +1,6 @@
 window.Sentry.init({
   dsn: process.env.SENTRY_DSN,
+  environment: `${process.env.EXTENSION_ENV}`,
 });
 
 import { suppressOfferFlightPenguinPopup } from "shared/utilities/suppressOfferFlightPenguinPopup";

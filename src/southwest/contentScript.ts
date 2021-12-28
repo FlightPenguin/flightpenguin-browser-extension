@@ -1,7 +1,8 @@
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 Sentry.init({
-  dsn: "https://d7f3363dd3774a64ad700b4523bcb789@o407795.ingest.sentry.io/5277451",
+  dsn: process.env.SENTRY_DSN,
+  environment: `${process.env.EXTENSION_ENV}`,
 });
 
 import { sendFailedScraper, sendScraperComplete } from "../shared/events";

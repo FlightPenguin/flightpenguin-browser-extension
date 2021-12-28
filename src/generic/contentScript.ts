@@ -2,6 +2,7 @@
 // @ts-ignore
 window.Sentry.init({
   dsn: process.env.SENTRY_DSN,
+  environment: `${process.env.EXTENSION_ENV}`,
 });
 
 import { showFlightPenguinPopup } from "./showFlightPenguinPopup";
