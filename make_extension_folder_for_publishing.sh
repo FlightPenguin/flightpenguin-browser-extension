@@ -76,7 +76,12 @@ package() {
 
 push_to_sentry() {
   pushd ${TARGET_DIR}/../ || exit 60
-  sentry-cli releases files ${VERSION} upload-sourcemaps ${PACKAGE_NAME} --url-prefix "chrome-extension://nofndgfpjopdpbcejgdpikmpdehlekac/"
+  if [ ! -x node_modules/@sentry/cli/bin/sentry-cli ]; then
+    echo "ERROR: missing sentry cli executable"
+    exit 63
+   fi
+
+  node_modules/@sentry/cli/bin/sentry-cli releases files ${VERSION} upload-sourcemaps ${PACKAGE_NAME} --url-prefix "chrome-extension://nofndgfpjopdpbcejgdpikmpdehlekac/"
 
   exitcode=$?
   if [ $exitcode -ne 0 ]; then
