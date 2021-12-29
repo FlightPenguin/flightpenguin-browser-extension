@@ -68,7 +68,7 @@ export const development: Configuration = {
   output: baseOutput,
   plugins: [...basePlugins, new DefinePlugin({ "process.env.EXTENSION_ENV": JSON.stringify("development") })],
   resolve: baseResolve,
-  devtool: "source-map", // eval-source-map causes Chrome CSP to go ape crazy
+  devtool: "none",
   module: {
     rules: getModuleRules({ mode: "development" }),
   },
