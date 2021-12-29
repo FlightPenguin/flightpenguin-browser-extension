@@ -3,7 +3,7 @@ import { isExtensionOpen } from "./isExtensionOpen";
 
 export const openExtension = async (): Promise<void> => {
   disableExtension();
-  await setPositionData();
+  // await setPositionData();
   isExtensionOpen({
     extensionOpenCallback: handleExtensionOpen,
     extensionClosedCallback: handleExtensionNotOpen,
