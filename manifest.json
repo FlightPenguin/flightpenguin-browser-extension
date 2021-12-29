@@ -1,6 +1,6 @@
 {
   "name": "FlightPenguin",
-  "version": "1.8.12",
+  "version": "1.8.14",
   "description": "Search flights",
   "background": {
     "page": "src/background.html",
@@ -42,12 +42,14 @@
       "matches": ["https://www.kiwi.com/us/search/results/*"],
       "css": ["src/shared/contentScript.css"],
       "js": [
+        "src/shared/sentry.js",
         "dist/kiwi.bundle.js"
       ]
     },
     {
       "matches": ["https://flightpenguin.com/*"],
       "js": [
+        "src/shared/sentry.js",
         "dist/flightpenguin.bundle.js"
       ]
     },
@@ -110,6 +112,7 @@
         "https://www.kiwi.com/us/search/results/*"
       ],
       "js": [
+        "src/shared/sentry.js",
         "dist/generic.bundle.js"
       ]
     }

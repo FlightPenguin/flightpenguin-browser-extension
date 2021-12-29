@@ -99,8 +99,8 @@ const SearchFormSchema = object({
 type FormState = ReturnType<typeof SearchFormSchema.validateSync>;
 const defaultInitialValues: FormState = {
   from: {
-    value: "SFO",
-    label: "SFO",
+    value: "",
+    label: "",
   },
   to: {
     value: "",

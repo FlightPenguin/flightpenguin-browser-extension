@@ -1,6 +1,7 @@
 import * as path from "path";
 import * as TerserPlugin from "terser-webpack-plugin";
 import { Configuration, DefinePlugin, ProgressPlugin } from "webpack";
+const EnvkeyWebpackPlugin = require("envkey-webpack-plugin");
 
 const defaultEntry = {
   background: "./src/background.js",
@@ -43,14 +44,18 @@ const basePlugins = [
   new ProgressPlugin({}),
   new DefinePlugin({
     "process.env.BUMBAG_ENV": JSON.stringify("not test"),
-    "process.env.VERSION": "1.8.12",
-    "process.env.GOOGLE_ANALYTICS_TRACKING_ID": JSON.stringify("UA-164337457-1"),
+    "process.env.VERSION": "1.8.14",
+  }),
+  new EnvkeyWebpackPlugin({
+    permitted: ["SENTRY_DSN", "GOOGLE_ANALYTICS_TRACKING_ID"],
+    dotEnvFile: ".env",
   }),
 ];
 
 const baseOutput = {
   filename: "[name].bundle.js",
   path: path.resolve(__dirname, "dist"),
+  sourceMapFilename: "[file].map",
 };
 
 const baseOptimization = {};
@@ -63,7 +68,7 @@ export const development: Configuration = {
   output: baseOutput,
   plugins: [...basePlugins, new DefinePlugin({ "process.env.EXTENSION_ENV": JSON.stringify("development") })],
   resolve: baseResolve,
-  devtool: false,
+  devtool: "none",
   module: {
     rules: getModuleRules({ mode: "development" }),
   },
@@ -74,7 +79,7 @@ export const production: Configuration = {
   mode: "production",
   entry: { ...defaultEntry },
   output: baseOutput,
-  devtool: false,
+  devtool: "source-map",
   plugins: [...basePlugins, new DefinePlugin({ "process.env.EXTENSION_ENV": JSON.stringify("production") })],
   module: {
     rules: getModuleRules({ mode: "production" }),
@@ -92,6 +97,7 @@ export const production: Configuration = {
           format: {
             comments: false,
           },
+          sourceMap: true,
         },
       }),
     ],

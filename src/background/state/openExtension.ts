@@ -31,6 +31,15 @@ const handleExtensionOpen = (tab: chrome.tabs.Tab) => {
     if (tab.id != null) {
       chrome.tabs.update(tab.id, { active: true });
     }
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    Sentry.addBreadcrumb({
+      category: "extension",
+      message: "Focused extension",
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      level: Sentry.Severity.Debug,
+    });
   });
 };
 
@@ -40,6 +49,15 @@ const handleExtensionNotOpen = () => {
       // need setTimeout here or else message will be missed by new tab.
       if (tab.id != null) {
         chrome.tabs.sendMessage(tab.id, {});
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
+        Sentry.addBreadcrumb({
+          category: "extension",
+          message: "Opened extension",
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
+          level: Sentry.Severity.Debug,
+        });
       }
     }, 1000);
   });

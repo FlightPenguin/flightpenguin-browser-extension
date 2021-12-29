@@ -1,3 +1,10 @@
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
+window.Sentry.init({
+  dsn: process.env.SENTRY_DSN,
+  environment: `${process.env.EXTENSION_ENV}`,
+});
+
 import { sendFailedScraper } from "../shared/events";
 import { sendFailed, sendProcessing } from "../shared/events/analytics/scrapers";
 import { addBackToSearchButton } from "../shared/ui/backToSearch";
@@ -21,14 +28,23 @@ chrome.runtime.onMessage.addListener(async function (message, sender, sendRespon
         await attachObserver(observer);
       } catch (error) {
         console.error(error);
-        // window.Sentry.captureException(error);  // TODO: Sentry setup
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
+        window.Sentry.captureException(error);
         sendFailedScraper("trip", error, "ALL");
         sendFailed("trip");
       }
       break;
     case "HIGHLIGHT_FLIGHT":
-      observer?.endObservation();
-      await highlightFlight(message.selectedDepartureId, message.selectedReturnId);
+      try {
+        observer?.endObservation();
+        await highlightFlight(message.selectedDepartureId, message.selectedReturnId);
+      } catch (error) {
+        console.error(error);
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
+        window.Sentry.captureException(error);
+      }
       break;
     default:
       break;
