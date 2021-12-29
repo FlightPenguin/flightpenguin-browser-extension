@@ -2,6 +2,7 @@ import { PageContent, PageWithHeader } from "bumbag";
 import React, { useCallback, useEffect, useState } from "react";
 
 import { getAuthToken } from "../../auth/getAuthToken";
+import { AnalyticsManager } from "../../background/AnalyticsManager";
 import { containerWidth, searchFormWidth, sidePaddingWidth } from "../../components/constants";
 import { LoginModal, WelcomeModal } from "../../components/Modals";
 import NavigationBar from "../../components/NavigationBar";
@@ -27,6 +28,8 @@ export const SearchPage = (): React.ReactElement => {
     setIsLoggedIn(!!bearerToken);
   }, [setIsLoggedIn]);
 
+  const analytics = new AnalyticsManager(`${process.env.GOOGLE_ANALYTICS_TRACKING_ID}`, false);
+
   useEffect(() => {
     chrome.runtime.onMessage.addListener((message) => {
       console.debug(message);
@@ -43,6 +46,10 @@ export const SearchPage = (): React.ReactElement => {
   useEffect(() => {
     getIsLoggedIn();
   }, [setIsLoggedIn, getIsLoggedIn]);
+
+  useEffect(() => {
+    analytics.pageview({});
+  }, []);
 
   return (
     <PageWithHeader header={<NavigationBar />}>
@@ -85,6 +92,11 @@ export const SearchPage = (): React.ReactElement => {
             onSubmit={(values) => {
               setFormData(values);
               setShowForm(false);
+              analytics.track({
+                category: "flight search",
+                action: "search",
+                label: window.location.host,
+              });
             }}
           />
         )}

@@ -1,8 +1,9 @@
 import { Alert, Box, Button, Card, Image, Link, Modal } from "bumbag";
 import React, { useEffect, useState } from "react";
 
-import { getSubscriptionValidity } from "../../auth";
+import { getSubscriptionValidity, getUserInfo } from "../../auth";
 import { getAuthToken } from "../../auth/getAuthToken";
+import { AnalyticsManager } from "../../background/AnalyticsManager";
 import { focusPrimaryTab } from "../../shared/utilities/windows/focusPrimaryTab";
 
 interface WelcomeModalProps {
@@ -10,6 +11,7 @@ interface WelcomeModalProps {
 }
 
 export const WelcomeModal = ({ onSuccess }: WelcomeModalProps): React.ReactElement => {
+  const analytics = new AnalyticsManager(`${process.env.GOOGLE_ANALYTICS_TRACKING_ID}`, false);
   const [authError, setAuthError] = useState(false);
 
   const modal = Modal.useState();
@@ -46,6 +48,11 @@ export const WelcomeModal = ({ onSuccess }: WelcomeModalProps): React.ReactEleme
             <Button
               onClick={async () => {
                 const token = await getAuthToken(true);
+                const userInfo = await getUserInfo(token);
+                const userId = userInfo?.id;
+                if (userId) {
+                  analytics.identify({ userId: userInfo.id });
+                }
                 const apiResponse = await getSubscriptionValidity(token);
                 await focusPrimaryTab();
                 if (apiResponse.status && apiResponse.data && apiResponse.data.status) {

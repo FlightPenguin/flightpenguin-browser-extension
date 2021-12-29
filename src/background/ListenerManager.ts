@@ -1,3 +1,4 @@
+import { AnalyticsManager } from "./AnalyticsManager";
 import {
   handleClearSelections,
   handleDepartureSelected,
@@ -7,6 +8,7 @@ import {
   handleFormDataReceived,
   handleHighlightTab,
   handleIndexUnloaded,
+  handleLogAnalyticsEvent,
   handleNoFlightsFound,
   handleOpenExtensionRequest,
   handleProviderReady,
@@ -16,7 +18,7 @@ import {
 } from "./eventHandlers";
 import { ProviderManager } from "./ProviderManager";
 
-export const ListenerManager = (providerManager: ProviderManager): void => {
+export const ListenerManager = (providerManager: ProviderManager, analyticsManager: AnalyticsManager): void => {
   chrome.runtime.onMessage.addListener(async function (message, sender, sendResponse) {
     sendResponse({ received: true, responderName: "background" });
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -77,8 +79,11 @@ export const ListenerManager = (providerManager: ProviderManager): void => {
       case "UPDATE_NOW":
         handleUpdateRequest();
         break;
+      case "LOG_ANALYTICS_EVENT":
+        handleLogAnalyticsEvent(analyticsManager, message);
+        break;
       case "OPEN_EXTENSION":
-        await handleOpenExtensionRequest(sender);
+        await handleOpenExtensionRequest(sender, analyticsManager);
         break;
       default:
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment

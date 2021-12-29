@@ -1,4 +1,5 @@
 import { sendScraperComplete } from "../../shared/events";
+import { sendSuccess } from "../../shared/events/analytics/scrapers";
 import { FlightSearchFormData } from "../../shared/types/FlightSearchFormData";
 import { sendFlights } from "./sendFlights";
 
@@ -10,8 +11,10 @@ const FLIGHT_CARD_SELECTOR = 'div[data-test="ResultCardWrapper"]';
 
 export class FlightObserver {
   private observer: MutationObserver;
+  private flightCount;
 
   constructor({ formData }: FlightObserverProps) {
+    this.flightCount = 0;
     // eslint-disable-next-line @typescript-eslint/no-this-alias
     const that = this;
     this.observer = new MutationObserver(async function (mutations) {
@@ -29,10 +32,12 @@ export class FlightObserver {
         });
       }
       if (flightCards.length) {
+        that.flightCount += flightCards.length;
         const { complete } = await sendFlights({ flightCards, formData: formData });
 
         if (complete) {
           sendScraperComplete("kiwi", "BOTH");
+          sendSuccess("kiwi", that.flightCount);
           that.endObservation();
         }
       }
