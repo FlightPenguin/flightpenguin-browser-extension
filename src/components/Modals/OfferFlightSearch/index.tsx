@@ -29,7 +29,7 @@ export const OfferFlightSearchModal = (): React.ReactElement => {
   const [loadingSelection, setLoadingSelection] = useState(false);
   const [imageLoaded, setImageLoaded] = useState(false);
 
-  const modal = Modal.useState();
+  const modal = Modal.useState({ animated: true });
   useEffect(() => {
     modal.setVisible(true);
   }, []);
@@ -41,7 +41,7 @@ export const OfferFlightSearchModal = (): React.ReactElement => {
   return (
     <>
       <Modal.Disclosure {...modal} />
-      <Modal {...modal} hideOnClickOutside={false} hideOnEsc={false}>
+      <Modal {...modal} fade expand hideOnClickOutside={false} hideOnEsc={false}>
         <Box height="100vh" width="100vw" backgroundColor="white">
           <Box
             alignX="center"
@@ -68,9 +68,9 @@ export const OfferFlightSearchModal = (): React.ReactElement => {
               </Text>
               <Flex justifyContent="space-between" paddingTop="major-2">
                 <Box
+                  altitude="200"
+                  padding="minor-3"
                   cursor={loadingSelection ? "wait" : "pointer"}
-                  width={iconSize}
-                  height={iconSize}
                   tabIndex={0}
                   onClick={() => {
                     if (!loadingSelection) {
@@ -84,9 +84,12 @@ export const OfferFlightSearchModal = (): React.ReactElement => {
                       sendOpenExtension();
                     }
                   }}
+                  _hover={{ border: "2px solid black", borderRadius: "10%" }}
+                  _focus={{ border: "2px solid black", borderRadius: "10%" }}
                 >
                   <Image
-                    width="100%"
+                    height={iconSize}
+                    width={iconSize}
                     alt="Search with Flight Penguin"
                     src={chrome.runtime.getURL("/src/icons/icon128.png")}
                   />
@@ -95,9 +98,9 @@ export const OfferFlightSearchModal = (): React.ReactElement => {
                   </Box>
                 </Box>
                 <Box
+                  altitude="200"
+                  padding="minor-3"
                   cursor={loadingSelection ? "wait" : "pointer"}
-                  width={iconSize}
-                  height={iconSize}
                   tabIndex={0}
                   onClick={() => {
                     if (!loadingSelection) {
@@ -115,12 +118,10 @@ export const OfferFlightSearchModal = (): React.ReactElement => {
                       modal.setVisible(false);
                     }
                   }}
+                  _hover={{ border: "2px solid black", borderRadius: "10%" }}
+                  _focus={{ border: "2px solid black", borderRadius: "10%" }}
                 >
-                  <Image
-                    height={iconSize}
-                    alt={`Search with ${siteName}`}
-                    src={siteLogo ? siteLogo : chrome.runtime.getURL("/images/aircraft.svg")}
-                  />
+                  <Image height={iconSize} width={iconSize} src={chrome.runtime.getURL("/images/aircraft.svg")} />
                   <Box textAlign="center" width="100%">
                     <Text fontWeight="700">{siteName}</Text>
                   </Box>
