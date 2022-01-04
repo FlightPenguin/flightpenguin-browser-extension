@@ -1,7 +1,5 @@
-import { parse } from "psl";
-
 export const getSiteLogoPath = (): string | undefined => {
-  const ogTwitterLogo = document.querySelector("meta[property='twitter:image']") as HTMLMetaElement | undefined;
+  const ogTwitterLogo = document.querySelector("meta[name='twitter:image']") as HTMLMetaElement | undefined;
   if (ogTwitterLogo && ogTwitterLogo?.content) {
     return ogTwitterLogo.content;
   }
