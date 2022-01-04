@@ -114,7 +114,8 @@
       "js": [
         "src/shared/sentry.js",
         "dist/generic.bundle.js"
-      ]
+      ],
+      "run_at": "document_end"
     }
   ],
   "permissions": [

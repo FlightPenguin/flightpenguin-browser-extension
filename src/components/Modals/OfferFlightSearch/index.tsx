@@ -19,9 +19,6 @@ type SpacingUnit =
   | "revert"
   | "unset";
 
-/* TODO:
- * Load faster (e.g. not onReady)
- */
 export const OfferFlightSearchModal = (): React.ReactElement => {
   const [hasSeenOffer, setHasSeenOffer] = useState(hasVisitedRecently());
   const [loadingSelection, setLoadingSelection] = useState(false);
