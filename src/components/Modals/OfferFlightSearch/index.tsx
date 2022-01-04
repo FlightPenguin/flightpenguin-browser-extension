@@ -21,7 +21,6 @@ type SpacingUnit =
 
 /* TODO:
  * Hide on HasSeenOffer
- * Center content
  * Load faster (e.g. not onReady)
  */
 export const OfferFlightSearchModal = (): React.ReactElement => {
@@ -35,22 +34,15 @@ export const OfferFlightSearchModal = (): React.ReactElement => {
   }, []);
 
   const siteName = getSiteName();
-  const siteLogo = getSiteLogoPath();
   const iconSize: { [key: string]: SpacingUnit } = { default: "128px", "max-tablet": "64px" };
 
   return (
     <>
       <Modal.Disclosure {...modal} />
       <Modal {...modal} fade expand hideOnClickOutside={false} hideOnEsc={false}>
-        <Box height="100vh" width="100vw" backgroundColor="white">
-          <Box
-            alignX="center"
-            alignY="center"
-            maxWidth="768px"
-            display={imageLoaded ? "block" : "none"}
-            padding="major-5"
-          >
-            <Box>
+        <Box height="100vh" width="100vw" backgroundColor="white" display="flex" alignX="center" alignY="center">
+          <Box maxWidth="768px" display={imageLoaded ? "flex" : "none"} flexDirection="column" padding="major-5">
+            <Box width="100%">
               <Image
                 width="100%"
                 height="100%"
@@ -62,7 +54,7 @@ export const OfferFlightSearchModal = (): React.ReactElement => {
                 }}
               />
             </Box>
-            <Box paddingTop="major-2" minWidth="240px" textAlign="center">
+            <Box paddingTop="major-2" minWidth="240px" width="100%" textAlign="center" borderRadius="10%">
               <Text fontWeight="bold" fontSize={{ default: "4vw", "min-fullHD": "56px", mobile: "20px" }}>
                 Which search provider?
               </Text>
@@ -99,6 +91,7 @@ export const OfferFlightSearchModal = (): React.ReactElement => {
                 </Box>
                 <Box
                   altitude="200"
+                  borderRadius="10%"
                   padding="minor-3"
                   cursor={loadingSelection ? "wait" : "pointer"}
                   tabIndex={0}
