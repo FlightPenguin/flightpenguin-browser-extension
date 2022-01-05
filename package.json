@@ -63,6 +63,7 @@
     "jest-cli": "^27.2.2",
     "jest-localstorage-mock": "^2.4.18",
     "lint-staged": "^11.0.1",
+    "mockdate": "^3.0.5",
     "prettier": "^2.3.2",
     "style-loader": "^2.0.0",
     "ts-jest": "^27.0.5",
