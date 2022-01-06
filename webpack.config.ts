@@ -47,7 +47,7 @@ const basePlugins = [
     "process.env.VERSION": "1.8.15",
   }),
   new EnvkeyWebpackPlugin({
-    permitted: ["SENTRY_DSN", "GOOGLE_ANALYTICS_TRACKING_ID"],
+    permitted: ["SENTRY_DSN", "SENTRY_PROJECT", "GOOGLE_ANALYTICS_TRACKING_ID"],
     dotEnvFile: ".env",
   }),
 ];

@@ -3,6 +3,7 @@
 Sentry.init({
   dsn: process.env.SENTRY_DSN,
   environment: `${process.env.EXTENSION_ENV}`,
+  release: `${process.env.SENTRY_PROJECT}@${process.env.VERSION}`,
 });
 
 import { sendFailedScraper, sendScraperComplete } from "../shared/events";

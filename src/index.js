@@ -11,6 +11,7 @@ Sentry.init({
   dsn: process.env.SENTRY_DSN,
   integrations: [new Integrations.BrowserTracing()],
   environment: `${process.env.EXTENSION_ENV}`,
+  release: `${process.env.SENTRY_PROJECT}@${process.env.VERSION}`,
   tracesSampleRate: 1.0,
 });
 

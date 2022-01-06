@@ -1,6 +1,7 @@
 window.Sentry.init({
   dsn: process.env.SENTRY_DSN,
   environment: `${process.env.EXTENSION_ENV}`,
+  release: `${process.env.SENTRY_PROJECT}@${process.env.VERSION}`,
 });
 
 // debugger and console logs can be seen by clicking background.js link for this extension under chrome://extensions,
