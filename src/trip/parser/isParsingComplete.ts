@@ -1,8 +1,13 @@
 import { MissingElementLookupError, MissingFieldParserError } from "../../shared/errors";
+import { stopScrollingCheck } from "../../shared/ui/stopScrolling";
 
 const TOTAL_FLIGHTS_CONTAINER_SELECTOR = "span.total";
 
 export const isComplete = (flightCard: HTMLDivElement): boolean => {
+  if (stopScrollingCheck(true)) {
+    return true;
+  }
+
   const processedFlightCount = getCurrentFlightNumber(flightCard);
   const totalExpectedFlights = getFlightTotal();
 
