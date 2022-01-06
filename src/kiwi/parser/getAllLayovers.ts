@@ -1,10 +1,8 @@
+import { MissingElementLookupError } from "../../shared/errors";
+import { getParsedModalHtml } from "../../shared/parser/modal/getParsedModalHtml";
 import { FlightLeg } from "../../shared/types/FlightLeg";
-import { waitForAppearance } from "../../shared/utilities/waitFor";
-import { closeModal } from "../ui/closeModal";
-import { getLayoversDetailModal } from "../ui/getLayoversDetailModal";
+import { setModalHtml } from "../ui/setModalHtml";
 import { getFlightLayovers } from "./getFlightLayovers";
-
-const FLIGHT_CONTAINER_SELECTOR = "[data-test='TripPopupWrapper']";
 
 interface GetAllLayoversProps {
   flightCard: HTMLDivElement;
@@ -15,13 +13,14 @@ export const getAllLayovers = async ({
   flightCard,
   roundtrip,
 }: GetAllLayoversProps): Promise<{ departureLayovers: FlightLeg[]; returnLayovers: FlightLeg[] }> => {
-  const modal = await getLayoversDetailModal(flightCard);
+  await setModalHtml(flightCard);
+  const modalDoc = getParsedModalHtml(flightCard);
+  const modal = modalDoc.querySelector("div");
+  if (!modal) {
+    throw new MissingElementLookupError("Unable to extract modal div");
+  }
 
-  await waitForAppearance(60000, FLIGHT_CONTAINER_SELECTOR);
   const departureLayovers = getFlightLayovers(modal, "DEPARTURE");
   const returnLayovers = roundtrip ? getFlightLayovers(modal, "RETURN") : [];
-
-  await closeModal(modal);
-
   return { departureLayovers, returnLayovers };
 };

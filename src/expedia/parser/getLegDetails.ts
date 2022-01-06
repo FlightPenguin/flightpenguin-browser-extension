@@ -119,11 +119,7 @@ const getDuration = (element: Element) => {
 };
 
 const getOperatingAirline = (element: Element) => {
-  // for operating might have to find index of first digit, then consider string before it if extra string after flight num
-  const airline = element?.textContent
-    ?.match(/[A-z]*/g)
-    ?.join(" ")
-    .trim();
+  const airline = element.textContent?.split(/\d+/)[0].replace(/\s+/g, " ").trim();
 
   if (!airline) {
     throw new MissingFieldParserError("Unable to determine operating airline for layover");

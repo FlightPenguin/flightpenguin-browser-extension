@@ -1,15 +1,18 @@
 import * as path from "path";
 import * as TerserPlugin from "terser-webpack-plugin";
 import { Configuration, DefinePlugin, ProgressPlugin } from "webpack";
+const EnvkeyWebpackPlugin = require("envkey-webpack-plugin");
 
 const defaultEntry = {
   background: "./src/background.js",
   index: "./src/index.js",
-  skyscanner: "./src/skyscanner/contentScript.js",
   southwest: "./src/southwest/contentScript.ts",
   southwestEmpty: "./src/southwest/emptyResultsContentScript.ts",
   expedia: "./src/expedia/contentScript.js",
   kiwi: "./src/kiwi/contentScript.ts",
+  trip: "./src/trip/contentScript.ts",
+  generic: "./src/generic/contentScript.ts",
+  flightpenguin: "./src/flightpenguin/contentScript.ts",
 };
 
 const getModuleRules = ({ mode }: { mode: "production" | "development" }) => [
@@ -41,13 +44,18 @@ const basePlugins = [
   new ProgressPlugin({}),
   new DefinePlugin({
     "process.env.BUMBAG_ENV": JSON.stringify("not test"),
-    "process.env.VERSION": "1.7.5",
+    "process.env.VERSION": JSON.stringify("1.8.16"),
+  }),
+  new EnvkeyWebpackPlugin({
+    permitted: ["SENTRY_DSN", "SENTRY_PROJECT", "GOOGLE_ANALYTICS_TRACKING_ID"],
+    dotEnvFile: ".env",
   }),
 ];
 
 const baseOutput = {
   filename: "[name].bundle.js",
   path: path.resolve(__dirname, "dist"),
+  sourceMapFilename: "[file].map",
 };
 
 const baseOptimization = {};
@@ -58,7 +66,7 @@ export const development: Configuration = {
     ...defaultEntry,
   },
   output: baseOutput,
-  plugins: [...basePlugins, new DefinePlugin({ "process.env.EXTENSION_ENV": "development" })],
+  plugins: [...basePlugins, new DefinePlugin({ "process.env.EXTENSION_ENV": JSON.stringify("development") })],
   resolve: baseResolve,
   devtool: false,
   module: {
@@ -71,8 +79,8 @@ export const production: Configuration = {
   mode: "production",
   entry: { ...defaultEntry },
   output: baseOutput,
-  devtool: false,
-  plugins: [...basePlugins, new DefinePlugin({ "process.env.EXTENSION_ENV": "production" })],
+  devtool: "source-map",
+  plugins: [...basePlugins, new DefinePlugin({ "process.env.EXTENSION_ENV": JSON.stringify("production") })],
   module: {
     rules: getModuleRules({ mode: "production" }),
   },
@@ -89,6 +97,7 @@ export const production: Configuration = {
           format: {
             comments: false,
           },
+          sourceMap: true,
         },
       }),
     ],

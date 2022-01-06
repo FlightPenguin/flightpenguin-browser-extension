@@ -1,13 +1,16 @@
 import { useDebounce } from "@react-hook/debounce";
-import { Box } from "bumbag";
+import { Alert, Box, Button } from "bumbag";
+import isEqual from "lodash.isequal";
 import React, { useEffect, useState } from "react";
 
+import { AnalyticsManager } from "../../background/AnalyticsManager";
 import { sendHighlightTab } from "../../shared/events";
 import { sendClearSelections } from "../../shared/events/sendClearSelections";
 import { sendIndexUnload } from "../../shared/events/sendIndexUnload";
 import { FlightSearchFormData } from "../../shared/types/FlightSearchFormData";
 import { ProcessedFlightSearchResult } from "../../shared/types/ProcessedFlightSearchResult";
 import { ProcessedItinerary } from "../../shared/types/ProcessedItinerary";
+import { sendFormDataToBackground } from "../SearchForm/utilities/sendFormDataToBackground";
 import TimelineContainer from "./Container";
 import { FlightSelection } from "./FlightSelection";
 
@@ -17,6 +20,8 @@ interface SearchResultsProps {
 }
 
 export const SearchResults = ({ formData, resultsContainerWidth }: SearchResultsProps): React.ReactElement => {
+  const analytics = new AnalyticsManager(`${process.env.GOOGLE_ANALYTICS_TRACKING_ID}`, false);
+
   const [flights, setFlights] = useDebounce<{
     itineraries: { [keyof: string]: ProcessedItinerary };
     departureFlights: ProcessedFlightSearchResult[];
@@ -35,9 +40,12 @@ export const SearchResults = ({ formData, resultsContainerWidth }: SearchResults
   const [returnsComplete, setReturnsComplete] = useState(false);
   const [departureFlightDetails, setDepartureFlightDetails] = useState<FlightSelection | null>(null);
   const [returnFlightDetails, setReturnFlightDetails] = useState<FlightSelection | null>(null);
+  const [tabInteractionFailed, setTabInteractionFailed] = useState(false);
+  const [searchAgainDisabled, setSearchAgainDisabled] = useState(false);
 
   useEffect(() => {
-    chrome.runtime.onMessage.addListener((message) => {
+    chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+      sendResponse({ received: true, responderName: "searchResults" });
       console.debug(message);
       switch (message.event) {
         case "FLIGHT_RESULTS_FOR_CLIENT":
@@ -55,17 +63,57 @@ export const SearchResults = ({ formData, resultsContainerWidth }: SearchResults
             setDeparturesComplete(true);
           }
           break;
+        case "HIGHLIGHT_TAB_FAILED":
+          setTabInteractionFailed(true);
+          break;
         default:
           break;
       }
     });
-  }, [setFlights]);
+  }, []);
 
   useEffect(() => {
     window.addEventListener("beforeunload", function () {
       sendIndexUnload();
     });
   });
+
+  if (tabInteractionFailed) {
+    return (
+      <Box alignX="center" marginTop="major-6">
+        <Alert title="Booking failed" type="danger">
+          <Box width="100%">
+            Flight Penguin opens windows in the background to search flight booking sites. We can't show your flight
+            because this window is closed.
+          </Box>
+          <Box width="100%" marginTop="major-1">
+            <Button
+              disabled={searchAgainDisabled}
+              palette="primary"
+              onClick={() => {
+                setSearchAgainDisabled(true);
+                setFlights({
+                  itineraries: {},
+                  departureFlights: [],
+                  returnFlights: [],
+                });
+                setDeparturesComplete(false);
+                setReturnsComplete(false);
+                setDepartureFlightDetails(null);
+                setReturnFlightDetails(null);
+                setTabInteractionFailed(false);
+
+                sendFormDataToBackground(formData);
+                setSearchAgainDisabled(false);
+              }}
+            >
+              Try again
+            </Button>
+          </Box>
+        </Alert>
+      </Box>
+    );
+  }
 
   return (
     <Box className="search-results-container" alignX="center" paddingTop="50px">
@@ -74,13 +122,25 @@ export const SearchResults = ({ formData, resultsContainerWidth }: SearchResults
         itineraries={flights.itineraries}
         flights={flights.departureFlights}
         formData={formData}
-        loading={!departuresComplete}
+        loading={!departureFlightDetails && !departuresComplete}
         resultsContainerWidth={resultsContainerWidth}
         onSelection={(details) => {
           setDepartureFlightDetails(details);
 
+          analytics.track({
+            category: "flight search",
+            action: "departure selection",
+            label: window.location.host,
+          });
+
           if (!formData?.roundtrip) {
             sendHighlightTab(details.flightPenguinId, "");
+
+            analytics.track({
+              category: "flight search",
+              action: "flight selection",
+              label: window.location.host,
+            });
           }
         }}
         onClear={() => {
@@ -99,12 +159,23 @@ export const SearchResults = ({ formData, resultsContainerWidth }: SearchResults
             itineraries={flights.itineraries}
             flights={flights.returnFlights}
             formData={formData}
-            loading={!returnsComplete}
+            loading={!returnFlightDetails && !returnsComplete}
             resultsContainerWidth={resultsContainerWidth}
             onSelection={(details) => {
               setReturnFlightDetails(details);
 
               sendHighlightTab(departureFlightDetails?.flightPenguinId, details.flightPenguinId);
+
+              analytics.track({
+                category: "flight search",
+                action: "return selection",
+                label: window.location.host,
+              });
+              analytics.track({
+                category: "flight search",
+                action: "flight selection",
+                label: window.location.host,
+              });
             }}
             onClear={() => {
               setReturnFlightDetails(null);
@@ -115,3 +186,7 @@ export const SearchResults = ({ formData, resultsContainerWidth }: SearchResults
     </Box>
   );
 };
+
+export default React.memo(SearchResults, (previous, next) => {
+  return isEqual(previous, next);
+});

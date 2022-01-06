@@ -1,12 +1,13 @@
-import { setPositionData } from "../components/utilities/geography/setPositionData";
 import { getUrl as getExpediaUrl } from "../expedia/mappings/getUrl";
 import { getUrl as getKiwiUrl } from "../kiwi/mappings/getUrl";
 import { pause } from "../shared/pause";
 import { FlightSearchFormData } from "../shared/types/FlightSearchFormData";
 import { Itinerary } from "../shared/types/Itinerary";
+import { MessageResponse } from "../shared/types/MessageResponse";
 import { WindowConfig } from "../shared/types/WindowConfig";
 import { getUrl as getSkyscannerUrl } from "../skyscanner/mappings/getUrl";
 import { getUrl as getSouthwestUrl } from "../southwest/mappings/getUrl";
+import { getUrl as getTripUrl } from "../trip/mappings/getUrl";
 import {
   DEFAULT_ON_READY_FUNCTION,
   FlightType,
@@ -33,8 +34,8 @@ const terminalStates = ["FAILED", "SUCCESS"];
 const successStates = ["SUCCESS"];
 
 const providerURLBaseMap: { [key: string]: (formData: FlightSearchFormData) => string } = {
+  trip: getTripUrl,
   southwest: getSouthwestUrl,
-  skyscanner: getSkyscannerUrl,
   expedia: getExpediaUrl,
   kiwi: getKiwiUrl,
 };
@@ -82,14 +83,6 @@ export class ProviderManager {
     return this.primaryTab?.id;
   }
 
-  getPrimaryTabIndex(): number | undefined {
-    return this.primaryTab?.index;
-  }
-
-  getPrimaryWindowId(): number | undefined {
-    return this.primaryTab?.windowId;
-  }
-
   setFormData(formData: FlightSearchFormData): void {
     this.formData = formData;
     this.knownProviders = this.formData.searchByPoints ? PROVIDERS_SUPPORTING_POINTS_SEARCH : SUPPORTED_PROVIDERS;
@@ -109,6 +102,17 @@ export class ProviderManager {
   }
 
   setStatus(providerName: string, status: StatusType, searchType: SearchType) {
+    if (!this.state[providerName]) {
+      this.state[providerName] = {
+        departureStatus: "PENDING",
+        returnStatus: "PENDING",
+        ready: true,
+        onReady: DEFAULT_ON_READY_FUNCTION,
+        timer: null,
+        attempts: 0,
+      };
+    }
+
     if (searchType === "DEPARTURE") {
       this.state[providerName]["departureStatus"] = status;
     } else if (searchType === "RETURN") {
@@ -207,13 +211,13 @@ export class ProviderManager {
 
   isDepartureSuccessful(): boolean {
     return this.knownProviders.every((providerName) => {
-      this.isProviderDepartureSuccessful(providerName);
+      return this.isProviderDepartureSuccessful(providerName);
     });
   }
 
   isReturnSuccessful(): boolean {
     return this.knownProviders.every((providerName) => {
-      this.isProviderReturnSuccessful(providerName);
+      return this.isProviderReturnSuccessful(providerName);
     });
   }
 
@@ -340,7 +344,13 @@ export class ProviderManager {
     });
   }
 
-  createWindow(url: string, provider: string, windowConfig: WindowConfig, message: any): Promise<void> {
+  createWindow(
+    url: string,
+    provider: string,
+    windowConfig: WindowConfig,
+    message: Record<string, unknown>,
+    messageResponseCallback: (response: MessageResponse | null) => void,
+  ): Promise<void> {
     this.setParsing(provider, "BOTH"); // de facto starting...
 
     const { height, width, left, top } = windowConfig;
@@ -348,17 +358,18 @@ export class ProviderManager {
     const that = this;
     return new Promise<void>((resolve) => {
       chrome.windows.create({ url, focused: false, height, width, left, top }, async (window) => {
-        if (window && window.tabs && that.primaryTab?.windowId !== null && that.primaryTab?.windowId !== undefined) {
-          // update again for chrome on windows, to move results window to foreground
-          chrome.windows.update(that.primaryTab.windowId, { focused: true });
+        this.setPrimaryTabAsFocus();
 
+        if (window && window.tabs) {
           that.setTab(provider, window.tabs[0]);
           that.setWindow(provider, window);
 
           chrome.tabs.onUpdated.addListener(function listener(tabId, info) {
             if (info.status === "complete" && tabId === that.getTabId(provider)) {
               chrome.tabs.onUpdated.removeListener(listener);
-              chrome.tabs.sendMessage(tabId, message);
+              chrome.tabs.sendMessage(tabId, message, {}, (response) => {
+                messageResponseCallback(response);
+              });
               resolve();
             }
           });
@@ -384,49 +395,101 @@ export class ProviderManager {
 
   searchForResults(formData: FlightSearchFormData, windowConfig: WindowConfig): void {
     this.setFormData(formData);
-    const primaryWindowId = this?.primaryTab?.windowId;
     const message = { event: "BEGIN_PARSING", formData };
-    if (primaryWindowId !== undefined && primaryWindowId !== null) {
-      const promises = this.knownProviders.map((provider) => {
-        const url = providerURLBaseMap[provider](formData);
-        // Open url in a new window.
-        // Not a new tab because we can't read results from inactive tabs (browser powers down inactive tabs).
-        return this.createWindow(url, provider, windowConfig, message);
+    const promises = this.knownProviders.map((providerName) => {
+      const url = providerURLBaseMap[providerName](formData);
+      // Open url in a new window.
+      // Not a new tab because we can't read results from inactive tabs (browser powers down inactive tabs).
+      return this.createWindow(url, providerName, windowConfig, message, (response: MessageResponse | null) => {
+        console.debug(response);
+        if (!response || !response.received) {
+          this.setFailed(providerName, "DEPARTURE");
+          this.sendMessageToIndexPage({
+            event: "SCRAPER_COMPLETE",
+            providerName: providerName,
+            status: "FAILED",
+          });
+          this.closeWindow(providerName);
+          if (this.isComplete("DEPARTURE")) {
+            this.sendMessageToIndexPage({ event: "SCRAPING_COMPLETED", searchType: "DEPARTURE" }, 3000);
+          }
+        }
       });
+    });
 
-      Promise.all(promises).then(() => {
-        // update again for chrome on windows, to move results window to foreground
-        chrome.windows.update(primaryWindowId, { focused: true });
-      });
-    }
+    Promise.all(promises).then(() => {
+      // update again for chrome on windows, to move results window to foreground
+      this.setPrimaryTabAsFocus();
+    });
   }
 
   sendMessageToIndexPage(message: any, delay = 0): void {
-    const primaryTabId = this.getPrimaryTabId();
-    if (primaryTabId !== null && primaryTabId !== undefined) {
-      setTimeout(() => {
-        chrome.tabs.sendMessage(primaryTabId, message);
-      }, delay);
-    }
+    const url = `chrome-extension://${chrome.runtime.id}/index.html`;
+
+    chrome.tabs.query({ url }, (tabs) => {
+      if (tabs && tabs.length) {
+        const primaryTabId = tabs[0]?.id;
+        if (primaryTabId) {
+          setTimeout(() => {
+            chrome.tabs.sendMessage(primaryTabId, message);
+          }, delay);
+        }
+      }
+    });
   }
 
   incrementParsingAttempts(providerName: string): void {
     this.state[providerName].attempts += 1;
   }
 
-  retry(providerName: string, windowConfig: WindowConfig): boolean {
+  retry(providerName: string, windowConfig: WindowConfig, searchType: SearchType): boolean {
     this.closeWindow(providerName);
-    const primaryWindowId = this.getPrimaryWindowId();
-    if (this.state[providerName].attempts < 2 && !!this.formData && primaryWindowId) {
+    if (this.state[providerName].attempts < 2 && !!this.formData && ["DEPARTURE", "BOTH"].includes(searchType)) {
       const url = providerURLBaseMap[providerName](this.formData);
       const message = { event: "BEGIN_PARSING", message: this.formData };
-      const promise = this.createWindow(url, providerName, windowConfig, message);
+      const promise = this.createWindow(url, providerName, windowConfig, message, (response) => {
+        console.debug(response);
+        if (!response || !response.received) {
+          this.setFailed(providerName, searchType);
+          this.sendMessageToIndexPage({
+            event: "SCRAPER_COMPLETE",
+            providerName: providerName,
+            status: "FAILED",
+          });
+          this.closeWindow(providerName);
+          if (this.isComplete(searchType)) {
+            this.sendMessageToIndexPage({ event: "SCRAPING_COMPLETED", searchType }, 3000);
+          }
+        }
+      });
       promise.then(() => {
-        chrome.windows.update(primaryWindowId, { focused: true });
+        this.setPrimaryTabAsFocus();
       });
       return true;
     } else {
       return false;
     }
+  }
+
+  setPrimaryTabAsFocus(): void {
+    /*
+     * Chrome's tab API focuses the tab and doesn't care if the window is in focus.
+     * This will focus the tab & the window!
+     * Worse yet, the tab object does not fire an update event when the window changes, so always use callbacks!
+     */
+    const url = `chrome-extension://${chrome.runtime.id}/index.html`;
+
+    chrome.tabs.query({ url }, (tabs) => {
+      if (tabs && tabs.length) {
+        const primaryTab = tabs[0];
+        if (primaryTab.id) {
+          chrome.tabs.update(primaryTab.id, { active: true }, (tab) => {
+            if (tab?.windowId) {
+              chrome.windows.update(tab.windowId, { focused: true });
+            }
+          });
+        }
+      }
+    });
   }
 }

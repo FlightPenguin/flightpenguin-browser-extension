@@ -47,4 +47,5 @@ const getFare = (flightCard: HTMLDivElement): string => {
 
 const setFlightId = (flightCard: HTMLDivElement, id: string) => {
   flightCard.dataset.fpid = id;
+  flightCard.dataset.fpVisited = "true";
 };

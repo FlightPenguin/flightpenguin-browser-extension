@@ -1,5 +1,6 @@
-export const isShort = (fauxStartDate: Date, fauxEndDate: Date, isOvernight: boolean): boolean => {
-  const tooShort = isOvernight ? 360 : 60; // less than 6 hours basically means you're trapped in the airport
+export const isShort = (fauxStartDate: Date, fauxEndDate: Date): boolean => {
+  const tooShort = 60; // less than an hour means you're sprinting to the next flight and praying no delay
   const layoverDurationInMinutes = Math.abs(fauxEndDate.valueOf() - fauxStartDate.valueOf()) / 60000;
+
   return layoverDurationInMinutes < tooShort;
 };

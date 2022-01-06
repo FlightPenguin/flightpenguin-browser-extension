@@ -1,3 +1,5 @@
+export const EXTENSION_URL = "chrome-extension://nofndgfpjopdpbcejgdpikmpdehlekac/index.html";
+
 export const PROVIDERS_NEEDING_RETURNS = [
   // force expansion
   "expedia",
@@ -7,8 +9,8 @@ export const SUPPORTED_PROVIDERS = [
   // force expansion
   "expedia",
   "kiwi",
-  "skyscanner",
   "southwest",
+  "trip",
 ];
 
 // eslint-disable-next-line @typescript-eslint/no-empty-function
@@ -23,3 +25,6 @@ export const CabinMap = {
   first: "First",
 };
 export type CabinType = "econ" | "prem_econ" | "business" | "first";
+
+export const API_HOST =
+  `${process.env.EXTENSION_ENV}` === "development" ? "http://localhost:3000" : "https://subscribe.flightpenguin.com";

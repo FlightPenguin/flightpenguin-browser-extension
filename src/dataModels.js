@@ -188,12 +188,23 @@ Flight.prototype.updateLayovers = function () {
  * @returns {array} list of departures
  */
 function sortFlights(flights, itins, cabin) {
-  for (let [k, v] of Object.entries(flights)) {
-    const price = itins[v.itinIds.sort((a, b) => itins[a].fareNumber - itins[b].fareNumber)[0]].fareNumber;
-    v.pain = getPain(price, cabin, v.layovers);
+  const sortableFlights = [];
+
+  for (let [id, flight] of Object.entries(flights)) {
+    const itinIds = flight.itinIds.filter((itinId) => !!itins[itinId]);
+    if (!itinIds.length) {
+      continue;
+    }
+
+    const itinId = itinIds.sort((a, b) => {
+      itins[a].fareNumber - itins[b].fareNumber;
+    })[0];
+    const price = itins[itinId].fareNumber;
+    flight.pain = getPain(price, cabin, flight.layovers);
+    sortableFlights.push(flight);
   }
 
-  return Object.values(flights).sort((a, b) => a.pain - b.pain);
+  return Object.values(sortableFlights).sort((a, b) => a.pain - b.pain);
 }
 /**
  * Itin {
@@ -245,7 +256,7 @@ function Itin(depFlight, retFlight, fare, currency, provider, windowId, tabId, m
       retFlight.toTimeDetails,
       retFlight.toDateTime,
       retFlight.toLocalTime,
-      depFlight.toLocalDateTime,
+      retFlight.toLocalDateTime,
       retFlight.operatingAirline,
       retFlight.marketingAirline,
       retFlight.duration,
@@ -266,7 +277,15 @@ function Itin(depFlight, retFlight, fare, currency, provider, windowId, tabId, m
 }
 
 function findReturnFlights(depFlight, itins) {
-  return depFlight.itinIds.map((itinId) => itins[itinId].retFlight);
+  const flights = depFlight.itinIds
+    .filter((itinId) => {
+      return !!itins[itinId] && !!itins[itinId].retFlight;
+    })
+    .map((itinId) => {
+      return itins[itinId].retFlight;
+    });
+
+  return flights;
 }
 
 /**

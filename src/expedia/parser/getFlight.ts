@@ -65,7 +65,8 @@ const getAirlines = (element: Element) => {
     // "Delta"
     // "• Delta 4164 operated by Skywest DBA Delta Connection"
     marketingAirlineContainer = airlineContainer.childNodes[0] as HTMLElement;
-    operatingAirlineContainer = airlineContainer.childNodes[1] as HTMLElement;
+    // operatingAirlineContainer = airlineContainer.childNodes[1] as HTMLElement;
+    operatingAirlineContainer = null;
   } else {
     marketingAirlineContainer = airlineContainer;
     operatingAirlineContainer = null;

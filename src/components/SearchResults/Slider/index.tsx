@@ -3,6 +3,7 @@ import isEqual from "lodash.isequal";
 import React, { useEffect, useState } from "react";
 import ReactSlider from "react-slider";
 
+import { FlightType } from "../../../background/constants";
 import { getDateValueInRange } from "../../../shared/utilities/getDateValueInRange";
 import Thumb from "./Thumb";
 import Track from "./Track";
@@ -19,6 +20,7 @@ interface TimelineSliderProps {
   flightCount: number;
   timezoneOffset: number;
   flightTimeContainerWidth: number;
+  flightType: FlightType;
 }
 
 const heightValue = 8;
@@ -32,6 +34,7 @@ const TimelineSlider = ({
   flightCount,
   timezoneOffset,
   flightTimeContainerWidth,
+  flightType,
 }: TimelineSliderProps): React.ReactElement => {
   const [touched, setTouched] = useState(false);
   /*
@@ -85,6 +88,7 @@ const TimelineSlider = ({
               flightCount={flightCount}
               timezoneOffset={timezoneOffset}
               flightTimeContainerWidth={flightTimeContainerWidth}
+              flightType={flightType}
             />
           );
         }}
@@ -104,8 +108,13 @@ const TimelineSlider = ({
         }}
         onChange={(value) => {
           setValues(value);
-          const { datetime: lowerBoundary } = getDatetimeByTick({ startDate, value: value[0] });
-          const { datetime: upperBoundary } = getDatetimeByTick({ startDate, value: value[1], timezoneOffset });
+          const { datetime: lowerBoundary } = getDatetimeByTick({ startDate, value: value[0], flightType });
+          const { datetime: upperBoundary } = getDatetimeByTick({
+            startDate,
+            value: value[1],
+            timezoneOffset,
+            flightType,
+          });
           onRangeChange(
             getDateValueInRange({ value: lowerBoundary, minimumValue: minimumDate, maximumValue: maximumDate }),
             getDateValueInRange({ value: upperBoundary, minimumValue: minimumDate, maximumValue: maximumDate }),
