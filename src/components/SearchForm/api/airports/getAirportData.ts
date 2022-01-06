@@ -23,7 +23,7 @@ export const getAirportData = async ({
       "Content-Type": "application/json",
       Authorization: `Bearer ${accessToken}`,
     },
-    timeout: 1000,
+    timeout: 3000,
     withCredentials: true,
   });
 
