@@ -73,6 +73,7 @@ const AirlineMap = {
     Iberia: { display: "Iberia", color: "#D05653", code: "IB" },
     "Air China": { display: "Air China", color: "#DF524B", code: "CA" },
     "Emirates Airlines": { display: "Emirates", color: "#CF534F", code: "EK" },
+    KLM: { display: "KLM", color: "#44A0DC", code: "KL" },
     "KLM-Royal Dutch Airlines": { display: "KLM", color: "#44A0DC", code: "KL" },
     "KLM Royal Dutch Airlines": { display: "KLM", color: "#44A0DC", code: "KL" },
     "Air France": { display: "Air France", color: "#DB3832", code: "AF" },
@@ -99,6 +100,8 @@ const AirlineMap = {
     "Aer Lingus": { display: "Aer Lingus", color: "#008274", code: "EI" },
     Aeroflot: { display: "Aeroflot", color: "#3C72A8", code: "SU" },
     "Aeroflot-Russian Airlines": { display: "Aeroflot", color: "#3C72A8", code: "SU" },
+    TAP: { display: "TAP", color: "#CC2C34", code: "TP" },
+    "TAP Air Portugal": { display: "TAP", color: "#CC2C34", code: "TP" },
   },
   getAirlineName: function (airlineName) {
     if (!airlineName || typeof airlineName !== "string") {
