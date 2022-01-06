@@ -9,6 +9,7 @@ import {
   handleHighlightTab,
   handleIndexUnloaded,
   handleLogAnalyticsEvent,
+  handleLogAnalyticsPageView,
   handleNoFlightsFound,
   handleOpenExtensionRequest,
   handleProviderReady,
@@ -81,6 +82,9 @@ export const ListenerManager = (providerManager: ProviderManager, analyticsManag
         break;
       case "LOG_ANALYTICS_EVENT":
         handleLogAnalyticsEvent(analyticsManager, message);
+        break;
+      case "LOG_ANALYTICS_PAGE_VIEW":
+        handleLogAnalyticsPageView(analyticsManager, message);
         break;
       case "OPEN_EXTENSION":
         await handleOpenExtensionRequest(sender, analyticsManager);
