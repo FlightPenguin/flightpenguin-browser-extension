@@ -1,4 +1,4 @@
-import { Box, Button, Icon, Input, Text } from "bumbag";
+import { Box, Button, Icon, Text } from "bumbag";
 import isEqual from "lodash.isequal";
 import React, { useState } from "react";
 
@@ -6,7 +6,8 @@ import { CabinMap } from "../../background/constants";
 import { FlightSearchFormData } from "../../shared/types/FlightSearchFormData";
 import { Cabin } from "../icons";
 import { getPrettyRewardsCardName } from "../utilities/forms/getPrettyRewardsCardName";
-import { getStandardizedFormatDate } from "../utilities/forms/getStandardizedFormatDate";
+import { GenericCell } from "./GenericCell";
+import { TimeCell } from "./TimeCell";
 
 interface SearchFormDisplayProps {
   containerWidth: number;
@@ -20,87 +21,25 @@ const SearchFormDisplay = ({ containerWidth, formData, onUpdateClick }: SearchFo
   return (
     <Box className="form-data-container" alignX="center">
       <Box use="section" width={`${containerWidth}px`}>
-        <Box display="flex" flex="row" flexWrap="nowrap" justifyContent="space-between" altitude="400">
-          <Box display="flex" boxSizing="border-box" whiteSpace="nowrap" alignX="center" padding="major-1">
-            <Box>
-              <Input.Icon
-                icon="solid-plane-departure"
-                aria-label="Departure information"
-                fontSize="300"
-                color="black"
-                alignX="left"
-              />
-            </Box>
-            <Box display="flex" flexDirection="column" width="100px" paddingLeft="10px" whiteSpace="normal">
-              <Text whiteSpace="normal" width="100px">
-                <Icon aria-label="Departure airport" icon="solid-map-marker-alt" marginRight="major-1" />
-                {formData.from}
-              </Text>
-              <Text fontSize="100" fontWeight="200" whiteSpace="normal" maxWidth="100px">
-                <Icon aria-label="Departure date" icon="regular-calendar" marginRight="major-1" />
-                {getStandardizedFormatDate(formData.fromDate)}
-              </Text>
-            </Box>
-          </Box>
-
-          {formData.roundtrip && (
-            <Box display="flex" boxSizing="border-box" whiteSpace="nowrap" alignX="center" padding="major-1">
-              <Box>
-                <Input.Icon
-                  icon="solid-plane-arrival"
-                  aria-label="Destination and return information"
-                  fontSize="300"
-                  color="black"
-                  alignX="left"
-                />
-              </Box>
-              <Box display="flex" flexDirection="column" width="100px" paddingLeft="10px" whiteSpace="normal">
-                <Text whiteSpace="normal" width="100px">
-                  <Icon aria-label="Destination airport" icon="solid-map-marker-alt" marginRight="major-1" />
-                  {formData.to}
-                </Text>
-                <Text fontSize="100" fontWeight="200" whiteSpace="normal" maxWidth="100px">
-                  <Icon aria-label="Return date" icon="regular-calendar" marginRight="major-1" />
-                  {getStandardizedFormatDate(formData.toDate)}
-                </Text>
-              </Box>
-            </Box>
-          )}
-
-          <Box display="flex" boxSizing="border-box" whiteSpace="nowrap" alignX="center" padding="major-1">
-            <Box display="flex" flexDirection="column" width="100px" paddingLeft="10px" whiteSpace="normal">
-              <Text whiteSpace="normal" width="100px">
-                <Icon aria-label="Number of passengers" icon="solid-user" marginRight="major-1" />
-                {formData.numPax}
-              </Text>
-            </Box>
-          </Box>
-
-          <Box display="flex" boxSizing="border-box" whiteSpace="nowrap" alignX="center" padding="major-1">
-            <Box display="flex" flexDirection="column" width="100px" paddingLeft="10px" whiteSpace="normal">
-              <Text whiteSpace="normal" width="100px">
-                <Cabin aria-label="Cabin / class" marginRight="major-1" fontSize="300" />
-                {CabinMap[formData.cabin || "econ"]}
-              </Text>
-            </Box>
-          </Box>
-
-          <Box display="flex" boxSizing="border-box" whiteSpace="nowrap" alignX="center" padding="major-1">
-            <Box
-              display="flex"
-              flexDirection="column"
-              width={formData.searchByPoints ? "250px" : "100px"}
-              paddingLeft="10px"
-              whiteSpace="normal"
-            >
-              <Text whiteSpace="normal" width={formData.searchByPoints ? "250px" : "100px"}>
-                <Icon aria-label="Search by" icon="solid-search" marginRight="major-1" />
-                {formData.searchByPoints && formData.pointsType
-                  ? `${getPrettyRewardsCardName(formData.pointsType)} points`
-                  : "Price"}
-              </Text>
-            </Box>
-          </Box>
+        <Box display="flex" flex="row" flexWrap="wrap" justifyContent="space-between" altitude="400">
+          <TimeCell flightType="DEPARTURE" airport={formData.from} date={formData.fromDate} />
+          <TimeCell flightType="RETURN" airport={formData.to} date={formData.roundtrip ? formData.toDate : undefined} />
+          <GenericCell
+            icon={<Icon aria-label="Number of passengers" icon="solid-user" marginRight="major-1" />}
+            displayText={`${formData.numPax}`}
+          />
+          <GenericCell
+            icon={<Cabin aria-label="Cabin / class" marginRight="major-1" fontSize="300" />}
+            displayText={`${formData.numPax}`}
+          />
+          <GenericCell
+            icon={<Icon aria-label="Search by" icon="solid-search" marginRight="major-1" />}
+            displayText={
+              formData.searchByPoints && formData.pointsType
+                ? `${getPrettyRewardsCardName(formData.pointsType)} points`
+                : "Price"
+            }
+          />
 
           <Box
             display="flex"
