@@ -155,7 +155,7 @@ export const SearchForm = ({
 
   return (
     <Box className="search-form-wrapper" alignX="center">
-      <Card maxWidth={`${containerWidth}px`}>
+      <Card minWidth="360px" maxWidth={`${containerWidth}px`} width="90%">
         <Formik
           initialValues={initialValues}
           validateOnBlur={true}
