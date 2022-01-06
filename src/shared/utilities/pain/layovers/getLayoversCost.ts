@@ -9,7 +9,6 @@ export const getLayoversCost = (layovers: Layover[], cabin: CabinType): number =
   });
 
   const layoverStops = layovers.filter((layover) => layover.isLayoverStop);
-  const layoverCountMultiplier = Number(`1.0${layoverStops.length}`);
-
+  const layoverCountMultiplier = 1 + 0.05 * layoverStops.length;
   return Math.pow(durationCost, layoverCountMultiplier);
 };

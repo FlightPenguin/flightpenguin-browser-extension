@@ -39,7 +39,7 @@ describe("getLayoverMultiplier tests", () => {
       expect(value).toEqual(1);
     });
 
-    it("is a crappy carrier", () => {
+    it("is an awful carrier", () => {
       const layover = {
         duration: "4h31m",
         durationMinutes: 271,
@@ -73,7 +73,7 @@ describe("getLayoverMultiplier tests", () => {
         isLayoverStop: false,
       };
       const value = getLayoverMultiplier(layover);
-      expect(value).toEqual(2.5);
+      expect(value).toEqual(1.5);
     });
   });
 
