@@ -99,6 +99,7 @@ const TimelineHeader = ({
         flightCount={flightCount}
         disabled={sliderDisabled}
         timezoneOffset={tzOffset}
+        flightTimeContainerWidth={flightTimeContainerWidth}
         flightType={flightType}
       />
     </Box>
