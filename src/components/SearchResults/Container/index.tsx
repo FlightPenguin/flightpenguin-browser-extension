@@ -141,7 +141,7 @@ const TimelineContainer = ({
       paddingBottom="45px"
       paddingTop="45px"
       altitude="400"
-      width={`${resultsContainerWidth}px`}
+      width="100%"
     >
       <Box display="flex" flexDirection="row">
         <TimelineTitle key="search-title" flightType={flightType} loading={loading} />

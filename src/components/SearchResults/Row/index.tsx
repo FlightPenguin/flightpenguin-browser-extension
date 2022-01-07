@@ -54,7 +54,7 @@ const TimelineRow = ({
     setLoading(false);
   }, [setLoading]);
 
-  const rowWidth = resultsContainerWidth - sidePaddingWidth * 2;
+  const rowWidth = resultsContainerWidth;
 
   const backgroundColor = index % 2 === 0 || selected ? "primaryTint" : "white";
   const bottomBorder = index % 2 === 1 ? "default" : "none";

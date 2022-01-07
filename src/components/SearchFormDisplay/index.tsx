@@ -19,7 +19,7 @@ const SearchFormDisplay = ({ containerWidth, formData, onUpdateClick }: SearchFo
 
   return (
     <Box className="form-data-container" alignX="center">
-      <Box use="section" width={`${containerWidth}px`} minWidth="360px">
+      <Box use="section" width="100%" minWidth="360px">
         <Box display="flex" flex="row" flexWrap="wrap" justifyContent="space-between" altitude="400">
           <TimeCell flightType="DEPARTURE" airport={formData.from} date={formData.fromDate} />
           <TimeCell flightType="RETURN" airport={formData.to} date={formData.roundtrip ? formData.toDate : undefined} />

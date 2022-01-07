@@ -116,7 +116,14 @@ export const SearchResults = ({ formData, resultsContainerWidth }: SearchResults
   }
 
   return (
-    <Box className="search-results-container" alignX="center" paddingTop="50px">
+    <Box
+      className="search-results-container"
+      display="flex"
+      flexDirection="column"
+      justifyContent="center"
+      paddingTop="50px"
+      width="100%"
+    >
       <TimelineContainer
         flightType="DEPARTURE"
         itineraries={flights.itineraries}
@@ -126,16 +133,13 @@ export const SearchResults = ({ formData, resultsContainerWidth }: SearchResults
         resultsContainerWidth={resultsContainerWidth}
         onSelection={(details) => {
           setDepartureFlightDetails(details);
-
           analytics.track({
             category: "flight search",
             action: "departure selection",
             label: window.location.host,
           });
-
           if (!formData?.roundtrip) {
             sendHighlightTab(details.flightPenguinId, "");
-
             analytics.track({
               category: "flight search",
               action: "flight selection",
@@ -150,7 +154,6 @@ export const SearchResults = ({ formData, resultsContainerWidth }: SearchResults
           setReturnsComplete(false);
         }}
       />
-
       {!!departureFlightDetails && formData.roundtrip && (
         <>
           <Box height="50px" />
@@ -163,9 +166,7 @@ export const SearchResults = ({ formData, resultsContainerWidth }: SearchResults
             resultsContainerWidth={resultsContainerWidth}
             onSelection={(details) => {
               setReturnFlightDetails(details);
-
               sendHighlightTab(departureFlightDetails?.flightPenguinId, details.flightPenguinId);
-
               analytics.track({
                 category: "flight search",
                 action: "return selection",

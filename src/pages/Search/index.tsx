@@ -1,5 +1,5 @@
-import { PageContent, PageWithHeader } from "bumbag";
-import React, { useCallback, useEffect, useState } from "react";
+import { Box, PageContent, PageWithHeader } from "bumbag";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 
 import { getAuthToken } from "../../auth/getAuthToken";
 import { AnalyticsManager } from "../../background/AnalyticsManager";
@@ -17,11 +17,13 @@ import { getFormContainerWidth } from "./utils/getFormContainerWidth";
 import { getResultsContainerWidth } from "./utils/getResultsContainerWidth";
 
 export const SearchPage = (): React.ReactElement => {
+  const resultsWrapperRef = useRef<HTMLDivElement>(null);
+
   const [formData, setFormData] = useState<FlightSearchFormData | undefined>(undefined);
   const [showForm, setShowForm] = useState(true);
 
-  const [formContainerWidth, setFormContainerWidth] = useState(getFormContainerWidth());
-  const [resultsContainerWidth, setResultsContainerWidth] = useState(getResultsContainerWidth());
+  const [formContainerWidth, setFormContainerWidth] = useState<number | undefined>();
+  const [resultsContainerWidth, setResultsContainerWidth] = useState<number | undefined>();
 
   const [showUpdate, setShowUpdate] = useState(true);
   const [showWelcomeModal, setShowWelcomeModal] = useState(isRecentlyInstalled());
@@ -48,9 +50,20 @@ export const SearchPage = (): React.ReactElement => {
   }, [setShowUpdate]);
 
   useEffect(() => {
+    if (resultsWrapperRef.current) {
+      const containerWidth = resultsWrapperRef.current.clientWidth;
+      setResultsContainerWidth(getResultsContainerWidth(containerWidth));
+      setFormContainerWidth(getFormContainerWidth(containerWidth));
+    }
+  }, [resultsWrapperRef]);
+
+  useEffect(() => {
     const handleResize = () => {
-      setResultsContainerWidth(getResultsContainerWidth());
-      setFormContainerWidth(getFormContainerWidth());
+      if (resultsWrapperRef.current) {
+        const containerWidth = resultsWrapperRef.current.clientWidth;
+        setResultsContainerWidth(getResultsContainerWidth(containerWidth));
+        setFormContainerWidth(getFormContainerWidth(containerWidth));
+      }
     };
 
     window.addEventListener("resize", handleResize);
@@ -67,7 +80,7 @@ export const SearchPage = (): React.ReactElement => {
 
   return (
     <PageWithHeader header={<NavigationBar />}>
-      <PageContent breakpoint="desktop" paddingY={{ default: "major-5" }}>
+      <PageContent isFluid paddingY={{ default: "major-10" }}>
         {showWelcomeModal && !isLoggedIn && (
           <WelcomeModal
             onSuccess={() => {
@@ -84,13 +97,13 @@ export const SearchPage = (): React.ReactElement => {
             }}
           />
         )}
-        {!showUpdate && (
+        {!showUpdate && ((showForm && formContainerWidth) || resultsContainerWidth) && (
           <UpdateNotificationAlert
             width={`${showForm ? formContainerWidth : resultsContainerWidth}px`}
             marginBottom="50px"
           />
         )}
-        {showForm && (
+        {showForm && formContainerWidth && (
           <SearchForm
             initialValues={
               formData && {
@@ -115,19 +128,22 @@ export const SearchPage = (): React.ReactElement => {
             containerWidth={formContainerWidth}
           />
         )}
-        {!showForm && !!formData && (
-          <>
-            <SearchFormDisplay
-              containerWidth={resultsContainerWidth}
-              formData={formData}
-              onUpdateClick={() => {
-                setShowForm(true);
-                sendIndexUnload();
-              }}
-            />
-            <SearchResults formData={formData} resultsContainerWidth={resultsContainerWidth} />
-          </>
-        )}
+        <Box display="flex" flexDirection="column" width="100%" id="results-wrapper" ref={resultsWrapperRef}>
+          {!showForm && !!formData && resultsContainerWidth && (
+            <>
+              <SearchFormDisplay
+                containerWidth={resultsContainerWidth}
+                formData={formData}
+                onUpdateClick={() => {
+                  setShowForm(true);
+                  sendIndexUnload();
+                }}
+              />
+
+              <SearchResults formData={formData} resultsContainerWidth={resultsContainerWidth} />
+            </>
+          )}
+        </Box>
       </PageContent>
     </PageWithHeader>
   );
