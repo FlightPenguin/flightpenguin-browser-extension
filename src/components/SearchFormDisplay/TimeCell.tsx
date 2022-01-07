@@ -17,17 +17,25 @@ export const TimeCell = ({ flightType, airport, date }: TimeCellProps): React.Re
   const calendarIconLabel = `${flightType === "DEPARTURE" ? "Departure" : "Return"} date`;
 
   return (
-    <Box display="flex" boxSizing="border-box" whiteSpace="nowrap" alignX="center" padding="major-1">
+    <Box
+      display="flex"
+      boxSizing="border-box"
+      whiteSpace="nowrap"
+      alignX="center"
+      padding="major-1"
+      flexBasis={{ default: "12%", "max-desktop": "30%", "max-tablet": "45%", mobile: "100%" }}
+      justifyContent="center"
+    >
       <Box>
         <Input.Icon icon={icon} aria-label={planeIconLabel} fontSize="300" color="black" alignX="left" />
       </Box>
-      <Box display="flex" flexDirection="column" paddingLeft="10px" paddingRight="10px" whiteSpace="nowrap">
-        <Text whiteSpace="normal">
+      <Box display="flex" flexDirection="column" paddingLeft="10px" paddingRight="10px">
+        <Text>
           <Icon aria-label={locationIconLabel} icon="solid-map-marker-alt" marginRight="major-1" />
           {airport}
         </Text>
         {date && (
-          <Text fontSize="100" fontWeight="200" whiteSpace="nowrap">
+          <Text fontSize="100" fontWeight="200">
             <Icon aria-label={calendarIconLabel} icon="regular-calendar" marginRight="major-1" />
             {getStandardizedFormatDate(date)}
           </Text>

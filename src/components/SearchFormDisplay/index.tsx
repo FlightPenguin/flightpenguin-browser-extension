@@ -1,8 +1,7 @@
-import { Box, Button, Icon, Text } from "bumbag";
+import { Box, Button, Hide, Icon } from "bumbag";
 import isEqual from "lodash.isequal";
 import React, { useState } from "react";
 
-import { CabinMap } from "../../background/constants";
 import { FlightSearchFormData } from "../../shared/types/FlightSearchFormData";
 import { Cabin } from "../icons";
 import { getPrettyRewardsCardName } from "../utilities/forms/getPrettyRewardsCardName";
@@ -20,7 +19,7 @@ const SearchFormDisplay = ({ containerWidth, formData, onUpdateClick }: SearchFo
 
   return (
     <Box className="form-data-container" alignX="center">
-      <Box use="section" width={`${containerWidth}px`}>
+      <Box use="section" width={`${containerWidth}px`} minWidth="360px">
         <Box display="flex" flex="row" flexWrap="wrap" justifyContent="space-between" altitude="400">
           <TimeCell flightType="DEPARTURE" airport={formData.from} date={formData.fromDate} />
           <TimeCell flightType="RETURN" airport={formData.to} date={formData.roundtrip ? formData.toDate : undefined} />
@@ -48,6 +47,8 @@ const SearchFormDisplay = ({ containerWidth, formData, onUpdateClick }: SearchFo
             alignX="center"
             padding="major-1"
             paddingRight="major-3"
+            flexBasis={{ default: "12%", "max-desktop": "30%", "max-tablet": "45%", mobile: "100%" }}
+            justifyContent="center"
           >
             <Button
               variant="outlined"
