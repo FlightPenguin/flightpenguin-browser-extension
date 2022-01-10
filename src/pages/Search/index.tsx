@@ -79,7 +79,7 @@ export const SearchPage = (): React.ReactElement => {
   }, []);
 
   return (
-    <PageWithHeader header={<NavigationBar />}>
+    <PageWithHeader header={<NavigationBar />} overflow="hidden">
       <PageContent isFluid paddingY={{ default: "major-10" }}>
         {showWelcomeModal && !isLoggedIn && (
           <WelcomeModal
