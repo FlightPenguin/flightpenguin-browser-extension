@@ -18,7 +18,7 @@ export const getIntervalInfo = (
   const { lowerBound, upperBound } = getTableTimeBounds(earliestFlight, latestFlight);
 
   const startHour = getStartHour(lowerBound);
-  const increment = getIncrement(lowerBound, upperBound, startHour);
+  const increment = getIncrement({ lowerBound, upperBound, startHour, flightTimeContainerWidth: rowMaxWidth });
   const intervals = getIntervals(startHour, increment, rowMaxWidth, upperBound);
 
   return { lowerBound, upperBound, startHour, increment, intervals };

@@ -122,7 +122,7 @@ const TimelineContainer = ({
       const timezoneOffset = Object.values(itineraries)[0].depFlight?.timezoneOffset || 0;
       setIntervalInfo({ intervals, increment, startHour, timezoneOffset });
     }
-  }, [itineraries]);
+  }, [itineraries, resultsContainerWidth]);
 
   if (!loading && !flights.length) {
     return (
