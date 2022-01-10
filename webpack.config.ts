@@ -44,7 +44,7 @@ const basePlugins = [
   new ProgressPlugin({}),
   new DefinePlugin({
     "process.env.BUMBAG_ENV": JSON.stringify("not test"),
-    "process.env.VERSION": JSON.stringify("1.8.16"),
+    "process.env.VERSION": JSON.stringify("1.8.17"),
   }),
   new EnvkeyWebpackPlugin({
     permitted: ["SENTRY_DSN", "SENTRY_PROJECT", "GOOGLE_ANALYTICS_TRACKING_ID"],

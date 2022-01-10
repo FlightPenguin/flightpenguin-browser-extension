@@ -69,7 +69,7 @@ export class AnalyticsManager {
           window,
           document,
           "script",
-          `https://www.google-analytics.com/analytics${debug && "_debug"}.js`, // HTTPS!!!!!
+          `https://www.google-analytics.com/analytics${debug ? "_debug" : ""}.js`, // HTTPS!!!!!
           "ga",
         );
       } else {
