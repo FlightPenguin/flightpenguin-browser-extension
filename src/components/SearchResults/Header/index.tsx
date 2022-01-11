@@ -59,13 +59,34 @@ const TimelineHeader = ({
             // @ts-ignore
             left={`-${intervalWidth}px`}
           >
-            <Text fontSize={timeFontSize} padding="major-1" tabIndex={-1}>
+            <Text
+              fontSize={timeFontSize}
+              padding="major-1"
+              tabIndex={-1}
+              marginRight={`${(intervalWidth * -1) / 2 + 3}px`}
+            >
               &nbsp;
             </Text>
-            <Text fontSize={timeFontSize} tabIndex={-1} color="info" fontWeight="700" width="100%" textAlign="right">
+            <Text
+              fontSize={timeFontSize}
+              tabIndex={-1}
+              color="info"
+              fontWeight="700"
+              width="100%"
+              textAlign="right"
+              marginRight={`${(intervalWidth * -1) / 2 + 3}px`}
+            >
               {departureAirportCode}
             </Text>
-            <Text fontSize={timeFontSize} tabIndex={-1} color="warning" fontWeight="700" width="100%" textAlign="right">
+            <Text
+              fontSize={timeFontSize}
+              tabIndex={-1}
+              color="warning"
+              fontWeight="700"
+              width="100%"
+              textAlign="right"
+              marginRight={`${(intervalWidth * -1) / 2 + 3}px`}
+            >
               {arrivalAirportCode}
             </Text>
           </Box>
