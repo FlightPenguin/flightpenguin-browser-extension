@@ -3,8 +3,8 @@ import { stopScrollingCheck } from "../../shared/ui/stopScrolling";
 
 const TOTAL_FLIGHTS_CONTAINER_SELECTOR = "span.total";
 
-export const isComplete = (flightCard: HTMLDivElement): boolean => {
-  if (stopScrollingCheck(true)) {
+export const isComplete = async (flightCard: HTMLDivElement): Promise<boolean> => {
+  if (await stopScrollingCheck(true)) {
     return true;
   }
 
