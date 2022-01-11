@@ -13,6 +13,7 @@ import TimelineGrid from "../Grid";
 import TimelineHeader from "../Header";
 import TimelineTitle from "../Title";
 import _skeletonItineraries from "./skeletonItineraries.json";
+import { getFilteredFlights } from "./utilities/getFilteredFlights";
 import { getFlightRowComponentsWidth } from "./utilities/getFlightRowComponentsWidth";
 import { getIntervalInfo } from "./utilities/getIntervalInfo";
 import { getSkeletonIntervalInfo } from "./utilities/getSkeletonIntervalInfo";
@@ -52,6 +53,10 @@ const TimelineContainer = ({
     lowerBound: null,
     upperBound: null,
   });
+  const [filterMaxStopNumber, setFilterMaxStopNumber] = useState<number | undefined>(undefined);
+  const [filterCarriers, setFilterCarriers] = useState<string[] | undefined>(undefined);
+  const [filterLayoverCities, setFilterLayoverCities] = useState<string[] | undefined>(undefined);
+
   const [selectedFlightDetails, setSelectedFlightDetails] = useState<FlightSelection | null>(null);
   const [displayFlights, setDisplayFlights] = useState<ProcessedFlightSearchResult[]>([]);
   const [intervalInfo, setIntervalInfo] = useState<{
@@ -87,23 +92,15 @@ const TimelineContainer = ({
     if (selectedFlightDetails) {
       return;
     }
-    // filter
-    const filteredFlights = flights.filter((flight) => {
-      // These coercions are necessary due to object passing from thread to thread...
-      if (!(flight.fromDateTime instanceof Date)) {
-        flight.fromDateTime = parseISO(flight.fromDateTime);
-      }
-      if (!(flight.toDateTime instanceof Date)) {
-        flight.toDateTime = parseISO(flight.toDateTime);
-      }
-      if (!(flight.toLocalDateTime instanceof Date)) {
-        flight.toLocalDateTime = parseISO(flight.toLocalDateTime);
-      }
 
-      return (
-        isFlightArrivingBeforeTime({ flight, datetime: filterDateRange.upperBound }) &&
-        isFlightDepartingAfterTime({ flight, datetime: filterDateRange.lowerBound })
-      );
+    const filteredFlights = getFilteredFlights({
+      flightSearchResults: flights,
+      filterProperties: {
+        dateRange: filterDateRange,
+        maxStopNumber: filterMaxStopNumber,
+        carriers: filterCarriers,
+        layoverCities: filterLayoverCities,
+      },
     });
 
     // sort / unique
