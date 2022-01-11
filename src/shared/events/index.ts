@@ -1,4 +1,5 @@
 export * from "./sendAnalyticsEvent";
+export * from "./sendAnalyticsPageView";
 export * from "./sendFailedScraper";
 export * from "./sendFlights";
 export * from "./sendNoFlights";
