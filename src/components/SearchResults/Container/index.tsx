@@ -15,6 +15,7 @@ import TimelineTitle from "../Title";
 import _skeletonItineraries from "./skeletonItineraries.json";
 import { getFlightTimeContainerWidth } from "./utilities/getFlightTimeContainerWidth";
 import { getIntervalInfo } from "./utilities/getIntervalInfo";
+import { getSkeletonIntervalInfo } from "./utilities/getSkeletonIntervalInfo";
 import { getSkeletonItinerariesWithFlightDates } from "./utilities/getSkeletonItinerariesWithFlightDates";
 import { isFlightArrivingBeforeTime } from "./utilities/isFlightArrivingBeforeTime";
 import { isFlightDepartingAfterTime } from "./utilities/isFlightDepartingAfterTime";
@@ -59,7 +60,14 @@ const TimelineContainer = ({
     increment: number;
     intervals: number[];
     timezoneOffset: number;
-  }>({ startHour: 0, increment: 4, intervals: [0, 4, 8, 12, 16, 20, 24, 28], timezoneOffset: 0 });
+  }>(getSkeletonIntervalInfo({ flightTimeContainerWidth }));
+
+  useEffect(() => {
+    if (!flights.length) {
+      const intervalInfo = getSkeletonIntervalInfo({ flightTimeContainerWidth });
+      setIntervalInfo(intervalInfo);
+    }
+  }, [resultsContainerWidth, flights]);
 
   useEffect(() => {
     const itins = getSkeletonItinerariesWithFlightDates({
