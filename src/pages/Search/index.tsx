@@ -8,6 +8,7 @@ import NavigationBar from "../../components/NavigationBar";
 import { SearchForm } from "../../components/SearchForm";
 import SearchFormDisplay from "../../components/SearchFormDisplay";
 import SearchResults from "../../components/SearchResults";
+import { SizeAlert } from "../../components/SizeAlert";
 import { UpdateNotificationAlert } from "../../components/UpdateNotificationAlert";
 import { getStandardizedFormatDate } from "../../components/utilities/forms/getStandardizedFormatDate";
 import { sendIndexUnload } from "../../shared/events/sendIndexUnload";
@@ -22,6 +23,7 @@ export const SearchPage = (): React.ReactElement => {
   const [formData, setFormData] = useState<FlightSearchFormData | undefined>(undefined);
   const [showForm, setShowForm] = useState(true);
 
+  const [pageWidth, setPageWidth] = useState(window.innerWidth);
   const [formContainerWidth, setFormContainerWidth] = useState<number | undefined>();
   const [resultsContainerWidth, setResultsContainerWidth] = useState<number | undefined>();
 
@@ -64,6 +66,7 @@ export const SearchPage = (): React.ReactElement => {
         setResultsContainerWidth(getResultsContainerWidth(containerWidth));
         setFormContainerWidth(getFormContainerWidth(containerWidth));
       }
+      setPageWidth(window.innerWidth);
     };
 
     window.addEventListener("resize", handleResize);
@@ -77,6 +80,14 @@ export const SearchPage = (): React.ReactElement => {
   useEffect(() => {
     analytics.pageview({});
   }, []);
+
+  if (pageWidth < 900) {
+    return (
+      <PageContent isFluid paddingY={{ default: "major-10" }}>
+        <SizeAlert />
+      </PageContent>
+    );
+  }
 
   return (
     <PageWithHeader header={<NavigationBar />} overflow="hidden">
