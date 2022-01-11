@@ -98,7 +98,6 @@ const TimelineRow = ({
   const arrivalTextColor = flight.timezoneOffset ? "warning" : "black";
   const departureTextColor = flight.timezoneOffset ? "info" : "black";
 
-  console.log(legendContainerWidth);
   return (
     <List.Item
       data-name="flight-list-item"
