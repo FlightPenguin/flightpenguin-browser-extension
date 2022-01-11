@@ -5,7 +5,7 @@ import React, { useEffect, useState } from "react";
 import { sendSelectedFlight } from "../../../shared/events";
 import { ProcessedFlightSearchResult } from "../../../shared/types/ProcessedFlightSearchResult";
 import { ProcessedItinerary } from "../../../shared/types/ProcessedItinerary";
-import { legendWidth, PaymentType, sidePaddingWidth } from "../../constants";
+import { PaymentType } from "../../constants";
 import { FlightSelection } from "../FlightSelection";
 import { FlightLegend } from "./FlightLegend";
 import { FlightSegmentBox } from "./FlightSegment";
@@ -26,6 +26,7 @@ interface TimelineRowProps {
   index: number;
   skeleton: boolean;
   selected: boolean;
+  legendContainerWidth: number;
   flightTimeContainerWidth: number;
   resultsContainerWidth: number;
   onSelection: (details: FlightSelection) => void;
@@ -44,6 +45,7 @@ const TimelineRow = ({
   index,
   selected,
   skeleton,
+  legendContainerWidth,
   flightTimeContainerWidth,
   resultsContainerWidth,
   onSelection,
@@ -96,6 +98,7 @@ const TimelineRow = ({
   const arrivalTextColor = flight.timezoneOffset ? "warning" : "black";
   const departureTextColor = flight.timezoneOffset ? "info" : "black";
 
+  console.log(legendContainerWidth);
   return (
     <List.Item
       data-name="flight-list-item"
@@ -125,7 +128,12 @@ const TimelineRow = ({
       // @ts-ignore
       _focus={rowHighlightStyle}
     >
-      <FlightLegend legendWidth={legendWidth} itinerary={itinerary} flight={flight} paymentType={paymentType} />
+      <FlightLegend
+        legendWidth={legendContainerWidth}
+        itinerary={itinerary}
+        flight={flight}
+        paymentType={paymentType}
+      />
       <Box
         data-name={"flight-container"}
         position="relative"

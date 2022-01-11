@@ -7,13 +7,13 @@ import React, { useEffect, useState } from "react";
 import { FlightSearchFormData } from "../../../shared/types/FlightSearchFormData";
 import { ProcessedFlightSearchResult } from "../../../shared/types/ProcessedFlightSearchResult";
 import { ProcessedItinerary } from "../../../shared/types/ProcessedItinerary";
-import { legendWidth, sidePaddingWidth } from "../../constants";
+import { sidePaddingWidth } from "../../constants";
 import { FlightSelection } from "../FlightSelection";
 import TimelineGrid from "../Grid";
 import TimelineHeader from "../Header";
 import TimelineTitle from "../Title";
 import _skeletonItineraries from "./skeletonItineraries.json";
-import { getFlightTimeContainerWidth } from "./utilities/getFlightTimeContainerWidth";
+import { getFlightRowComponentsWidth } from "./utilities/getFlightRowComponentsWidth";
 import { getIntervalInfo } from "./utilities/getIntervalInfo";
 import { getSkeletonIntervalInfo } from "./utilities/getSkeletonIntervalInfo";
 import { getSkeletonItinerariesWithFlightDates } from "./utilities/getSkeletonItinerariesWithFlightDates";
@@ -41,9 +41,8 @@ const TimelineContainer = ({
   onSelection,
   onClear,
 }: TimelimeContainerProps): React.ReactElement => {
-  const flightTimeContainerWidth = getFlightTimeContainerWidth({
+  const { legendContainerWidth, flightSegmentsContainerWidth: flightTimeContainerWidth } = getFlightRowComponentsWidth({
     resultsContainerWidth,
-    legendContainerWidth: legendWidth,
   });
 
   const [skeletonItineraries, setSkeletonItineraries] = useState<{ [keyof: string]: ProcessedItinerary }>({});
@@ -152,7 +151,12 @@ const TimelineContainer = ({
       width="100%"
     >
       <Box display="flex" flexDirection="row">
-        <TimelineTitle key="search-title" flightType={flightType} loading={loading} />
+        <TimelineTitle
+          key="search-title"
+          flightType={flightType}
+          loading={loading}
+          legendContainerWidth={legendContainerWidth}
+        />
         <TimelineHeader
           formData={formData}
           flightType={flightType}
@@ -187,6 +191,7 @@ const TimelineContainer = ({
                 formData={formData}
                 skeleton={false}
                 selectedFlight={selectedFlightDetails?.flight}
+                legendContainerWidth={legendContainerWidth}
                 resultsContainerWidth={resultsContainerWidth}
                 flightTimeContainerWidth={flightTimeContainerWidth}
                 onSelection={(details: FlightSelection) => {
@@ -207,6 +212,7 @@ const TimelineContainer = ({
               formData={formData}
               skeleton={true}
               selectedFlight={undefined}
+              legendContainerWidth={legendContainerWidth}
               flightTimeContainerWidth={flightTimeContainerWidth}
               resultsContainerWidth={resultsContainerWidth}
               onSelection={() => {}} // eslint-disable-line @typescript-eslint/no-empty-function

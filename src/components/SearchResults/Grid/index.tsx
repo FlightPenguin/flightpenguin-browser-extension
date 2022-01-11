@@ -24,6 +24,7 @@ interface TimelineGridProps {
   skeleton: boolean;
   selectedFlight: ProcessedFlightSearchResult | undefined;
   onSelection: (details: FlightSelection) => void;
+  legendContainerWidth: number;
   flightTimeContainerWidth: number;
   resultsContainerWidth: number;
 }
@@ -39,6 +40,7 @@ const TimelineGrid = ({
   skeleton,
   selectedFlight,
   onSelection,
+  legendContainerWidth,
   flightTimeContainerWidth,
   resultsContainerWidth,
 }: TimelineGridProps): React.ReactElement => {
@@ -62,6 +64,7 @@ const TimelineGrid = ({
           to={formData.to}
           index={index}
           selected={!!selectedFlight && selectedFlight.id === flight.id}
+          legendContainerWidth={legendContainerWidth}
           flightTimeContainerWidth={flightTimeContainerWidth}
           resultsContainerWidth={resultsContainerWidth}
           skeleton={skeleton}

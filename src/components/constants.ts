@@ -1,5 +1,4 @@
 export const defaultSearchFormWidth = 768;
-export const legendWidth = 300;
 export const sidePaddingWidth = 85;
 export const pageSidePadding = 32;
 export const rowHeight = 90;
