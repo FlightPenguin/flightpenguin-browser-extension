@@ -48,7 +48,7 @@ export const FlightLegend = ({
         <Text
           data-name="primary-airline"
           whiteSpace="normal"
-          width="185px"
+          maxWidth="185px"
           textOverflow="ellipsis"
           display="block"
           overflow="hidden"
