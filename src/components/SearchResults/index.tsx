@@ -16,9 +16,10 @@ import { FlightSelection } from "./FlightSelection";
 
 interface SearchResultsProps {
   formData: FlightSearchFormData;
+  resultsContainerWidth: number;
 }
 
-const SearchResults = ({ formData }: SearchResultsProps): React.ReactElement => {
+export const SearchResults = ({ formData, resultsContainerWidth }: SearchResultsProps): React.ReactElement => {
   const analytics = new AnalyticsManager(`${process.env.GOOGLE_ANALYTICS_TRACKING_ID}`, false);
 
   const [flights, setFlights] = useDebounce<{
@@ -115,25 +116,30 @@ const SearchResults = ({ formData }: SearchResultsProps): React.ReactElement => 
   }
 
   return (
-    <Box className="search-results-container" alignX="center" paddingTop="50px">
+    <Box
+      className="search-results-container"
+      display="flex"
+      flexDirection="column"
+      justifyContent="center"
+      paddingTop="50px"
+      width="100%"
+    >
       <TimelineContainer
         flightType="DEPARTURE"
         itineraries={flights.itineraries}
         flights={flights.departureFlights}
         formData={formData}
         loading={!departureFlightDetails && !departuresComplete}
+        resultsContainerWidth={resultsContainerWidth}
         onSelection={(details) => {
           setDepartureFlightDetails(details);
-
           analytics.track({
             category: "flight search",
             action: "departure selection",
             label: window.location.host,
           });
-
           if (!formData?.roundtrip) {
             sendHighlightTab(details.flightPenguinId, "");
-
             analytics.track({
               category: "flight search",
               action: "flight selection",
@@ -148,7 +154,6 @@ const SearchResults = ({ formData }: SearchResultsProps): React.ReactElement => 
           setReturnsComplete(false);
         }}
       />
-
       {!!departureFlightDetails && formData.roundtrip && (
         <>
           <Box height="50px" />
@@ -158,11 +163,10 @@ const SearchResults = ({ formData }: SearchResultsProps): React.ReactElement => 
             flights={flights.returnFlights}
             formData={formData}
             loading={!returnFlightDetails && !returnsComplete}
+            resultsContainerWidth={resultsContainerWidth}
             onSelection={(details) => {
               setReturnFlightDetails(details);
-
               sendHighlightTab(departureFlightDetails?.flightPenguinId, details.flightPenguinId);
-
               analytics.track({
                 category: "flight search",
                 action: "return selection",

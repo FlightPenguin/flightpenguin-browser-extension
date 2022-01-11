@@ -1,4 +1,4 @@
-import { Box, List as BumbagList, Text } from "bumbag";
+import { Box, List as BumbagList } from "bumbag";
 import React from "react";
 import { List, ListRowRenderer, WindowScroller } from "react-virtualized";
 
@@ -6,7 +6,7 @@ import { FlightType } from "../../../background/constants";
 import { FlightSearchFormData } from "../../../shared/types/FlightSearchFormData";
 import { ProcessedFlightSearchResult } from "../../../shared/types/ProcessedFlightSearchResult";
 import { ProcessedItinerary } from "../../../shared/types/ProcessedItinerary";
-import { containerWidth, rowHeight } from "../../constants";
+import { rowHeight } from "../../constants";
 import { getPaymentType } from "../../SearchForm/utilities/getPaymentType";
 import { getCheapestItinerary } from "../Container/utilities/getCheapestItinerary";
 import { getFlightPenguinId } from "../Container/utilities/getFlightPenguinId";
@@ -24,6 +24,9 @@ interface TimelineGridProps {
   skeleton: boolean;
   selectedFlight: ProcessedFlightSearchResult | undefined;
   onSelection: (details: FlightSelection) => void;
+  legendContainerWidth: number;
+  flightTimeContainerWidth: number;
+  resultsContainerWidth: number;
 }
 
 const TimelineGrid = ({
@@ -37,6 +40,9 @@ const TimelineGrid = ({
   skeleton,
   selectedFlight,
   onSelection,
+  legendContainerWidth,
+  flightTimeContainerWidth,
+  resultsContainerWidth,
 }: TimelineGridProps): React.ReactElement => {
   const rowRender: ListRowRenderer = ({ index, key, style }) => {
     const flight = flights[index];
@@ -45,7 +51,7 @@ const TimelineGrid = ({
     const paymentMethod = getPaymentType(formData);
 
     return (
-      <Box key={key} style={style} width={`${containerWidth}px`}>
+      <Box key={key} style={style} width={`${resultsContainerWidth}px`}>
         <TimelineRow
           flight={flight}
           itinerary={cheapestItinerary}
@@ -58,6 +64,9 @@ const TimelineGrid = ({
           to={formData.to}
           index={index}
           selected={!!selectedFlight && selectedFlight.id === flight.id}
+          legendContainerWidth={legendContainerWidth}
+          flightTimeContainerWidth={flightTimeContainerWidth}
+          resultsContainerWidth={resultsContainerWidth}
           skeleton={skeleton}
           paymentType={paymentMethod}
           onSelection={(details: FlightSelection) => {
@@ -84,7 +93,7 @@ const TimelineGrid = ({
               rowRenderer={rowRender}
               scrollTop={scrollTop}
               tabIndex={-1}
-              width={containerWidth + 100} // +n allows time boxes to flow over
+              width={resultsContainerWidth + 100} // +n allows time boxes to flow over
             />
           </Box>
         )}

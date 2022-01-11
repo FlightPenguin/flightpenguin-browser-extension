@@ -7,18 +7,21 @@ import React, { useEffect, useState } from "react";
 import { FlightSearchFormData } from "../../../shared/types/FlightSearchFormData";
 import { ProcessedFlightSearchResult } from "../../../shared/types/ProcessedFlightSearchResult";
 import { ProcessedItinerary } from "../../../shared/types/ProcessedItinerary";
-import { containerWidth, flightTimeContainerWidth, sidePaddingWidth } from "../../constants";
+import { sidePaddingWidth } from "../../constants";
 import { FlightSelection } from "../FlightSelection";
 import TimelineGrid from "../Grid";
 import TimelineHeader from "../Header";
 import TimelineTitle from "../Title";
 import _skeletonItineraries from "./skeletonItineraries.json";
+import { getFlightRowComponentsWidth } from "./utilities/getFlightRowComponentsWidth";
 import { getIntervalInfo } from "./utilities/getIntervalInfo";
+import { getSkeletonIntervalInfo } from "./utilities/getSkeletonIntervalInfo";
 import { getSkeletonItinerariesWithFlightDates } from "./utilities/getSkeletonItinerariesWithFlightDates";
 import { isFlightArrivingBeforeTime } from "./utilities/isFlightArrivingBeforeTime";
 import { isFlightDepartingAfterTime } from "./utilities/isFlightDepartingAfterTime";
 
 interface TimelimeContainerProps {
+  resultsContainerWidth: number;
   flightType: "DEPARTURE" | "RETURN";
   itineraries: { [keyof: string]: ProcessedItinerary };
   flights: ProcessedFlightSearchResult[];
@@ -29,6 +32,7 @@ interface TimelimeContainerProps {
 }
 
 const TimelineContainer = ({
+  resultsContainerWidth,
   flightType,
   flights,
   itineraries,
@@ -37,6 +41,10 @@ const TimelineContainer = ({
   onSelection,
   onClear,
 }: TimelimeContainerProps): React.ReactElement => {
+  const { legendContainerWidth, flightSegmentsContainerWidth: flightTimeContainerWidth } = getFlightRowComponentsWidth({
+    resultsContainerWidth,
+  });
+
   const [skeletonItineraries, setSkeletonItineraries] = useState<{ [keyof: string]: ProcessedItinerary }>({});
   const [skeletonFlights, setSkeletonFlights] = useState<ProcessedFlightSearchResult[]>([]);
 
@@ -51,7 +59,14 @@ const TimelineContainer = ({
     increment: number;
     intervals: number[];
     timezoneOffset: number;
-  }>({ startHour: 0, increment: 4, intervals: [0, 4, 8, 12, 16, 20, 24, 28], timezoneOffset: 0 });
+  }>(getSkeletonIntervalInfo({ flightTimeContainerWidth }));
+
+  useEffect(() => {
+    if (!flights.length) {
+      const intervalInfo = getSkeletonIntervalInfo({ flightTimeContainerWidth });
+      setIntervalInfo(intervalInfo);
+    }
+  }, [resultsContainerWidth, flights]);
 
   useEffect(() => {
     const itins = getSkeletonItinerariesWithFlightDates({
@@ -114,7 +129,7 @@ const TimelineContainer = ({
       const timezoneOffset = Object.values(itineraries)[0].depFlight?.timezoneOffset || 0;
       setIntervalInfo({ intervals, increment, startHour, timezoneOffset });
     }
-  }, [itineraries]);
+  }, [itineraries, resultsContainerWidth]);
 
   if (!loading && !flights.length) {
     return (
@@ -133,10 +148,15 @@ const TimelineContainer = ({
       paddingBottom="45px"
       paddingTop="45px"
       altitude="400"
-      width={`${containerWidth + sidePaddingWidth * 2}px`}
+      width="100%"
     >
       <Box display="flex" flexDirection="row">
-        <TimelineTitle key="search-title" flightType={flightType} loading={loading} />
+        <TimelineTitle
+          key="search-title"
+          flightType={flightType}
+          loading={loading}
+          legendContainerWidth={legendContainerWidth}
+        />
         <TimelineHeader
           formData={formData}
           flightType={flightType}
@@ -146,7 +166,8 @@ const TimelineContainer = ({
             setFilterDateRange({ lowerBound: minDate, upperBound: maxDate });
           }}
           sliderDisabled={!!selectedFlightDetails}
-          flightCount={displayFlights.length} // TODO: limit based on infinite scroll...
+          flightCount={displayFlights.length}
+          flightTimeContainerWidth={flightTimeContainerWidth}
         />
       </Box>
       <Box data-name={`${flightType.toLowerCase()}-container`} display="flex">
@@ -170,6 +191,9 @@ const TimelineContainer = ({
                 formData={formData}
                 skeleton={false}
                 selectedFlight={selectedFlightDetails?.flight}
+                legendContainerWidth={legendContainerWidth}
+                resultsContainerWidth={resultsContainerWidth}
+                flightTimeContainerWidth={flightTimeContainerWidth}
                 onSelection={(details: FlightSelection) => {
                   setSelectedFlightDetails(details);
                   setDisplayFlights([details.flight]);
@@ -188,6 +212,9 @@ const TimelineContainer = ({
               formData={formData}
               skeleton={true}
               selectedFlight={undefined}
+              legendContainerWidth={legendContainerWidth}
+              flightTimeContainerWidth={flightTimeContainerWidth}
+              resultsContainerWidth={resultsContainerWidth}
               onSelection={() => {}} // eslint-disable-line @typescript-eslint/no-empty-function
             />
           )}
@@ -220,6 +247,7 @@ export default React.memo(TimelineContainer, (previous, next) => {
       formData: previous.formData,
       flightType: previous.flightType,
       loading: previous.loading,
+      resultsContainerWidth: previous.resultsContainerWidth,
     },
     {
       flights: next.flights,
@@ -227,6 +255,7 @@ export default React.memo(TimelineContainer, (previous, next) => {
       formData: next.formData,
       flightType: next.flightType,
       loading: next.loading,
+      resultsContainerWidth: next.resultsContainerWidth,
     },
   );
 });

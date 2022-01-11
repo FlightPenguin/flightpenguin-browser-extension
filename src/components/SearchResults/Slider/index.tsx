@@ -5,7 +5,6 @@ import ReactSlider from "react-slider";
 
 import { FlightType } from "../../../background/constants";
 import { getDateValueInRange } from "../../../shared/utilities/getDateValueInRange";
-import { flightTimeContainerWidth } from "../../constants";
 import Thumb from "./Thumb";
 import Track from "./Track";
 import { getAcceptableDateRange } from "./utilities/getAcceptableDateRange";
@@ -20,6 +19,7 @@ interface TimelineSliderProps {
   disabled: boolean;
   flightCount: number;
   timezoneOffset: number;
+  flightTimeContainerWidth: number;
   flightType: FlightType;
 }
 
@@ -33,6 +33,7 @@ const TimelineSlider = ({
   disabled,
   flightCount,
   timezoneOffset,
+  flightTimeContainerWidth,
   flightType,
 }: TimelineSliderProps): React.ReactElement => {
   const [touched, setTouched] = useState(false);
@@ -86,6 +87,7 @@ const TimelineSlider = ({
               touched={touched}
               flightCount={flightCount}
               timezoneOffset={timezoneOffset}
+              flightTimeContainerWidth={flightTimeContainerWidth}
               flightType={flightType}
             />
           );
@@ -100,13 +102,19 @@ const TimelineSlider = ({
               minimumValue={0}
               maximumValue={ticks}
               touched={touched}
+              flightTimeContainerWidth={flightTimeContainerWidth}
             />
           );
         }}
         onChange={(value) => {
           setValues(value);
-          const { datetime: lowerBoundary } = getDatetimeByTick({ startDate, value: value[0] });
-          const { datetime: upperBoundary } = getDatetimeByTick({ startDate, value: value[1], timezoneOffset });
+          const { datetime: lowerBoundary } = getDatetimeByTick({ startDate, value: value[0], flightType });
+          const { datetime: upperBoundary } = getDatetimeByTick({
+            startDate,
+            value: value[1],
+            timezoneOffset,
+            flightType,
+          });
           onRangeChange(
             getDateValueInRange({ value: lowerBoundary, minimumValue: minimumDate, maximumValue: maximumDate }),
             getDateValueInRange({ value: upperBoundary, minimumValue: minimumDate, maximumValue: maximumDate }),
@@ -123,12 +131,20 @@ export default React.memo(TimelineSlider, (previous, next) => {
   return isEqual(getValuesForMemoCheck(previous), getValuesForMemoCheck(next));
 });
 
-const getValuesForMemoCheck = ({ intervals, startDate, intervalWidth, disabled, flightCount }: TimelineSliderProps) => {
+const getValuesForMemoCheck = ({
+  intervals,
+  startDate,
+  intervalWidth,
+  disabled,
+  flightCount,
+  flightTimeContainerWidth,
+}: TimelineSliderProps) => {
   return {
     intervalsCount: intervals.length,
     startDate: startDate,
     intervalWidth: intervalWidth,
     disabled: disabled,
     flightCount: flightCount,
+    flightTimeContainerWidth: flightTimeContainerWidth,
   };
 };

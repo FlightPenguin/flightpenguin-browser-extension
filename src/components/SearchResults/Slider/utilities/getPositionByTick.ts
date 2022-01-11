@@ -1,6 +1,5 @@
 import Decimal from "decimal.js-light";
 
-import { flightTimeContainerWidth } from "../../../constants";
 import { thumbWidthWrapperValue } from "../constants";
 import { getSliderTicks } from "./getSliderTicks";
 
@@ -8,9 +7,15 @@ interface GetPositionByTickProps {
   value: number;
   intervals: number[];
   applyAdjustment?: boolean;
+  flightTimeContainerWidth: number;
 }
 
-export const getPositionByTick = ({ value, intervals, applyAdjustment = true }: GetPositionByTickProps): number => {
+export const getPositionByTick = ({
+  value,
+  intervals,
+  flightTimeContainerWidth,
+  applyAdjustment = true,
+}: GetPositionByTickProps): number => {
   const ticks = getSliderTicks({ intervals });
   const adjustmentValue = applyAdjustment ? thumbWidthWrapperValue / 2 : 0;
 

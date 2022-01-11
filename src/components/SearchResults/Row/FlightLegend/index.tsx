@@ -24,36 +24,40 @@ export const FlightLegend = ({
 
   return (
     <Box
+      alignItems="center"
+      boxSizing="border-box"
       data-name="flight-legend"
       display="flex"
-      boxSizing="border-box"
-      whiteSpace="nowrap"
-      alignX="center"
-      width={`${legendWidth}px`}
+      flexDirection="row"
+      justifyContent={legendWidth >= 150 ? "start" : "center"}
       padding="major-1"
+      width={`${legendWidth}px`}
     >
-      <Box data-name="flight-price">
-        <Text fontSize={paymentType.toUpperCase() === "CASH" ? "500" : "250"} fontWeight="700">
+      <Box boxSizing="border-box" data-name="flight-price" paddingRight={legendWidth >= 150 ? "major-1" : "0px"}>
+        <Text
+          fontSize={paymentType === "CASH" ? "clamp(1rem, 2vw, 2rem)" : "clamp(1rem, 1.33vw, 1.5rem)"}
+          fontWeight="700"
+        >
           {fareValue}
         </Text>
       </Box>
-      <Box
-        data-name="airlines"
-        display="flex"
-        flexDirection="column"
-        width="265px"
-        paddingLeft="10px"
-        whiteSpace="normal"
-      >
-        <Text data-name="primary-airline" whiteSpace="normal" width="185px">
-          {flight.operatingAirline.display}
-        </Text>
-        {flight.marketingAirlineText && (
-          <Text data-name="secondary-airline" fontSize="100" fontWeight="200" whiteSpace="normal" maxWidth="185px">
-            {flight.marketingAirlineText}
+
+      {legendWidth >= 150 && (
+        <Box data-name="airlines" display="flex" width="65%">
+          <Text
+            data-name="primary-airline"
+            whiteSpace="normal"
+            fontSize="clamp(.5rem, 1.25vw, 1rem)"
+            maxWidth="100%"
+            textOverflow="ellipsis"
+            display="block"
+            overflow="hidden"
+            maxHeight="80px"
+          >
+            {flight.operatingAirline.display}
           </Text>
-        )}
-      </Box>
+        </Box>
+      )}
     </Box>
   );
 };
