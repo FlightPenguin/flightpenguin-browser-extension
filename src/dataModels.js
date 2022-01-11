@@ -93,7 +93,14 @@ function Flight(
   this.duration = duration;
   this.durationMinutes = convertDurationToMinutes(duration);
   this.layovers = layovers || [];
-  this.itinIds = [];
+
+  const layoversDetails = this.layovers.filter((layover) => layover.isLayoverStop);
+  const flightSegments = this.layovers.filter((layover) => !layover.isLayoverStop);
+  this.layoverCount = layoversDetails.length;
+  this.layoverAirports = [...new Set(layoversDetails.map((layover) => layover.from))];
+  this.carriers = [...new Set(flightSegments.map((layover) => layover.operatingAirline.display))];
+
+  this.this.itinIds = [];
   this.timezoneOffset = timezoneOffset;
 
   this.updateLayovers();
