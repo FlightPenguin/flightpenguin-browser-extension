@@ -1,4 +1,4 @@
-import { STORAGE_COORDINATES_KEY_NAME, STORAGE_NEARBY_AIRPORTS_KEY_NAME } from "./constants";
+import { STORAGE_NEARBY_AIRPORTS_KEY_NAME } from "./constants";
 import { getNearbyAirportData } from "./getNearbyAirportData";
 
 const setLocalStorageForAirports = async (position: GeolocationPosition): Promise<void> => {
