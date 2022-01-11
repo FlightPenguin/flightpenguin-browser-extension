@@ -19,7 +19,7 @@ const TimelineTitle = ({ flightType, loading, legendContainerWidth }: TimelineTi
       border="1px solid transparent"
     >
       <Box alignX="left" width={`${legendContainerWidth}px`} flexDirection="row">
-        <Text alignX="left" fontWeight="700" fontSize="500">
+        <Text alignX="left" fontWeight="700" fontSize="clamp(1rem, 2vw, 2rem)">
           {capitalize(flightType)}s
         </Text>
         {loading && (
