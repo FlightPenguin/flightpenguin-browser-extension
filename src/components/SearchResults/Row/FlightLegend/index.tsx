@@ -45,15 +45,21 @@ export const FlightLegend = ({
         paddingLeft="10px"
         whiteSpace="normal"
       >
-        <Text data-name="primary-airline" whiteSpace="normal" width="185px">
+        <Text
+          data-name="primary-airline"
+          whiteSpace="normal"
+          width="185px"
+          textOverflow="ellipsis"
+          display="block"
+          overflow="hidden"
+          maxHeight="80px"
+        >
           {flight.operatingAirline.display}
         </Text>
-        {flight.marketingAirlineText && (
-          <Text data-name="secondary-airline" fontSize="100" fontWeight="200" whiteSpace="normal" maxWidth="185px">
-            {flight.marketingAirlineText}
-          </Text>
-        )}
       </Box>
     </Box>
   );
 };
+
+//UnitedDelta Charlie Echo Something Chicken GoFish Stupid More Text More Fail Keep it Coming Stupid Head
+//UnitedDeltaCharlieEchoSomethingChickenGoFishStupidMoreTextMoreFailKeepitComingStupidHead
