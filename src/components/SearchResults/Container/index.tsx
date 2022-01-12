@@ -1,5 +1,4 @@
 import { Alert, Badge, Box } from "bumbag";
-import { parseISO } from "date-fns";
 import isEqual from "lodash.isequal";
 import uniqBy from "lodash.uniqby";
 import React, { useEffect, useState } from "react";
@@ -7,6 +6,7 @@ import React, { useEffect, useState } from "react";
 import { FlightSearchFormData } from "../../../shared/types/FlightSearchFormData";
 import { ProcessedFlightSearchResult } from "../../../shared/types/ProcessedFlightSearchResult";
 import { ProcessedItinerary } from "../../../shared/types/ProcessedItinerary";
+import { SearchLegMeta } from "../../../shared/types/SearchMeta";
 import { sidePaddingWidth } from "../../constants";
 import { FlightSelection } from "../FlightSelection";
 import TimelineGrid from "../Grid";
@@ -18,8 +18,6 @@ import { getFlightRowComponentsWidth } from "./utilities/getFlightRowComponentsW
 import { getIntervalInfo } from "./utilities/getIntervalInfo";
 import { getSkeletonIntervalInfo } from "./utilities/getSkeletonIntervalInfo";
 import { getSkeletonItinerariesWithFlightDates } from "./utilities/getSkeletonItinerariesWithFlightDates";
-import { isFlightArrivingBeforeTime } from "./utilities/isFlightArrivingBeforeTime";
-import { isFlightDepartingAfterTime } from "./utilities/isFlightDepartingAfterTime";
 
 interface TimelimeContainerProps {
   resultsContainerWidth: number;
@@ -27,6 +25,7 @@ interface TimelimeContainerProps {
   itineraries: { [keyof: string]: ProcessedItinerary };
   flights: ProcessedFlightSearchResult[];
   formData: FlightSearchFormData;
+  meta: SearchLegMeta;
   loading: boolean;
   onSelection: (details: FlightSelection) => void;
   onClear: () => void;
@@ -38,6 +37,7 @@ const TimelineContainer = ({
   flights,
   itineraries,
   formData,
+  meta,
   loading,
   onSelection,
   onClear,
@@ -165,6 +165,7 @@ const TimelineContainer = ({
           sliderDisabled={!!selectedFlightDetails}
           flightCount={displayFlights.length}
           flightTimeContainerWidth={flightTimeContainerWidth}
+          meta={meta}
         />
       </Box>
       <Box data-name={`${flightType.toLowerCase()}-container`} display="flex">
@@ -240,6 +241,7 @@ export default React.memo(TimelineContainer, (previous, next) => {
   return isEqual(
     {
       flights: previous.flights,
+      meta: previous.meta,
       itineraries: previous.itineraries,
       formData: previous.formData,
       flightType: previous.flightType,
@@ -248,6 +250,7 @@ export default React.memo(TimelineContainer, (previous, next) => {
     },
     {
       flights: next.flights,
+      meta: next.meta,
       itineraries: next.itineraries,
       formData: next.formData,
       flightType: next.flightType,
