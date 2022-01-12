@@ -6,17 +6,13 @@ window.Sentry.init({
   release: `${process.env.SENTRY_PROJECT}@${process.env.VERSION}`,
 });
 
-import { updateFlyingButtons } from "./updateFlyingButtons";
+import { getExtensionUrl } from "../shared/utilities/getExtensionUrl";
 
-document.onreadystatechange = () => {
-  if (document.readyState === "complete") {
-    try {
-      updateFlyingButtons();
-    } catch (err) {
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
-      window.Sentry.captureException(err);
-      console.error(err);
-    }
-  }
-};
+try {
+  window.location.href = getExtensionUrl();
+} catch (err) {
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
+  window.Sentry.captureException(err);
+  console.error(err);
+}
