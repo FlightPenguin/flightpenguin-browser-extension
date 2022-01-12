@@ -1,4 +1,4 @@
-import { DropdownMenu, Group, Icon, Tag, Text } from "bumbag";
+import { DropdownMenu, Group, Tag } from "bumbag";
 import capitalize from "lodash.capitalize";
 import * as numberToWords from "number-to-words";
 import React from "react";
