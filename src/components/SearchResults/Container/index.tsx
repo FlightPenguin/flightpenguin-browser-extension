@@ -153,6 +153,8 @@ const TimelineContainer = ({
           flightType={flightType}
           loading={loading}
           legendContainerWidth={legendContainerWidth}
+          flightCount={displayFlights.length}
+          meta={meta}
         />
         <TimelineHeader
           formData={formData}
@@ -165,7 +167,6 @@ const TimelineContainer = ({
           sliderDisabled={!!selectedFlightDetails}
           flightCount={displayFlights.length}
           flightTimeContainerWidth={flightTimeContainerWidth}
-          meta={meta}
         />
       </Box>
       <Box data-name={`${flightType.toLowerCase()}-container`} display="flex">

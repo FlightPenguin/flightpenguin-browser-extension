@@ -10,7 +10,7 @@ import { sendIndexUnload } from "../../shared/events/sendIndexUnload";
 import { FlightSearchFormData } from "../../shared/types/FlightSearchFormData";
 import { ProcessedFlightSearchResult } from "../../shared/types/ProcessedFlightSearchResult";
 import { ProcessedItinerary } from "../../shared/types/ProcessedItinerary";
-import { SearchMeta } from "../../shared/types/SearchMeta";
+import { SearchLegMeta, SearchMeta } from "../../shared/types/SearchMeta";
 import { sendFormDataToBackground } from "../SearchForm/utilities/sendFormDataToBackground";
 import TimelineContainer from "./Container";
 import { FlightSelection } from "./FlightSelection";
@@ -133,7 +133,11 @@ export const SearchResults = ({ formData, resultsContainerWidth }: SearchResults
         itineraries={flights.itineraries}
         flights={flights.departureFlights}
         formData={formData}
-        meta={searchMeta && searchMeta.departures}
+        meta={
+          searchMeta
+            ? searchMeta.departures
+            : ({ layoverCounts: [] as number[], airlines: [] as string[], airports: [] as string[] } as SearchLegMeta)
+        }
         loading={!departureFlightDetails && !departuresComplete}
         resultsContainerWidth={resultsContainerWidth}
         onSelection={(details) => {
@@ -167,7 +171,15 @@ export const SearchResults = ({ formData, resultsContainerWidth }: SearchResults
             itineraries={flights.itineraries}
             flights={flights.returnFlights}
             formData={formData}
-            meta={searchMeta && searchMeta.returns}
+            meta={
+              searchMeta
+                ? searchMeta.returns
+                : ({
+                    layoverCounts: [] as number[],
+                    airlines: [] as string[],
+                    airports: [] as string[],
+                  } as SearchLegMeta)
+            }
             loading={!returnFlightDetails && !returnsComplete}
             resultsContainerWidth={resultsContainerWidth}
             onSelection={(details) => {

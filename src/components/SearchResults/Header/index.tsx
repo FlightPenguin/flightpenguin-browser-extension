@@ -3,7 +3,6 @@ import isEqual from "lodash.isequal";
 import React from "react";
 
 import { FlightSearchFormData } from "../../../shared/types/FlightSearchFormData";
-import { SearchLegMeta } from "../../../shared/types/SearchMeta";
 import TimelineSlider from "../Slider";
 import { TimeCell } from "./TimeCell";
 import { getFlightInfo } from "./utilities/getFlightInfo";
@@ -11,7 +10,6 @@ import { getFontSize } from "./utilities/getFontSize";
 
 interface TimelineHeaderProps {
   formData: FlightSearchFormData;
-  meta: SearchLegMeta;
   flightType: "DEPARTURE" | "RETURN";
   intervals: number[];
   tzOffset: number;
@@ -23,7 +21,6 @@ interface TimelineHeaderProps {
 
 const TimelineHeader = ({
   formData,
-  meta,
   flightType,
   intervals,
   tzOffset,
