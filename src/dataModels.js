@@ -100,7 +100,7 @@ function Flight(
   this.layoverAirports = [...new Set(layoversDetails.map((layover) => layover.from))];
   this.carriers = [...new Set(flightSegments.map((layover) => layover.operatingAirline.display))];
 
-  this.this.itinIds = [];
+  this.itinIds = [];
   this.timezoneOffset = timezoneOffset;
 
   this.updateLayovers();
