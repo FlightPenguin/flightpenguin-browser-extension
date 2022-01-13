@@ -77,7 +77,7 @@ export const AirlineFilterMenu = ({ airlines, onChange }: FilterMenuProps): Reac
         <Tag variant="outlined" fontSize="clamp(.5rem, .6vw, .75rem)">
           {airlineText}
         </Tag>
-        <Tag palette="text" fontSize="clamp(.5rem, .6vw, .75rem)">
+        <Tag palette={valueChanged ? "primary" : "text"} fontSize="clamp(.5rem, .6vw, .75rem)">
           Filter{values.length === 0 && " disabled"}
         </Tag>
       </Group>
