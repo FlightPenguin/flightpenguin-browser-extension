@@ -1,4 +1,4 @@
-import { DropdownMenu, Group, Tag } from "bumbag";
+import { Box, DropdownMenu, Group, Tag } from "bumbag";
 import isEqual from "lodash.isequal";
 import pluralize from "pluralize";
 import React, { useEffect, useState } from "react";
@@ -39,7 +39,32 @@ export const AirlineFilterMenu = ({ airlines, onChange }: FilterMenuProps): Reac
             }}
           >
             {airlines.map((value) => {
-              return <DropdownMenu.OptionItem value={value}>{value}</DropdownMenu.OptionItem>;
+              return (
+                <DropdownMenu.OptionItem value={value}>
+                  <Box display="flex" flexDirection="row" flexWrap="nowrap" justifyContent="space-between" width="100%">
+                    <Box display="flex">{value}</Box>
+                    <Box
+                      color="gray"
+                      display="flex"
+                      paddingLeft="minor-1"
+                      paddingRight="minor-1"
+                      textDecoration="underline"
+                      data-value={value}
+                      onClick={(event: React.MouseEvent) => {
+                        event.preventDefault();
+                        event.stopPropagation();
+
+                        const value = (event.target as HTMLDivElement).dataset.value as string;
+                        setValueChanged(true);
+                        setValues([value]);
+                        onChange([value]);
+                      }}
+                    >
+                      Only
+                    </Box>
+                  </Box>
+                </DropdownMenu.OptionItem>
+              );
             })}
           </DropdownMenu.OptionGroup>
         </React.Fragment>

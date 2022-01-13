@@ -1,4 +1,4 @@
-import { DropdownMenu, Group, Tag, Text } from "bumbag";
+import { Box, DropdownMenu, Group, Tag, Text } from "bumbag";
 import capitalize from "lodash.capitalize";
 import isEqual from "lodash.isequal";
 import * as numberToWords from "number-to-words";
@@ -53,7 +53,30 @@ export const LayoverCountFilterMenu = ({ layoverCounts, onChange }: FilterMenuPr
               const textValue = value === 0 ? "No" : capitalize(numberToWords.toWords(value));
               return (
                 <DropdownMenu.OptionItem value={value.toString()}>
-                  {textValue} {pluralize("stop", value)}
+                  <Box display="flex" flexDirection="row" flexWrap="nowrap" justifyContent="space-between" width="100%">
+                    <Box display="flex">
+                      {textValue} {pluralize("stop", value)}
+                    </Box>
+                    <Box
+                      color="gray"
+                      display="flex"
+                      paddingLeft="minor-1"
+                      paddingRight="minor-1"
+                      textDecoration="underline"
+                      data-value={value.toString()}
+                      onClick={(event: React.MouseEvent) => {
+                        event.preventDefault();
+                        event.stopPropagation();
+
+                        const value = Number((event.target as HTMLDivElement).dataset.value);
+                        setValueChanged(true);
+                        setValues([value]);
+                        onChange([value]);
+                      }}
+                    >
+                      Only
+                    </Box>
+                  </Box>
                 </DropdownMenu.OptionItem>
               );
             })}
@@ -81,7 +104,7 @@ const getLayoverText = (values: number[]): string => {
     return "Layovers";
   } else if (values.length === 1) {
     const value = values[0];
-    return `${value} ${pluralize("Layover", value)}`;
+    return `${value ? value : "No"} ${pluralize("Layover", value)}`;
   } else {
     return `${Math.min(...values)} - ${Math.max(...values)} layovers`;
   }
