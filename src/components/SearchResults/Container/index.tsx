@@ -176,7 +176,12 @@ const TimelineContainer = ({
       <Box data-name={`${flightType.toLowerCase()}-container`} display="flex">
         <Box className="border-flex-box" display="flex" borderLeft="default" width="100%">
           {flights.length ? (
-            !displayFlights.length && (filterDateRange.lowerBound || filterDateRange.upperBound) ? (
+            !displayFlights.length &&
+            (filterDateRange.lowerBound ||
+              filterDateRange.upperBound ||
+              filterStops !== undefined ||
+              filterCarriers !== undefined ||
+              filterLayoverCities !== undefined) ? (
               <Box width="100%" display="flex" justifyContent="center">
                 <Alert title="No flights found" type="warning">
                   We were unable to find any flights that match your search criteria.{" "}
