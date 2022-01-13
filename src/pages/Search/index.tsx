@@ -137,6 +137,9 @@ export const SearchPage = (): React.ReactElement => {
               });
             }}
             containerWidth={formContainerWidth}
+            onAuthError={() => {
+              setIsLoggedIn(false);
+            }}
           />
         )}
         <Box display="flex" flexDirection="column" width="100%" id="results-wrapper" ref={resultsWrapperRef}>

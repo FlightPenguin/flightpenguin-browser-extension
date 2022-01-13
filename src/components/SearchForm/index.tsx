@@ -117,12 +117,14 @@ const defaultInitialValues: FormState = {
 interface SearchFormProps {
   containerWidth: number;
   onSubmit: (values: FlightSearchFormData) => void;
+  onAuthError: () => void;
   initialValues?: FormState;
 }
 
 export const SearchForm = ({
   containerWidth,
   onSubmit,
+  onAuthError,
   initialValues = defaultInitialValues,
 }: SearchFormProps): React.ReactElement => {
   const nearestAirport = getNearestRelevantAirport();
@@ -148,7 +150,7 @@ export const SearchForm = ({
   const getAirports = useCallback(
     async ({ page, searchText }) => {
       setAirportSearchText(searchText);
-      return getAirportData({ page: page - 1, search: searchText.trim() });
+      return getAirportData({ page: page - 1, search: searchText.trim(), onAuthError });
     },
     [setAirportSearchText],
   );
@@ -200,6 +202,9 @@ export const SearchForm = ({
                       disableClear
                       disabled={formik.isSubmitting}
                       emptyText={airportSearchText.length ? "No results found." : "Type to start searching."}
+                      errorText={
+                        "An error occurred.  Please try again after a short wait.  If this error persists, contact support@flightpenguin.com."
+                      }
                       hasFieldWrapper={true}
                       hasSearch
                       label={
@@ -258,6 +263,9 @@ export const SearchForm = ({
                       disableClear
                       disabled={formik.isSubmitting}
                       emptyText={airportSearchText.length ? "No results found." : "Type to start searching."}
+                      errorText={
+                        "An error occurred.  Please try again after a short wait.  If this error persists, contact support@flightpenguin.com."
+                      }
                       hasFieldWrapper={true}
                       hasSearch
                       label={
