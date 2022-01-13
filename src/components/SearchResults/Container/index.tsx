@@ -1,5 +1,4 @@
 import { Alert, Badge, Box } from "bumbag";
-import { parseISO } from "date-fns";
 import isEqual from "lodash.isequal";
 import uniqBy from "lodash.uniqby";
 import React, { useEffect, useState } from "react";
@@ -7,18 +6,19 @@ import React, { useEffect, useState } from "react";
 import { FlightSearchFormData } from "../../../shared/types/FlightSearchFormData";
 import { ProcessedFlightSearchResult } from "../../../shared/types/ProcessedFlightSearchResult";
 import { ProcessedItinerary } from "../../../shared/types/ProcessedItinerary";
-import { sidePaddingWidth } from "../../constants";
+import { SearchLegMeta } from "../../../shared/types/SearchMeta";
+import { FlightSortDimension, sidePaddingWidth } from "../../constants";
 import { FlightSelection } from "../FlightSelection";
 import TimelineGrid from "../Grid";
 import TimelineHeader from "../Header";
 import TimelineTitle from "../Title";
 import _skeletonItineraries from "./skeletonItineraries.json";
+import { getFilteredFlights } from "./utilities/getFilteredFlights";
 import { getFlightRowComponentsWidth } from "./utilities/getFlightRowComponentsWidth";
 import { getIntervalInfo } from "./utilities/getIntervalInfo";
 import { getSkeletonIntervalInfo } from "./utilities/getSkeletonIntervalInfo";
 import { getSkeletonItinerariesWithFlightDates } from "./utilities/getSkeletonItinerariesWithFlightDates";
-import { isFlightArrivingBeforeTime } from "./utilities/isFlightArrivingBeforeTime";
-import { isFlightDepartingAfterTime } from "./utilities/isFlightDepartingAfterTime";
+import { getSortedFlights } from "./utilities/getSortedFlights";
 
 interface TimelimeContainerProps {
   resultsContainerWidth: number;
@@ -26,6 +26,7 @@ interface TimelimeContainerProps {
   itineraries: { [keyof: string]: ProcessedItinerary };
   flights: ProcessedFlightSearchResult[];
   formData: FlightSearchFormData;
+  meta: SearchLegMeta;
   loading: boolean;
   onSelection: (details: FlightSelection) => void;
   onClear: () => void;
@@ -37,6 +38,7 @@ const TimelineContainer = ({
   flights,
   itineraries,
   formData,
+  meta,
   loading,
   onSelection,
   onClear,
@@ -52,6 +54,11 @@ const TimelineContainer = ({
     lowerBound: null,
     upperBound: null,
   });
+  const [filterStops, setFilterStops] = useState<number[] | undefined>(undefined);
+  const [filterCarriers, setFilterCarriers] = useState<string[] | undefined>(undefined);
+  const [filterLayoverCities, setFilterLayoverCities] = useState<string[] | undefined>(undefined);
+  const [sortDimension, setSortDimension] = useState<FlightSortDimension>("pain");
+
   const [selectedFlightDetails, setSelectedFlightDetails] = useState<FlightSelection | null>(null);
   const [displayFlights, setDisplayFlights] = useState<ProcessedFlightSearchResult[]>([]);
   const [intervalInfo, setIntervalInfo] = useState<{
@@ -87,31 +94,28 @@ const TimelineContainer = ({
     if (selectedFlightDetails) {
       return;
     }
-    // filter
-    const filteredFlights = flights.filter((flight) => {
-      // These coercions are necessary due to object passing from thread to thread...
-      if (!(flight.fromDateTime instanceof Date)) {
-        flight.fromDateTime = parseISO(flight.fromDateTime);
-      }
-      if (!(flight.toDateTime instanceof Date)) {
-        flight.toDateTime = parseISO(flight.toDateTime);
-      }
-      if (!(flight.toLocalDateTime instanceof Date)) {
-        flight.toLocalDateTime = parseISO(flight.toLocalDateTime);
-      }
 
-      return (
-        isFlightArrivingBeforeTime({ flight, datetime: filterDateRange.upperBound }) &&
-        isFlightDepartingAfterTime({ flight, datetime: filterDateRange.lowerBound })
-      );
+    const filteredFlights = getFilteredFlights({
+      flightSearchResults: flights,
+      filterProperties: {
+        dateRange: filterDateRange,
+        layoverCount: filterStops,
+        carriers: filterCarriers,
+        layoverCities: filterLayoverCities,
+      },
     });
 
-    // sort / unique
-    const sortedFlights = uniqBy(filteredFlights, "id").sort((a, b) => {
-      return a.pain - b.pain;
-    });
+    const sortedFlights = getSortedFlights({ flights: filteredFlights, itineraries, dimension: sortDimension });
     setDisplayFlights(sortedFlights);
-  }, [flights, selectedFlightDetails, filterDateRange]);
+  }, [
+    flights,
+    selectedFlightDetails,
+    filterDateRange,
+    filterStops,
+    filterCarriers,
+    filterLayoverCities,
+    sortDimension,
+  ]);
 
   useEffect(() => {
     if (
@@ -156,6 +160,13 @@ const TimelineContainer = ({
           flightType={flightType}
           loading={loading}
           legendContainerWidth={legendContainerWidth}
+          flightCount={uniqBy(flights, "id").length}
+          filteredFlightCount={displayFlights.length}
+          onLayoverCountFilterChange={(values: number[]) => setFilterStops(values)}
+          onAirlinesFilterChange={(values: string[]) => setFilterCarriers(values)}
+          onSortDimensionChange={(value) => setSortDimension(value)}
+          meta={meta}
+          flightSelected={!!selectedFlightDetails}
         />
         <TimelineHeader
           formData={formData}
@@ -173,7 +184,12 @@ const TimelineContainer = ({
       <Box data-name={`${flightType.toLowerCase()}-container`} display="flex">
         <Box className="border-flex-box" display="flex" borderLeft="default" width="100%">
           {flights.length ? (
-            !displayFlights.length && (filterDateRange.lowerBound || filterDateRange.upperBound) ? (
+            !displayFlights.length &&
+            (filterDateRange.lowerBound ||
+              filterDateRange.upperBound ||
+              filterStops !== undefined ||
+              filterCarriers !== undefined ||
+              filterLayoverCities !== undefined) ? (
               <Box width="100%" display="flex" justifyContent="center">
                 <Alert title="No flights found" type="warning">
                   We were unable to find any flights that match your search criteria.{" "}
@@ -243,6 +259,7 @@ export default React.memo(TimelineContainer, (previous, next) => {
   return isEqual(
     {
       flights: previous.flights,
+      meta: previous.meta,
       itineraries: previous.itineraries,
       formData: previous.formData,
       flightType: previous.flightType,
@@ -251,6 +268,7 @@ export default React.memo(TimelineContainer, (previous, next) => {
     },
     {
       flights: next.flights,
+      meta: next.meta,
       itineraries: next.itineraries,
       formData: next.formData,
       flightType: next.flightType,

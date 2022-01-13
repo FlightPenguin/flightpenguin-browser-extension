@@ -4,6 +4,7 @@ import { pause } from "../shared/pause";
 import { FlightSearchFormData } from "../shared/types/FlightSearchFormData";
 import { Itinerary } from "../shared/types/Itinerary";
 import { MessageResponse } from "../shared/types/MessageResponse";
+import { ProcessedFlightSearchResult } from "../shared/types/ProcessedFlightSearchResult";
 import { WindowConfig } from "../shared/types/WindowConfig";
 import { getUrl as getSkyscannerUrl } from "../skyscanner/mappings/getUrl";
 import { getUrl as getSouthwestUrl } from "../southwest/mappings/getUrl";
@@ -491,5 +492,42 @@ export class ProviderManager {
         }
       }
     });
+  }
+
+  getAirlines(flightType: FlightType): string[] {
+    const flights = Object.values(flightType === "DEPARTURE" ? this.departures : this.returns);
+    return [
+      ...new Set(
+        flights
+          .map((flight: ProcessedFlightSearchResult) => {
+            return flight.carriers;
+          })
+          .flat(),
+      ),
+    ].sort() as string[];
+  }
+
+  getLayoverAirports(flightType: FlightType): string[] {
+    const flights = Object.values(flightType === "DEPARTURE" ? this.departures : this.returns);
+    return [
+      ...new Set(
+        flights
+          .map((flight: ProcessedFlightSearchResult) => {
+            return flight.layoverAirports;
+          })
+          .flat(),
+      ),
+    ].sort() as string[];
+  }
+
+  getLayoverCounts(flightType: FlightType): number[] {
+    const flights = Object.values(flightType === "DEPARTURE" ? this.departures : this.returns);
+    return [
+      ...new Set(
+        flights.map((flight: ProcessedFlightSearchResult) => {
+          return flight.layoverCount;
+        }),
+      ),
+    ].sort() as number[];
   }
 }
