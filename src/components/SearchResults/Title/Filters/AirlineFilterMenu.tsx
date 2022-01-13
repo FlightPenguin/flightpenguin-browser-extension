@@ -46,7 +46,7 @@ export const AirlineFilterMenu = ({ airlines, onChange }: FilterMenuProps): Reac
       }
       paddingTop="minor-1"
       tabIndex={0}
-      zIndex={2}
+      zIndex={3}
     >
       <Group>
         <Tag variant="outlined" fontSize="clamp(.5rem, .6vw, .75rem)">

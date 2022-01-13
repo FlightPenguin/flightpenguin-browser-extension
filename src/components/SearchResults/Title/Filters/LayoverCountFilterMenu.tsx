@@ -1,4 +1,4 @@
-import { DropdownMenu, Group, Tag } from "bumbag";
+import { DropdownMenu, Group, Tag, Text } from "bumbag";
 import capitalize from "lodash.capitalize";
 import isEqual from "lodash.isequal";
 import * as numberToWords from "number-to-words";
@@ -62,7 +62,7 @@ export const LayoverCountFilterMenu = ({ layoverCounts, onChange }: FilterMenuPr
       }
       paddingTop="minor-1"
       tabIndex={0}
-      zIndex={2}
+      zIndex={4}
     >
       <Group>
         <Tag variant="outlined" fontSize="clamp(.5rem, .6vw, .75rem)">
