@@ -70,7 +70,6 @@ export const AirlineFilterMenu = ({ airlines, onChange }: FilterMenuProps): Reac
         </React.Fragment>
       }
       paddingTop="minor-1"
-      tabIndex={0}
       zIndex={3}
     >
       <Group>

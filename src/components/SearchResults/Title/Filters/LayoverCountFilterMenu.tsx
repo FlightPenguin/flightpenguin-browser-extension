@@ -84,7 +84,6 @@ export const LayoverCountFilterMenu = ({ layoverCounts, onChange }: FilterMenuPr
         </React.Fragment>
       }
       paddingTop="minor-1"
-      tabIndex={0}
       zIndex={4}
     >
       <Group>
