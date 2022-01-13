@@ -504,7 +504,7 @@ export class ProviderManager {
           })
           .flat(),
       ),
-    ] as string[];
+    ].sort() as string[];
   }
 
   getLayoverAirports(flightType: FlightType): string[] {
@@ -517,7 +517,7 @@ export class ProviderManager {
           })
           .flat(),
       ),
-    ] as string[];
+    ].sort() as string[];
   }
 
   getLayoverCounts(flightType: FlightType): number[] {
@@ -528,6 +528,6 @@ export class ProviderManager {
           return flight.layoverCount;
         }),
       ),
-    ] as number[];
+    ].sort() as number[];
   }
 }

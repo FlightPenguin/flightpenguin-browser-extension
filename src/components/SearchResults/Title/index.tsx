@@ -14,6 +14,10 @@ interface TimelineTitleProps {
   legendContainerWidth: number;
   meta: SearchLegMeta;
   flightCount: number;
+  filteredFlightCount: number;
+  onLayoverCountFilterChange: (values: number[]) => void;
+  onAirlinesFilterChange: (values: string[]) => void;
+  flightSelected: boolean;
 }
 
 const TimelineTitle = ({
@@ -22,8 +26,12 @@ const TimelineTitle = ({
   legendContainerWidth,
   meta,
   flightCount,
+  filteredFlightCount,
+  onLayoverCountFilterChange,
+  onAirlinesFilterChange,
+  flightSelected,
 }: TimelineTitleProps): React.ReactElement => {
-  const flightCountText = getFlightCountText({ loading, flightCount });
+  const flightCountText = getFlightCountText({ loading, flightCount, filteredFlightCount });
 
   return (
     <Box
@@ -34,21 +42,25 @@ const TimelineTitle = ({
     >
       <Box width={`${legendContainerWidth}px`}>
         <Text alignX="left" fontWeight="700" fontSize="clamp(1rem, 1.5vw, 1.5rem)">
-          {/*TODO: Make a sorting hat!*/}
           {capitalize(flightType)}s
         </Text>
-        <Box display="flex" flexDirection="row" alignItems="start">
-          <Text fontSize="clamp(.375rem, .6vw, .75rem)">{flightCountText}</Text>
-        </Box>
-        {!!meta?.layoverCounts.length && meta.layoverCounts.length > 1 && (
-          <Box display="flex">
-            <LayoverCountFilterMenu layoverCounts={meta.layoverCounts} />
-          </Box>
-        )}
-        {!!meta?.airlines.length && meta.airlines.length > 1 && (
-          <Box display="flex">
-            <AirlineFilterMenu airlines={meta.airlines} />
-          </Box>
+        {!flightSelected && (
+          <React.Fragment>
+            <Box display="flex" flexDirection="row" alignItems="start">
+              {/*TODO: Make a sorting hat!*/}
+              <Text fontSize="clamp(.375rem, .6vw, .75rem)">{flightCountText}</Text>
+            </Box>
+            {!!meta?.layoverCounts.length && meta.layoverCounts.length > 1 && (
+              <Box display="flex">
+                <LayoverCountFilterMenu layoverCounts={meta.layoverCounts} onChange={onLayoverCountFilterChange} />
+              </Box>
+            )}
+            {!!meta?.airlines.length && meta.airlines.length > 1 && (
+              <Box display="flex">
+                <AirlineFilterMenu airlines={meta.airlines} onChange={onAirlinesFilterChange} />
+              </Box>
+            )}
+          </React.Fragment>
         )}
       </Box>
     </Box>

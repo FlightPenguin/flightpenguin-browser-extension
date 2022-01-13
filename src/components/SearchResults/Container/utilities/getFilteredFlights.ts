@@ -11,7 +11,7 @@ interface GetFilteredFlightsInput {
   flightSearchResults: ProcessedFlightSearchResult[];
   filterProperties: {
     dateRange: { lowerBound: Date | null; upperBound: Date | null };
-    maxStopNumber: number | undefined;
+    layoverCount: number[] | undefined;
     carriers: string[] | undefined;
     layoverCities: string[] | undefined;
   };
@@ -36,7 +36,7 @@ export const getFilteredFlights = ({
     return (
       isFlightArrivingBeforeTime({ flight, datetime: filterProperties.dateRange.upperBound }) &&
       isFlightDepartingAfterTime({ flight, datetime: filterProperties.dateRange.lowerBound }) &&
-      isLayoverCountInRange({ flight, maxLayoverCount: filterProperties.maxStopNumber }) &&
+      isLayoverCountInRange({ flight, layoverCount: filterProperties.layoverCount }) &&
       isFlightThroughCity({ flight, cities: filterProperties.layoverCities }) &&
       isFlightOperatedByCarriers({ flight, carriers: filterProperties.carriers })
     );

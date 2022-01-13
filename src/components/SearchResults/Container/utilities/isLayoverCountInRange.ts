@@ -1,13 +1,13 @@
 import { ProcessedFlightSearchResult } from "../../../../shared/types/ProcessedFlightSearchResult";
 
-interface IsFlightThroughCityProps {
+interface IsLayoverCountInRangeProps {
   flight: ProcessedFlightSearchResult;
-  maxLayoverCount: number | undefined;
+  layoverCount: number[] | undefined;
 }
 
-export const isLayoverCountInRange = ({ flight, maxLayoverCount }: IsFlightThroughCityProps): boolean => {
-  if (maxLayoverCount !== undefined) {
-    return flight.layoverCount <= maxLayoverCount;
+export const isLayoverCountInRange = ({ flight, layoverCount }: IsLayoverCountInRangeProps): boolean => {
+  if (layoverCount && layoverCount.length >= 1) {
+    return layoverCount.includes(flight.layoverCount);
   }
   return true;
 };

@@ -53,7 +53,7 @@ const TimelineContainer = ({
     lowerBound: null,
     upperBound: null,
   });
-  const [filterMaxStopNumber, setFilterMaxStopNumber] = useState<number | undefined>(undefined);
+  const [filterStops, setFilterStops] = useState<number[] | undefined>(undefined);
   const [filterCarriers, setFilterCarriers] = useState<string[] | undefined>(undefined);
   const [filterLayoverCities, setFilterLayoverCities] = useState<string[] | undefined>(undefined);
 
@@ -97,7 +97,7 @@ const TimelineContainer = ({
       flightSearchResults: flights,
       filterProperties: {
         dateRange: filterDateRange,
-        maxStopNumber: filterMaxStopNumber,
+        layoverCount: filterStops,
         carriers: filterCarriers,
         layoverCities: filterLayoverCities,
       },
@@ -108,7 +108,7 @@ const TimelineContainer = ({
       return a.pain - b.pain;
     });
     setDisplayFlights(sortedFlights);
-  }, [flights, selectedFlightDetails, filterDateRange]);
+  }, [flights, selectedFlightDetails, filterDateRange, filterStops, filterCarriers, filterLayoverCities]);
 
   useEffect(() => {
     if (
@@ -153,8 +153,12 @@ const TimelineContainer = ({
           flightType={flightType}
           loading={loading}
           legendContainerWidth={legendContainerWidth}
-          flightCount={displayFlights.length}
+          flightCount={flights.length}
+          filteredFlightCount={displayFlights.length}
+          onLayoverCountFilterChange={(values: number[]) => setFilterStops(values)}
+          onAirlinesFilterChange={(values: string[]) => setFilterCarriers(values)}
           meta={meta}
+          flightSelected={!!selectedFlightDetails}
         />
         <TimelineHeader
           formData={formData}
