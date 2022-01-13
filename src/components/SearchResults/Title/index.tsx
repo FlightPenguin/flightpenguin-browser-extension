@@ -4,9 +4,10 @@ import isEqual from "lodash.isequal";
 import React from "react";
 
 import { SearchLegMeta } from "../../../shared/types/SearchMeta";
+import { FlightSortDimension } from "../../constants";
 import { AirlineFilterMenu } from "./Filters/AirlineFilterMenu";
 import { LayoverCountFilterMenu } from "./Filters/LayoverCountFilterMenu";
-import { getFlightCountText } from "./utilities/getFlightCountText";
+import { SortFlightsMenu } from "./Sorts/SortFlightsMenu";
 
 interface TimelineTitleProps {
   flightType: "DEPARTURE" | "RETURN";
@@ -17,6 +18,7 @@ interface TimelineTitleProps {
   filteredFlightCount: number;
   onLayoverCountFilterChange: (values: number[]) => void;
   onAirlinesFilterChange: (values: string[]) => void;
+  onSortDimensionChange: (value: FlightSortDimension) => void;
   flightSelected: boolean;
 }
 
@@ -29,10 +31,9 @@ const TimelineTitle = ({
   filteredFlightCount,
   onLayoverCountFilterChange,
   onAirlinesFilterChange,
+  onSortDimensionChange,
   flightSelected,
 }: TimelineTitleProps): React.ReactElement => {
-  const flightCountText = getFlightCountText({ loading, flightCount, filteredFlightCount });
-
   return (
     <Box
       className={`${flightType.toLowerCase()}-header-title`}
@@ -46,9 +47,13 @@ const TimelineTitle = ({
         </Text>
         {!flightSelected && (
           <React.Fragment>
-            <Box display="flex" flexDirection="row" alignItems="start">
-              {/*TODO: Make a sorting hat!*/}
-              <Text fontSize="clamp(.375rem, .6vw, .75rem)">{flightCountText}</Text>
+            <Box display="flex">
+              <SortFlightsMenu
+                loading={loading}
+                flightCount={flightCount}
+                filteredFlightCount={filteredFlightCount}
+                onChange={onSortDimensionChange}
+              />
             </Box>
             {!!meta?.layoverCounts.length && meta.layoverCounts.length > 1 && (
               <Box display="flex">

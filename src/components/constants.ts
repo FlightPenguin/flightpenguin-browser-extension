@@ -9,3 +9,13 @@ export const PointsMap = {
 };
 export type CardType = "CHASE-SAPPHIRE-RESERVE" | "CHASE-SAPPHIRE-PREFERRED";
 export type PaymentType = "CASH" | "CHASE-SAPPHIRE-RESERVE" | "CHASE-SAPPHIRE-PREFERRED";
+export type FlightSortDimension = "pain" | "fare" | "duration" | "dta" | "dtd" | "ata" | "atd";
+export const FlightSortDimensionDisplayMap = {
+  pain: "Pain",
+  fare: "Price",
+  duration: "Duration",
+  dta: "Dep. Time ↑",
+  dtd: "Dep. Time ↓",
+  ata: "Arr. Time ↑",
+  atd: "Arr. Time ↓",
+};

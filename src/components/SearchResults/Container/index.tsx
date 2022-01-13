@@ -7,7 +7,7 @@ import { FlightSearchFormData } from "../../../shared/types/FlightSearchFormData
 import { ProcessedFlightSearchResult } from "../../../shared/types/ProcessedFlightSearchResult";
 import { ProcessedItinerary } from "../../../shared/types/ProcessedItinerary";
 import { SearchLegMeta } from "../../../shared/types/SearchMeta";
-import { sidePaddingWidth } from "../../constants";
+import { FlightSortDimension, sidePaddingWidth } from "../../constants";
 import { FlightSelection } from "../FlightSelection";
 import TimelineGrid from "../Grid";
 import TimelineHeader from "../Header";
@@ -18,6 +18,7 @@ import { getFlightRowComponentsWidth } from "./utilities/getFlightRowComponentsW
 import { getIntervalInfo } from "./utilities/getIntervalInfo";
 import { getSkeletonIntervalInfo } from "./utilities/getSkeletonIntervalInfo";
 import { getSkeletonItinerariesWithFlightDates } from "./utilities/getSkeletonItinerariesWithFlightDates";
+import { getSortedFlights } from "./utilities/getSortedFlights";
 
 interface TimelimeContainerProps {
   resultsContainerWidth: number;
@@ -56,6 +57,7 @@ const TimelineContainer = ({
   const [filterStops, setFilterStops] = useState<number[] | undefined>(undefined);
   const [filterCarriers, setFilterCarriers] = useState<string[] | undefined>(undefined);
   const [filterLayoverCities, setFilterLayoverCities] = useState<string[] | undefined>(undefined);
+  const [sortDimension, setSortDimension] = useState<FlightSortDimension>("pain");
 
   const [selectedFlightDetails, setSelectedFlightDetails] = useState<FlightSelection | null>(null);
   const [displayFlights, setDisplayFlights] = useState<ProcessedFlightSearchResult[]>([]);
@@ -103,12 +105,17 @@ const TimelineContainer = ({
       },
     });
 
-    // sort / unique
-    const sortedFlights = uniqBy(filteredFlights, "id").sort((a, b) => {
-      return a.pain - b.pain;
-    });
+    const sortedFlights = getSortedFlights({ flights: filteredFlights, itineraries, dimension: sortDimension });
     setDisplayFlights(sortedFlights);
-  }, [flights, selectedFlightDetails, filterDateRange, filterStops, filterCarriers, filterLayoverCities]);
+  }, [
+    flights,
+    selectedFlightDetails,
+    filterDateRange,
+    filterStops,
+    filterCarriers,
+    filterLayoverCities,
+    sortDimension,
+  ]);
 
   useEffect(() => {
     if (
@@ -153,10 +160,11 @@ const TimelineContainer = ({
           flightType={flightType}
           loading={loading}
           legendContainerWidth={legendContainerWidth}
-          flightCount={flights.length}
+          flightCount={uniqBy(flights, "id").length}
           filteredFlightCount={displayFlights.length}
           onLayoverCountFilterChange={(values: number[]) => setFilterStops(values)}
           onAirlinesFilterChange={(values: string[]) => setFilterCarriers(values)}
+          onSortDimensionChange={(value) => setSortDimension(value)}
           meta={meta}
           flightSelected={!!selectedFlightDetails}
         />
