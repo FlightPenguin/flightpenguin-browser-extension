@@ -112,7 +112,7 @@ remove_source_maps() {
   rm -f ./dist/*.map
   exitcode=$?
   if [ $exitcode -ne 0 ]; then
-    echo "ERROR: Failed to package ${PACKAGE_NAME}"
+    echo "ERROR: Failed to clean up source maps ${PACKAGE_NAME}"
     exit 42
   fi
   popd || exit 41
