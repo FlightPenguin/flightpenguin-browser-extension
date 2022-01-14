@@ -67,6 +67,18 @@ export const getAirportData = async ({
   } catch (e) {
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
+    window.Sentry.captureBreadcrumb({
+      message: "Catastrophic failed airport search",
+      category: "form",
+      data: {
+        searchText: search,
+        page: page,
+        error: e,
+      },
+    });
+
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     window.Sentry.captureException(e);
     throw e;
   }
