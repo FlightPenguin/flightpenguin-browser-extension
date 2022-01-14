@@ -157,7 +157,7 @@ export const SearchForm = ({
 
   return (
     <Box className="search-form-wrapper" alignX="center">
-      <Card minWidth="360px" maxWidth={`${containerWidth}px`} width="90%">
+      <Card minWidth="360px" maxWidth={`${containerWidth}px`} width="100%">
         <Formik
           initialValues={initialValues}
           validateOnBlur={true}
@@ -185,7 +185,12 @@ export const SearchForm = ({
           {(formik) => {
             return (
               <Form>
-                <FieldStack orientation="horizontal" className="airport-stack" paddingTop="major-3">
+                <FieldStack
+                  orientation="horizontal"
+                  verticalBelow="tablet"
+                  className="airport-stack"
+                  paddingTop="major-3"
+                >
                   <FieldWrapper
                     cursor="default"
                     state={getFieldState(formik, "from")}
@@ -310,7 +315,12 @@ export const SearchForm = ({
                   </FieldWrapper>
                 </FieldStack>
 
-                <FieldStack orientation="horizontal" className="trip-type-stack" paddingTop="major-3">
+                <FieldStack
+                  orientation="horizontal"
+                  verticalBelow="tablet"
+                  className="trip-type-stack"
+                  paddingTop="major-3"
+                >
                   <FieldWrapper
                     state={getFieldState(formik, "roundtrip")}
                     validationText={getValidationText(formik, "roundtrip")}
@@ -329,7 +339,7 @@ export const SearchForm = ({
                   </FieldWrapper>
                 </FieldStack>
 
-                <FieldStack orientation="horizontal" className="date-stack" paddingTop="major-3">
+                <FieldStack orientation="horizontal" verticalBelow="tablet" className="date-stack" paddingTop="major-3">
                   <FieldWrapper
                     state={getFieldState(formik, "fromDate")}
                     validationText={getValidationText(formik, "fromDate")}
@@ -451,7 +461,12 @@ export const SearchForm = ({
                   )}
                 </FieldStack>
 
-                <FieldStack orientation="horizontal" className="cabin-stack" paddingTop="major-3">
+                <FieldStack
+                  orientation="horizontal"
+                  verticalBelow="tablet"
+                  className="cabin-stack"
+                  paddingTop="major-3"
+                >
                   <FieldWrapper
                     state={getFieldState(formik, "numPax")}
                     validationText={getValidationText(formik, "numPax")}
@@ -510,7 +525,12 @@ export const SearchForm = ({
                   </FieldWrapper>
                 </FieldStack>
 
-                <FieldStack orientation="horizontal" className="payment-stack" paddingTop="major-3">
+                <FieldStack
+                  orientation="horizontal"
+                  verticalBelow="tablet"
+                  className="payment-stack"
+                  paddingTop="major-3"
+                >
                   <FieldWrapper
                     state={getFieldState(formik, "searchByPoints")}
                     validationText={getValidationText(formik, "searchByPoints")}
@@ -527,6 +547,7 @@ export const SearchForm = ({
                         { value: "true", label: "Points" },
                       ]}
                       orientation="horizontal"
+                      verticalBelow="tablet"
                       autoComplete="off"
                       hasFieldWrapper={true}
                       onChange={formik.handleChange}

@@ -3,6 +3,7 @@ import React, { useCallback, useEffect, useRef, useState } from "react";
 
 import { getAuthToken } from "../../auth/getAuthToken";
 import { AnalyticsManager } from "../../background/AnalyticsManager";
+import { MarketingFooter } from "../../components/MarketingFooter";
 import { LoginModal, WelcomeModal } from "../../components/Modals";
 import NavigationBar from "../../components/NavigationBar";
 import { SearchForm } from "../../components/SearchForm";
@@ -115,32 +116,35 @@ export const SearchPage = (): React.ReactElement => {
           />
         )}
         {showForm && formContainerWidth && (
-          <SearchForm
-            initialValues={
-              formData && {
-                ...formData,
-                from: { value: formData.from, label: formData.from },
-                to: { value: formData.to, label: formData.to },
-                cabin: formData?.cabin || "econ",
-                fromDate: getStandardizedFormatDate(formData.fromDate),
-                toDate: getStandardizedFormatDate(formData.toDate),
-                searchByPoints: formData.searchByPoints.toString(),
+          <React.Fragment>
+            <SearchForm
+              initialValues={
+                formData && {
+                  ...formData,
+                  from: { value: formData.from, label: formData.from },
+                  to: { value: formData.to, label: formData.to },
+                  cabin: formData?.cabin || "econ",
+                  fromDate: getStandardizedFormatDate(formData.fromDate),
+                  toDate: getStandardizedFormatDate(formData.toDate),
+                  searchByPoints: formData.searchByPoints.toString(),
+                }
               }
-            }
-            onSubmit={(values) => {
-              setFormData(values);
-              setShowForm(false);
-              analytics.track({
-                category: "flight search",
-                action: "search",
-                label: window.location.host,
-              });
-            }}
-            containerWidth={formContainerWidth}
-            onAuthError={() => {
-              setIsLoggedIn(false);
-            }}
-          />
+              onSubmit={(values) => {
+                setFormData(values);
+                setShowForm(false);
+                analytics.track({
+                  category: "flight search",
+                  action: "search",
+                  label: window.location.host,
+                });
+              }}
+              containerWidth={formContainerWidth}
+              onAuthError={() => {
+                setIsLoggedIn(false);
+              }}
+            />
+            <MarketingFooter />
+          </React.Fragment>
         )}
         <Box display="flex" flexDirection="column" width="100%" id="results-wrapper" ref={resultsWrapperRef}>
           {!showForm && !!formData && resultsContainerWidth && (
