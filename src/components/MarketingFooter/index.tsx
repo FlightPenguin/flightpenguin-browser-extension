@@ -17,7 +17,7 @@ export const MarketingFooter = (): React.ReactElement => {
             <ContentTile
               title="Visualize flights"
               body="Our time-bar layout makes it easy to see flight takeoff, landing, and layover times.  You can compare apples to apples, instead of looking at virtual airline tickets designed to confuse you."
-              image={{ path: "woof", altText: "dog" }}
+              image={{ path: "/images/TimelineView.png", altText: "Example of timeline view" }}
             />
             <ContentTile
               title="Find better flights"
@@ -27,7 +27,7 @@ export const MarketingFooter = (): React.ReactElement => {
             <ContentTile
               title="One search"
               body="Our extension searches across many airlines, allowing us to show you all the results.  No need to go to each airline's site."
-              image={{ path: "woof", altText: "dog" }}
+              image={{ path: "/images/AirlinesView.png", altText: "Example of searched airlines" }}
             />
           </Stack>
         </Box>
