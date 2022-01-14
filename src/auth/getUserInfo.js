@@ -1,3 +1,5 @@
+import { HttpError } from "shared/errors";
+
 export function getUserInfo(accessToken) {
   return fetch("https://www.googleapis.com/oauth2/v1/userinfo?alt=json", {
     method: "GET",
@@ -8,7 +10,7 @@ export function getUserInfo(accessToken) {
     if (response.status === 200) {
       return response.json();
     } else {
-      throw new Error(response.status);
+      throw new HttpError(`Unable to retrieve google user info`, response.status, response.statusText);
     }
   });
 }

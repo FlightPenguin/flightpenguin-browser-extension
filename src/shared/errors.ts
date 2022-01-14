@@ -30,3 +30,17 @@ export class MissingElementLookupError extends ParserError {
     super(message);
   }
 }
+
+export class HttpError extends Error {
+  public statusCode: string;
+  public statusMessage: string;
+
+  constructor(message: string, statusCode: string | number, statusMessage: string) {
+    super();
+    this.message = message;
+    this.stack = new Error().stack;
+    this.name = this.constructor.name;
+    this.statusCode = `${statusCode}`;
+    this.statusMessage = statusMessage;
+  }
+}
