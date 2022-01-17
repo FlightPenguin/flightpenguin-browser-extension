@@ -82,8 +82,7 @@ push_to_sentry() {
     exit 63
    fi
 
-  ${ROOT_DIR}/node_modules/@sentry/cli/bin/sentry-cli releases files ${VERSION} upload-sourcemaps ${PACKAGE_NAME} --url-prefix "chrome-extension://nofndgfpjopdpbcejgdpikmpdehlekac/"
-
+  ${ROOT_DIR}/node_modules/@sentry/cli/bin/sentry-cli releases set-commits ${VERSION}  --auto
   exitcode=$?
   if [ $exitcode -ne 0 ]; then
     echo "ERROR: Failed to package ${PACKAGE_NAME}"
@@ -105,17 +104,6 @@ load_envkey() {
     echo "ERROR: Failed to execute envkey-source"
     exit 71
   fi
-}
-
-remove_source_maps() {
-  pushd ${TARGET_DIR} || exit 40
-  rm -f ./dist/*.map
-  exitcode=$?
-  if [ $exitcode -ne 0 ]; then
-    echo "ERROR: Failed to clean up source maps ${PACKAGE_NAME}"
-    exit 42
-  fi
-  popd || exit 41
 }
 
 version_check () {
@@ -167,7 +155,6 @@ copy_directory "./src/css" "${TARGET_DIR}/src"
 copy_directory "./src/icons" "${TARGET_DIR}/src"
 
 push_to_sentry
-remove_source_maps
 package
 
 echo "Completed packaging ${PACKAGE_NAME}.zip"
