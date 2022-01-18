@@ -98,7 +98,7 @@ push_to_sentry() {
     exit 62
   fi
 
-  ${ROOT_DIR}/node_modules/@sentry/cli/bin/sentry-cli releases files "${SENTRY_VERSION}" --wait --ignore-file .sentryignore --ext ts --ext map --ext js --ext tsx --ext jsx --url-prefix "chrome-extension://nofndgfpjopdpbcejgdpikmpdehlekac/" .
+  ${ROOT_DIR}/node_modules/@sentry/cli/bin/sentry-cli releases files "${SENTRY_VERSION}" --ignore-file .sentryignore --ext ts --ext map --ext js --ext tsx --ext jsx --url-prefix "chrome-extension://nofndgfpjopdpbcejgdpikmpdehlekac/" .
   exitcode=$?
   if [ $exitcode -ne 0 ]; then
     echo "ERROR: Failed to upload files for sentry release ${PACKAGE_NAME}"
