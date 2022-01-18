@@ -47,11 +47,17 @@ build() {
   uncommitted_file_count=$(git status -s -uall | wc -l)
   if [ ${uncommitted_file_count} -ne 0 ]; then
     echo "ERROR: No building with uncommitted changes!"
-    exit 89
+    exit 88
+  fi
+
+  unpushed_commits=$(git cherry -v | wc -l)
+  if [ ${unpushed_commits} -ne 0 ]; then
+    echo "ERROR: No building with unpushed commits!"
+    exit 87
   fi
 
   devtools_count=$(grep -c devtools manifest.json)
-  if [ ${uncommitted_file_count} -ne 0 ]; then
+  if [ ${devtools_count} -ne 0 ]; then
     echo "ERROR: No building with react-devtools listener in manifest"
     exit 81
   fi
@@ -76,43 +82,20 @@ package() {
 }
 
 push_to_sentry() {
+  pushd ${TARGET_DIR}/../ || exit 60
   if [ ! -x ${ROOT_DIR}/node_modules/@sentry/cli/bin/sentry-cli ]; then
     echo "ERROR: missing sentry cli executable"
     exit 63
    fi
 
-  SENTRY_VERSION="${SENTRY_PROJECT}@${VERSION}"
+  ${ROOT_DIR}/node_modules/@sentry/cli/bin/sentry-cli releases files ${VERSION} upload-sourcemaps ${PACKAGE_NAME} --url-prefix "chrome-extension://nofndgfpjopdpbcejgdpikmpdehlekac/"
 
-  ${ROOT_DIR}/node_modules/@sentry/cli/bin/sentry-cli releases new "${SENTRY_VERSION}"
   exitcode=$?
   if [ $exitcode -ne 0 ]; then
-    echo "ERROR: Failed to create sentry release ${PACKAGE_NAME}"
-    exit 64
-  fi
-
-  ${ROOT_DIR}/node_modules/@sentry/cli/bin/sentry-cli releases set-commits "${SENTRY_VERSION}" --auto
-  exitcode=$?
-  if [ $exitcode -ne 0 ]; then
-    echo "ERROR: Failed to set commits for sentry release ${PACKAGE_NAME}"
+    echo "ERROR: Failed to package ${PACKAGE_NAME}"
     exit 62
   fi
-
-  ${ROOT_DIR}/node_modules/@sentry/cli/bin/sentry-cli releases files "${SENTRY_VERSION}" upload \
-    --ignore-file .sentryignore \
-    --ext ts \
-    --ext map \
-    --ext js \
-    --ext tsx \
-    --ext jsx \
-    --wait  \
-    --url-prefix "chrome-extension://nofndgfpjopdpbcejgdpikmpdehlekac/" \
-    .
-
-  exitcode=$?
-  if [ $exitcode -ne 0 ]; then
-    echo "ERROR: Failed to upload files for sentry release ${PACKAGE_NAME}"
-    exit 65
-  fi
+  popd || exit 61
 }
 
 load_envkey() {
@@ -128,6 +111,17 @@ load_envkey() {
     echo "ERROR: Failed to execute envkey-source"
     exit 71
   fi
+}
+
+remove_source_maps() {
+  pushd ${TARGET_DIR} || exit 40
+  rm -f ./dist/*.map
+  exitcode=$?
+  if [ $exitcode -ne 0 ]; then
+    echo "ERROR: Failed to package ${PACKAGE_NAME}"
+    exit 42
+  fi
+  popd || exit 41
 }
 
 version_check () {
@@ -179,6 +173,7 @@ copy_directory "./src/css" "${TARGET_DIR}/src"
 copy_directory "./src/icons" "${TARGET_DIR}/src"
 
 push_to_sentry
+remove_source_maps
 package
 
 echo "Completed packaging ${PACKAGE_NAME}.zip"
