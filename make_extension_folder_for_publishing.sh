@@ -76,7 +76,6 @@ package() {
 }
 
 push_to_sentry() {
-  pushd ${TARGET_DIR}/../ || exit 60
   if [ ! -x ${ROOT_DIR}/node_modules/@sentry/cli/bin/sentry-cli ]; then
     echo "ERROR: missing sentry cli executable"
     exit 63
@@ -114,8 +113,6 @@ push_to_sentry() {
     echo "ERROR: Failed to upload files for sentry release ${PACKAGE_NAME}"
     exit 65
   fi
-
-  popd || exit 61
 }
 
 load_envkey() {
