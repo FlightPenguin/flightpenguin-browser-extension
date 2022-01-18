@@ -150,7 +150,7 @@ export const SearchForm = ({
   const getAirports = useCallback(
     async ({ page, searchText }) => {
       setAirportSearchText(searchText);
-      return getAirportData({ page: page - 1, search: searchText.trim(), onAuthError });
+      return getAirportData({ page: page - 1, search: searchText.trim(), onAuthError, retry401: true });
     },
     [setAirportSearchText],
   );

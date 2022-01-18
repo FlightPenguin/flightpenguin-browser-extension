@@ -47,11 +47,17 @@ build() {
   uncommitted_file_count=$(git status -s -uall | wc -l)
   if [ ${uncommitted_file_count} -ne 0 ]; then
     echo "ERROR: No building with uncommitted changes!"
-    exit 89
+    exit 88
+  fi
+
+  unpushed_commits=$(git cherry -v | wc -l)
+  if [ ${unpushed_commits} -ne 0 ]; then
+    echo "ERROR: No building with unpushed commits!"
+    exit 87
   fi
 
   devtools_count=$(grep -c devtools manifest.json)
-  if [ ${uncommitted_file_count} -ne 0 ]; then
+  if [ ${devtools_count} -ne 0 ]; then
     echo "ERROR: No building with react-devtools listener in manifest"
     exit 81
   fi
