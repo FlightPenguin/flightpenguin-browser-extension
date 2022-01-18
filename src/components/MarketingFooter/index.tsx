@@ -16,7 +16,7 @@ export const MarketingFooter = (): React.ReactElement => {
           <Stack orientation="horizontal" verticalBelow="tablet">
             <ContentTile
               title="Visualize flights"
-              body="Our time-bar layout makes it easy to see flight takeoff, landing, and layover times.  You can compare apples to apples, instead of looking at virtual airline tickets designed to confuse you."
+              body="Do your eyes glaze over staring at virtual flight tickets that are intentionally made to be difficult to compare?  Our time-bar layout makes it easy to see flight takeoff, landing, and layover times."
               image={{ path: "/images/TimelineView.png", altText: "Example of timeline view" }}
             />
             <ContentTile
@@ -26,7 +26,7 @@ export const MarketingFooter = (): React.ReactElement => {
             />
             <ContentTile
               title="One search"
-              body="Our extension searches across many airlines, allowing us to show you all the results.  No need to go to each airline's site."
+              body="Hate having to visit multiple travel sites?  Our extension searches across airlines, including the uncooperative ones like Southwest and Ryanair."
               image={{ path: "/images/AirlinesView.png", altText: "Example of searched airlines" }}
             />
           </Stack>
