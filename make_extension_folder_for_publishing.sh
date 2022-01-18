@@ -82,7 +82,7 @@ push_to_sentry() {
     exit 63
    fi
 
-  SENTRY_VERSION="${SENTRY_VERSION}"
+  SENTRY_VERSION="${SENTRY_PROJECT}@${VERSION}"
 
   ${ROOT_DIR}/node_modules/@sentry/cli/bin/sentry-cli releases new "${SENTRY_VERSION}"
   exitcode=$?
