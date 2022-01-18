@@ -82,12 +82,29 @@ push_to_sentry() {
     exit 63
    fi
 
-  ${ROOT_DIR}/node_modules/@sentry/cli/bin/sentry-cli releases set-commits ${VERSION}  --auto
+  SENTRY_VERSION="${SENTRY_VERSION}"
+
+  ${ROOT_DIR}/node_modules/@sentry/cli/bin/sentry-cli releases new "${SENTRY_VERSION}"
   exitcode=$?
   if [ $exitcode -ne 0 ]; then
-    echo "ERROR: Failed to package ${PACKAGE_NAME}"
+    echo "ERROR: Failed to create sentry release ${PACKAGE_NAME}"
+    exit 64
+  fi
+
+  ${ROOT_DIR}/node_modules/@sentry/cli/bin/sentry-cli releases set-commits "${SENTRY_VERSION}" --auto
+  exitcode=$?
+  if [ $exitcode -ne 0 ]; then
+    echo "ERROR: Failed to set commits for sentry release ${PACKAGE_NAME}"
     exit 62
   fi
+
+  ${ROOT_DIR}/node_modules/@sentry/cli/bin/sentry-cli releases files "${SENTRY_VERSION}" --wait --ignore-file .sentryignore --ext ts --ext map --ext js --ext tsx --ext jsx --url-prefix "chrome-extension://nofndgfpjopdpbcejgdpikmpdehlekac/" .
+  exitcode=$?
+  if [ $exitcode -ne 0 ]; then
+    echo "ERROR: Failed to upload files for sentry release ${PACKAGE_NAME}"
+    exit 65
+  fi
+
   popd || exit 61
 }
 
