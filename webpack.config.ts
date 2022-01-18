@@ -44,7 +44,7 @@ const basePlugins = [
   new ProgressPlugin({}),
   new DefinePlugin({
     "process.env.BUMBAG_ENV": JSON.stringify("not test"),
-    "process.env.VERSION": JSON.stringify("1.10.3.2"),
+    "process.env.VERSION": JSON.stringify("1.10.3.5"),
   }),
   new EnvkeyWebpackPlugin({
     permitted: ["SENTRY_DSN", "SENTRY_PROJECT", "GOOGLE_ANALYTICS_TRACKING_ID"],
@@ -79,7 +79,7 @@ export const production: Configuration = {
   mode: "production",
   entry: { ...defaultEntry },
   output: baseOutput,
-  devtool: "inline-source-map",
+  devtool: "source-map",
   plugins: [...basePlugins, new DefinePlugin({ "process.env.EXTENSION_ENV": JSON.stringify("production") })],
   module: {
     rules: getModuleRules({ mode: "production" }),

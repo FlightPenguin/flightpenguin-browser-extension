@@ -1,5 +1,17 @@
-.idea
 .env
+.eslintrc
+.gitignore
+.idea
+.jest.config.js
+.prettierignore
+.prettierc
+babel.config.json
+make_extension_folder_for_publishing.sh
+README.md
+setup.jest.js
+webpack.config.ts
+webpack.development.config.js
+webpack.production.config.js
 
 node_modules/
 local
