@@ -18,7 +18,7 @@ const SearchFormDisplay = ({ containerWidth, formData, onUpdateClick }: SearchFo
   const [disabled, setDisabled] = useState(false);
 
   return (
-    <Box className="form-data-container" alignX="center">
+    <Box className="form-data-container" alignX="center" boxSizing="border-box">
       <Box use="section" width="100%" minWidth="360px">
         <Box display="flex" flex="row" flexWrap="wrap" justifyContent="space-between" altitude="400">
           <TimeCell flightType="DEPARTURE" airport={formData.from} date={formData.fromDate} />

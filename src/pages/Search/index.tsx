@@ -146,7 +146,16 @@ export const SearchPage = (): React.ReactElement => {
             <MarketingFooter />
           </React.Fragment>
         )}
-        <Box display="flex" flexDirection="column" width="100%" id="results-wrapper" ref={resultsWrapperRef}>
+        <Box
+          boxSizing="border-box"
+          display="flex"
+          flexDirection="column"
+          width="100%"
+          id="results-wrapper"
+          ref={resultsWrapperRef}
+          paddingLeft="2rem"
+          paddingRight="2rem"
+        >
           {!showForm && !!formData && resultsContainerWidth && (
             <>
               <SearchFormDisplay
