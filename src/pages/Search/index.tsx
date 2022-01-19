@@ -92,7 +92,7 @@ export const SearchPage = (): React.ReactElement => {
 
   return (
     <PageWithHeader header={<NavigationBar />} overflow="hidden">
-      <PageContent isFluid paddingY={{ default: "major-10" }}>
+      <Box display="flex" flexDirection="column">
         {showWelcomeModal && !isLoggedIn && (
           <WelcomeModal
             onSuccess={() => {
@@ -162,7 +162,7 @@ export const SearchPage = (): React.ReactElement => {
             </>
           )}
         </Box>
-      </PageContent>
+      </Box>
     </PageWithHeader>
   );
 };

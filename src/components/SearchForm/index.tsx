@@ -156,7 +156,13 @@ export const SearchForm = ({
   );
 
   return (
-    <Box className="search-form-wrapper" alignX="center">
+    <Box
+      display="flex"
+      className="search-form-wrapper"
+      boxSizing="border-box"
+      paddingTop="major-6"
+      justifyContent="center"
+    >
       <Card minWidth="360px" maxWidth={`${containerWidth}px`} width="100%">
         <Formik
           initialValues={initialValues}
