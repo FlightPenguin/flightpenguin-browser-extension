@@ -12,15 +12,27 @@ interface ContentTileProps {
 
 export const ContentTile = ({ title, body, image }: ContentTileProps): React.ReactElement => {
   return (
-    <Box className="content-tile" display="flex" flexDirection="row" justifyContent="start">
-      <Box display="flex" flexDirection="column" justifyContent="flex-start">
-        <Text fontSize="clamp(1rem, 1.5vw, 2rem)" fontWeight="700">
-          {title}
-        </Text>
-        <Text fontSize="clamp(.75rem, 1vw, 1rem)">{body}</Text>
-      </Box>
-      <Box display="flex">
-        <Image src={image.path} alt={image.altText} />
+    <Box
+      className="content-tile"
+      display="flex"
+      flexDirection="row"
+      justifyContent="start"
+      maxWidth="300px"
+      altitude="100"
+      padding="major-1"
+    >
+      <Box display="flex" flexDirection="column" justifyContent="space-between">
+        <Box display="flex" flexDirection="column" justifyContent="flex-start">
+          <Text fontSize="clamp(1rem, 1.5vw, 2rem)" fontWeight="700" textAlign="center">
+            {title}
+          </Text>
+          <Box padding="major-1">
+            <Image alt={image.altText} src={image.path} width="100%" />
+          </Box>
+        </Box>
+        <Box padding="major-1">
+          <Text fontSize="clamp(.75rem, 1vw, 1rem)">{body}</Text>
+        </Box>
       </Box>
     </Box>
   );
