@@ -13,11 +13,12 @@ interface ContentTileProps {
 export const ContentTile = ({ title, body, image }: ContentTileProps): React.ReactElement => {
   return (
     <Box
+      backgroundColor="white"
       className="content-tile"
       display="flex"
       flexDirection="row"
       justifyContent="start"
-      maxWidth="300px"
+      maxWidth="290px"
       altitude="100"
       padding="major-1"
     >

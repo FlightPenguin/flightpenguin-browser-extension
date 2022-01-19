@@ -5,7 +5,16 @@ import { ContentTile } from "./ContentTile";
 
 export const MarketingFooter = (): React.ReactElement => {
   return (
-    <Box display="flex" id="marketing-footer" paddingTop="major-8" width="100%" justifyContent="center">
+    <Box
+      background="linear-gradient( 5deg, transparent 1%, #f2ebfd 20%, #f2ebfd 60%, transparent 60%)"
+      box-sizing="border-box"
+      display="flex"
+      id="marketing-footer"
+      justifyContent="center"
+      paddingTop="major-6"
+      paddingBottom="major-6"
+      width="100%"
+    >
       <Box
         display="flex"
         flexDirection="column"
