@@ -341,13 +341,13 @@ function makeItins(itinCollection, departures, itins, provider, windowId, tabId,
 
     itin.depFlight.itinIds.push(itin.id);
 
-    // if (itins[itin.id]) {
-    //   // this can happen if the same itin exists across different providers
-    //   itins[itin.id].push(itin);
-    // } else {
-    //   itins[itin.id] = [itin];
-    // }
-    itins[itin.id] = itin;
+    const existingItin = itins[itin.id];
+    if ((existingItin && itin.fareNumber < existingItin.fareNumber) || !existingItin) {
+      if (existingItin && itin.fareNumber < existingItin.fareNumber) {
+        console.debug(`updating ${itin.id}`);
+      }
+      itins[itin.id] = itin;
+    }
   });
 
   return { itins, departures, returns };
