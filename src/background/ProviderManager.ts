@@ -6,7 +6,6 @@ import { Itinerary } from "../shared/types/Itinerary";
 import { MessageResponse } from "../shared/types/MessageResponse";
 import { ProcessedFlightSearchResult } from "../shared/types/ProcessedFlightSearchResult";
 import { WindowConfig } from "../shared/types/WindowConfig";
-import { getUrl as getSkyscannerUrl } from "../skyscanner/mappings/getUrl";
 import { getUrl as getSouthwestUrl } from "../southwest/mappings/getUrl";
 import { getUrl as getTripUrl } from "../trip/mappings/getUrl";
 import {
@@ -358,26 +357,29 @@ export class ProviderManager {
     // eslint-disable-next-line @typescript-eslint/no-this-alias
     const that = this;
     return new Promise<void>((resolve) => {
-      chrome.windows.create({ url, focused: false, height, width, left, top }, async (window) => {
-        this.setPrimaryTabAsFocus();
+      chrome.windows.create(
+        { url, focused: false, height, width, left, top, setSelfAsOpener: true },
+        async (window) => {
+          this.setPrimaryTabAsFocus();
 
-        if (window && window.tabs) {
-          that.setTab(provider, window.tabs[0]);
-          that.setWindow(provider, window);
+          if (window && window.tabs) {
+            that.setTab(provider, window.tabs[0]);
+            that.setWindow(provider, window);
 
-          chrome.tabs.onUpdated.addListener(function listener(tabId, info) {
-            if (info.status === "complete" && tabId === that.getTabId(provider)) {
-              chrome.tabs.onUpdated.removeListener(listener);
-              chrome.tabs.sendMessage(tabId, message, {}, (response) => {
-                messageResponseCallback(response);
-              });
-              resolve();
-            }
-          });
-        } else {
-          throw new Error("Unable to create window - no window!");
-        }
-      });
+            chrome.tabs.onUpdated.addListener(function listener(tabId, info) {
+              if (info.status === "complete" && tabId === that.getTabId(provider)) {
+                chrome.tabs.onUpdated.removeListener(listener);
+                chrome.tabs.sendMessage(tabId, message, {}, (response) => {
+                  messageResponseCallback(response);
+                });
+                resolve();
+              }
+            });
+          } else {
+            throw new Error("Unable to create window - no window!");
+          }
+        },
+      );
     });
   }
 
