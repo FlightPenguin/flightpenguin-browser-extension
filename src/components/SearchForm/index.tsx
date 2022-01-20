@@ -2,9 +2,11 @@ import { Box, Button, Card, FieldStack, FieldWrapper, Input, RadioGroup, Select,
 import { SelectMenu } from "bumbag/src/SelectMenu";
 import { addDays, endOfDay, max, nextSunday, startOfDay } from "date-fns";
 import { Field as FormikField, Form, Formik } from "formik";
+import Fuse from "fuse.js";
 import React, { ElementRef, useCallback, useEffect, useRef, useState } from "react";
 import { boolean, mixed, number, object, string } from "yup";
 
+import airports from "../../assets/airports.json";
 import { CabinMap } from "../../background/constants";
 import { FlightSearchFormData } from "../../shared/types/FlightSearchFormData";
 import { setRecentlyInstalled } from "../../shared/utilities/recentlyInstalledManager";
@@ -20,7 +22,7 @@ import { getStandardizedFormatDate } from "../utilities/forms/getStandardizedFor
 import { isValidDateInputString } from "../utilities/forms/isValidDateInputString";
 import { getNearestRelevantAirport } from "../utilities/geography/getNearestRelevantAirport";
 import { Airport } from "./api/airports/Airport";
-import { getAirportData } from "./api/airports/getAirportData";
+// import { getAirportData } from "./api/airports/getAirportData";
 import { MatchedLabel } from "./components/SelectMenu/MatchedLabel";
 import { getFridayAfterNext } from "./utilities/getFridayAfterNext";
 import { sendFormDataToBackground } from "./utilities/sendFormDataToBackground";
@@ -141,10 +143,26 @@ export const SearchForm = ({ onSubmit, initialValues = defaultInitialValues }: S
     maximum: getChromeFormattedDateFromDate(maxDate),
   });
   const [airportSearchText, setAirportSearchText] = useState("");
-  const getAirports = useCallback(
-    async ({ page, searchText }) => {
+  const airportOptions = airports.map((record: any) => {
+    return {
+      key: record.iataCode,
+      label: record.iataCode,
+      name: record.displayName,
+      location: record.displayLocation,
+      value: record.iataCode,
+    };
+  }) as Airport[];
+  const searchAirports = useCallback(
+    async ({ searchText }) => {
       setAirportSearchText(searchText);
-      return getAirportData({ page: page - 1, search: searchText.trim() });
+      const fuse = new Fuse(airportOptions, {
+        keys: ["label", "name", "location"],
+      });
+      const results = fuse
+        .search(searchText)
+        .map((result) => result.item)
+        .slice(0, 15);
+      return { options: results };
     },
     [setAirportSearchText],
   );
@@ -210,7 +228,7 @@ export const SearchForm = ({ onSubmit, initialValues = defaultInitialValues }: S
                           Starting airport
                         </Box>
                       }
-                      loadOptions={getAirports}
+                      loadOptions={searchAirports}
                       name="from"
                       onBlur={(event: React.ChangeEvent) => {
                         if (Object.keys(event).length) {
@@ -268,7 +286,7 @@ export const SearchForm = ({ onSubmit, initialValues = defaultInitialValues }: S
                           Destination airport
                         </Box>
                       }
-                      loadOptions={getAirports}
+                      loadOptions={searchAirports}
                       name="to"
                       onBlur={(event: React.ChangeEvent) => {
                         if (Object.keys(event).length) {
