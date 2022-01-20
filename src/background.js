@@ -18,7 +18,7 @@ import {
 } from "./background/state";
 
 try {
-  const analyticsManager = new AnalyticsManager();
+  const analyticsManager = new AnalyticsManager(`${process.env.GOOGLE_ANALYTICS_TRACKING_ID}`, false);
 
   ExtensionUninstalledHandler(analyticsManager);
   ExtensionInstalledHandler(analyticsManager);

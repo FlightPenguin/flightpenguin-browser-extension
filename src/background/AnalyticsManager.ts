@@ -7,7 +7,7 @@ export interface EventInput {
   category: string;
   action: string;
   label?: string;
-  value?: number;
+  value?: number | string;
 }
 
 interface IdentifyInput {
@@ -137,12 +137,17 @@ export class AnalyticsManager {
     if (!this.isLoaded()) {
       return;
     }
-    window.ga("send", {
+    const payload: { [keyof: string]: string | number } = {
       hitType: "event",
       eventCategory: category,
       eventAction: action,
-      eventLabel: label,
-      eventValue: value,
-    });
+    };
+    if (label) {
+      payload["eventLabel"] = label;
+    }
+    if (value) {
+      payload["eventValue"] = value;
+    }
+    window.ga("send", payload);
   }
 }
