@@ -17,6 +17,9 @@ export interface ProcessedFlightSearchResult {
   duration: string;
   durationMinutes: number;
   layovers: Layover[];
+  layoverCount: number;
+  layoverAirports: string[];
+  carriers: string[];
   itinIds: string[];
   timezoneOffset: number;
   pain: number;

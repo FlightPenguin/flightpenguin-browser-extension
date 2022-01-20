@@ -20,6 +20,7 @@ interface ThumbProps {
   touched: boolean;
   flightCount: number;
   timezoneOffset: number;
+  flightTimeContainerWidth: number;
   flightType: FlightType;
 }
 
@@ -37,6 +38,7 @@ const Thumb = ({
   touched,
   flightCount,
   timezoneOffset,
+  flightTimeContainerWidth,
   flightType,
 }: ThumbProps): React.ReactElement => {
   const [inUse, setInUse] = useState(false);
@@ -54,7 +56,7 @@ const Thumb = ({
     timezoneOffset: state.index === 1 ? timezoneOffset : 0,
     flightType,
   });
-  const position = getPositionByTick({ intervals, value });
+  const position = getPositionByTick({ intervals, value, flightTimeContainerWidth });
   const color = timezoneOffset ? (state.index === 0 ? "info" : "warning") : "black";
 
   return (
@@ -157,6 +159,7 @@ const getValuesForMemoCheck = ({
   minimumValue,
   maximumValue,
   flightCount,
+  flightTimeContainerWidth,
   flightType,
 }: ThumbProps) => {
   return {
@@ -168,6 +171,7 @@ const getValuesForMemoCheck = ({
     minimumValue,
     maximumValue,
     flightCount,
+    flightTimeContainerWidth,
     flightType,
   };
 };

@@ -12,18 +12,19 @@ export const getLayoverMultiplier = (layover: Layover): number => {
 
   if (isAwfulCarrier(layover)) {
     // riding frontier et al sucks.
-    multiplier += 1.5;
+    multiplier += 0.5;
   }
 
   if (!layover.isLayoverStop) {
     return multiplier;
   }
 
+  // time not in the air is automatically penalized...
   multiplier += 1;
 
   if (isAirportChange(layover)) {
     // Changing airports is an awful experience.  Massive penalty!
-    multiplier += 4;
+    multiplier += 10;
   }
 
   const startTimeDetails = getTimeDetails(layover.fromTime);
@@ -38,7 +39,7 @@ export const getLayoverMultiplier = (layover: Layover): number => {
     multiplier += 0.15;
   }
 
-  if (isShort(fauxStartDate, fauxEndDate, overnight)) {
+  if (isShort(fauxStartDate, fauxEndDate)) {
     // Hoofing it around in a large airport in a short time, especially if delays hit can ruin a flight/connection.
     multiplier += 1;
   }

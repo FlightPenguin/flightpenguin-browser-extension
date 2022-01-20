@@ -1,6 +1,6 @@
-import { MissingElementLookupError } from "../../shared/errors";
 import { getParsedModalHtml } from "../../shared/parser/modal/getParsedModalHtml";
 import { FlightLeg } from "../../shared/types/FlightLeg";
+import { getKiwiFlightId } from "../shared/getKiwiFlightId";
 import { setModalHtml } from "../ui/setModalHtml";
 import { getFlightLayovers } from "./getFlightLayovers";
 
@@ -13,12 +13,10 @@ export const getAllLayovers = async ({
   flightCard,
   roundtrip,
 }: GetAllLayoversProps): Promise<{ departureLayovers: FlightLeg[]; returnLayovers: FlightLeg[] }> => {
-  await setModalHtml(flightCard);
-  const modalDoc = getParsedModalHtml(flightCard);
-  const modal = modalDoc.querySelector("div");
-  if (!modal) {
-    throw new MissingElementLookupError("Unable to extract modal div");
-  }
+  const kiwiId = getKiwiFlightId(flightCard);
+
+  await setModalHtml(flightCard, kiwiId);
+  const modal = getParsedModalHtml(kiwiId, "BOTH");
 
   const departureLayovers = getFlightLayovers(modal, "DEPARTURE");
   const returnLayovers = roundtrip ? getFlightLayovers(modal, "RETURN") : [];

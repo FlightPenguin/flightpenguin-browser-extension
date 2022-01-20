@@ -3,25 +3,15 @@
 window.Sentry.init({
   dsn: process.env.SENTRY_DSN,
   environment: `${process.env.EXTENSION_ENV}`,
+  release: `${process.env.SENTRY_PROJECT}@${process.env.VERSION}`,
 });
 
+import { sendAnalyticsPageView } from "../shared/events";
 import { showFlightPenguinPopup } from "./showFlightPenguinPopup";
 
-const paintableStates = ["interactive", "complete"];
-
 try {
-  if (paintableStates.includes(document.readyState)) {
-    console.log("LAUNCH");
-    showFlightPenguinPopup();
-  } else {
-    console.log("ONREADY");
-    document.onreadystatechange = () => {
-      if (paintableStates.includes(document.readyState)) {
-        console.log("READY");
-        showFlightPenguinPopup();
-      }
-    };
-  }
+  showFlightPenguinPopup();
+  sendAnalyticsPageView();
 } catch (err) {
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore

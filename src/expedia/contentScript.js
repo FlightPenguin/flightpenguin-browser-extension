@@ -1,6 +1,7 @@
 window.Sentry.init({
   dsn: process.env.SENTRY_DSN,
   environment: `${process.env.EXTENSION_ENV}`,
+  release: `${process.env.SENTRY_PROJECT}@${process.env.VERSION}`,
 });
 
 import { sendFailed, sendProcessing, sendSuccess } from "shared/events/analytics/scrapers/index";

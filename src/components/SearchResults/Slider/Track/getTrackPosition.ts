@@ -1,19 +1,20 @@
 import Decimal from "decimal.js-light";
 
 import { getValueInRange } from "../../../../shared/utilities/getValueInRange";
-import { flightTimeContainerWidth } from "../../../constants";
 import { getPositionByTick } from "../utilities/getPositionByTick";
 
 interface GetTrackPositionProps {
   index: number;
   intervals: number[];
   value: number[];
+  flightTimeContainerWidth: number;
 }
 
 export const getTrackPosition = ({
   value,
   index,
   intervals,
+  flightTimeContainerWidth,
 }: GetTrackPositionProps): { left: number; right: number } => {
   /*
   We need to adjust the position to the track to deal with the thumb positional adjustment.
@@ -23,12 +24,12 @@ export const getTrackPosition = ({
    */
 
   const innerBoundary = getValueInRange({
-    value: getPositionByTick({ value: value[0], intervals, applyAdjustment: false }),
+    value: getPositionByTick({ value: value[0], intervals, flightTimeContainerWidth, applyAdjustment: false }),
     minimumValue: 0,
     maximumValue: flightTimeContainerWidth,
   });
   const outerBoundary = getValueInRange({
-    value: getPositionByTick({ value: value[1], intervals, applyAdjustment: false }),
+    value: getPositionByTick({ value: value[1], intervals, flightTimeContainerWidth, applyAdjustment: false }),
     minimumValue: 0,
     maximumValue: flightTimeContainerWidth,
   });

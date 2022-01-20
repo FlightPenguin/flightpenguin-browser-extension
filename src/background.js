@@ -1,6 +1,7 @@
 window.Sentry.init({
   dsn: process.env.SENTRY_DSN,
   environment: `${process.env.EXTENSION_ENV}`,
+  release: `${process.env.SENTRY_PROJECT}@${process.env.VERSION}`,
 });
 
 // debugger and console logs can be seen by clicking background.js link for this extension under chrome://extensions,
@@ -17,9 +18,9 @@ import {
 } from "./background/state";
 
 try {
-  const analyticsManager = new AnalyticsManager();
+  const analyticsManager = new AnalyticsManager(`${process.env.GOOGLE_ANALYTICS_TRACKING_ID}`, false);
 
-  ExtensionUninstalledHandler();
+  ExtensionUninstalledHandler(analyticsManager);
   ExtensionInstalledHandler(analyticsManager);
   ExtensionOpenedHandler(analyticsManager);
 

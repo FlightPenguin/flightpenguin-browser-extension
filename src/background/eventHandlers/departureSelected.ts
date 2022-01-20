@@ -20,13 +20,37 @@ export const handleDepartureSelected = (providerManager: ProviderManager, depart
 
   const { returnsIncluded: providersNotNeedingReturns, noReturnsIncluded: providersNeedingReturns } =
     getProvidersByType(departureProviders);
-  if (providersNeedingReturns) {
-    console.log("needs returns");
-    requestNoRoundtripProviderReturns(departure, providerManager, providersNeedingReturns, departureItineraries);
-  }
-  if (providersNotNeedingReturns) {
-    console.log("No need for returns");
+
+  let searching = false;
+
+  if (providersNotNeedingReturns.length) {
+    console.debug(`No need for scraping for returns, flights found from ${providersNotNeedingReturns}`);
     getRoundtripProviderReturns(departure, providerManager, providersNotNeedingReturns);
+    searching = true;
+  }
+  if (providersNeedingReturns.length) {
+    console.debug(`need to scrape for returns, flights found from ${providersNeedingReturns}`);
+    requestNoRoundtripProviderReturns(departure, providerManager, providersNeedingReturns, departureItineraries);
+    searching = true;
+  }
+
+  if (!searching) {
+    const message = {
+      event: "RETURN_FLIGHTS_FOR_CLIENT",
+      flights: {
+        departureList: sortFlights(
+          providerManager.getDepartures(),
+          providerManager.getItineraries(),
+          providerManager.getFormCabinValue(),
+        ),
+        returnList: [],
+        itins: providerManager.getItineraries(),
+        updatedAt: new Date(),
+      },
+      formData: providerManager.getFormData(),
+    };
+    providerManager.sendMessageToIndexPage(message);
+    providerManager.sendMessageToIndexPage({ event: "SCRAPING_COMPLETED", searchType: "RETURN" }, 3000);
   }
 };
 

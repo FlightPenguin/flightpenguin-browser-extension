@@ -9,7 +9,7 @@ export const getSubscriptionValidity = async (accessToken: string): Promise<APIR
       "Content-Type": "application/json",
       Authorization: `Bearer ${accessToken}`,
     },
-    timeout: 3000,
+    timeout: 5000,
     withCredentials: true,
   });
 

@@ -8,8 +8,20 @@ import { isExtensionOpen } from "./isExtensionOpen";
 
 export const openExtension = async (analytics: AnalyticsManager): Promise<void> => {
   disableExtension();
-  await setPositionData();
-  await identifyUserToGoogleAnalytics(analytics);
+  try {
+    await setPositionData();
+    await identifyUserToGoogleAnalytics(analytics);
+  } catch (error) {
+    if (error instanceof GeolocationPositionError && error.message.toLowerCase() === "user denied geolocation") {
+      console.debug("Geolocation denied, moving on...");
+    } else {
+      console.error(error);
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      Sentry.captureException(error);
+    }
+  }
+
   isExtensionOpen({
     extensionOpenCallback: handleExtensionOpen,
     extensionClosedCallback: handleExtensionNotOpen,

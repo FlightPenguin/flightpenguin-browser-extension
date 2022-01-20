@@ -1,14 +1,13 @@
-import { Box, Button, Card, FieldStack, FieldWrapper, Input, RadioGroup, Select, Switch, Text } from "bumbag";
+import { Box, Button, Card, FieldStack, FieldWrapper, Input, RadioGroup, Select, Switch } from "bumbag";
 import { SelectMenu } from "bumbag/src/SelectMenu";
 import { addDays, endOfDay, max, nextSunday, startOfDay } from "date-fns";
 import { Field as FormikField, Form, Formik } from "formik";
-import React, { ElementRef, useCallback, useEffect, useRef, useState } from "react";
+import React, { useCallback, useRef, useState } from "react";
 import { boolean, mixed, number, object, string } from "yup";
 
-import { CabinMap } from "../../background/constants";
 import { FlightSearchFormData } from "../../shared/types/FlightSearchFormData";
 import { setRecentlyInstalled } from "../../shared/utilities/recentlyInstalledManager";
-import { CardType, PointsMap, searchFormWidth } from "../constants";
+import { CardType, PointsMap } from "../constants";
 import { getFieldState, getParsedDate, getValidationText } from "../utilities/forms";
 import { disableNonAlphaInput } from "../utilities/forms/disableNonAlphaInput";
 import { getBooleanFromString } from "../utilities/forms/getBooleanFromString";
@@ -116,11 +115,18 @@ const defaultInitialValues: FormState = {
 };
 
 interface SearchFormProps {
+  containerWidth: number;
   onSubmit: (values: FlightSearchFormData) => void;
+  onAuthError: () => void;
   initialValues?: FormState;
 }
 
-export const SearchForm = ({ onSubmit, initialValues = defaultInitialValues }: SearchFormProps): React.ReactElement => {
+export const SearchForm = ({
+  containerWidth,
+  onSubmit,
+  onAuthError,
+  initialValues = defaultInitialValues,
+}: SearchFormProps): React.ReactElement => {
   const nearestAirport = getNearestRelevantAirport();
   initialValues.from = nearestAirport;
 
@@ -144,14 +150,20 @@ export const SearchForm = ({ onSubmit, initialValues = defaultInitialValues }: S
   const getAirports = useCallback(
     async ({ page, searchText }) => {
       setAirportSearchText(searchText);
-      return getAirportData({ page: page - 1, search: searchText.trim() });
+      return getAirportData({ page: page - 1, search: searchText.trim(), onAuthError, retry401: true });
     },
     [setAirportSearchText],
   );
 
   return (
-    <Box className="search-form-wrapper" alignX="center">
-      <Card maxWidth={`${searchFormWidth}px`}>
+    <Box
+      display="flex"
+      className="search-form-wrapper"
+      boxSizing="border-box"
+      paddingTop="major-6"
+      justifyContent="center"
+    >
+      <Card minWidth="360px" maxWidth={`${containerWidth}px`} width="100%">
         <Formik
           initialValues={initialValues}
           validateOnBlur={true}
@@ -179,7 +191,12 @@ export const SearchForm = ({ onSubmit, initialValues = defaultInitialValues }: S
           {(formik) => {
             return (
               <Form>
-                <FieldStack orientation="horizontal" className="airport-stack" paddingTop="major-3">
+                <FieldStack
+                  orientation="horizontal"
+                  verticalBelow="tablet"
+                  className="airport-stack"
+                  paddingTop="major-3"
+                >
                   <FieldWrapper
                     cursor="default"
                     state={getFieldState(formik, "from")}
@@ -196,6 +213,9 @@ export const SearchForm = ({ onSubmit, initialValues = defaultInitialValues }: S
                       disableClear
                       disabled={formik.isSubmitting}
                       emptyText={airportSearchText.length ? "No results found." : "Type to start searching."}
+                      errorText={
+                        "An error occurred.  Please try again after a short wait.  If this error persists, contact support@flightpenguin.com."
+                      }
                       hasFieldWrapper={true}
                       hasSearch
                       label={
@@ -254,6 +274,9 @@ export const SearchForm = ({ onSubmit, initialValues = defaultInitialValues }: S
                       disableClear
                       disabled={formik.isSubmitting}
                       emptyText={airportSearchText.length ? "No results found." : "Type to start searching."}
+                      errorText={
+                        "An error occurred.  Please try again after a short wait.  If this error persists, contact support@flightpenguin.com."
+                      }
                       hasFieldWrapper={true}
                       hasSearch
                       label={
@@ -298,7 +321,12 @@ export const SearchForm = ({ onSubmit, initialValues = defaultInitialValues }: S
                   </FieldWrapper>
                 </FieldStack>
 
-                <FieldStack orientation="horizontal" className="trip-type-stack" paddingTop="major-3">
+                <FieldStack
+                  orientation="horizontal"
+                  verticalBelow="tablet"
+                  className="trip-type-stack"
+                  paddingTop="major-3"
+                >
                   <FieldWrapper
                     state={getFieldState(formik, "roundtrip")}
                     validationText={getValidationText(formik, "roundtrip")}
@@ -317,7 +345,7 @@ export const SearchForm = ({ onSubmit, initialValues = defaultInitialValues }: S
                   </FieldWrapper>
                 </FieldStack>
 
-                <FieldStack orientation="horizontal" className="date-stack" paddingTop="major-3">
+                <FieldStack orientation="horizontal" verticalBelow="tablet" className="date-stack" paddingTop="major-3">
                   <FieldWrapper
                     state={getFieldState(formik, "fromDate")}
                     validationText={getValidationText(formik, "fromDate")}
@@ -439,7 +467,12 @@ export const SearchForm = ({ onSubmit, initialValues = defaultInitialValues }: S
                   )}
                 </FieldStack>
 
-                <FieldStack orientation="horizontal" className="cabin-stack" paddingTop="major-3">
+                <FieldStack
+                  orientation="horizontal"
+                  verticalBelow="tablet"
+                  className="cabin-stack"
+                  paddingTop="major-3"
+                >
                   <FieldWrapper
                     state={getFieldState(formik, "numPax")}
                     validationText={getValidationText(formik, "numPax")}
@@ -498,7 +531,12 @@ export const SearchForm = ({ onSubmit, initialValues = defaultInitialValues }: S
                   </FieldWrapper>
                 </FieldStack>
 
-                <FieldStack orientation="horizontal" className="payment-stack" paddingTop="major-3">
+                <FieldStack
+                  orientation="horizontal"
+                  verticalBelow="tablet"
+                  className="payment-stack"
+                  paddingTop="major-3"
+                >
                   <FieldWrapper
                     state={getFieldState(formik, "searchByPoints")}
                     validationText={getValidationText(formik, "searchByPoints")}
@@ -515,6 +553,7 @@ export const SearchForm = ({ onSubmit, initialValues = defaultInitialValues }: S
                         { value: "true", label: "Points" },
                       ]}
                       orientation="horizontal"
+                      verticalBelow="tablet"
                       autoComplete="off"
                       hasFieldWrapper={true}
                       onChange={formik.handleChange}

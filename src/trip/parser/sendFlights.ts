@@ -48,7 +48,7 @@ export const sendFlights = async ({ flightCards, formData }: SendFlightsProps): 
   }
 
   if (lastFlightCard) {
-    const complete = isComplete(lastFlightCard);
+    const complete = await isComplete(lastFlightCard);
     if (complete) {
       stopScrollingNow("Reached max flights");
       scrollToTop();

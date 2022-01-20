@@ -5,7 +5,7 @@ import React, { useEffect, useState } from "react";
 import { sendSelectedFlight } from "../../../shared/events";
 import { ProcessedFlightSearchResult } from "../../../shared/types/ProcessedFlightSearchResult";
 import { ProcessedItinerary } from "../../../shared/types/ProcessedItinerary";
-import { containerWidth, flightTimeContainerWidth, legendWidth, PaymentType } from "../../constants";
+import { PaymentType } from "../../constants";
 import { FlightSelection } from "../FlightSelection";
 import { FlightLegend } from "./FlightLegend";
 import { FlightSegmentBox } from "./FlightSegment";
@@ -26,6 +26,9 @@ interface TimelineRowProps {
   index: number;
   skeleton: boolean;
   selected: boolean;
+  legendContainerWidth: number;
+  flightTimeContainerWidth: number;
+  resultsContainerWidth: number;
   onSelection: (details: FlightSelection) => void;
 }
 
@@ -42,6 +45,9 @@ const TimelineRow = ({
   index,
   selected,
   skeleton,
+  legendContainerWidth,
+  flightTimeContainerWidth,
+  resultsContainerWidth,
   onSelection,
 }: TimelineRowProps): React.ReactElement => {
   const [loading, setLoading] = useState(true);
@@ -50,13 +56,15 @@ const TimelineRow = ({
     setLoading(false);
   }, [setLoading]);
 
+  const rowWidth = resultsContainerWidth;
+
   const backgroundColor = index % 2 === 0 || selected ? "primaryTint" : "white";
   const bottomBorder = index % 2 === 1 ? "default" : "none";
 
   if (loading) {
     return (
       <List.Item
-        width={`${containerWidth}px`}
+        width={`${rowWidth}px`}
         alignX="center"
         alignY="center"
         minHeight="90px"
@@ -97,7 +105,7 @@ const TimelineRow = ({
       alignX="center"
       display="flex"
       tabIndex={0}
-      width={`${containerWidth}px`}
+      width={`${rowWidth}px`}
       onClick={() => {
         if (skeleton || selected) {
           return;
@@ -119,7 +127,12 @@ const TimelineRow = ({
       // @ts-ignore
       _focus={rowHighlightStyle}
     >
-      <FlightLegend legendWidth={legendWidth} itinerary={itinerary} flight={flight} paymentType={paymentType} />
+      <FlightLegend
+        legendWidth={legendContainerWidth}
+        itinerary={itinerary}
+        flight={flight}
+        paymentType={paymentType}
+      />
       <Box
         data-name={"flight-container"}
         position="relative"
@@ -216,6 +229,7 @@ export default React.memo(TimelineRow, (previous, next) => {
       increment: previous.increment,
       startHourOffset: previous.startHourOffset,
       selected: previous.selected,
+      flightTimeContainerWidth: previous.flightTimeContainerWidth,
     },
     {
       itineraryId: next.itinerary.id,
@@ -224,6 +238,7 @@ export default React.memo(TimelineRow, (previous, next) => {
       increment: next.increment,
       startHourOffset: next.startHourOffset,
       selected: next.selected,
+      flightTimeContainerWidth: next.flightTimeContainerWidth,
     },
   );
 });
