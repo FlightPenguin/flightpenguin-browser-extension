@@ -1,6 +1,7 @@
 import { getCalculatedDuration } from "shared/utilities/getCalculatedDuration";
 import { getPain } from "shared/utilities/pain/getPain";
 
+import { PROVIDERS_NEEDING_RETURNS } from "./background/constants";
 import AirlineMap from "./shared/nameMaps/airlineMap.js";
 import isRegionalAirline from "./shared/nameMaps/regionalAirlines.js";
 import { convertDurationToMinutes, getTimeDetails, getTimezoneOffset } from "./utilityFunctions.js";
@@ -342,10 +343,19 @@ function makeItins(itinCollection, departures, itins, provider, windowId, tabId,
     itin.depFlight.itinIds.push(itin.id);
 
     const existingItin = itins[itin.id];
-    if ((existingItin && itin.fareNumber < existingItin.fareNumber) || !existingItin) {
-      if (existingItin && itin.fareNumber < existingItin.fareNumber) {
-        console.debug(`updating ${itin.id}`);
-      }
+    if (!existingItin) {
+      itins[itin.id] = itin;
+    } else if (existingItin && itin.fareNumber < existingItin.fareNumber) {
+      console.debug(`updating ${existingItin.id} due to better price from ${itin.provider}`);
+      itins[itin.id] = itin;
+    } else if (
+      existingItin &&
+      existingItin.provider !== itin.provider &&
+      itin.fareNumber === existingItin.fareNumber &&
+      PROVIDERS_NEEDING_RETURNS.includes(existingItin.provider) &&
+      !PROVIDERS_NEEDING_RETURNS.includes(existingItin.provider)
+    ) {
+      console.debug(`updating ${existingItin.id} as ${itin.provider} does not require a return scrape`);
       itins[itin.id] = itin;
     }
   });
