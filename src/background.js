@@ -7,7 +7,6 @@ window.Sentry.init({
 // debugger and console logs can be seen by clicking background.js link for this extension under chrome://extensions,
 // it will open a developer console for this extension and in addition to logs you can see the local storage
 
-import { getUserInfo } from "./auth/index";
 import { AnalyticsManager } from "./background/AnalyticsManager";
 import { ListenerManager } from "./background/ListenerManager";
 import { ProviderManager } from "./background/ProviderManager";
@@ -21,7 +20,7 @@ import {
 try {
   const analyticsManager = new AnalyticsManager();
 
-  ExtensionUninstalledHandler();
+  ExtensionUninstalledHandler(analyticsManager);
   ExtensionInstalledHandler(analyticsManager);
   ExtensionOpenedHandler(analyticsManager);
 
