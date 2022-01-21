@@ -1,15 +1,19 @@
 import { Button, DropdownMenu, Image, Link, TopNav } from "bumbag";
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import UserInfo = chrome.identity.UserInfo;
+import { getUserProfileInfo } from "../../auth/getUserProfileInfo";
 
 const NavigationBar = () => {
   const [profileInfo, setProfileInfo] = useState<UserInfo | null>(null);
 
-  useEffect(() => {
-    chrome.identity.getProfileUserInfo((userInfo: UserInfo) => {
-      setProfileInfo(userInfo);
-    });
+  const fetchUserProfileInfo = useCallback(async () => {
+    const userinfo = await getUserProfileInfo();
+    setProfileInfo(userinfo);
   }, []);
+
+  useEffect(() => {
+    fetchUserProfileInfo();
+  }, [fetchUserProfileInfo]);
 
   return (
     <TopNav border={"none"}>
@@ -27,12 +31,12 @@ const NavigationBar = () => {
                   <DropdownMenu.Group title="Profile" cursor="default">
                     <DropdownMenu.Item
                       style={{ whiteSpace: "nowrap" }}
-                      // use={Link}
+                      use={Link}
                       iconBefore="solid-user"
                       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
                       // @ts-ignore
-                      // href="https://subscribe.flightpenguin.com"
-                      // target="_blank"
+                      href="https://subscribe.flightpenguin.com"
+                      target="_blank"
                     >
                       {profileInfo.email}
                     </DropdownMenu.Item>
