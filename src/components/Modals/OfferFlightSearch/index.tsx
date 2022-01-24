@@ -100,7 +100,7 @@ export const OfferFlightSearchModal = (): React.ReactElement => {
                         setHasSeenOffer(true);
                         sessionStorage.setItem("hasOfferedFlightPenguinSwitch", "true");
                         modal.setVisible(false);
-                        sendSearchDecision("Flight Penguin");
+                        sendSearchDecision(siteName);
                       }
                     }}
                     onKeyPress={(event) => {
