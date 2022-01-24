@@ -22,7 +22,6 @@ import { getStandardizedFormatDate } from "../utilities/forms/getStandardizedFor
 import { isValidDateInputString } from "../utilities/forms/isValidDateInputString";
 import { getNearestRelevantAirport } from "../utilities/geography/getNearestRelevantAirport";
 import { Airport } from "./api/airports/Airport";
-// import { getAirportData } from "./api/airports/getAirportData";
 import { MatchedLabel } from "./components/SelectMenu/MatchedLabel";
 import { getFridayAfterNext } from "./utilities/getFridayAfterNext";
 import { sendFormDataToBackground } from "./utilities/sendFormDataToBackground";
@@ -161,7 +160,7 @@ export const SearchForm = ({ onSubmit, initialValues = defaultInitialValues }: S
       const results = fuse
         .search(searchText)
         .map((result) => result.item)
-        .slice(0, 15);
+        .slice(0, 10);
       return { options: results };
     },
     [setAirportSearchText],
