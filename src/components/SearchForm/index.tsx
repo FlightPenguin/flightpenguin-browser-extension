@@ -128,13 +128,17 @@ export const SearchForm = ({
   initialValues = defaultInitialValues,
 }: SearchFormProps): React.ReactElement => {
   const nearestAirport = getNearestRelevantAirport();
-  initialValues.from = nearestAirport;
+  if (initialValues.from.label === "") {
+    initialValues.from = nearestAirport;
+  }
 
   const fromAirportRef = useRef<HTMLDivElement>(null);
   const toAirportRef = useRef<HTMLDivElement>(null);
   const cabinRef = useRef<HTMLDivElement>(null);
 
   const [fromValue, setFromValue] = useState<Airport>(nearestAirport);
+  console.log(fromValue);
+
   const [toValue, setToValue] = useState<Airport | null>({
     value: "",
     label: "",
