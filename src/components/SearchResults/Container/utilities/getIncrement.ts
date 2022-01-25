@@ -1,20 +1,35 @@
-export const getIncrement = (lowerBound: number, upperBound: number, startHour: number): number => {
-  let increment;
+interface GetIncrementInput {
+  lowerBound: number;
+  upperBound: number;
+  startHour: number;
+  flightTimeContainerWidth: number;
+}
+
+export const getIncrement = ({
+  lowerBound,
+  upperBound,
+  startHour,
+  flightTimeContainerWidth,
+}: GetIncrementInput): number => {
+  if (flightTimeContainerWidth <= 500) {
+    return 24;
+  }
+
+  const multiplier = flightTimeContainerWidth <= 800 ? 2 : 1;
 
   if (upperBound - lowerBound > 72) {
-    increment = 6;
+    return 6 * multiplier;
   } else if (upperBound - startHour <= 12) {
-    increment = 1;
+    return 1 * multiplier;
   } else if (upperBound - startHour <= 24) {
     if (startHour % 4 === 0) {
-      increment = 2;
+      return 2 * multiplier;
     } else {
-      increment = 3;
+      return 3 * multiplier;
     }
   } else if (startHour % 4 === 0) {
-    increment = 4;
+    return 4 * multiplier;
   } else {
-    increment = 3;
+    return 3 * multiplier;
   }
-  return increment;
 };

@@ -1,9 +1,9 @@
-import { Box, Flex, Icon, Image, Modal, Show, Text } from "bumbag";
+import { Box, Flex, Image, Modal, Text } from "bumbag";
 import React, { useEffect, useState } from "react";
 
-import { sendOpenExtension } from "../../../shared/events/sendOpenExtension";
+import { sendOpenExtension } from "../../../shared/events/";
+import { sendSearchDecision } from "../../../shared/events/analytics/searchDecision";
 import { hasVisitedRecently } from "../utilities/hasVisitedRecently";
-import { getSiteLogoPath } from "./utilities/getSiteLogoPath";
 import { getSiteName } from "./utilities/getSiteName";
 
 type Unit = "px" | "em" | "rem" | "%" | "ch" | "vw" | "vh";
@@ -65,12 +65,14 @@ export const OfferFlightSearchModal = (): React.ReactElement => {
                       if (!loadingSelection) {
                         setLoadingSelection(true);
                         sendOpenExtension();
+                        sendSearchDecision("Flight Penguin");
                       }
                     }}
                     onKeyPress={(event) => {
                       if (!loadingSelection && event.charCode === 13) {
                         setLoadingSelection(true);
                         sendOpenExtension();
+                        sendSearchDecision("Flight Penguin");
                       }
                     }}
                     _hover={{ border: "2px solid black", borderRadius: "10%" }}
@@ -98,6 +100,7 @@ export const OfferFlightSearchModal = (): React.ReactElement => {
                         setHasSeenOffer(true);
                         sessionStorage.setItem("hasOfferedFlightPenguinSwitch", "true");
                         modal.setVisible(false);
+                        sendSearchDecision(siteName);
                       }
                     }}
                     onKeyPress={(event) => {
@@ -106,12 +109,18 @@ export const OfferFlightSearchModal = (): React.ReactElement => {
                         setHasSeenOffer(true);
                         sessionStorage.setItem("hasOfferedFlightPenguinSwitch", "true");
                         modal.setVisible(false);
+                        sendSearchDecision(siteName);
                       }
                     }}
                     _hover={{ border: "2px solid black", borderRadius: "10%" }}
                     _focus={{ border: "2px solid black", borderRadius: "10%" }}
                   >
-                    <Image height={iconSize} width={iconSize} src={chrome.runtime.getURL("/images/aircraft.svg")} />
+                    <Image
+                      height={iconSize}
+                      width={iconSize}
+                      alt={`Search with ${siteName}`}
+                      src={chrome.runtime.getURL("/images/aircraft.svg")}
+                    />
                     <Box textAlign="center" width="100%">
                       <Text fontWeight="700">{siteName}</Text>
                     </Box>

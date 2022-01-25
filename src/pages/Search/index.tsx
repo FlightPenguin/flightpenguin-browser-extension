@@ -1,23 +1,32 @@
-import { PageContent, PageWithHeader } from "bumbag";
-import React, { useCallback, useEffect, useState } from "react";
+import { Box, PageContent, PageWithHeader } from "bumbag";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 
 import { getAuthToken } from "../../auth/getAuthToken";
 import { AnalyticsManager } from "../../background/AnalyticsManager";
-import { containerWidth, searchFormWidth, sidePaddingWidth } from "../../components/constants";
+import { MarketingFooter } from "../../components/MarketingFooter";
 import { LoginModal, WelcomeModal } from "../../components/Modals";
 import NavigationBar from "../../components/NavigationBar";
 import { SearchForm } from "../../components/SearchForm";
 import SearchFormDisplay from "../../components/SearchFormDisplay";
 import SearchResults from "../../components/SearchResults";
+import { SizeAlert } from "../../components/SizeAlert";
 import { UpdateNotificationAlert } from "../../components/UpdateNotificationAlert";
 import { getStandardizedFormatDate } from "../../components/utilities/forms/getStandardizedFormatDate";
 import { sendIndexUnload } from "../../shared/events/sendIndexUnload";
 import { FlightSearchFormData } from "../../shared/types/FlightSearchFormData";
 import { isRecentlyInstalled, setRecentlyInstalled } from "../../shared/utilities/recentlyInstalledManager";
+import { getFormContainerWidth } from "./utils/getFormContainerWidth";
+import { getResultsContainerWidth } from "./utils/getResultsContainerWidth";
 
 export const SearchPage = (): React.ReactElement => {
+  const resultsWrapperRef = useRef<HTMLDivElement>(null);
+
   const [formData, setFormData] = useState<FlightSearchFormData | undefined>(undefined);
   const [showForm, setShowForm] = useState(true);
+
+  const [pageWidth, setPageWidth] = useState(window.innerWidth);
+  const [formContainerWidth, setFormContainerWidth] = useState<number | undefined>();
+  const [resultsContainerWidth, setResultsContainerWidth] = useState<number | undefined>();
 
   const [showUpdate, setShowUpdate] = useState(true);
   const [showWelcomeModal, setShowWelcomeModal] = useState(isRecentlyInstalled());
@@ -44,6 +53,28 @@ export const SearchPage = (): React.ReactElement => {
   }, [setShowUpdate]);
 
   useEffect(() => {
+    if (resultsWrapperRef.current) {
+      const containerWidth = resultsWrapperRef.current.clientWidth;
+      setResultsContainerWidth(getResultsContainerWidth(containerWidth));
+      setFormContainerWidth(getFormContainerWidth(containerWidth));
+    }
+  }, [resultsWrapperRef]);
+
+  useEffect(() => {
+    const handleResize = () => {
+      if (resultsWrapperRef.current) {
+        const containerWidth = resultsWrapperRef.current.clientWidth;
+        setResultsContainerWidth(getResultsContainerWidth(containerWidth));
+        setFormContainerWidth(getFormContainerWidth(containerWidth));
+      }
+      setPageWidth(window.innerWidth);
+    };
+
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, [setResultsContainerWidth]);
+
+  useEffect(() => {
     getIsLoggedIn();
   }, [setIsLoggedIn, getIsLoggedIn]);
 
@@ -51,9 +82,17 @@ export const SearchPage = (): React.ReactElement => {
     analytics.pageview({});
   }, []);
 
+  if (pageWidth < 900) {
+    return (
+      <PageContent isFluid paddingY={{ default: "major-10" }}>
+        <SizeAlert />
+      </PageContent>
+    );
+  }
+
   return (
-    <PageWithHeader header={<NavigationBar />}>
-      <PageContent breakpoint="desktop" paddingY={{ default: "major-5" }}>
+    <PageWithHeader header={<NavigationBar />} overflow="hidden">
+      <Box display="flex" flexDirection="column">
         {showWelcomeModal && !isLoggedIn && (
           <WelcomeModal
             onSuccess={() => {
@@ -70,49 +109,69 @@ export const SearchPage = (): React.ReactElement => {
             }}
           />
         )}
-        {!showUpdate && (
+        {!showUpdate && ((showForm && formContainerWidth) || resultsContainerWidth) && (
           <UpdateNotificationAlert
-            width={`${showForm ? searchFormWidth : containerWidth + sidePaddingWidth * 2}px`}
+            width={`${showForm ? formContainerWidth : resultsContainerWidth}px`}
             marginBottom="50px"
           />
         )}
-        {showForm && (
-          <SearchForm
-            initialValues={
-              formData && {
-                ...formData,
-                from: { value: formData.from, label: formData.from },
-                to: { value: formData.to, label: formData.to },
-                cabin: formData?.cabin || "econ",
-                fromDate: getStandardizedFormatDate(formData.fromDate),
-                toDate: getStandardizedFormatDate(formData.toDate),
-                searchByPoints: formData.searchByPoints.toString(),
+        {showForm && formContainerWidth && (
+          <React.Fragment>
+            <SearchForm
+              initialValues={
+                formData && {
+                  ...formData,
+                  from: { value: formData.from, label: formData.from },
+                  to: { value: formData.to, label: formData.to },
+                  cabin: formData?.cabin || "econ",
+                  fromDate: getStandardizedFormatDate(formData.fromDate),
+                  toDate: getStandardizedFormatDate(formData.toDate),
+                  searchByPoints: formData.searchByPoints.toString(),
+                }
               }
-            }
-            onSubmit={(values) => {
-              setFormData(values);
-              setShowForm(false);
-              analytics.track({
-                category: "flight search",
-                action: "search",
-                label: window.location.host,
-              });
-            }}
-          />
-        )}
-        {!showForm && !!formData && (
-          <>
-            <SearchFormDisplay
-              formData={formData}
-              onUpdateClick={() => {
-                setShowForm(true);
-                sendIndexUnload();
+              onSubmit={(values) => {
+                setFormData(values);
+                setShowForm(false);
+                analytics.track({
+                  category: "flight search",
+                  action: "search",
+                  label: window.location.host,
+                });
+              }}
+              containerWidth={formContainerWidth}
+              onAuthError={() => {
+                setIsLoggedIn(false);
               }}
             />
-            <SearchResults formData={formData} />
-          </>
+            <MarketingFooter />
+          </React.Fragment>
         )}
-      </PageContent>
+        <Box
+          boxSizing="border-box"
+          display="flex"
+          flexDirection="column"
+          width="100%"
+          id="results-wrapper"
+          ref={resultsWrapperRef}
+          paddingLeft="2rem"
+          paddingRight="2rem"
+        >
+          {!showForm && !!formData && resultsContainerWidth && (
+            <>
+              <SearchFormDisplay
+                containerWidth={resultsContainerWidth}
+                formData={formData}
+                onUpdateClick={() => {
+                  setShowForm(true);
+                  sendIndexUnload();
+                }}
+              />
+
+              <SearchResults formData={formData} resultsContainerWidth={resultsContainerWidth} />
+            </>
+          )}
+        </Box>
+      </Box>
     </PageWithHeader>
   );
 };

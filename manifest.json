@@ -1,6 +1,6 @@
 {
   "name": "FlightPenguin",
-  "version": "1.8.20",
+  "version": "1.10.10",
   "description": "Search flights",
   "background": {
     "page": "src/background.html",
@@ -51,7 +51,8 @@
       "js": [
         "src/shared/sentry.js",
         "dist/flightpenguin.bundle.js"
-      ]
+      ],
+      "run_at": "document_start"
     },
     {
       "matches": [

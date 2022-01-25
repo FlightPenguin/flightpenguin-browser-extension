@@ -4,6 +4,7 @@ import React, { useEffect, useState } from "react";
 import { getSubscriptionValidity, getUserInfo } from "../../auth";
 import { getAuthToken } from "../../auth/getAuthToken";
 import { AnalyticsManager } from "../../background/AnalyticsManager";
+import { GoogleUserInfo } from "../../shared/types/GoogleUserInfo";
 import { focusPrimaryTab } from "../../shared/utilities/windows/focusPrimaryTab";
 
 interface LoginModalProps {
@@ -46,19 +47,25 @@ export const LoginModal = ({ onSuccess }: LoginModalProps): React.ReactElement =
           <Card.Footer>
             <Button
               onClick={async () => {
-                const token = await getAuthToken(true);
-                const userInfo = await getUserInfo(token);
-                const userId = userInfo?.id;
-                if (userId) {
-                  analytics.identify({ userId: userInfo.id });
-                }
-                const apiResponse = await getSubscriptionValidity(token);
-                await focusPrimaryTab();
+                let userInfo: GoogleUserInfo | undefined;
+                try {
+                  const token = await getAuthToken(true);
+                  userInfo = await getUserInfo(token);
+                  const apiResponse = await getSubscriptionValidity(token);
+                  await focusPrimaryTab();
 
-                if (apiResponse.status && apiResponse.data && apiResponse.data.status) {
-                  onSuccess();
-                } else {
+                  if (apiResponse.status && apiResponse.data && apiResponse.data.status) {
+                    onSuccess();
+                  } else {
+                    setAuthError(true);
+                  }
+                } catch (e) {
                   setAuthError(true);
+                  throw e;
+                }
+
+                if (userInfo !== undefined && !!userInfo?.id) {
+                  analytics.identify({ userId: userInfo.id });
                 }
               }}
               palette="primary"

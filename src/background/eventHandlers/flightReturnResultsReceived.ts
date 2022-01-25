@@ -50,6 +50,18 @@ export const handleFlightReturnResultsReceived = (
         itins: itineraries,
         updatedAt: new Date(),
       },
+      meta: {
+        departures: {
+          airports: providerManager.getLayoverAirports("DEPARTURE"),
+          airlines: providerManager.getAirlines("DEPARTURE"),
+          layoverCounts: providerManager.getLayoverCounts("DEPARTURE"),
+        },
+        returns: {
+          airports: providerManager.getLayoverAirports("RETURN"),
+          airlines: providerManager.getAirlines("RETURN"),
+          layoverCounts: providerManager.getLayoverCounts("RETURN"),
+        },
+      },
       formData: providerManager.getFormData(),
     };
 

@@ -10,15 +10,17 @@ import { sendIndexUnload } from "../../shared/events/sendIndexUnload";
 import { FlightSearchFormData } from "../../shared/types/FlightSearchFormData";
 import { ProcessedFlightSearchResult } from "../../shared/types/ProcessedFlightSearchResult";
 import { ProcessedItinerary } from "../../shared/types/ProcessedItinerary";
+import { SearchLegMeta, SearchMeta } from "../../shared/types/SearchMeta";
 import { sendFormDataToBackground } from "../SearchForm/utilities/sendFormDataToBackground";
 import TimelineContainer from "./Container";
 import { FlightSelection } from "./FlightSelection";
 
 interface SearchResultsProps {
   formData: FlightSearchFormData;
+  resultsContainerWidth: number;
 }
 
-const SearchResults = ({ formData }: SearchResultsProps): React.ReactElement => {
+export const SearchResults = ({ formData, resultsContainerWidth }: SearchResultsProps): React.ReactElement => {
   const analytics = new AnalyticsManager(`${process.env.GOOGLE_ANALYTICS_TRACKING_ID}`, false);
 
   const [flights, setFlights] = useDebounce<{
@@ -34,6 +36,7 @@ const SearchResults = ({ formData }: SearchResultsProps): React.ReactElement => 
     500,
     true,
   );
+  const [searchMeta, setSearchMeta] = useDebounce<SearchMeta | undefined>(undefined, 500, true);
 
   const [departuresComplete, setDeparturesComplete] = useState(false);
   const [returnsComplete, setReturnsComplete] = useState(false);
@@ -54,6 +57,7 @@ const SearchResults = ({ formData }: SearchResultsProps): React.ReactElement => 
             departureFlights: message.flights.departureList,
             returnFlights: message.flights.returnList,
           });
+          setSearchMeta(message.meta);
           break;
         case "SCRAPING_COMPLETED":
           if (message.searchType === "RETURN") {
@@ -101,6 +105,7 @@ const SearchResults = ({ formData }: SearchResultsProps): React.ReactElement => 
                 setDepartureFlightDetails(null);
                 setReturnFlightDetails(null);
                 setTabInteractionFailed(false);
+                setSearchMeta(undefined);
 
                 sendFormDataToBackground(formData);
                 setSearchAgainDisabled(false);
@@ -115,25 +120,35 @@ const SearchResults = ({ formData }: SearchResultsProps): React.ReactElement => 
   }
 
   return (
-    <Box className="search-results-container" alignX="center" paddingTop="50px">
+    <Box
+      className="search-results-container"
+      display="flex"
+      flexDirection="column"
+      justifyContent="center"
+      paddingTop="50px"
+      width="100%"
+    >
       <TimelineContainer
         flightType="DEPARTURE"
         itineraries={flights.itineraries}
         flights={flights.departureFlights}
         formData={formData}
+        meta={
+          searchMeta
+            ? searchMeta.departures
+            : ({ layoverCounts: [] as number[], airlines: [] as string[], airports: [] as string[] } as SearchLegMeta)
+        }
         loading={!departureFlightDetails && !departuresComplete}
+        resultsContainerWidth={resultsContainerWidth}
         onSelection={(details) => {
           setDepartureFlightDetails(details);
-
           analytics.track({
             category: "flight search",
             action: "departure selection",
             label: window.location.host,
           });
-
           if (!formData?.roundtrip) {
             sendHighlightTab(details.flightPenguinId, "");
-
             analytics.track({
               category: "flight search",
               action: "flight selection",
@@ -148,7 +163,6 @@ const SearchResults = ({ formData }: SearchResultsProps): React.ReactElement => 
           setReturnsComplete(false);
         }}
       />
-
       {!!departureFlightDetails && formData.roundtrip && (
         <>
           <Box height="50px" />
@@ -157,12 +171,20 @@ const SearchResults = ({ formData }: SearchResultsProps): React.ReactElement => 
             itineraries={flights.itineraries}
             flights={flights.returnFlights}
             formData={formData}
+            meta={
+              searchMeta
+                ? searchMeta.returns
+                : ({
+                    layoverCounts: [] as number[],
+                    airlines: [] as string[],
+                    airports: [] as string[],
+                  } as SearchLegMeta)
+            }
             loading={!returnFlightDetails && !returnsComplete}
+            resultsContainerWidth={resultsContainerWidth}
             onSelection={(details) => {
               setReturnFlightDetails(details);
-
               sendHighlightTab(departureFlightDetails?.flightPenguinId, details.flightPenguinId);
-
               analytics.track({
                 category: "flight search",
                 action: "return selection",

@@ -1,6 +1,7 @@
 import { getCalculatedDuration } from "shared/utilities/getCalculatedDuration";
 import { getPain } from "shared/utilities/pain/getPain";
 
+import { PROVIDERS_NEEDING_RETURNS } from "./background/constants";
 import AirlineMap from "./shared/nameMaps/airlineMap.js";
 import isRegionalAirline from "./shared/nameMaps/regionalAirlines.js";
 import { convertDurationToMinutes, getTimeDetails, getTimezoneOffset } from "./utilityFunctions.js";
@@ -93,10 +94,17 @@ function Flight(
   this.duration = duration;
   this.durationMinutes = convertDurationToMinutes(duration);
   this.layovers = layovers || [];
+
   this.itinIds = [];
   this.timezoneOffset = timezoneOffset;
 
   this.updateLayovers();
+
+  const layoversDetails = this.layovers.filter((layover) => layover.isLayoverStop);
+  const flightSegments = this.layovers.filter((layover) => !layover.isLayoverStop);
+  this.layoverCount = layoversDetails.length;
+  this.layoverAirports = [...new Set(layoversDetails.map((layover) => layover.from))];
+  this.carriers = [...new Set(flightSegments.map((layover) => layover.operatingAirline.display))];
 }
 
 function cleanupAirline(airline) {
@@ -334,13 +342,22 @@ function makeItins(itinCollection, departures, itins, provider, windowId, tabId,
 
     itin.depFlight.itinIds.push(itin.id);
 
-    // if (itins[itin.id]) {
-    //   // this can happen if the same itin exists across different providers
-    //   itins[itin.id].push(itin);
-    // } else {
-    //   itins[itin.id] = [itin];
-    // }
-    itins[itin.id] = itin;
+    const existingItin = itins[itin.id];
+    if (!existingItin) {
+      itins[itin.id] = itin;
+    } else if (existingItin && itin.fareNumber < existingItin.fareNumber) {
+      console.debug(`updating ${existingItin.id} due to better price from ${itin.provider}`);
+      itins[itin.id] = itin;
+    } else if (
+      existingItin &&
+      existingItin.provider !== itin.provider &&
+      itin.fareNumber === existingItin.fareNumber &&
+      PROVIDERS_NEEDING_RETURNS.includes(existingItin.provider) &&
+      !PROVIDERS_NEEDING_RETURNS.includes(existingItin.provider)
+    ) {
+      console.debug(`updating ${existingItin.id} as ${itin.provider} does not require a return scrape`);
+      itins[itin.id] = itin;
+    }
   });
 
   return { itins, departures, returns };

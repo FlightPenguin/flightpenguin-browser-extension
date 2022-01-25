@@ -9,18 +9,18 @@ export const ExtensionInstalledHandler = (analytics: AnalyticsManager): void => 
 
     switch (details.reason.toLowerCase()) {
       case "install":
-        analytics.track({ category: "lifecycle", action: "Install" });
+        analytics.track({ category: "lifecycle", action: "Install", label: "Flight Penguin" });
         setRecentlyInstalled(true);
         await openExtension(analytics);
         break;
       case "update":
-        analytics.track({ category: "lifecycle", action: "Update" });
+        analytics.track({ category: "lifecycle", action: "Update", label: "Flight Penguin" });
         break;
       case "chrome_update":
-        analytics.track({ category: "lifecycle", action: "Chrome update" });
+        analytics.track({ category: "lifecycle", action: "Chrome update", label: "Flight Penguin" });
         break;
       case "shared_module_update":
-        analytics.track({ category: "lifecycle", action: "Shared update" });
+        analytics.track({ category: "lifecycle", action: "Shared update", label: "Flight Penguin" });
         break;
       default:
         console.error(`What is this install reason: ${details.reason}`);

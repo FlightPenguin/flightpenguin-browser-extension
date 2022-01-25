@@ -46,7 +46,7 @@ export const FlightSegmentBox = ({ flightSegment, left }: FlightSegmentBoxProps)
       </Box>
       {flightSegment.isLayoverStop && (
         <Box>
-          <Text alignX="center" fontSize="150">
+          <Text alignX="center" fontSize="clamp(.4375rem, 1vw, .875rem)">
             {flightSegment.from}
           </Text>
         </Box>
