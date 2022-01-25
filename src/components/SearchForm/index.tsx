@@ -152,7 +152,7 @@ export const SearchForm = ({
     maximum: getChromeFormattedDateFromDate(maxDate),
   });
   const [airportSearchText, setAirportSearchText] = useState("");
-  const airportOptions = airports.map((record: any) => {
+  const airportOptions = airports.map((record: Record<string, unknown>) => {
     return {
       key: record.iataCode,
       label: record.iataCode,
@@ -163,32 +163,13 @@ export const SearchForm = ({
     };
   }) as Airport[];
 
-  const accentsMap = new Map([
-    ["A", "Á|À|Ã|Â|Ä"],
-    ["a", "á|à|ã|â|ä"],
-    ["E", "É|È|Ê|Ë"],
-    ["e", "é|è|ê|ë"],
-    ["I", "Í|Ì|Î|Ï"],
-    ["i", "í|ì|î|ï"],
-    ["O", "Ó|Ò|Ô|Õ|Ö"],
-    ["o", "ó|ò|ô|õ|ö"],
-    ["U", "Ú|Ù|Û|Ü"],
-    ["u", "ú|ù|û|ü"],
-    ["C", "Ç"],
-    ["c", "ç"],
-    ["N", "Ñ"],
-    ["n", "ñ"],
-  ]);
-  const accentsReducer = (acc, [key]) => acc.replace(new RegExp(accentsMap.get(key), "g"), key);
-  const removeAccents = (text) => [...accentsMap].reduce(accentsReducer, text);
-
   const searchAirports = useCallback(
     async ({ searchText }) => {
       setAirportSearchText(searchText);
       const fuse = new Fuse(airportOptions, {
         keys: ["searchText", "key"],
       });
-      const cleanedText = removeAccents(searchText);
+      const cleanedText = searchText.normalize("NFD").replace(/\p{Diacritic}/gu, "");
       const results = fuse
         .search(cleanedText)
         .map((result) => result.item)
