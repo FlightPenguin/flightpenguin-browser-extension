@@ -8,9 +8,9 @@ export const PROVIDERS_SUPPORTING_POINTS_SEARCH = ["expedia"];
 export const SUPPORTED_PROVIDERS = [
   // force expansion
   "expedia",
-  "kiwi",
-  "southwest",
-  "trip",
+  // "kiwi",
+  // "southwest",
+  // "trip",
 ];
 
 // eslint-disable-next-line @typescript-eslint/no-empty-function

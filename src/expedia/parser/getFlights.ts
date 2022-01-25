@@ -1,6 +1,7 @@
 import { waitForTheElementToDisappear } from "wait-for-the-element";
 
 import { LoadingTimeoutParserError, MissingElementLookupError } from "../../shared/errors";
+import { pause } from "../../shared/pause";
 import { FlightDetails } from "../../shared/types/FlightDetails";
 import { FlightSearchFormData } from "../../shared/types/FlightSearchFormData";
 import { UnprocessedFlightSearchResult } from "../../shared/types/UnprocessedFlightSearchResult";
@@ -72,6 +73,8 @@ export const getFlights = async (
     });
 
     closeFlightDetailsModal();
+
+    await pause(100);
   }
   return flights;
 };
