@@ -50,7 +50,8 @@ export const TimeCell = ({
       position="relative"
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
-      left={tzOffset ? `-${intervalWidth}px` : "0px"}
+      left={"0px"}
+      data-name="interval"
     >
       {isMidnight ? (
         <Box position="relative" border="default" padding="major-1" borderRadius="4">
@@ -65,11 +66,16 @@ export const TimeCell = ({
           &nbsp;
         </Text>
       )}
-      <Tooltip
-        content={`Time at ${tzOffset ? departureAirportCode : departureAirportCode + " and " + arrivalAirportCode}`}
-        hasArrow
-        placement="right"
-      >
+      <Box display="flex" justifyContent="center" width="100%" data-name="text-wrapper">
+        <Text
+          flex={1}
+          fontSize={timeFontSize}
+          fontWeight={isMidnight ? "700" : "400"}
+          tabIndex={-1}
+          color={tzOffset ? "info" : "black"}
+        >
+          {tzOffset && interval === 0 ? departureAirportCode : ""}
+        </Text>
         <Text
           fontSize={timeFontSize}
           fontWeight={isMidnight ? "700" : "400"}
@@ -78,13 +84,36 @@ export const TimeCell = ({
         >
           {displayTime.toLowerCase()}
         </Text>
-      </Tooltip>
+        <Text
+          flex={1}
+          fontSize={timeFontSize}
+          fontWeight={isMidnight ? "700" : "400"}
+          tabIndex={-1}
+          color={tzOffset ? "info" : "black"}
+        />
+      </Box>
       {!!tzOffset && (
-        <Tooltip content={`Time at ${arrivalAirportCode}`} hasArrow placement="right">
+        <Box display="flex" justifyContent="center" width="100%" data-name="text-wrapper">
+          <Text
+            flex={1}
+            fontSize={timeFontSize}
+            fontWeight={isMidnight ? "700" : "400"}
+            tabIndex={-1}
+            color={tzOffset ? "warning" : "black"}
+          >
+            {tzOffset && interval === 0 ? arrivalAirportCode : ""}
+          </Text>
           <Text fontSize={timeFontSize} fontWeight={isMidnight ? "700" : "400"} tabIndex={-1} color="warning">
             {displayOffsetTime.toLowerCase()}
           </Text>
-        </Tooltip>
+          <Text
+            flex={1}
+            fontSize={timeFontSize}
+            fontWeight={isMidnight ? "700" : "400"}
+            tabIndex={-1}
+            color={tzOffset ? "warning" : "black"}
+          />
+        </Box>
       )}
     </Box>
   );
