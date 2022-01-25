@@ -1,3 +1,4 @@
+import { pause } from "../../shared/pause";
 import { waitForAppearance } from "../../shared/utilities/waitFor";
 
 const FLIGHT_CARDS_SELECTOR = 'div[data-test="ResultCardWrapper"]';
@@ -29,7 +30,7 @@ export const isComplete = async (flightCard: HTMLDivElement): Promise<boolean> =
       block: "start",
       inline: "nearest",
     });
-    return false;
+    await pause(1500);
   }
   return !!flightContainer.querySelector(NO_MORE_RESULTS_SELECTOR);
 };
@@ -41,7 +42,9 @@ const getProcessedFlightTotal = (flightContainer: HTMLDivElement): number => {
 };
 
 const isReadyForMoreFlights = (flightContainer: HTMLDivElement): boolean => {
-  return flightContainer.querySelectorAll(PLACEHOLDER_CARD_SELECTOR).length <= 4;
+  // const count = flightContainer.querySelectorAll(PLACEHOLDER_CARD_SELECTOR).length;
+  // return flightContainer.querySelectorAll(PLACEHOLDER_CARD_SELECTOR).length <= 4;
+  return true;
 };
 
 const getShowMoreButton = (flightContainer: HTMLDivElement): HTMLButtonElement | null => {

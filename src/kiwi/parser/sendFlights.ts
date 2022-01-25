@@ -1,5 +1,6 @@
 import { sendFlightsEvent } from "../../shared/events";
 import { getNextVisibleSibling } from "../../shared/parser/getNextVisibleSibling";
+import { pause } from "../../shared/pause";
 import { FlightSearchFormData } from "../../shared/types/FlightSearchFormData";
 import { UnprocessedFlightSearchResult } from "../../shared/types/UnprocessedFlightSearchResult";
 import { stopScrollingCheck, stopScrollingNow } from "../../shared/ui/stopScrolling";
@@ -24,6 +25,8 @@ export const sendFlights = async ({ flightCards, formData }: SendFlightsProps): 
     if (shouldSkipCard(flightCard)) {
       flightCard.style.display = "none";
       flightCard.dataset.fpVisited = "true";
+
+      lastFlightCard = flightCard;
       continue;
     }
 
@@ -50,7 +53,7 @@ export const sendFlights = async ({ flightCards, formData }: SendFlightsProps): 
 };
 
 const shouldSkipCard = (flightCard: HTMLDivElement): boolean => {
-  const denyListTerms = ["travel hack", "no-checked-bag"];
+  const denyListTerms = ["travel hack", "no-checked-bag", "no baggage"];
   const ignoreIfMissing = ["show details"];
 
   return (
@@ -70,7 +73,14 @@ const scrollToCard = async (flightCard: HTMLDivElement): Promise<void> => {
   if (scrollToCard.getBoundingClientRect().y > 0) {
     // NOTE: getBoundingClientRect().y returns negative numbers if above the current viewport...
     if (scrollToCard.dataset.test === "ResultCardPlaceholder") {
+      const halfHeight = window.innerHeight / 2;
+
+      // jitter and skitter to activate kiwi's scroll handler
       window.scrollBy(0, window.innerHeight);
+      await pause(250);
+      window.scrollBy(0, halfHeight * -1);
+      await pause(250);
+      window.scrollBy(0, halfHeight);
     } else {
       scrollToCard.scrollIntoView({
         behavior: "smooth",
