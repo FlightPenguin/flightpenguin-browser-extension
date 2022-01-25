@@ -48,7 +48,7 @@ export const MarketingFooter = (): React.ReactElement => {
           />
           <ContentTile
             title="One search"
-            body="Hate having to visit multiple travel sites?  Our extension searches across airlines, including the uncooperative ones like Southwest and Ryanair."
+            body="Hate having to visit multiple travel sites?  Our extension searches across airlines, including the ones that do not play nicely with others."
             image={{ path: "/images/Airlines.webp", altText: "Example of searched airlines" }}
           />
         </Box>
