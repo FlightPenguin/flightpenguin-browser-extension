@@ -149,16 +149,38 @@ export const SearchForm = ({ onSubmit, initialValues = defaultInitialValues }: S
       name: record.displayName,
       location: record.displayLocation,
       value: record.iataCode,
+      searchText: record.searchText,
     };
   }) as Airport[];
+
+  const accentsMap = new Map([
+    ["A", "Á|À|Ã|Â|Ä"],
+    ["a", "á|à|ã|â|ä"],
+    ["E", "É|È|Ê|Ë"],
+    ["e", "é|è|ê|ë"],
+    ["I", "Í|Ì|Î|Ï"],
+    ["i", "í|ì|î|ï"],
+    ["O", "Ó|Ò|Ô|Õ|Ö"],
+    ["o", "ó|ò|ô|õ|ö"],
+    ["U", "Ú|Ù|Û|Ü"],
+    ["u", "ú|ù|û|ü"],
+    ["C", "Ç"],
+    ["c", "ç"],
+    ["N", "Ñ"],
+    ["n", "ñ"],
+  ]);
+  const accentsReducer = (acc, [key]) => acc.replace(new RegExp(accentsMap.get(key), "g"), key);
+  const removeAccents = (text) => [...accentsMap].reduce(accentsReducer, text);
+
   const searchAirports = useCallback(
     async ({ searchText }) => {
       setAirportSearchText(searchText);
       const fuse = new Fuse(airportOptions, {
-        keys: ["label", "name", "location"],
+        keys: ["searchText", "key"],
       });
+      const cleanedText = removeAccents(searchText);
       const results = fuse
-        .search(searchText)
+        .search(cleanedText)
         .map((result) => result.item)
         .slice(0, 10);
       return { options: results };
