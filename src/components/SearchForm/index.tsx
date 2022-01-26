@@ -168,6 +168,7 @@ export const SearchForm = ({
       setAirportSearchText(searchText);
       const fuse = new Fuse(airportOptions, {
         keys: ["searchText", "key"],
+        ignoreLocation: true,
       });
       const cleanedText = searchText.normalize("NFD").replace(/\p{Diacritic}/gu, "");
       const results = fuse
