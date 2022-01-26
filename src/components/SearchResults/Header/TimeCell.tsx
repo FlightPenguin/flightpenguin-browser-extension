@@ -68,11 +68,14 @@ export const TimeCell = ({
       )}
       <Box display="flex" justifyContent="center" width="100%" data-name="text-wrapper">
         <Text
+          boxSizing="border-box"
+          color={tzOffset ? "info" : "black"}
           flex={1}
           fontSize={timeFontSize}
           fontWeight={isMidnight ? "700" : "400"}
+          paddingRight="minor-1"
           tabIndex={-1}
-          color={tzOffset ? "info" : "black"}
+          textAlign="right"
         >
           {tzOffset && interval === 0 ? departureAirportCode : ""}
         </Text>
@@ -85,21 +88,27 @@ export const TimeCell = ({
           {displayTime.toLowerCase()}
         </Text>
         <Text
+          boxSizing="border-box"
+          color={tzOffset ? "info" : "black"}
           flex={1}
           fontSize={timeFontSize}
           fontWeight={isMidnight ? "700" : "400"}
+          paddingLeft="minor-1"
           tabIndex={-1}
-          color={tzOffset ? "info" : "black"}
+          textAlign="left"
         />
       </Box>
       {!!tzOffset && (
         <Box display="flex" justifyContent="center" width="100%" data-name="text-wrapper">
           <Text
+            boxSizing="border-box"
+            color={tzOffset ? "warning" : "black"}
             flex={1}
             fontSize={timeFontSize}
             fontWeight={isMidnight ? "700" : "400"}
+            paddingRight="minor-1"
             tabIndex={-1}
-            color={tzOffset ? "warning" : "black"}
+            textAlign="right"
           >
             {tzOffset && interval === 0 ? arrivalAirportCode : ""}
           </Text>
@@ -107,11 +116,14 @@ export const TimeCell = ({
             {displayOffsetTime.toLowerCase()}
           </Text>
           <Text
+            boxSizing="border-box"
+            color={tzOffset ? "warning" : "black"}
             flex={1}
             fontSize={timeFontSize}
             fontWeight={isMidnight ? "700" : "400"}
+            paddingLeft="minor-1"
             tabIndex={-1}
-            color={tzOffset ? "warning" : "black"}
+            textAlign="left"
           />
         </Box>
       )}
