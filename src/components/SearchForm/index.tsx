@@ -2,9 +2,11 @@ import { Box, Button, Card, FieldStack, FieldWrapper, Input, RadioGroup, Select,
 import { SelectMenu } from "bumbag/src/SelectMenu";
 import { addDays, endOfDay, max, nextSunday, startOfDay } from "date-fns";
 import { Field as FormikField, Form, Formik } from "formik";
+import Fuse from "fuse.js";
 import React, { useCallback, useRef, useState } from "react";
 import { boolean, mixed, number, object, string } from "yup";
 
+import airports from "../../assets/airports.json";
 import { FlightSearchFormData } from "../../shared/types/FlightSearchFormData";
 import { setRecentlyInstalled } from "../../shared/utilities/recentlyInstalledManager";
 import { CardType, PointsMap } from "../constants";
@@ -19,7 +21,6 @@ import { getStandardizedFormatDate } from "../utilities/forms/getStandardizedFor
 import { isValidDateInputString } from "../utilities/forms/isValidDateInputString";
 import { getNearestRelevantAirport } from "../utilities/geography/getNearestRelevantAirport";
 import { Airport } from "./api/airports/Airport";
-import { getAirportData } from "./api/airports/getAirportData";
 import { MatchedLabel } from "./components/SelectMenu/MatchedLabel";
 import { getFridayAfterNext } from "./utilities/getFridayAfterNext";
 import { sendFormDataToBackground } from "./utilities/sendFormDataToBackground";
@@ -151,10 +152,29 @@ export const SearchForm = ({
     maximum: getChromeFormattedDateFromDate(maxDate),
   });
   const [airportSearchText, setAirportSearchText] = useState("");
-  const getAirports = useCallback(
-    async ({ page, searchText }) => {
+  const airportOptions = airports.map((record: Record<string, unknown>) => {
+    return {
+      key: record.iataCode,
+      label: record.iataCode,
+      name: record.displayName,
+      location: record.displayLocation,
+      value: record.iataCode,
+      searchText: record.searchText,
+    };
+  }) as Airport[];
+
+  const searchAirports = useCallback(
+    async ({ searchText }) => {
       setAirportSearchText(searchText);
-      return getAirportData({ page: page - 1, search: searchText.trim(), onAuthError, retry401: true });
+      const fuse = new Fuse(airportOptions, {
+        keys: ["searchText", "key"],
+      });
+      const cleanedText = searchText.normalize("NFD").replace(/\p{Diacritic}/gu, "");
+      const results = fuse
+        .search(cleanedText)
+        .map((result) => result.item)
+        .slice(0, 10);
+      return { options: results };
     },
     [setAirportSearchText],
   );
@@ -234,7 +254,7 @@ export const SearchForm = ({
                           Starting airport
                         </Box>
                       }
-                      loadOptions={getAirports}
+                      loadOptions={searchAirports}
                       name="from"
                       onBlur={(event: React.ChangeEvent) => {
                         if (Object.keys(event).length) {
@@ -295,7 +315,7 @@ export const SearchForm = ({
                           Destination airport
                         </Box>
                       }
-                      loadOptions={getAirports}
+                      loadOptions={searchAirports}
                       name="to"
                       onBlur={(event: React.ChangeEvent) => {
                         if (Object.keys(event).length) {
