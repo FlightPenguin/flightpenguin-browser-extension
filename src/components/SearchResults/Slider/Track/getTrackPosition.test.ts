@@ -199,3 +199,62 @@ describe("getTrackPosition happy path tests", () => {
     });
   });
 });
+
+describe("getTrackPosition invalid input", () => {
+  it("has NaN in intervals", () => {
+    expect(() => {
+      getTrackPosition({
+        intervals: [0, 4, 8, NaN],
+        index: 2,
+        flightTimeContainerWidth: 1117,
+        value: [0, 33],
+      });
+    }).toThrow("Invalid value(s) for intervals (0,4,8,NaN) in getTrackPosition");
+  });
+
+  it("has NaN for index", () => {
+    expect(() => {
+      getTrackPosition({
+        intervals: [0, 4, 8],
+        index: NaN,
+        flightTimeContainerWidth: 1117,
+        value: [0, 33],
+      });
+    }).toThrow("Invalid value(s) for index (NaN) in getTrackPosition");
+  });
+
+  it("has NaN for flightTimeContainerWidth", () => {
+    expect(() => {
+      getTrackPosition({
+        intervals: [0, 4, 8],
+        index: 2,
+        flightTimeContainerWidth: NaN,
+        value: [0, 33],
+      });
+    }).toThrow("Invalid value(s) for flightTimeContainerWidth (NaN) in getTrackPosition");
+  });
+
+  it("has NaN in value", () => {
+    expect(() => {
+      getTrackPosition({
+        intervals: [0, 4, 8],
+        index: 2,
+        flightTimeContainerWidth: 1117,
+        value: [0, 33, NaN],
+      });
+    }).toThrow("Invalid value(s) for value (0,33,NaN) in getTrackPosition");
+  });
+
+  it("fails many with NaN", () => {
+    expect(() => {
+      getTrackPosition({
+        intervals: [0, 4, 8, NaN],
+        index: NaN,
+        flightTimeContainerWidth: NaN,
+        value: [0, 33, NaN],
+      });
+    }).toThrow(
+      "Invalid value(s) for flightTimeContainerWidth (NaN), index (NaN), intervals (0,4,8,NaN), value (0,33,NaN) in getTrackPosition",
+    );
+  });
+});

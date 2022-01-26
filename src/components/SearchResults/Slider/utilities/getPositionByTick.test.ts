@@ -48,3 +48,51 @@ describe("getPositionByTick without adjustment", () => {
     expect(value).toBe(279.25);
   });
 });
+
+describe("getPositionByTick invalid input", () => {
+  it("has NaN in value", () => {
+    expect(() => {
+      getPositionByTick({
+        value: NaN,
+        intervals: [0, 4],
+        flightTimeContainerWidth: 1117,
+        applyAdjustment: false,
+      });
+    }).toThrow("Invalid value(s) for value (NaN) in getPositionByTick");
+  });
+
+  it("has NaN for intervals", () => {
+    expect(() => {
+      getPositionByTick({
+        value: 4,
+        intervals: [0, NaN],
+        flightTimeContainerWidth: 1117,
+        applyAdjustment: false,
+      });
+    }).toThrow("Invalid value(s) for intervals (0,NaN) in getPositionByTick");
+  });
+
+  it("has NaN for flightTimeContainerWidth", () => {
+    expect(() => {
+      getPositionByTick({
+        value: 4,
+        intervals: [0, 4],
+        flightTimeContainerWidth: NaN,
+        applyAdjustment: false,
+      });
+    }).toThrow("Invalid value(s) for flightTimeContainerWidth (NaN) in getPositionByTick");
+  });
+
+  it("fails many with NaN", () => {
+    expect(() => {
+      getPositionByTick({
+        value: NaN,
+        intervals: [0, NaN],
+        flightTimeContainerWidth: NaN,
+        applyAdjustment: false,
+      });
+    }).toThrow(
+      "Invalid value(s) for value (NaN), flightTimeContainerWidth (NaN), intervals (0,NaN) in getPositionByTick",
+    );
+  });
+});
