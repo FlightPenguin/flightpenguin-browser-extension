@@ -3,8 +3,10 @@ import { Integrations } from "@sentry/tracing";
 import { Provider as BumbagProvider, ToastManager } from "bumbag";
 import React from "react";
 import ReactDom from "react-dom";
+import { ErrorBoundary } from "react-error-boundary";
 
 import { FlightPenguinTheme } from "./components/utilities/bumbag/theme";
+import { ErrorPage } from "./pages/Error/index";
 import { SearchPage } from "./pages/Search/index";
 
 Sentry.init({
@@ -20,7 +22,9 @@ const root = document.getElementById("react-root");
 if (root) {
   ReactDom.render(
     <BumbagProvider theme={FlightPenguinTheme}>
-      <SearchPage />
+      <ErrorBoundary FallbackComponent={ErrorPage}>
+        <SearchPage />
+      </ErrorBoundary>
       <ToastManager />
     </BumbagProvider>,
     root,
