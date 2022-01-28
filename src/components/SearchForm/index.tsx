@@ -7,6 +7,7 @@ import React, { useCallback, useRef, useState } from "react";
 import { boolean, mixed, number, object, string } from "yup";
 
 import airports from "../../assets/airports.json";
+import { CabinMap } from "../../background/constants";
 import { FlightSearchFormData } from "../../shared/types/FlightSearchFormData";
 import { setRecentlyInstalled } from "../../shared/utilities/recentlyInstalledManager";
 import { CardType, PointsMap } from "../constants";
@@ -524,34 +525,21 @@ export const SearchForm = ({
                     validationText={getValidationText(formik, "cabin")}
                   >
                     <FormikField
+                      autoComplete="off"
                       buttonProps={{ elementRef: cabinRef }}
                       component={Select.Formik}
-                      name="cabin"
-                      options={[
-                        { label: "Economy", value: "econ" },
-                        { label: "Premium Economy", value: "prem_econ" },
-                        { label: "Business", value: "business" },
-                        { label: "First", value: "first" },
-                      ]}
-                      width="100%"
-                      autoComplete="off"
-                      hasFieldWrapper={true}
-                      onChange={formik.handleChange}
-                      onBlur={formik.handleBlur}
-                      label={
-                        <Box
-                          onClick={() => {
-                            const elementRef = cabinRef.current;
-                            if (elementRef) {
-                              elementRef.click();
-                            }
-                          }}
-                        >
-                          Cabin
-                        </Box>
-                      }
-                      disabled={formik.isSubmitting}
                       containLabel
+                      disabled={formik.isSubmitting}
+                      hasFieldWrapper={true}
+                      label="Cabin"
+                      labelInOptions={false}
+                      name="cabin"
+                      onBlur={formik.handleBlur}
+                      onChange={formik.handleChange}
+                      options={Object.entries(CabinMap).map(([key, val]) => {
+                        return { label: val, value: key };
+                      })}
+                      width="100%"
                     />
                   </FieldWrapper>
                 </FieldStack>
