@@ -139,7 +139,6 @@ export const SearchForm = ({
   const cabinRef = useRef<HTMLDivElement>(null);
 
   const [fromValue, setFromValue] = useState<Airport>(nearestAirport);
-  console.log(fromValue);
 
   const [toValue, setToValue] = useState<Airport | null>({
     value: "",
@@ -260,7 +259,7 @@ export const SearchForm = ({
                       name="from"
                       onBlur={(event: React.ChangeEvent) => {
                         if (Object.keys(event).length) {
-                          formik.handleBlur(event);
+                          formik.handleBlur("from");
                         } else {
                           // bumbag generates stupid blur events during setup...
                           formik.setFieldTouched("from", false);
@@ -321,7 +320,7 @@ export const SearchForm = ({
                       name="to"
                       onBlur={(event: React.ChangeEvent) => {
                         if (Object.keys(event).length) {
-                          formik.handleBlur(event);
+                          formik.handleBlur("to");
                         } else {
                           // bumbag generates stupid blur events during setup...
                           formik.setFieldTouched("to", false);
@@ -418,7 +417,7 @@ export const SearchForm = ({
                           maximum: maximumTo,
                         });
 
-                        formik.handleBlur(event);
+                        formik.handleBlur("fromDate");
                       }}
                       onFocus={(event: Event) => {
                         const target = event.target as HTMLInputElement;
@@ -472,7 +471,7 @@ export const SearchForm = ({
                             value = initialValues.fromDate;
                           }
                           formik.setFieldValue("toDate", value);
-                          formik.handleBlur(event);
+                          formik.handleBlur("toDate");
                         }}
                         onFocus={(event: Event) => {
                           const target = event.target as HTMLInputElement;
