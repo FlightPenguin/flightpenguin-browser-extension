@@ -1,6 +1,10 @@
 import { WindowConfig } from "../types/WindowConfig";
 
-export function sendFailedScraper(providerName: string, error: Error, searchType: "DEPARTURE" | "RETURN" | "ALL") {
+export const sendFailedScraper = (
+  providerName: string,
+  error: Error,
+  searchType: "DEPARTURE" | "RETURN" | "ALL",
+): void => {
   const windowConfig: WindowConfig = {
     height: window.outerHeight,
     width: window.outerWidth,
@@ -14,4 +18,4 @@ export function sendFailedScraper(providerName: string, error: Error, searchType
     description: `${error.name} ${error.message}`,
     windowConfig,
   });
-}
+};
