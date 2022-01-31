@@ -1,12 +1,12 @@
-import { getTimeDetailsFromMinutes } from "./getTimeDetailsFromMinutes";
+import { getTimeDetailsFromString } from "./getTimeDetailsFromString";
 
-describe("getTimeDetailsFromMinutes happy path", () => {
+describe("getTimeDetailsFromString happy path", () => {
   it("midnight", () => {
-    const value = getTimeDetailsFromMinutes({ minutes: 15 });
+    const value = getTimeDetailsFromString("12:15am");
     expect(value).toEqual({
       hours: 0,
       minutes: 15,
-      excessDays: null,
+      excessDays: "",
       displayHours: 12,
       timeOfDay: "am",
       excessDayCount: 0,
@@ -14,11 +14,11 @@ describe("getTimeDetailsFromMinutes happy path", () => {
   });
 
   it("morning", () => {
-    const value = getTimeDetailsFromMinutes({ minutes: 125 });
+    const value = getTimeDetailsFromString("2:05am");
     expect(value).toEqual({
       hours: 2,
       minutes: 5,
-      excessDays: null,
+      excessDays: "",
       displayHours: 2,
       timeOfDay: "am",
       excessDayCount: 0,
@@ -26,11 +26,11 @@ describe("getTimeDetailsFromMinutes happy path", () => {
   });
 
   it("noon", () => {
-    const value = getTimeDetailsFromMinutes({ minutes: 720 });
+    const value = getTimeDetailsFromString("12:00pm");
     expect(value).toEqual({
       hours: 12,
       minutes: 0,
-      excessDays: null,
+      excessDays: "",
       displayHours: 12,
       timeOfDay: "pm",
       excessDayCount: 0,
@@ -38,11 +38,11 @@ describe("getTimeDetailsFromMinutes happy path", () => {
   });
 
   it("afternoon", () => {
-    const value = getTimeDetailsFromMinutes({ minutes: 789 });
+    const value = getTimeDetailsFromString("1:09pm");
     expect(value).toEqual({
       hours: 13,
       minutes: 9,
-      excessDays: null,
+      excessDays: "",
       displayHours: 1,
       timeOfDay: "pm",
       excessDayCount: 0,
@@ -50,28 +50,38 @@ describe("getTimeDetailsFromMinutes happy path", () => {
   });
 
   it("tomorrow morning", () => {
-    const value = getTimeDetailsFromMinutes({ minutes: 1442 });
-    // not sure if this is actually right... should it be 24 hours and an excess days?
+    const value = getTimeDetailsFromString("12:02am+1");
     expect(value).toEqual({
-      hours: 0,
+      hours: 24,
       minutes: 2,
-      excessDays: "+1",
+      excessDays: "",
       displayHours: 12,
       timeOfDay: "am",
-      excessDayCount: 1,
+      excessDayCount: 0,
     });
   });
 
   it("tomorrow afternoon", () => {
-    const value = getTimeDetailsFromMinutes({ minutes: 2162 });
-    // not sure if this is actually right... should it be 24 hours and an excess days?
+    const value = getTimeDetailsFromString("12:02pm+1");
     expect(value).toEqual({
-      hours: 12,
+      hours: 36,
       minutes: 2,
-      excessDays: "+1",
+      excessDays: "",
       displayHours: 12,
       timeOfDay: "pm",
-      excessDayCount: 1,
+      excessDayCount: 0,
+    });
+  });
+
+  it("yesterday", () => {
+    const value = getTimeDetailsFromString("12:02pm-1");
+    expect(value).toEqual({
+      hours: -12,
+      minutes: 2,
+      excessDays: "",
+      displayHours: 12,
+      timeOfDay: "pm",
+      excessDayCount: 0,
     });
   });
 });
