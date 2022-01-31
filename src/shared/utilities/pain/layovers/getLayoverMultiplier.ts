@@ -1,5 +1,5 @@
-import { getTimeDetails } from "../../../../utilityFunctions";
 import { Layover } from "../../../types/ProcessedFlightSearchResult";
+import { getTimeDetailsFromString } from "../../getTimeDetailsFromString";
 import { getFauxDate } from "./getFauxDate";
 import { isAirportChange } from "./isAirportChange";
 import { isAwfulCarrier } from "./isAwfulCarrier";
@@ -27,10 +27,10 @@ export const getLayoverMultiplier = (layover: Layover): number => {
     multiplier += 10;
   }
 
-  const startTimeDetails = getTimeDetails(layover.fromTime);
+  const startTimeDetails = getTimeDetailsFromString(layover.fromTime);
   const fauxStartDate = getFauxDate(startTimeDetails);
 
-  const endTimeDetails = getTimeDetails(layover.toTime);
+  const endTimeDetails = getTimeDetailsFromString(layover.toTime);
   const fauxEndDate = getFauxDate(endTimeDetails);
 
   const overnight = isOvernight(startTimeDetails, endTimeDetails);

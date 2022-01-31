@@ -1,9 +1,10 @@
 import { addDays, addHours, addMinutes, parse } from "date-fns";
 
-import { convertTimeTo24HourClock, getTimezoneOffset } from "../../utilityFunctions";
 import AirlineMap from "../nameMaps/airlineMap";
 import { getDurationInMinutes } from "../utilities/getDurationInMinutes";
+import { getElapsedTime } from "../utilities/getElapsedTime";
 import { getTimeStringFromDate } from "../utilities/getTimeStringFromDate";
+import { getTimezoneOffset } from "../utilities/getTimezoneOffset";
 import { FlightLeg } from "./FlightLeg";
 import { FlightTimeDetails } from "./FlightTimeDetails";
 
@@ -83,7 +84,7 @@ export class FlightDetails {
   }
 
   getTimeDetails(time: string): FlightTimeDetails {
-    const { hours, minutes } = convertTimeTo24HourClock(time, true);
+    const { hours, minutes } = getElapsedTime(time, true);
     const timeOfDay = time.toLowerCase().includes("pm") ? "pm" : "am";
     const excessDays = time.match(/(\+\d)/);
     const displayHours = Number(time.split(":")[0]); // want 12 hour clock

@@ -1,4 +1,4 @@
-import { convertTimeTo24HourClock } from "../../../../../utilityFunctions";
+import { getElapsedTime } from "../../../../../shared/utilities/getElapsedTime";
 import { getPixelsPerMinute } from "../../../../utilities/position/getPixelsPerMinute";
 
 interface GetPositionProps {
@@ -39,10 +39,10 @@ export function getPosition({
   const startMinutesOffset = startDayOffset * minutesPerDay - startHourOffset * minutesPerHour; // if flight starts on a following day, happens with layovers
   const endMinutesOffset = endDayOffset * minutesPerDay - startHourOffset * minutesPerHour; // if flight ends on a following day, happens with long distance flights and layovers
 
-  const fromTimeAttrs = convertTimeTo24HourClock(fromTime);
+  const fromTimeAttrs = getElapsedTime(fromTime, false);
   const startTimeInMinutes = startMinutesOffset + fromTimeAttrs.minutes + fromTimeAttrs.hours * minutesPerHour;
 
-  const toTimeAttrs = convertTimeTo24HourClock(toTime);
+  const toTimeAttrs = getElapsedTime(toTime, false);
   const endTimeInMinutes = endMinutesOffset + toTimeAttrs.minutes + toTimeAttrs.hours * minutesPerHour;
 
   const startPositionPx = pxPerMinute.times(startTimeInMinutes);
