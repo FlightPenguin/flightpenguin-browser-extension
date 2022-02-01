@@ -4,7 +4,7 @@ import { MissingFieldParserError } from "../../shared/errors";
 import { standardizeTimeString } from "../../shared/helpers";
 import { FlightLeg } from "../../shared/types/FlightLeg";
 import { FlightSearchFormData } from "../../shared/types/FlightSearchFormData";
-import { getTimeDetails } from "../../utilityFunctions";
+import { getTimeDetailsFromString } from "../../shared/utilities/getTimeDetailsFromString";
 
 export const getLegDetails = (
   leg: Element,
@@ -128,7 +128,7 @@ const getOperatingAirline = (element: Element) => {
 };
 
 const isLayoverOvernight = (previousLegDetails: FlightLeg, fromTime: string): boolean => {
-  const fromTimeDetails = getTimeDetails(fromTime);
+  const fromTimeDetails = getTimeDetailsFromString(fromTime);
   return previousLegDetails.toTimeDetails.hours % 24 > fromTimeDetails.hours % 24;
 };
 

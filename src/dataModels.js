@@ -1,10 +1,11 @@
 import { getCalculatedDuration } from "shared/utilities/getCalculatedDuration";
+import { getDurationInMinutes } from "shared/utilities/getDurationInMinutes";
+import { getTimeDetailsFromString } from "shared/utilities/getTimeDetailsFromString";
 import { getPain } from "shared/utilities/pain/getPain";
 
 import { PROVIDERS_NEEDING_RETURNS } from "./background/constants";
 import AirlineMap from "./shared/nameMaps/airlineMap.js";
 import isRegionalAirline from "./shared/nameMaps/regionalAirlines.js";
-import { convertDurationToMinutes, getTimeDetails, getTimezoneOffset } from "./utilityFunctions.js";
 
 /**
  * Flight {
@@ -92,7 +93,7 @@ function Flight(
   // marketing airline is unique, not operating
   this.id = `${this.fromLocalTime}-${this.toLocalTime}-${markAirline}`;
   this.duration = duration;
-  this.durationMinutes = convertDurationToMinutes(duration);
+  this.durationMinutes = getDurationInMinutes(duration);
   this.layovers = layovers || [];
 
   this.itinIds = [];
@@ -132,8 +133,8 @@ Flight.prototype.updateLayovers = function () {
     const layovers = this.layovers.map(({ fromTime, toTime, duration, operatingAirline, timezoneOffset }, idx) => {
       return {
         ...this.layovers[idx],
-        fromTimeDetails: getTimeDetails(fromTime),
-        toTimeDetails: getTimeDetails(toTime),
+        fromTimeDetails: getTimeDetailsFromString(fromTime),
+        toTimeDetails: getTimeDetailsFromString(toTime),
         duration: duration,
         operatingAirline: cleanupAirline(operatingAirline),
         timezoneOffset: timezoneOffset,

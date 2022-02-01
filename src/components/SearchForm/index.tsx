@@ -2,9 +2,12 @@ import { Box, Button, Card, FieldStack, FieldWrapper, Input, RadioGroup, Select,
 import { SelectMenu } from "bumbag/src/SelectMenu";
 import { addDays, endOfDay, max, nextSunday, startOfDay } from "date-fns";
 import { Field as FormikField, Form, Formik } from "formik";
+import Fuse from "fuse.js";
 import React, { useCallback, useRef, useState } from "react";
 import { boolean, mixed, number, object, string } from "yup";
 
+import airports from "../../assets/airports.json";
+import { CabinMap } from "../../background/constants";
 import { FlightSearchFormData } from "../../shared/types/FlightSearchFormData";
 import { setRecentlyInstalled } from "../../shared/utilities/recentlyInstalledManager";
 import { CardType, PointsMap } from "../constants";
@@ -19,7 +22,6 @@ import { getStandardizedFormatDate } from "../utilities/forms/getStandardizedFor
 import { isValidDateInputString } from "../utilities/forms/isValidDateInputString";
 import { getNearestRelevantAirport } from "../utilities/geography/getNearestRelevantAirport";
 import { Airport } from "./api/airports/Airport";
-import { getAirportData } from "./api/airports/getAirportData";
 import { MatchedLabel } from "./components/SelectMenu/MatchedLabel";
 import { getFridayAfterNext } from "./utilities/getFridayAfterNext";
 import { sendFormDataToBackground } from "./utilities/sendFormDataToBackground";
@@ -128,13 +130,16 @@ export const SearchForm = ({
   initialValues = defaultInitialValues,
 }: SearchFormProps): React.ReactElement => {
   const nearestAirport = getNearestRelevantAirport();
-  initialValues.from = nearestAirport;
+  if (initialValues.from.label === "") {
+    initialValues.from = nearestAirport;
+  }
 
   const fromAirportRef = useRef<HTMLDivElement>(null);
   const toAirportRef = useRef<HTMLDivElement>(null);
   const cabinRef = useRef<HTMLDivElement>(null);
 
   const [fromValue, setFromValue] = useState<Airport>(nearestAirport);
+
   const [toValue, setToValue] = useState<Airport | null>({
     value: "",
     label: "",
@@ -147,10 +152,30 @@ export const SearchForm = ({
     maximum: getChromeFormattedDateFromDate(maxDate),
   });
   const [airportSearchText, setAirportSearchText] = useState("");
-  const getAirports = useCallback(
-    async ({ page, searchText }) => {
+  const airportOptions = airports.map((record: Record<string, unknown>) => {
+    return {
+      key: record.iataCode,
+      label: record.iataCode,
+      name: record.displayName,
+      location: record.displayLocation,
+      value: record.iataCode,
+      searchText: record.searchText,
+    };
+  }) as Airport[];
+
+  const searchAirports = useCallback(
+    async ({ searchText }) => {
       setAirportSearchText(searchText);
-      return getAirportData({ page: page - 1, search: searchText.trim(), onAuthError, retry401: true });
+      const fuse = new Fuse(airportOptions, {
+        keys: ["searchText", "key"],
+        ignoreLocation: true,
+      });
+      const cleanedText = searchText.normalize("NFD").replace(/\p{Diacritic}/gu, "");
+      const results = fuse
+        .search(cleanedText)
+        .map((result) => result.item)
+        .slice(0, 10);
+      return { options: results };
     },
     [setAirportSearchText],
   );
@@ -230,11 +255,11 @@ export const SearchForm = ({
                           Starting airport
                         </Box>
                       }
-                      loadOptions={getAirports}
+                      loadOptions={searchAirports}
                       name="from"
                       onBlur={(event: React.ChangeEvent) => {
                         if (Object.keys(event).length) {
-                          formik.handleBlur(event);
+                          formik.handleBlur("from");
                         } else {
                           // bumbag generates stupid blur events during setup...
                           formik.setFieldTouched("from", false);
@@ -291,11 +316,11 @@ export const SearchForm = ({
                           Destination airport
                         </Box>
                       }
-                      loadOptions={getAirports}
+                      loadOptions={searchAirports}
                       name="to"
                       onBlur={(event: React.ChangeEvent) => {
                         if (Object.keys(event).length) {
-                          formik.handleBlur(event);
+                          formik.handleBlur("to");
                         } else {
                           // bumbag generates stupid blur events during setup...
                           formik.setFieldTouched("to", false);
@@ -392,7 +417,7 @@ export const SearchForm = ({
                           maximum: maximumTo,
                         });
 
-                        formik.handleBlur(event);
+                        formik.handleBlur("fromDate");
                       }}
                       onFocus={(event: Event) => {
                         const target = event.target as HTMLInputElement;
@@ -446,7 +471,7 @@ export const SearchForm = ({
                             value = initialValues.fromDate;
                           }
                           formik.setFieldValue("toDate", value);
-                          formik.handleBlur(event);
+                          formik.handleBlur("toDate");
                         }}
                         onFocus={(event: Event) => {
                           const target = event.target as HTMLInputElement;
@@ -499,34 +524,21 @@ export const SearchForm = ({
                     validationText={getValidationText(formik, "cabin")}
                   >
                     <FormikField
+                      autoComplete="off"
                       buttonProps={{ elementRef: cabinRef }}
                       component={Select.Formik}
-                      name="cabin"
-                      options={[
-                        { label: "Economy", value: "econ" },
-                        { label: "Premium Economy", value: "prem_econ" },
-                        { label: "Business", value: "business" },
-                        { label: "First", value: "first" },
-                      ]}
-                      width="100%"
-                      autoComplete="off"
-                      hasFieldWrapper={true}
-                      onChange={formik.handleChange}
-                      onBlur={formik.handleBlur}
-                      label={
-                        <Box
-                          onClick={() => {
-                            const elementRef = cabinRef.current;
-                            if (elementRef) {
-                              elementRef.click();
-                            }
-                          }}
-                        >
-                          Cabin
-                        </Box>
-                      }
-                      disabled={formik.isSubmitting}
                       containLabel
+                      disabled={formik.isSubmitting}
+                      hasFieldWrapper={true}
+                      label="Cabin"
+                      labelInOptions={false}
+                      name="cabin"
+                      onBlur={formik.handleBlur}
+                      onChange={formik.handleChange}
+                      options={Object.entries(CabinMap).map(([key, val]) => {
+                        return { label: val, value: key };
+                      })}
+                      width="100%"
                     />
                   </FieldWrapper>
                 </FieldStack>

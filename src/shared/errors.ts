@@ -44,3 +44,26 @@ export class HttpError extends Error {
     this.statusMessage = statusMessage;
   }
 }
+
+export interface InvalidArgument {
+  argumentName: string;
+  value: any;
+}
+
+export class InvalidArgumentsError extends ExtendableError {
+  public invalidArguments: InvalidArgument[];
+  public fxnName: string;
+
+  constructor(fxnName: string, invalidArguments: InvalidArgument[]) {
+    const messages = invalidArguments
+      .map(({ argumentName, value }) => {
+        return `${argumentName} (${value})`;
+      })
+      .join(", ");
+    const message = `Invalid value(s) for ${messages} in ${fxnName}`;
+
+    super(message);
+    this.fxnName = fxnName;
+    this.invalidArguments = invalidArguments;
+  }
+}

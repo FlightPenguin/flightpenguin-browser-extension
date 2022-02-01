@@ -54,7 +54,7 @@ export const SearchPage = (): React.ReactElement => {
 
   useEffect(() => {
     if (resultsWrapperRef.current) {
-      const containerWidth = resultsWrapperRef.current.clientWidth;
+      const containerWidth = resultsWrapperRef.current.clientWidth || window.innerWidth;
       setResultsContainerWidth(getResultsContainerWidth(containerWidth));
       setFormContainerWidth(getFormContainerWidth(containerWidth));
     }
@@ -63,7 +63,7 @@ export const SearchPage = (): React.ReactElement => {
   useEffect(() => {
     const handleResize = () => {
       if (resultsWrapperRef.current) {
-        const containerWidth = resultsWrapperRef.current.clientWidth;
+        const containerWidth = resultsWrapperRef.current.clientWidth || window.innerWidth;
         setResultsContainerWidth(getResultsContainerWidth(containerWidth));
         setFormContainerWidth(getFormContainerWidth(containerWidth));
       }

@@ -1,4 +1,4 @@
-import { convertDurationToMinutes } from "../../../../utilityFunctions";
+import { getDurationInMinutes } from "../../getDurationInMinutes";
 
 export const getSmoothDuration = (duration: string): number => {
   /*
@@ -7,7 +7,7 @@ export const getSmoothDuration = (duration: string): number => {
     Similarly, the difference between 13h14m and 13h44m is irrelevant.
     We should use a sliding step function based on the total duration.
    */
-  const durationInMinutes = convertDurationToMinutes(duration);
+  const durationInMinutes = getDurationInMinutes(duration);
   const stepSize = getStepSize(durationInMinutes);
   const steps = Math.floor(durationInMinutes / stepSize);
   return steps * stepSize;

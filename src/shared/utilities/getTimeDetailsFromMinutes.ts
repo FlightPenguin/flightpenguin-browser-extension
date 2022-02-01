@@ -22,5 +22,6 @@ export const getTimeDetailsFromMinutes = ({ minutes }: GetTimeDetailsFromMinutes
     minutes: minutes,
     displayHours: displayHours,
     timeOfDay: elapsedHours >= 12 ? "pm" : "am",
+    excessDayCount: elapsedDays,
   };
 };
