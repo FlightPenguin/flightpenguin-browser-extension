@@ -20,6 +20,14 @@ export const LoginModal = ({ onSuccess }: LoginModalProps): React.ReactElement =
     modal.setVisible(true);
   }, []);
 
+  useEffect(() => {
+    if (authError) {
+      chrome.identity.clearAllCachedAuthTokens(() => {
+        console.debug("Cleared auth tokens due to auth error in login modal");
+      });
+    }
+  }, [authError]);
+
   return (
     <>
       <Modal.Disclosure {...modal} />
@@ -51,6 +59,11 @@ export const LoginModal = ({ onSuccess }: LoginModalProps): React.ReactElement =
                 try {
                   const token = await getAuthToken(true);
                   userInfo = await getUserInfo(token);
+                  const userId = userInfo?.id;
+                  if (userId) {
+                    analytics.identify({ userId });
+                  }
+
                   const apiResponse = await getSubscriptionValidity(token);
                   await focusPrimaryTab();
 
@@ -62,10 +75,6 @@ export const LoginModal = ({ onSuccess }: LoginModalProps): React.ReactElement =
                 } catch (e) {
                   setAuthError(true);
                   throw e;
-                }
-
-                if (userInfo !== undefined && !!userInfo?.id) {
-                  analytics.identify({ userId: userInfo.id });
                 }
               }}
               palette="primary"
