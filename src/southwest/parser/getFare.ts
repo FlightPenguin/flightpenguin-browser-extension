@@ -12,5 +12,5 @@ export const getFare = ({ flight }: GetFareProps): string | null => {
   if (!fare) {
     return null;
   }
-  return Math.floor(Number(fare)).toString();
+  return Math.ceil(Number(fare)).toString();
 };
