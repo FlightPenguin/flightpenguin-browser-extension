@@ -111,7 +111,7 @@ const getRoundtripProviderReturns = (
   const { itineraries } = providerManager.getItineraries();
   const filteredItineraries = Object.fromEntries(
     Object.entries(itineraries).filter(([id, itinerary]) => {
-      return departureProviders.includes(itinerary.provider);
+      return departureProviders.includes(itinerary.provider) && id.startsWith(departure.id);
     }),
   );
 
@@ -125,13 +125,9 @@ const getRoundtripProviderReturns = (
   const message = {
     event: "RETURN_FLIGHTS_FOR_CLIENT",
     flights: {
-      departureList: sortFlights(
-        providerManager.getDepartures(),
-        filteredItineraries,
-        providerManager.getFormCabinValue(),
-      ),
+      departureList: sortFlights(providerManager.getDepartures(), itineraries, providerManager.getFormCabinValue()),
       returnList: providerManager.getReturns(),
-      itins: filteredItineraries,
+      itins: itineraries,
       updatedAt: new Date(),
     },
     formData: providerManager.getFormData(),

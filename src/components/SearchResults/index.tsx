@@ -36,6 +36,7 @@ export const SearchResults = ({ formData, resultsContainerWidth }: SearchResults
     500,
     true,
   );
+  const [returnItineraries, setReturnItineraries] = useState({});
   const [searchMeta, setSearchMeta] = useDebounce<SearchMeta | undefined>(undefined, 500, true);
 
   const [departuresComplete, setDeparturesComplete] = useState(false);
@@ -44,6 +45,18 @@ export const SearchResults = ({ formData, resultsContainerWidth }: SearchResults
   const [returnFlightDetails, setReturnFlightDetails] = useState<FlightSelection | null>(null);
   const [tabInteractionFailed, setTabInteractionFailed] = useState(false);
   const [searchAgainDisabled, setSearchAgainDisabled] = useState(false);
+
+  useEffect(() => {
+    let filteredItineraries = {};
+    if (departureFlightDetails?.flight) {
+      filteredItineraries = Object.fromEntries(
+        Object.entries(flights.itineraries).filter(([id, itinerary]) => {
+          return id.startsWith(departureFlightDetails.flightPenguinId);
+        }),
+      );
+    }
+    setReturnItineraries(filteredItineraries);
+  }, [setReturnItineraries, departureFlightDetails, flights]);
 
   useEffect(() => {
     chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
@@ -168,7 +181,7 @@ export const SearchResults = ({ formData, resultsContainerWidth }: SearchResults
           <Box height="50px" />
           <TimelineContainer
             flightType="RETURN"
-            itineraries={flights.itineraries}
+            itineraries={returnItineraries}
             flights={flights.returnFlights}
             formData={formData}
             meta={
