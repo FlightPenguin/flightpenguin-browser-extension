@@ -11,7 +11,7 @@ export const ExtensionInstalledHandler = (analytics: AnalyticsManager): void => 
       case "install":
         analytics.track({ category: "lifecycle", action: "Install", label: "Flight Penguin" });
         setRecentlyInstalled(true);
-        await openExtension(analytics);
+        await openExtension();
         break;
       case "update":
         analytics.track({ category: "lifecycle", action: "Update", label: "Flight Penguin" });

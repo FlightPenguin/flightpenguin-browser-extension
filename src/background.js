@@ -26,7 +26,7 @@ try {
 
   ExtensionUninstalledHandler(analyticsManager);
   ExtensionInstalledHandler(analyticsManager);
-  ExtensionOpenedHandler(analyticsManager);
+  ExtensionOpenedHandler();
 
   const providerManager = new ProviderManager();
   ExtensionUpdateAvailableHandler(providerManager);

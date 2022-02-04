@@ -10,6 +10,7 @@ import {
   handleIndexUnloaded,
   handleLogAnalyticsEvent,
   handleLogAnalyticsPageView,
+  handleLogAnalyticsUserIdentified,
   handleNoFlightsFound,
   handleOpenExtensionRequest,
   handleProviderReady,
@@ -83,11 +84,14 @@ export const ListenerManager = (providerManager: ProviderManager, analyticsManag
       case "LOG_ANALYTICS_EVENT":
         handleLogAnalyticsEvent(analyticsManager, message);
         break;
+      case "LOG_ANALYTICS_USER_IDENTIFIED":
+        handleLogAnalyticsUserIdentified(analyticsManager, message);
+        break;
       case "LOG_ANALYTICS_PAGE_VIEW":
         handleLogAnalyticsPageView(analyticsManager, message);
         break;
       case "OPEN_EXTENSION":
-        await handleOpenExtensionRequest(sender, analyticsManager);
+        await handleOpenExtensionRequest(sender);
         break;
       default:
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment

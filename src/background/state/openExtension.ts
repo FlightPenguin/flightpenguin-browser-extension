@@ -1,16 +1,10 @@
-import { getUserInfo } from "../../auth";
-import { getAuthToken } from "../../auth/getAuthToken";
 import { setPositionData } from "../../components/utilities/geography/setPositionData";
-import { getExtensionUrl } from "../../shared/utilities/getExtensionUrl";
-import { getCurrentTab } from "../../shared/utilities/tabs/getCurrentTab";
-import { AnalyticsManager } from "../AnalyticsManager";
 import { isExtensionOpen } from "./isExtensionOpen";
 
-export const openExtension = async (analytics: AnalyticsManager): Promise<void> => {
+export const openExtension = async (): Promise<void> => {
   disableExtension();
   try {
     await setPositionData();
-    await identifyUserToGoogleAnalytics(analytics);
   } catch (error) {
     if (error instanceof GeolocationPositionError && error.message.toLowerCase() === "user denied geolocation") {
       console.debug("Geolocation denied, moving on...");
@@ -81,20 +75,4 @@ const updateExtensionIfRequired = () => {
       chrome.runtime.reload();
     }
   });
-};
-
-const identifyUserToGoogleAnalytics = async (analytics: AnalyticsManager) => {
-  const tab = await getCurrentTab();
-  const url = getExtensionUrl();
-  if (tab.url !== url) {
-    // don't reidentify the user if someone is just mashing the icon...
-    const token = await getAuthToken(false);
-    if (token) {
-      const userInfo = await getUserInfo(token);
-      const userId = userInfo?.id;
-      if (userId) {
-        analytics.identify({ userId: userInfo.id });
-      }
-    }
-  }
 };

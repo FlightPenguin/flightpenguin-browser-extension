@@ -4,6 +4,7 @@ import React, { useEffect, useState } from "react";
 import { getSubscriptionValidity, getUserInfo } from "../../auth";
 import { getAuthToken } from "../../auth/getAuthToken";
 import { AnalyticsManager } from "../../background/AnalyticsManager";
+import { sendAnalyticsUserIdentified } from "../../shared/events";
 import { GoogleUserInfo } from "../../shared/types/GoogleUserInfo";
 import { focusPrimaryTab } from "../../shared/utilities/windows/focusPrimaryTab";
 
@@ -62,6 +63,7 @@ export const LoginModal = ({ onSuccess }: LoginModalProps): React.ReactElement =
                   const userId = userInfo?.id;
                   if (userId) {
                     analytics.identify({ userId });
+                    sendAnalyticsUserIdentified(userId);
                   }
 
                   const apiResponse = await getSubscriptionValidity(token);
