@@ -5,18 +5,20 @@ import { API_HOST } from "../../../background/constants";
 import { Airport } from "../../SearchForm/api/airports/Airport";
 
 interface GetNearbyAirportDataProps {
-  position: GeolocationPosition;
+  latitude: number;
+  longitude: number;
   page: number;
 }
 
 export const getNearbyAirportData = async ({
-  position,
+  latitude,
+  longitude,
   page,
-}: GetNearbyAirportDataProps): Promise<{ options: Airport[] }> => {
+}: GetNearbyAirportDataProps): Promise<Airport | null> => {
   const accessToken = await getAuthToken(false);
   try {
     const response = await axios.get(
-      `${API_HOST}/api/airport/location?latitude=${position.coords.latitude}&longitude=${position.coords.longitude}&page=${page}`,
+      `${API_HOST}/api/airport/location?latitude=${latitude}&longitude=${longitude}&page=${page}`,
       {
         headers: {
           "Content-Type": "application/json",
@@ -37,11 +39,26 @@ export const getNearbyAirportData = async ({
           value: record.iataCode,
         };
       }) as Airport[];
-      return { options: airports };
+      return airports[0];
     }
-    return { options: [] };
+    return null;
   } catch (e) {
     console.error(e);
-    return { options: [] };
+    return null;
   }
+};
+
+const CACHE_KEY = "fp-local-airport";
+
+export const setNearbyAirportCache = (airport: Airport): void => {
+  const cacheValue = JSON.stringify({ airport });
+  localStorage.setItem(CACHE_KEY, cacheValue);
+};
+
+export const getNearbyAirportFromCache = () => {
+  const cacheValue = JSON.parse(localStorage.getItem(CACHE_KEY) || "{}");
+  if (!!cacheValue && cacheValue.airport) {
+    return cacheValue.airport;
+  }
+  return null;
 };

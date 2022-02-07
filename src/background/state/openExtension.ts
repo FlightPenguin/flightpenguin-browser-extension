@@ -1,21 +1,7 @@
-import { setPositionData } from "../../components/utilities/geography/setPositionData";
 import { isExtensionOpen } from "./isExtensionOpen";
 
 export const openExtension = async (): Promise<void> => {
   disableExtension();
-  try {
-    await setPositionData();
-  } catch (error) {
-    if (error instanceof GeolocationPositionError && error.message.toLowerCase() === "user denied geolocation") {
-      console.debug("Geolocation denied, moving on...");
-    } else {
-      console.error(error);
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
-      Sentry.captureException(error);
-    }
-  }
-
   isExtensionOpen({
     extensionOpenCallback: handleExtensionOpen,
     extensionClosedCallback: handleExtensionNotOpen,
