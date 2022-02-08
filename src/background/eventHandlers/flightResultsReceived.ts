@@ -12,6 +12,12 @@ export const handleFlightResultsReceived = (
     return; // TODO: Enhance
   }
 
+  const filteredFlights = flights.filter(
+    (flight) =>
+      flight.departureFlight?.operatingAirlineDetails?.display !== "WN" &&
+      flight.departureFlight?.marketingAirlineDetails?.display !== "WN",
+  );
+
   const windowId = providerManager.getWindowId(providerName);
   const tabId = providerManager.getTabId(providerName);
   if (windowId === null || windowId === undefined || tabId === null || tabId === undefined) {
@@ -25,7 +31,7 @@ export const handleFlightResultsReceived = (
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore
   const { departures, itins: itineraries } = makeItins(
-    flights,
+    filteredFlights,
     existingDepartures,
     existingItineraries,
     providerName,
