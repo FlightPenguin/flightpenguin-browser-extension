@@ -9,7 +9,7 @@ const getAuthTokenPromise = (interactive: boolean): Promise<string> => {
         console.error(chrome.runtime.lastError);
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore
-        window.Sentry.captureMessage(chrome.runtime.lastError);
+        window.Sentry.captureException(chrome.runtime.lastError);
         chrome.identity.clearAllCachedAuthTokens(() => {
           if (interactive) {
             chrome.identity.getAuthToken({ interactive }, (token) => {
