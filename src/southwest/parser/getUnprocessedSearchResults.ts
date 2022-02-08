@@ -29,10 +29,11 @@ export const getUnprocessedSearchResults = ({
           // Southwest displays but blocks out full flights...
           return;
         }
+        const totalFare = Number(departureFare) + Number(returnFare);
         itineraries.push({
           departureFlight,
           returnFlight,
-          fare: `${Number(departureFare) + Number(returnFare)}`,
+          fare: `${totalFare}`,
           id: `${departureFlight.id}-${returnFlight.id}`,
         });
       });

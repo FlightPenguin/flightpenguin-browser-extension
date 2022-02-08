@@ -4,6 +4,7 @@ import React, { useEffect, useState } from "react";
 import { getSubscriptionValidity, getUserInfo } from "../../auth";
 import { getAuthToken } from "../../auth/getAuthToken";
 import { AnalyticsManager } from "../../background/AnalyticsManager";
+import { GoogleUserInfo } from "../../shared/types/GoogleUserInfo";
 import { focusPrimaryTab } from "../../shared/utilities/windows/focusPrimaryTab";
 
 interface WelcomeModalProps {
@@ -18,6 +19,14 @@ export const WelcomeModal = ({ onSuccess }: WelcomeModalProps): React.ReactEleme
   useEffect(() => {
     modal.setVisible(true);
   }, []);
+
+  useEffect(() => {
+    if (authError) {
+      chrome.identity.clearAllCachedAuthTokens(() => {
+        console.debug("Cleared auth tokens due to auth error in welcome modal");
+      });
+    }
+  }, [authError]);
 
   return (
     <>
@@ -47,18 +56,26 @@ export const WelcomeModal = ({ onSuccess }: WelcomeModalProps): React.ReactEleme
           <Card.Footer>
             <Button
               onClick={async () => {
-                const token = await getAuthToken(true);
-                const userInfo = await getUserInfo(token);
-                const userId = userInfo?.id;
-                if (userId) {
-                  analytics.identify({ userId: userInfo.id });
-                }
-                const apiResponse = await getSubscriptionValidity(token);
-                await focusPrimaryTab();
-                if (apiResponse.status && apiResponse.data && apiResponse.data.status) {
-                  onSuccess();
-                } else {
+                let userInfo: GoogleUserInfo | undefined;
+                try {
+                  const token = await getAuthToken(true);
+                  userInfo = await getUserInfo(token);
+                  const userId = userInfo?.id;
+                  if (userId) {
+                    analytics.identify({ userId });
+                  }
+
+                  const apiResponse = await getSubscriptionValidity(token);
+                  await focusPrimaryTab();
+
+                  if (apiResponse.status && apiResponse.data && apiResponse.data.status) {
+                    onSuccess();
+                  } else {
+                    setAuthError(true);
+                  }
+                } catch (e) {
                   setAuthError(true);
+                  throw e;
                 }
               }}
               palette="primary"
