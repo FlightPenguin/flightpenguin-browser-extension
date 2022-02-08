@@ -1,4 +1,5 @@
 import { pause } from "../../shared/pause";
+import { stopScrollingCheck } from "../../shared/ui/stopScrolling";
 import { waitForAppearance } from "../../shared/utilities/waitFor";
 
 const FLIGHT_CARDS_SELECTOR = 'div[data-test="ResultCardWrapper"]';
@@ -18,19 +19,22 @@ export const isComplete = async (flightCard: HTMLDivElement): Promise<boolean> =
   if (!showMoreButton) {
     return true;
   }
-  if (isReadyForMoreFlights(flightContainer)) {
+  if (isReadyForMoreFlights(flightContainer) && !(await stopScrollingCheck(false))) {
     showMoreButton.click();
     const newCard = await waitForAppearance(
       60000,
       `${PLACEHOLDER_CARD_SELECTOR},${FLIGHT_CARDS_SELECTOR}:not(${VISITED_SELECTOR}`,
     );
-    newCard.scrollIntoView({
-      behavior: "smooth",
-      // puts element at top
-      block: "start",
-      inline: "nearest",
-    });
-    await pause(1500);
+
+    if (!(await stopScrollingCheck(false))) {
+      newCard.scrollIntoView({
+        behavior: "smooth",
+        // puts element at top
+        block: "start",
+        inline: "nearest",
+      });
+      await pause(1500);
+    }
   }
   return !!flightContainer.querySelector(NO_MORE_RESULTS_SELECTOR);
 };
