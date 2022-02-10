@@ -1,27 +1,14 @@
-export const getAuthToken = async (interactive = true): Promise<string> => {
-  return await getAuthTokenPromise(interactive);
-};
+import { getAuth } from "firebase/auth";
 
-const getAuthTokenPromise = (interactive: boolean): Promise<string> => {
-  return new Promise((resolve) => {
-    chrome.identity.getAuthToken({ interactive }, (token) => {
-      if (chrome.runtime.lastError) {
-        console.error(chrome.runtime.lastError);
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
-        window.Sentry.captureMessage(chrome.runtime.lastError);
-        chrome.identity.clearAllCachedAuthTokens(() => {
-          if (interactive) {
-            chrome.identity.getAuthToken({ interactive }, (token) => {
-              resolve(token);
-            });
-          } else {
-            resolve(token);
-          }
-        });
-      } else {
-        resolve(token);
-      }
-    });
-  });
+export const getAuthToken = async (forceRefresh = true): Promise<string> => {
+  const auth = getAuth();
+  if (!auth) {
+    throw new Error("Firebase not initialized before getAuthToken is called");
+  }
+
+  if (!auth.currentUser) {
+    throw new Error("getAuthToken called before firebase synced");
+  }
+
+  return await auth.currentUser.getIdToken(forceRefresh);
 };

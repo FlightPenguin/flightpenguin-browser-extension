@@ -126,7 +126,7 @@ export const SearchPage = (): React.ReactElement => {
             marginBottom="50px"
           />
         )}
-        {showForm && formContainerWidth && (
+        {firebaseLoaded && showForm && formContainerWidth && (
           <React.Fragment>
             <SearchForm
               initialValues={

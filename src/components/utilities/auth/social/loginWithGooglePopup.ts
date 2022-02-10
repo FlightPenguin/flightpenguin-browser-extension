@@ -1,6 +1,6 @@
 import { Auth, GoogleAuthProvider, signInWithPopup } from "firebase/auth";
 
-import { getSubscriptionValidity } from "../../../../auth";
+import { getSubscriptionValidity } from "../../../../auth/getSubscriptionValidity";
 import { AnalyticsManager } from "../../../../background/AnalyticsManager";
 import { sendAnalyticsUserIdentified } from "../../../../shared/events";
 
@@ -17,7 +17,7 @@ export const loginWithGooglePopup = async (
 
   let apiResponse;
   if (accessToken) {
-    apiResponse = await getSubscriptionValidity(accessToken);
+    apiResponse = await getSubscriptionValidity({ accessToken });
     if (apiResponse.status && apiResponse.data && apiResponse.data.status) {
       const userId = authResult.user.providerData[0]?.uid;
       const email = authResult.user.email;

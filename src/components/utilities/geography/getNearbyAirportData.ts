@@ -15,7 +15,7 @@ export const getNearbyAirportData = async ({
   longitude,
   page,
 }: GetNearbyAirportDataProps): Promise<Airport | null> => {
-  const accessToken = await getAuthToken(false);
+  const accessToken = await getAuthToken(true);
   try {
     const response = await axios.get(
       `${API_HOST}/api/airport/location?latitude=${latitude}&longitude=${longitude}&page=${page}`,
@@ -23,6 +23,7 @@ export const getNearbyAirportData = async ({
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${accessToken}`,
+          "auth-source": "firebase",
         },
         timeout: 3000,
         withCredentials: true,
