@@ -1,7 +1,7 @@
 import { Box, PageContent, PageWithHeader } from "bumbag";
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import { onAuthStateChanged, User } from "firebase/auth";
+import React, { useEffect, useRef, useState } from "react";
 
-import { getAuthToken } from "../../auth/getAuthToken";
 import { AnalyticsManager } from "../../background/AnalyticsManager";
 import { MarketingFooter } from "../../components/MarketingFooter";
 import { LoginModal, WelcomeModal } from "../../components/Modals";
@@ -11,6 +11,8 @@ import SearchFormDisplay from "../../components/SearchFormDisplay";
 import SearchResults from "../../components/SearchResults";
 import { SizeAlert } from "../../components/SizeAlert";
 import { UpdateNotificationAlert } from "../../components/UpdateNotificationAlert";
+import { initFirebase } from "../../components/utilities/auth/initFirebase";
+import { initGoogleProvider } from "../../components/utilities/auth/social/initGoogleProvider";
 import { getStandardizedFormatDate } from "../../components/utilities/forms/getStandardizedFormatDate";
 import { sendIndexUnload } from "../../shared/events/sendIndexUnload";
 import { FlightSearchFormData } from "../../shared/types/FlightSearchFormData";
@@ -19,6 +21,9 @@ import { getFormContainerWidth } from "./utils/getFormContainerWidth";
 import { getResultsContainerWidth } from "./utils/getResultsContainerWidth";
 
 export const SearchPage = (): React.ReactElement => {
+  const { auth } = initFirebase();
+  const googleProvider = initGoogleProvider();
+
   const resultsWrapperRef = useRef<HTMLDivElement>(null);
 
   const [formData, setFormData] = useState<FlightSearchFormData | undefined>(undefined);
@@ -30,14 +35,21 @@ export const SearchPage = (): React.ReactElement => {
 
   const [showUpdate, setShowUpdate] = useState(true);
   const [showWelcomeModal, setShowWelcomeModal] = useState(isRecentlyInstalled());
-  const [isLoggedIn, setIsLoggedIn] = useState(true);
-
-  const getIsLoggedIn = useCallback(async () => {
-    const bearerToken = await getAuthToken(false);
-    setIsLoggedIn(!!bearerToken);
-  }, [setIsLoggedIn]);
+  const [activeUser, setActiveUser] = useState<User | null>(null);
+  const [firebaseLoaded, setFirebaseLoaded] = useState(false);
 
   const analytics = new AnalyticsManager(`${process.env.GOOGLE_ANALYTICS_TRACKING_ID}`, false);
+
+  useEffect(() => {
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        setActiveUser(user);
+      } else {
+        setActiveUser(null);
+      }
+      setFirebaseLoaded(true);
+    });
+  }, []);
 
   useEffect(() => {
     chrome.runtime.onMessage.addListener((message) => {
@@ -75,10 +87,6 @@ export const SearchPage = (): React.ReactElement => {
   }, [setResultsContainerWidth]);
 
   useEffect(() => {
-    getIsLoggedIn();
-  }, [setIsLoggedIn, getIsLoggedIn]);
-
-  useEffect(() => {
     analytics.pageview({});
   }, []);
 
@@ -93,19 +101,22 @@ export const SearchPage = (): React.ReactElement => {
   return (
     <PageWithHeader header={<NavigationBar />} overflow="hidden">
       <Box display="flex" flexDirection="column">
-        {showWelcomeModal && !isLoggedIn && (
+        {showWelcomeModal && firebaseLoaded && !activeUser && (
           <WelcomeModal
+            firebaseAuth={auth}
+            googleProvider={googleProvider}
             onSuccess={() => {
               setShowWelcomeModal(false);
-              setIsLoggedIn(true);
               setRecentlyInstalled(false);
             }}
           />
         )}
-        {!isLoggedIn && !showWelcomeModal && (
+        {firebaseLoaded && !activeUser && !showWelcomeModal && (
           <LoginModal
+            firebaseAuth={auth}
+            googleProvider={googleProvider}
             onSuccess={() => {
-              setIsLoggedIn(true);
+              console.debug("Authenticated");
             }}
           />
         )}
@@ -139,9 +150,6 @@ export const SearchPage = (): React.ReactElement => {
                 });
               }}
               containerWidth={formContainerWidth}
-              onAuthError={() => {
-                setIsLoggedIn(false);
-              }}
             />
             <MarketingFooter />
           </React.Fragment>

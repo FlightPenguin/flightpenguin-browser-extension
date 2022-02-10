@@ -124,14 +124,12 @@ const defaultInitialValues: FormState = {
 interface SearchFormProps {
   containerWidth: number;
   onSubmit: (values: FlightSearchFormData) => void;
-  onAuthError: () => void;
   initialValues?: FormState;
 }
 
 export const SearchForm = ({
   containerWidth,
   onSubmit,
-  onAuthError,
   initialValues = defaultInitialValues,
 }: SearchFormProps): React.ReactElement => {
   const cachedBaseAirport = getNearbyAirportFromCache();
