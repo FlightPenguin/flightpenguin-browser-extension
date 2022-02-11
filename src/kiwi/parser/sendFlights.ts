@@ -76,18 +76,26 @@ const scrollToCard = async (flightCard: HTMLDivElement): Promise<void> => {
       const halfHeight = window.innerHeight / 2;
 
       // jitter and skitter to activate kiwi's scroll handler
-      window.scrollBy(0, window.innerHeight);
-      await pause(250);
-      window.scrollBy(0, halfHeight * -1);
-      await pause(250);
-      window.scrollBy(0, halfHeight);
+      if (!(await stopScrollingCheck(false))) {
+        window.scrollBy(0, window.innerHeight);
+        await pause(250);
+      }
+      if (!(await stopScrollingCheck(false))) {
+        window.scrollBy(0, halfHeight * -1);
+        await pause(250);
+      }
+      if (!(await stopScrollingCheck(false))) {
+        window.scrollBy(0, halfHeight);
+      }
     } else {
-      scrollToCard.scrollIntoView({
-        behavior: "smooth",
-        // puts element at top
-        block: "start",
-        inline: "nearest",
-      });
+      if (!(await stopScrollingCheck(false))) {
+        scrollToCard.scrollIntoView({
+          behavior: "smooth",
+          // puts element at top
+          block: "start",
+          inline: "nearest",
+        });
+      }
     }
   }
 };

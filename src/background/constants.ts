@@ -9,7 +9,7 @@ export const SUPPORTED_PROVIDERS = [
   // force expansion
   "expedia",
   "kiwi",
-  "southwest",
+  // "southwest",
   "trip",
 ];
 
