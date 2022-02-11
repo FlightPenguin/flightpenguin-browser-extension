@@ -1,8 +1,8 @@
 import axios from "axios";
 
-import { API_HOST } from "../background/constants";
-import { getFirebaseToken } from "../components/utilities/auth/getFirebaseToken";
-import { APIResponse } from "../shared/types/APIResponse";
+import { API_HOST } from "../../../background/constants";
+import { APIResponse } from "../../../shared/types/APIResponse";
+import { getFirebaseToken } from "./getFirebaseToken";
 
 interface GetSubscriptionValidityProps {
   accessToken?: string;
