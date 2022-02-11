@@ -3,7 +3,7 @@ import { Auth, GoogleAuthProvider } from "firebase/auth";
 import React, { useEffect, useState } from "react";
 
 import { AnalyticsManager } from "../../background/AnalyticsManager";
-import { loginWithGooglePopup } from "../utilities/auth/social/loginWithGooglePopup";
+import { loginWithGooglePopup } from "../utilities/auth/social/google/loginWithGooglePopup";
 
 interface LoginModalProps {
   firebaseAuth: Auth;

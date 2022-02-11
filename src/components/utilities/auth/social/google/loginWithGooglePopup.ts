@@ -1,8 +1,8 @@
 import { Auth, GoogleAuthProvider, signInWithPopup } from "firebase/auth";
 
-import { getSubscriptionValidity } from "../../../../auth/getSubscriptionValidity";
-import { AnalyticsManager } from "../../../../background/AnalyticsManager";
-import { sendAnalyticsUserIdentified } from "../../../../shared/events";
+import { getSubscriptionValidity } from "../../../../../auth/getSubscriptionValidity";
+import { AnalyticsManager } from "../../../../../background/AnalyticsManager";
+import { sendAnalyticsUserIdentified } from "../../../../../shared/events";
 
 export const loginWithGooglePopup = async (
   auth: Auth,

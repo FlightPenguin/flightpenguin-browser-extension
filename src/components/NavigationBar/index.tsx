@@ -1,6 +1,6 @@
 import { Box, DropdownMenu, Icon, Image, Link, Text, TopNav } from "bumbag";
+import isEqual from "lodash.isequal";
 import React, { useCallback, useEffect, useState } from "react";
-import UserInfo = chrome.identity.UserInfo;
 import {
   FacebookIcon,
   FacebookShareButton,
@@ -10,19 +10,26 @@ import {
   TwitterShareButton,
 } from "react-share";
 
-import { getUserProfileInfo } from "../../auth/getUserProfileInfo";
+import { getUserInfo } from "../utilities/auth/social/google/getUserInfo";
+import { UserSocialAuthProfile } from "../utilities/auth/social/types/UserSocialAuthProfile";
 
-const NavigationBar = () => {
-  const [profileInfo, setProfileInfo] = useState<UserInfo | null>(null);
+interface NavigationBarProps {
+  firebaseLoaded: boolean;
+}
+
+const NavigationBar = ({ firebaseLoaded }: NavigationBarProps): React.ReactElement => {
+  const [profileInfo, setProfileInfo] = useState<UserSocialAuthProfile | null>(null);
 
   const fetchUserProfileInfo = useCallback(async () => {
-    const userinfo = await getUserProfileInfo();
-    setProfileInfo(userinfo);
-  }, []);
+    if (firebaseLoaded) {
+      const userinfo = getUserInfo();
+      setProfileInfo(userinfo);
+    }
+  }, [firebaseLoaded]);
 
   useEffect(() => {
     fetchUserProfileInfo();
-  }, [fetchUserProfileInfo]);
+  }, [fetchUserProfileInfo, firebaseLoaded]);
 
   const socialTitle = "Share Flight Penguin";
 
@@ -61,7 +68,7 @@ const NavigationBar = () => {
             {" "}
           </Box>
         </TopNav.Item>
-        {profileInfo && profileInfo.email && (
+        {firebaseLoaded && profileInfo && profileInfo.email && (
           <TopNav.Item>
             <DropdownMenu
               menu={
@@ -105,7 +112,7 @@ const NavigationBar = () => {
 };
 
 export default React.memo(NavigationBar, (previous, next) => {
-  return true;
+  return isEqual(previous, next);
 });
 
 const getSocialUrl = (sourceName: string) => {

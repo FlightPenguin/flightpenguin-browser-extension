@@ -12,7 +12,7 @@ import SearchResults from "../../components/SearchResults";
 import { SizeAlert } from "../../components/SizeAlert";
 import { UpdateNotificationAlert } from "../../components/UpdateNotificationAlert";
 import { initFirebase } from "../../components/utilities/auth/initFirebase";
-import { initGoogleProvider } from "../../components/utilities/auth/social/initGoogleProvider";
+import { initGoogleProvider } from "../../components/utilities/auth/social/google/initGoogleProvider";
 import { getStandardizedFormatDate } from "../../components/utilities/forms/getStandardizedFormatDate";
 import { sendIndexUnload } from "../../shared/events/sendIndexUnload";
 import { FlightSearchFormData } from "../../shared/types/FlightSearchFormData";
@@ -99,7 +99,7 @@ export const SearchPage = (): React.ReactElement => {
   }
 
   return (
-    <PageWithHeader header={<NavigationBar />} overflow="hidden">
+    <PageWithHeader header={<NavigationBar firebaseLoaded={firebaseLoaded} />} overflow="hidden">
       <Box display="flex" flexDirection="column">
         {showWelcomeModal && firebaseLoaded && !activeUser && (
           <WelcomeModal
