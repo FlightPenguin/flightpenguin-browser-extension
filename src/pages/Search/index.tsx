@@ -99,7 +99,10 @@ export const SearchPage = (): React.ReactElement => {
   }
 
   return (
-    <PageWithHeader header={<NavigationBar firebaseLoaded={firebaseLoaded} />} overflow="hidden">
+    <PageWithHeader
+      header={<NavigationBar firebaseLoaded={firebaseLoaded} currentUser={activeUser} />}
+      overflow="hidden"
+    >
       <Box display="flex" flexDirection="column">
         {showWelcomeModal && firebaseLoaded && !activeUser && (
           <WelcomeModal

@@ -1,4 +1,5 @@
 import { Box, DropdownMenu, Icon, Image, Link, Text, TopNav } from "bumbag";
+import { User } from "firebase/auth";
 import isEqual from "lodash.isequal";
 import React, { useCallback, useEffect, useState } from "react";
 import {
@@ -10,26 +11,29 @@ import {
   TwitterShareButton,
 } from "react-share";
 
+import { logout } from "../utilities/auth/logout";
 import { getUserInfo } from "../utilities/auth/social/google/getUserInfo";
 import { UserSocialAuthProfile } from "../utilities/auth/social/types/UserSocialAuthProfile";
 
 interface NavigationBarProps {
   firebaseLoaded: boolean;
+  currentUser: User | null;
 }
 
-const NavigationBar = ({ firebaseLoaded }: NavigationBarProps): React.ReactElement => {
+const NavigationBar = ({ firebaseLoaded, currentUser }: NavigationBarProps): React.ReactElement => {
   const [profileInfo, setProfileInfo] = useState<UserSocialAuthProfile | null>(null);
+  const [logoutDisabled, setLogoutDisabled] = useState(false);
 
   const fetchUserProfileInfo = useCallback(async () => {
-    if (firebaseLoaded) {
+    if (firebaseLoaded && currentUser) {
       const userinfo = getUserInfo();
       setProfileInfo(userinfo);
     }
-  }, [firebaseLoaded]);
+  }, [firebaseLoaded, currentUser]);
 
   useEffect(() => {
     fetchUserProfileInfo();
-  }, [fetchUserProfileInfo, firebaseLoaded]);
+  }, [fetchUserProfileInfo, firebaseLoaded, currentUser]);
 
   const socialTitle = "Share Flight Penguin";
 
@@ -68,7 +72,7 @@ const NavigationBar = ({ firebaseLoaded }: NavigationBarProps): React.ReactEleme
             {" "}
           </Box>
         </TopNav.Item>
-        {firebaseLoaded && profileInfo && profileInfo.email && (
+        {firebaseLoaded && currentUser && profileInfo && profileInfo.email && (
           <TopNav.Item>
             <DropdownMenu
               menu={
@@ -95,6 +99,17 @@ const NavigationBar = ({ firebaseLoaded }: NavigationBarProps): React.ReactEleme
                       href="mailto:support@flightpenguin.com"
                     >
                       Help
+                    </DropdownMenu.Item>
+                    <DropdownMenu.Item
+                      iconBefore="solid-sign-out-alt"
+                      disabled={logoutDisabled}
+                      onClick={async () => {
+                        setLogoutDisabled(true);
+                        await logout();
+                        setLogoutDisabled(false);
+                      }}
+                    >
+                      Logout
                     </DropdownMenu.Item>
                   </DropdownMenu.Group>
                 </React.Fragment>
