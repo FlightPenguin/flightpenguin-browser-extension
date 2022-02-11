@@ -1,6 +1,6 @@
 import { getAuth } from "firebase/auth";
 
-export const getAuthToken = async (forceRefresh = true): Promise<string> => {
+export const getFirebaseToken = async (forceRefresh = true): Promise<string> => {
   const auth = getAuth();
   if (!auth) {
     throw new Error("Firebase not initialized before getAuthToken is called");

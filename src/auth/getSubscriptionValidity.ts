@@ -1,8 +1,8 @@
 import axios from "axios";
 
 import { API_HOST } from "../background/constants";
+import { getFirebaseToken } from "../components/utilities/auth/getFirebaseToken";
 import { APIResponse } from "../shared/types/APIResponse";
-import { getAuthToken } from "./getAuthToken";
 
 interface GetSubscriptionValidityProps {
   accessToken?: string;
@@ -14,7 +14,7 @@ export const getSubscriptionValidity = async ({ accessToken }: GetSubscriptionVa
   };
 
   if (!accessToken) {
-    accessToken = await getAuthToken(true);
+    accessToken = await getFirebaseToken(true);
     headers["auth-source"] = "firebase";
   }
   headers["Authorization"] = `Bearer ${accessToken}`;

@@ -1,8 +1,8 @@
 import axios from "axios";
 
-import { getAuthToken } from "../../../auth/getAuthToken";
 import { API_HOST } from "../../../background/constants";
 import { Airport } from "../../SearchForm/api/airports/Airport";
+import { getFirebaseToken } from "../auth/getFirebaseToken";
 
 interface GetNearbyAirportDataProps {
   latitude: number;
@@ -15,7 +15,7 @@ export const getNearbyAirportData = async ({
   longitude,
   page,
 }: GetNearbyAirportDataProps): Promise<Airport | null> => {
-  const accessToken = await getAuthToken(true);
+  const accessToken = await getFirebaseToken(true);
   try {
     const response = await axios.get(
       `${API_HOST}/api/airport/location?latitude=${latitude}&longitude=${longitude}&page=${page}`,
