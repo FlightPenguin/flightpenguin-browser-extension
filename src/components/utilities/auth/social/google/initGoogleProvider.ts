@@ -4,5 +4,8 @@ export const initGoogleProvider = (): GoogleAuthProvider => {
   provider.addScope("openid");
   provider.addScope("profile");
   provider.addScope("email");
+  provider.setCustomParameters({
+    prompt: "consent",
+  });
   return provider;
 };
