@@ -1,6 +1,7 @@
 import { Box, Button, Card, FieldStack, FieldWrapper, Input, RadioGroup, Select, Switch, SwitchField } from "bumbag";
 import { SelectMenu } from "bumbag/src/SelectMenu";
 import { addDays, endOfDay, max, nextSunday, startOfDay } from "date-fns";
+import { User } from "firebase/auth";
 import { Field as FormikField, Form, Formik } from "formik";
 import Fuse from "fuse.js";
 import React, { useCallback, useEffect, useRef, useState } from "react";
@@ -122,12 +123,14 @@ const defaultInitialValues: FormState = {
 };
 
 interface SearchFormProps {
+  activeUser: User | null;
   containerWidth: number;
   onSubmit: (values: FlightSearchFormData) => void;
   initialValues?: FormState;
 }
 
 export const SearchForm = ({
+  activeUser,
   containerWidth,
   onSubmit,
   initialValues = defaultInitialValues,
@@ -196,7 +199,7 @@ export const SearchForm = ({
   );
 
   const getNearestAirport = useCallback(async () => {
-    if (!geolocation.error && !cachedBaseAirport && !suggestedDefaultAirport) {
+    if (!geolocation.error && geolocation.latitude && !cachedBaseAirport && !suggestedDefaultAirport && !!activeUser) {
       const airport = await getNearbyAirportData({
         latitude: geolocation.latitude,
         longitude: geolocation.longitude,
@@ -206,7 +209,7 @@ export const SearchForm = ({
         setSuggestedDefaultAirport(airport);
       }
     }
-  }, [geolocation, cachedBaseAirport, suggestedDefaultAirport, setSuggestedDefaultAirport]);
+  }, [geolocation, cachedBaseAirport, suggestedDefaultAirport, setSuggestedDefaultAirport, activeUser]);
 
   useEffect(() => {
     getNearestAirport();

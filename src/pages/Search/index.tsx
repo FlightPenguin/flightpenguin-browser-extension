@@ -153,6 +153,7 @@ export const SearchPage = (): React.ReactElement => {
                 });
               }}
               containerWidth={formContainerWidth}
+              activeUser={activeUser}
             />
             <MarketingFooter />
           </React.Fragment>
