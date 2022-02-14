@@ -1,8 +1,7 @@
-import { AnalyticsManager } from "../AnalyticsManager";
 import { openExtension } from "./openExtension";
 
-export const ExtensionOpenedHandler = (analytics: AnalyticsManager): void => {
+export const ExtensionOpenedHandler = (): void => {
   chrome.browserAction.onClicked.addListener(() => {
-    openExtension(analytics);
+    openExtension();
   });
 };

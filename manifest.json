@@ -1,6 +1,6 @@
 {
   "name": "FlightPenguin",
-  "version": "1.12.1",
+  "version": "1.13.0",
   "description": "Search flights",
   "background": {
     "page": "src/background.html",
@@ -141,6 +141,6 @@
    "128": "src/icons/icon128.png"
   },
   "manifest_version": 2,
-  "content_security_policy": "script-src 'self' https://www.google-analytics.com https://browser.sentry-cdn.com https://www.gstatic.com; object-src 'self'",
+  "content_security_policy": "script-src 'self' https://www.google-analytics.com https://browser.sentry-cdn.com https://www.gstatic.com https://apis.google.com; object-src 'self'",
   "web_accessible_resources": ["index.html", "test.html", "images/*.svg", "src/icons/*.png", "src/icons/*.svg"]
 }

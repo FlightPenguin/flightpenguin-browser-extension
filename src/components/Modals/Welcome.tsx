@@ -1,19 +1,20 @@
 import { Alert, Box, Button, Card, Image, Link, Modal } from "bumbag";
+import { Auth, GoogleAuthProvider } from "firebase/auth";
 import React, { useEffect, useState } from "react";
 
-import { getSubscriptionValidity, getUserInfo } from "../../auth";
-import { getAuthToken } from "../../auth/getAuthToken";
 import { AnalyticsManager } from "../../background/AnalyticsManager";
-import { GoogleUserInfo } from "../../shared/types/GoogleUserInfo";
-import { focusPrimaryTab } from "../../shared/utilities/windows/focusPrimaryTab";
+import { loginWithGooglePopup } from "../utilities/auth/social/google/loginWithGooglePopup";
 
 interface WelcomeModalProps {
+  firebaseAuth: Auth;
+  googleProvider: GoogleAuthProvider;
   onSuccess: () => void;
 }
 
-export const WelcomeModal = ({ onSuccess }: WelcomeModalProps): React.ReactElement => {
+export const WelcomeModal = ({ firebaseAuth, googleProvider, onSuccess }: WelcomeModalProps): React.ReactElement => {
   const analytics = new AnalyticsManager(`${process.env.GOOGLE_ANALYTICS_TRACKING_ID}`, false);
   const [authError, setAuthError] = useState(false);
+  const [disabled, setDisabled] = useState(false);
 
   const modal = Modal.useState();
   useEffect(() => {
@@ -55,27 +56,28 @@ export const WelcomeModal = ({ onSuccess }: WelcomeModalProps): React.ReactEleme
           </Card.Content>
           <Card.Footer>
             <Button
+              disabled={disabled}
               onClick={async () => {
-                let userInfo: GoogleUserInfo | undefined;
+                setDisabled(true);
                 try {
-                  const token = await getAuthToken(true);
-                  userInfo = await getUserInfo(token);
-                  const userId = userInfo?.id;
-                  if (userId) {
-                    analytics.identify({ userId });
-                  }
-
-                  const apiResponse = await getSubscriptionValidity(token);
-                  await focusPrimaryTab();
-
-                  if (apiResponse.status && apiResponse.data && apiResponse.data.status) {
-                    onSuccess();
-                  } else {
-                    setAuthError(true);
-                  }
-                } catch (e) {
+                  loginWithGooglePopup(
+                    firebaseAuth,
+                    googleProvider,
+                    analytics,
+                    () => {
+                      setDisabled(false);
+                      setAuthError(false);
+                      onSuccess();
+                    },
+                    () => {
+                      setDisabled(false);
+                      setAuthError(true);
+                    },
+                  );
+                } catch (error) {
+                  setDisabled(false);
                   setAuthError(true);
-                  throw e;
+                  throw error;
                 }
               }}
               palette="primary"

@@ -1,26 +1,29 @@
 import axios from "axios";
 
-import { getAuthToken } from "../../../auth/getAuthToken";
 import { API_HOST } from "../../../background/constants";
 import { Airport } from "../../SearchForm/api/airports/Airport";
+import { getFirebaseToken } from "../auth/getFirebaseToken";
 
 interface GetNearbyAirportDataProps {
-  position: GeolocationPosition;
+  latitude: number;
+  longitude: number;
   page: number;
 }
 
 export const getNearbyAirportData = async ({
-  position,
+  latitude,
+  longitude,
   page,
-}: GetNearbyAirportDataProps): Promise<{ options: Airport[] }> => {
-  const accessToken = await getAuthToken(false);
+}: GetNearbyAirportDataProps): Promise<Airport | null> => {
+  const accessToken = await getFirebaseToken(true);
   try {
     const response = await axios.get(
-      `${API_HOST}/api/airport/location?latitude=${position.coords.latitude}&longitude=${position.coords.longitude}&page=${page}`,
+      `${API_HOST}/api/airport/location?latitude=${latitude}&longitude=${longitude}&page=${page}`,
       {
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${accessToken}`,
+          "auth-source": "firebase",
         },
         timeout: 3000,
         withCredentials: true,
@@ -37,11 +40,26 @@ export const getNearbyAirportData = async ({
           value: record.iataCode,
         };
       }) as Airport[];
-      return { options: airports };
+      return airports[0];
     }
-    return { options: [] };
+    return null;
   } catch (e) {
     console.error(e);
-    return { options: [] };
+    return null;
   }
+};
+
+const CACHE_KEY = "fp-local-airport";
+
+export const setNearbyAirportCache = (airport: Airport): void => {
+  const cacheValue = JSON.stringify({ airport });
+  localStorage.setItem(CACHE_KEY, cacheValue);
+};
+
+export const getNearbyAirportFromCache = () => {
+  const cacheValue = JSON.parse(localStorage.getItem(CACHE_KEY) || "{}");
+  if (!!cacheValue && cacheValue.airport) {
+    return cacheValue.airport;
+  }
+  return null;
 };
