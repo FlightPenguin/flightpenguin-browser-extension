@@ -603,7 +603,7 @@ export const SearchForm = ({
                     state={getFieldState(formik, "searchByPoints")}
                     validationText={getValidationText(formik, "searchByPoints")}
                     label="Search by  "
-                    display="flex"
+                    display="none"
                     flexDirection="row"
                     marginTop="major-3"
                   >
