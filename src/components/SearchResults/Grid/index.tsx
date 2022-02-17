@@ -12,6 +12,7 @@ import { getCheapestItinerary } from "../Container/utilities/getCheapestItinerar
 import { getFlightPenguinId } from "../Container/utilities/getFlightPenguinId";
 import { FlightSelection } from "../FlightSelection";
 import TimelineRow from "../Row";
+import { getDepartureAirport } from "./utlilities/getDepartureAirport";
 
 interface TimelineGridProps {
   flights: ProcessedFlightSearchResult[];
@@ -60,8 +61,8 @@ const TimelineGrid = ({
           increment={increment}
           startHourOffset={startHour}
           key={`itinerary-${flightPenguinId}`}
-          from={formData.from}
-          to={formData.to}
+          from={getDepartureAirport({ formData, flight })}
+          to={formData.to.value.toUpperCase()}
           index={index}
           selected={!!selectedFlight && selectedFlight.id === flight.id}
           legendContainerWidth={legendContainerWidth}

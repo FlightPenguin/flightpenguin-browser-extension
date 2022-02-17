@@ -15,7 +15,7 @@ export const getUrl = (formData: FlightSearchFormData): string => {
   const { from, to, fromDate, toDate, numPax, cabin, roundtrip } = formData;
   const startDate = formatDate(fromDate);
   const tripType = roundtrip ? "roundtrip" : "oneway";
-  let url = `https://www.expedia.com/Flights-Search?mode=search&trip=${tripType}&leg1=from:${from},to:${to},departure:${startDate}TANYT&leg2=from:${to},to:${from},`;
+  let url = `https://www.expedia.com/Flights-Search?mode=search&trip=${tripType}&leg1=from:${from.value.toUpperCase()},to:${to.value.toUpperCase()},departure:${startDate}TANYT&leg2=from:${to.value.toUpperCase()},to:${from.value.toUpperCase()},`;
 
   if (roundtrip) {
     const endDate = formatDate(toDate);

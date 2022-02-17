@@ -4,11 +4,13 @@ export interface Airport {
   name: string;
   location: string;
   value: string;
+  type: string;
   raw?: {
     name?: string;
     iataCode?: string;
     city?: string;
     stateProvince?: string;
     country?: string;
+    cityCode?: string;
   };
 }

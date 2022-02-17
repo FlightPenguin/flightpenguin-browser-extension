@@ -11,12 +11,12 @@ export const getFlightInfo = (
   let arrivalAirportCode;
   if (flightType === "DEPARTURE") {
     startDate = formData.fromDate;
-    departureAirportCode = formData.from;
-    arrivalAirportCode = formData.to;
+    departureAirportCode = formData.from.value.toUpperCase();
+    arrivalAirportCode = formData.to.value.toUpperCase();
   } else {
     startDate = formData.toDate;
-    departureAirportCode = formData.to;
-    arrivalAirportCode = formData.from;
+    departureAirportCode = formData.to.value.toUpperCase();
+    arrivalAirportCode = formData.from.value.toUpperCase();
   }
 
   return {

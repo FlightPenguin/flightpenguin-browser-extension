@@ -38,6 +38,9 @@ export const getNearbyAirportData = async ({
           name: record.displayName,
           location: record.displayLocation,
           value: record.iataCode,
+          raw: {
+            cityCode: record.cityCode,
+          },
         };
       }) as Airport[];
       return airports[0];

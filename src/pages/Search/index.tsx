@@ -7,6 +7,7 @@ import { MarketingFooter } from "../../components/MarketingFooter";
 import { LoginModal, WelcomeModal } from "../../components/Modals";
 import NavigationBar from "../../components/NavigationBar";
 import { SearchForm } from "../../components/SearchForm";
+import { Airport } from "../../components/SearchForm/api/airports/Airport";
 import SearchFormDisplay from "../../components/SearchFormDisplay";
 import SearchResults from "../../components/SearchResults";
 import { SizeAlert } from "../../components/SizeAlert";
@@ -135,8 +136,6 @@ export const SearchPage = (): React.ReactElement => {
               initialValues={
                 formData && {
                   ...formData,
-                  from: { value: formData.from, label: formData.from },
-                  to: { value: formData.to, label: formData.to },
                   cabin: formData?.cabin || "econ",
                   fromDate: getStandardizedFormatDate(formData.fromDate),
                   toDate: getStandardizedFormatDate(formData.toDate),
