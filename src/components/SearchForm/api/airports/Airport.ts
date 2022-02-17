@@ -11,5 +11,6 @@ export interface Airport {
     city?: string;
     stateProvince?: string;
     country?: string;
+    cityCode?: string;
   };
 }

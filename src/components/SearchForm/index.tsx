@@ -363,23 +363,52 @@ export const SearchForm = ({
                   </FieldWrapper>
                 </FieldStack>
 
-                {suggestedDefaultAirport && suggestedDefaultAirport.key === fromValue.key && (
-                  <FieldStack
-                    orientation="horizontal"
-                    verticalBelow="tablet"
-                    className="airport-cache"
-                    paddingTop="major-3"
-                  >
-                    <SwitchField
-                      switchLabel={`Set ${suggestedDefaultAirport.key} as your default departure airport`}
-                      label=""
-                      onClick={() => {
-                        setNearbyAirportCache(suggestedDefaultAirport);
-                        setSuggestedDefaultAirport(null);
-                      }}
-                    />
-                  </FieldStack>
-                )}
+                {suggestedDefaultAirport &&
+                  suggestedDefaultAirport.value &&
+                  fromValue &&
+                  fromValue.value &&
+                  fromValue.type === "airport" &&
+                  suggestedDefaultAirport.value === fromValue.value &&
+                  fromValue.type === "airport" && (
+                    <FieldStack
+                      orientation="horizontal"
+                      verticalBelow="tablet"
+                      className="airport-cache"
+                      paddingTop="major-3"
+                    >
+                      <SwitchField
+                        switchLabel={`Set ${fromValue.value} as your default departure airport`}
+                        label=""
+                        onClick={() => {
+                          setNearbyAirportCache(fromValue);
+                          setSuggestedDefaultAirport(null);
+                        }}
+                      />
+                    </FieldStack>
+                  )}
+
+                {suggestedDefaultAirport &&
+                  fromValue &&
+                  fromValue.value &&
+                  fromValue.type === "city" &&
+                  suggestedDefaultAirport.raw.cityCode &&
+                  suggestedDefaultAirport.raw.cityCode === fromValue.value && (
+                    <FieldStack
+                      orientation="horizontal"
+                      verticalBelow="tablet"
+                      className="airport-cache"
+                      paddingTop="major-3"
+                    >
+                      <SwitchField
+                        switchLabel={`Set ${fromValue.value} as your default departure city`}
+                        label=""
+                        onClick={() => {
+                          setNearbyAirportCache(fromValue);
+                          setSuggestedDefaultAirport(null);
+                        }}
+                      />
+                    </FieldStack>
+                  )}
 
                 <FieldStack
                   orientation="horizontal"
