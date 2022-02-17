@@ -12,6 +12,7 @@ import { getLayovers } from "./getLayovers";
 const AIRLINE_SELECTOR = "[data-test-id='flight-operated']";
 const ARRIVAL_TIME_SELECTOR = "[data-test-id='arrival-time']";
 const DURATION_SELECTOR = "[data-test-id='journey-duration']";
+const ARRIVAL_DEPARTURE_SELECTOR = "div[data-test-id='arrival-departure']";
 
 export const getFlight = async (
   element: Element,
@@ -21,19 +22,20 @@ export const getFlight = async (
   const { marketingAirline, operatingAirline } = getAirlines(element);
   const { departureTime, arrivalTime } = getFlightTimes(element);
   const { duration, hasStops } = getDurationDetails(element);
+  const { departureAirport, arrivalAirport } = getArrivalAndDepartureAirports(element);
 
   openFlightDetailsModal(element);
   const modal = await getFlightDetailsModal();
   await openLayoverDetailsCollapsible(modal);
 
-  const layovers = hasStops
+  const flightSegments = hasStops
     ? await getLayovers(modal, 3000, formData, isReturn)
     : [
         new FlightLeg({
           fromTime: departureTime,
           toTime: arrivalTime,
-          from: isReturn ? formData.to : formData.from,
-          to: isReturn ? formData.from : formData.to,
+          from: departureAirport,
+          to: arrivalAirport,
           duration: duration,
           // eslint-disable-next-line @typescript-eslint/ban-ts-comment
           // @ts-ignore
@@ -48,7 +50,7 @@ export const getFlight = async (
     fromTime: departureTime,
     toTime: arrivalTime,
     duration,
-    layovers,
+    layovers: flightSegments,
   });
 };
 
@@ -115,4 +117,21 @@ const getDurationDetails = (flightContainer: Element) => {
   }
 
   return { duration, hasStops };
+};
+
+const getArrivalAndDepartureAirports = (flightCard: Element): { departureAirport: string; arrivalAirport: string } => {
+  const textContainer = flightCard.querySelector(ARRIVAL_DEPARTURE_SELECTOR) as HTMLDivElement;
+  if (!textContainer) {
+    throw new MissingElementLookupError("Unable to lookup arrival/departure container in flight card");
+  }
+
+  const rawText = textContainer.textContent;
+  if (!rawText) {
+    throw new MissingFieldParserError("Unable to extract text from arrival/departure container");
+  }
+
+  const [trash, departureish, arrivalish] = rawText.split("(");
+  const departureAirport = departureish.split(")")[0].trim();
+  const arrivalAirport = arrivalish.split(")")[0].trim();
+  return { departureAirport, arrivalAirport };
 };

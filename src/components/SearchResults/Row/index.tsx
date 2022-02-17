@@ -86,6 +86,8 @@ const TimelineRow = ({
   const flightPenguinId = flight.id;
   const { left, right } = getSegmentContainerPositions(flightSegments);
   const intervalWidth = flightTimeContainerWidth / (intervalCount - 1);
+  const departureAirport = flightSegments[0].from;
+  const arrivalAirport = flightSegments.slice(-1)[0].to;
 
   const rowHighlightStyle = selected
     ? {}
@@ -191,7 +193,7 @@ const TimelineRow = ({
           {flight.fromTime}
           {!!flight.timezoneOffset && (
             <Badge isAttached palette="info">
-              {flightType === "DEPARTURE" ? from : to}
+              {departureAirport}
             </Badge>
           )}
         </Tag>
@@ -211,7 +213,7 @@ const TimelineRow = ({
           {flight.toLocalTime}
           {!!flight.timezoneOffset && (
             <Badge isAttached palette="warning">
-              {flightType === "DEPARTURE" ? to : from}
+              {arrivalAirport}
             </Badge>
           )}
         </Tag>

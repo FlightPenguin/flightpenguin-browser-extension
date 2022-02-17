@@ -3,12 +3,12 @@ import { SelectMenu } from "bumbag/src/SelectMenu";
 import { addDays, endOfDay, max, nextSunday, startOfDay } from "date-fns";
 import { User } from "firebase/auth";
 import { Field as FormikField, Form, Formik } from "formik";
-import Fuse from "fuse.js";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import useGeolocation from "react-hook-geolocation";
 import { boolean, mixed, number, object, string } from "yup";
 
 import airports from "../../assets/airports.json";
+import cities from "../../assets/cities.json";
 import { CabinMap } from "../../background/constants";
 import { FlightSearchFormData } from "../../shared/types/FlightSearchFormData";
 import { setRecentlyInstalled } from "../../shared/utilities/recentlyInstalledManager";
@@ -30,8 +30,8 @@ import {
 import { Airport } from "./api/airports/Airport";
 import { MatchedLabel } from "./components/SelectMenu/MatchedLabel";
 import { getFridayAfterNext } from "./utilities/getFridayAfterNext";
+import { getMatchingAirports } from "./utilities/getMatchingAirports";
 import { sendFormDataToBackground } from "./utilities/sendFormDataToBackground";
-
 const cabinHelpText = "You must select a cabin type.";
 
 const today = startOfDay(new Date());
@@ -157,6 +157,7 @@ export const SearchForm = ({
     location: "",
     key: "",
     name: "",
+    type: "airport",
   });
   const [toValue, setToValue] = useState<Airport | null>({
     value: "",
@@ -164,36 +165,17 @@ export const SearchForm = ({
     location: "",
     key: "",
     name: "",
+    type: "airport",
   });
   const [toDateBounds, setToDateBounds] = useState({
     minimum: getChromeFormattedDateFromDate(fridayAfterNext),
     maximum: getChromeFormattedDateFromDate(maxDate),
   });
   const [airportSearchText, setAirportSearchText] = useState("");
-  const airportOptions = airports.map((record: Record<string, unknown>) => {
-    return {
-      key: record.iataCode,
-      label: record.iataCode,
-      name: record.displayName,
-      location: record.displayLocation,
-      value: record.iataCode,
-      searchText: record.searchText,
-    };
-  }) as Airport[];
-
   const searchAirports = useCallback(
     async ({ searchText }) => {
       setAirportSearchText(searchText);
-      const fuse = new Fuse(airportOptions, {
-        keys: ["searchText", "key"],
-        ignoreLocation: true,
-      });
-      const cleanedText = searchText.normalize("NFD").replace(/\p{Diacritic}/gu, "");
-      const results = fuse
-        .search(cleanedText)
-        .map((result) => result.item)
-        .slice(0, 10);
-      return { options: results };
+      return { options: getMatchingAirports(searchText, airports, cities) };
     },
     [setAirportSearchText],
   );
@@ -234,9 +216,9 @@ export const SearchForm = ({
 
             const cleanValues = {
               ...values,
-              from: values.from.value?.toUpperCase() || "",
+              from: values.from as Airport,
               fromDate: getChromeFormattedDateFromString(values.fromDate),
-              to: values.to.value?.toUpperCase() || "",
+              to: values.to as Airport,
               toDate: values.toDate ? getChromeFormattedDateFromString(values.toDate) : "",
               searchByPoints: getBooleanFromString(values.searchByPoints),
               pointsType: pointsType,

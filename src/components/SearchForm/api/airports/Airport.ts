@@ -4,6 +4,7 @@ export interface Airport {
   name: string;
   location: string;
   value: string;
+  type: string;
   raw?: {
     name?: string;
     iataCode?: string;
