@@ -391,8 +391,8 @@ export const SearchForm = ({
                   fromValue &&
                   fromValue.value &&
                   fromValue.type === "city" &&
-                  suggestedDefaultAirport.raw.cityCode &&
-                  suggestedDefaultAirport.raw.cityCode === fromValue.value && (
+                  suggestedDefaultAirport.raw?.cityCode &&
+                  suggestedDefaultAirport.raw?.cityCode === fromValue.value && (
                     <FieldStack
                       orientation="horizontal"
                       verticalBelow="tablet"
