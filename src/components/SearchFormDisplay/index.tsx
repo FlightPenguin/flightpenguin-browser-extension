@@ -2,6 +2,7 @@ import { Box, Button, Hide, Icon } from "bumbag";
 import isEqual from "lodash.isequal";
 import React, { useState } from "react";
 
+import { CabinMap } from "../../background/constants";
 import { FlightSearchFormData } from "../../shared/types/FlightSearchFormData";
 import { Cabin } from "../icons";
 import { getPrettyRewardsCardName } from "../utilities/forms/getPrettyRewardsCardName";
@@ -33,7 +34,7 @@ const SearchFormDisplay = ({ containerWidth, formData, onUpdateClick }: SearchFo
           />
           <GenericCell
             icon={<Cabin aria-label="Cabin / class" marginRight="major-1" fontSize="300" />}
-            displayText={`${formData.numPax}`}
+            displayText={CabinMap[`${formData.cabin}`]}
           />
           <GenericCell
             icon={<Icon aria-label="Search by" icon="solid-search" marginRight="major-1" />}
