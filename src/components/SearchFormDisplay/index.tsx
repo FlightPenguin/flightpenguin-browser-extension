@@ -34,7 +34,7 @@ const SearchFormDisplay = ({ containerWidth, formData, onUpdateClick }: SearchFo
           />
           <GenericCell
             icon={<Cabin aria-label="Cabin / class" marginRight="major-1" fontSize="300" />}
-            displayText={CabinMap[`${formData.cabin}`]}
+            displayText={CabinMap[formData.cabin || "econ"]}
           />
           {/*<GenericCell*/}
           {/*  icon={<Icon aria-label="Search by" icon="solid-search" marginRight="major-1" />}*/}
