@@ -1,5 +1,5 @@
-import { sendScraperComplete } from "../../shared/events";
-import { sendSuccess } from "../../shared/events/analytics/scrapers";
+import { sendFailedScraper, sendScraperComplete } from "../../shared/events";
+import { sendFailed, sendSuccess } from "../../shared/events/analytics/scrapers";
 import { FlightSearchFormData } from "../../shared/types/FlightSearchFormData";
 import { sendFlights } from "./sendFlights";
 
@@ -33,12 +33,22 @@ export class FlightObserver {
       }
       if (flightCards.length) {
         that.flightCount += flightCards.length;
-        const { complete } = await sendFlights({ flightCards, formData: formData });
+        try {
+          const { complete } = await sendFlights({ flightCards, formData: formData });
 
-        if (complete) {
-          sendScraperComplete("kiwi", "BOTH");
-          sendSuccess("kiwi", that.flightCount);
+          if (complete) {
+            sendScraperComplete("kiwi", "BOTH");
+            sendSuccess("kiwi", that.flightCount);
+            that.endObservation();
+          }
+        } catch (error) {
           that.endObservation();
+          console.error(error);
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
+          window.Sentry.captureException(error);
+          sendFailedScraper("kiwi", error, "ALL");
+          sendFailed("kiwi");
         }
       }
     });
