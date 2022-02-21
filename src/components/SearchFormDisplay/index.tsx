@@ -36,14 +36,14 @@ const SearchFormDisplay = ({ containerWidth, formData, onUpdateClick }: SearchFo
             icon={<Cabin aria-label="Cabin / class" marginRight="major-1" fontSize="300" />}
             displayText={CabinMap[`${formData.cabin}`]}
           />
-          <GenericCell
-            icon={<Icon aria-label="Search by" icon="solid-search" marginRight="major-1" />}
-            displayText={
-              formData.searchByPoints && formData.pointsType
-                ? `${getPrettyRewardsCardName(formData.pointsType)} points`
-                : "Price"
-            }
-          />
+          {/*<GenericCell*/}
+          {/*  icon={<Icon aria-label="Search by" icon="solid-search" marginRight="major-1" />}*/}
+          {/*  displayText={*/}
+          {/*    formData.searchByPoints && formData.pointsType*/}
+          {/*      ? `${getPrettyRewardsCardName(formData.pointsType)} points`*/}
+          {/*      : "Price"*/}
+          {/*  }*/}
+          {/*/>*/}
 
           <Box
             display="flex"
