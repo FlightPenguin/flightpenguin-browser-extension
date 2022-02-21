@@ -1,5 +1,6 @@
 import { getUrl as getExpediaUrl } from "../expedia/mappings/getUrl";
 import { getUrl as getKiwiUrl } from "../kiwi/mappings/getUrl";
+import { sendFailedScraper } from "../shared/events";
 import { pause } from "../shared/pause";
 import { FlightSearchFormData } from "../shared/types/FlightSearchFormData";
 import { Itinerary } from "../shared/types/Itinerary";
@@ -376,7 +377,9 @@ export class ProviderManager {
               }
             });
           } else {
-            throw new Error("Unable to create window - no window!");
+            const error = new Error("Unable to create window - no window!");
+            sendFailedScraper(provider, error, "ALL");
+            throw error;
           }
         },
       );
