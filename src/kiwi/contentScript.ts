@@ -12,12 +12,14 @@ window.Sentry.init({
 
 import { sendFailedScraper } from "../shared/events";
 import { sendFailed, sendProcessing } from "../shared/events/analytics/scrapers";
+import { pollForNoResults } from "../shared/parser/pollForNoResults";
 import { addBackToSearchButton } from "../shared/ui/backToSearch";
 import { stopScrollingNow } from "../shared/ui/stopScrolling";
 import { suppressOfferFlightPenguinPopup } from "../shared/utilities/suppressOfferFlightPenguinPopup";
 import { getFlightContainer } from "./parser/getFlightContainer";
 import { FlightObserver } from "./parser/observer";
 import { getFlightPenguinId } from "./shared/getFlightPenguinId";
+import { hasNoResults } from "./ui/hasNoResults";
 import { highlightFlightCard } from "./ui/highlightFlightCard";
 
 let observer: FlightObserver | null = null;
@@ -32,6 +34,7 @@ chrome.runtime.onMessage.addListener(async function (message, sender, sendRespon
         sendProcessing("kiwi");
         observer = new FlightObserver({ formData: message.formData });
         await attachObserver(observer);
+        pollForNoResults({ pollForNoResultsCheck: hasNoResults, providerName: "kiwi", searchType: "BOTH" });
       } catch (error) {
         console.error(error);
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
