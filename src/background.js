@@ -1,3 +1,5 @@
+import { initEventListeners } from "./background/eventListeners/index";
+
 window.Sentry.init({
   dsn: process.env.SENTRY_DSN,
   environment: `${process.env.EXTENSION_ENV}`,
@@ -31,6 +33,7 @@ try {
   const providerManager = new ProviderManager();
   ExtensionUpdateAvailableHandler(providerManager);
   ListenerManager(providerManager, analyticsManager);
+  initEventListeners(providerManager);
 } catch (error) {
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore

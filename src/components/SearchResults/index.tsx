@@ -45,6 +45,7 @@ export const SearchResults = ({ formData, resultsContainerWidth }: SearchResults
   const [returnFlightDetails, setReturnFlightDetails] = useState<FlightSelection | null>(null);
   const [tabInteractionFailed, setTabInteractionFailed] = useState(false);
   const [searchAgainDisabled, setSearchAgainDisabled] = useState(false);
+  const [windowClosed, setWindowClosed] = useState(false);
 
   useEffect(() => {
     let filteredItineraries = {};
@@ -73,11 +74,14 @@ export const SearchResults = ({ formData, resultsContainerWidth }: SearchResults
           setSearchMeta(message.meta);
           break;
         case "SCRAPING_COMPLETED":
-          if (message.searchType === "RETURN") {
+          if (message?.searchType === "RETURN") {
             setReturnsComplete(true);
           } else {
             setDeparturesComplete(true);
           }
+          break;
+        case "WINDOW_CLOSED":
+          setWindowClosed(true);
           break;
         case "HIGHLIGHT_TAB_FAILED":
           setTabInteractionFailed(true);
@@ -94,19 +98,19 @@ export const SearchResults = ({ formData, resultsContainerWidth }: SearchResults
     });
   });
 
-  if (tabInteractionFailed) {
+  if (tabInteractionFailed || windowClosed) {
     return (
       <Box alignX="center" marginTop="major-6">
         <Alert title="Booking failed" type="danger">
           <Box width="100%">
             Flight Penguin opens windows in the background to search flight booking sites. We can't show your flight
-            because this window is closed.
+            because at least one of these windows has been closed.
           </Box>
           <Box width="100%" marginTop="major-1">
             <Button
               disabled={searchAgainDisabled}
               palette="primary"
-              onClick={() => {
+              onClick={async () => {
                 setSearchAgainDisabled(true);
                 setFlights({
                   itineraries: {},
@@ -119,6 +123,7 @@ export const SearchResults = ({ formData, resultsContainerWidth }: SearchResults
                 setReturnFlightDetails(null);
                 setTabInteractionFailed(false);
                 setSearchMeta(undefined);
+                setWindowClosed(false);
 
                 sendFormDataToBackground(formData);
                 setSearchAgainDisabled(false);

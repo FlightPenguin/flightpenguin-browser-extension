@@ -7,6 +7,7 @@ import { Itinerary } from "../shared/types/Itinerary";
 import { MessageResponse } from "../shared/types/MessageResponse";
 import { ProcessedFlightSearchResult } from "../shared/types/ProcessedFlightSearchResult";
 import { WindowConfig } from "../shared/types/WindowConfig";
+import { getExtensionUrl } from "../shared/utilities/getExtensionUrl";
 import { getUrl as getSouthwestUrl } from "../southwest/mappings/getUrl";
 import { getUrl as getTripUrl } from "../trip/mappings/getUrl";
 import {
@@ -21,6 +22,7 @@ import { isExtensionOpen } from "./state";
 type StatusType = "PENDING" | "PARSING" | "PARTIAL_RETURN_CONTINUING" | "FAILED" | "SUCCESS";
 
 interface ProviderState {
+  alertOnWindowClose: boolean;
   departureStatus: StatusType;
   returnStatus: StatusType;
   tab?: chrome.tabs.Tab;
@@ -33,6 +35,15 @@ interface ProviderState {
 
 const terminalStates = ["FAILED", "SUCCESS"];
 const successStates = ["SUCCESS"];
+const defaultProviderState: ProviderState = {
+  alertOnWindowClose: true,
+  departureStatus: "PENDING" as StatusType,
+  returnStatus: "PENDING" as StatusType,
+  ready: true,
+  onReady: DEFAULT_ON_READY_FUNCTION,
+  timer: null,
+  attempts: 0,
+};
 
 const providerURLBaseMap: { [key: string]: (formData: FlightSearchFormData) => string } = {
   trip: getTripUrl,
@@ -104,14 +115,7 @@ export class ProviderManager {
 
   setStatus(providerName: string, status: StatusType, searchType: SearchType) {
     if (!this.state[providerName]) {
-      this.state[providerName] = {
-        departureStatus: "PENDING",
-        returnStatus: "PENDING",
-        ready: true,
-        onReady: DEFAULT_ON_READY_FUNCTION,
-        timer: null,
-        attempts: 0,
-      };
+      this.state[providerName] = { ...defaultProviderState };
     }
 
     if (searchType === "DEPARTURE") {
@@ -278,16 +282,17 @@ export class ProviderManager {
     return this.state[providerName].onReady;
   }
 
+  setAlertOnWindowClose(providerName: string, value: boolean): void {
+    this.state[providerName].alertOnWindowClose = value;
+  }
+
+  getAlertOnWindowClose(providerName: string): boolean {
+    return this.state[providerName].alertOnWindowClose;
+  }
+
   setDefault(): void {
     this.knownProviders.forEach((providerName) => {
-      this.state[providerName] = {
-        departureStatus: "PENDING",
-        returnStatus: "PENDING",
-        ready: true,
-        onReady: DEFAULT_ON_READY_FUNCTION,
-        timer: null,
-        attempts: 0,
-      };
+      this.state[providerName] = { ...defaultProviderState };
     });
     this.itineraries = {};
     this.itinerariesVersion = 0;
@@ -329,6 +334,16 @@ export class ProviderManager {
 
   getWindowId(providerName: string): number | undefined {
     return this.state[providerName].window?.id;
+  }
+
+  getProviderByWindowId(windowId: number): { details: ProviderState; providerName: string } | null {
+    const windows = Object.entries(this.state).filter(([providerName, providerDetails]) => {
+      return providerName && providerDetails && providerDetails?.window?.id && providerDetails.window.id === windowId;
+    });
+    if (windows.length) {
+      return { providerName: windows[0][0], details: windows[0][1] };
+    }
+    return null;
   }
 
   setPrimaryTab(): void {
@@ -389,7 +404,12 @@ export class ProviderManager {
   closeWindow(providerName: string): void {
     const windowId = this.getWindowId(providerName);
     if (windowId !== null && windowId !== undefined) {
-      chrome.windows.remove(windowId);
+      chrome.windows.get(windowId, (window) => {
+        if (window && window.id) {
+          this.setAlertOnWindowClose(providerName, false);
+          chrome.windows.remove(windowId);
+        }
+      });
     }
   }
 
