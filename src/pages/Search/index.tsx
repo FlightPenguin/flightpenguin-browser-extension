@@ -91,6 +91,11 @@ export const SearchPage = (): React.ReactElement => {
     analytics.pageview({});
   }, []);
 
+  const updateSearch = () => {
+    setShowForm(true);
+    sendIndexUnload();
+  };
+
   if (pageWidth < 900) {
     return (
       <PageContent isFluid paddingY={{ default: "major-10" }}>
@@ -172,13 +177,14 @@ export const SearchPage = (): React.ReactElement => {
               <SearchFormDisplay
                 containerWidth={resultsContainerWidth}
                 formData={formData}
-                onUpdateClick={() => {
-                  setShowForm(true);
-                  sendIndexUnload();
-                }}
+                onUpdateClick={updateSearch}
               />
 
-              <SearchResults formData={formData} resultsContainerWidth={resultsContainerWidth} />
+              <SearchResults
+                formData={formData}
+                resultsContainerWidth={resultsContainerWidth}
+                onUpdateFormClick={updateSearch}
+              />
             </>
           )}
         </Box>

@@ -18,9 +18,14 @@ import { FlightSelection } from "./FlightSelection";
 interface SearchResultsProps {
   formData: FlightSearchFormData;
   resultsContainerWidth: number;
+  onUpdateFormClick: () => void;
 }
 
-export const SearchResults = ({ formData, resultsContainerWidth }: SearchResultsProps): React.ReactElement => {
+export const SearchResults = ({
+  formData,
+  resultsContainerWidth,
+  onUpdateFormClick,
+}: SearchResultsProps): React.ReactElement => {
   const analytics = new AnalyticsManager(`${process.env.GOOGLE_ANALYTICS_TRACKING_ID}`, false);
 
   const [flights, setFlights] = useDebounce<{
@@ -98,6 +103,25 @@ export const SearchResults = ({ formData, resultsContainerWidth }: SearchResults
     });
   });
 
+  const searchAgain = async () => {
+    setSearchAgainDisabled(true);
+    setFlights({
+      itineraries: {},
+      departureFlights: [],
+      returnFlights: [],
+    });
+    setDeparturesComplete(false);
+    setReturnsComplete(false);
+    setDepartureFlightDetails(null);
+    setReturnFlightDetails(null);
+    setTabInteractionFailed(false);
+    setSearchMeta(undefined);
+    setWindowClosed(false);
+
+    sendFormDataToBackground(formData);
+    setSearchAgainDisabled(false);
+  };
+
   if (tabInteractionFailed || windowClosed) {
     return (
       <Box alignX="center" marginTop="major-6">
@@ -107,28 +131,7 @@ export const SearchResults = ({ formData, resultsContainerWidth }: SearchResults
             because at least one of these windows has been closed.
           </Box>
           <Box width="100%" marginTop="major-1">
-            <Button
-              disabled={searchAgainDisabled}
-              palette="primary"
-              onClick={async () => {
-                setSearchAgainDisabled(true);
-                setFlights({
-                  itineraries: {},
-                  departureFlights: [],
-                  returnFlights: [],
-                });
-                setDeparturesComplete(false);
-                setReturnsComplete(false);
-                setDepartureFlightDetails(null);
-                setReturnFlightDetails(null);
-                setTabInteractionFailed(false);
-                setSearchMeta(undefined);
-                setWindowClosed(false);
-
-                sendFormDataToBackground(formData);
-                setSearchAgainDisabled(false);
-              }}
-            >
+            <Button disabled={searchAgainDisabled} palette="primary" onClick={searchAgain}>
               Try again
             </Button>
           </Box>
@@ -180,6 +183,7 @@ export const SearchResults = ({ formData, resultsContainerWidth }: SearchResults
           setFlights({ ...flights, returnFlights: [] });
           setReturnsComplete(false);
         }}
+        onUpdateFormClick={onUpdateFormClick}
       />
       {!!departureFlightDetails && formData.roundtrip && (
         <>
@@ -217,6 +221,7 @@ export const SearchResults = ({ formData, resultsContainerWidth }: SearchResults
             onClear={() => {
               setReturnFlightDetails(null);
             }}
+            onUpdateFormClick={onUpdateFormClick}
           />
         </>
       )}

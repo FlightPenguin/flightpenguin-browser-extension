@@ -1,4 +1,4 @@
-import { Alert, Badge, Box } from "bumbag";
+import { Alert, Badge, Box, Button } from "bumbag";
 import isEqual from "lodash.isequal";
 import uniqBy from "lodash.uniqby";
 import React, { useEffect, useState } from "react";
@@ -30,6 +30,7 @@ interface TimelimeContainerProps {
   loading: boolean;
   onSelection: (details: FlightSelection) => void;
   onClear: () => void;
+  onUpdateFormClick: () => void;
 }
 
 const TimelineContainer = ({
@@ -42,6 +43,7 @@ const TimelineContainer = ({
   loading,
   onSelection,
   onClear,
+  onUpdateFormClick,
 }: TimelimeContainerProps): React.ReactElement => {
   const { legendContainerWidth, flightSegmentsContainerWidth: flightTimeContainerWidth } = getFlightRowComponentsWidth({
     resultsContainerWidth,
@@ -67,6 +69,8 @@ const TimelineContainer = ({
     intervals: number[];
     timezoneOffset: number;
   }>(getSkeletonIntervalInfo({ flightTimeContainerWidth }));
+
+  const [updateSearchButtonDisabled, setUpdateSearchButtonDisabled] = useState(false);
 
   useEffect(() => {
     if (!flights.length) {
@@ -137,11 +141,30 @@ const TimelineContainer = ({
 
   if (!loading && !flights.length) {
     return (
-      <Alert title="No flights found" type="warning">
-        We were unable to find any flights. Update your search and try again!
-      </Alert>
+      <Box alignX="center" marginTop="major-6">
+        <Alert title="No flights found" type="warning">
+          <Box width="100%">We were unable to find any flights. Update your search and / or try again!</Box>
+          <Box width="100%" marginTop="major-1">
+            <Button
+              disabled={updateSearchButtonDisabled}
+              palette="primary"
+              onClick={() => {
+                setUpdateSearchButtonDisabled(true);
+                onUpdateFormClick();
+              }}
+            >
+              Update search
+            </Button>
+          </Box>
+        </Alert>
+      </Box>
     );
   }
+
+  const clearContainerSelection = () => {
+    setSelectedFlightDetails(null);
+    onClear();
+  };
 
   return (
     <Box
@@ -238,15 +261,7 @@ const TimelineContainer = ({
       </Box>
       {selectedFlightDetails && (
         <Badge isAttached size="large" palette="danger">
-          <Box
-            marginBottom="5px"
-            fontSize={200}
-            cursor="pointer"
-            onClick={() => {
-              setSelectedFlightDetails(null);
-              onClear();
-            }}
-          >
+          <Box marginBottom="5px" fontSize={200} cursor="pointer" onClick={clearContainerSelection}>
             x
           </Box>
         </Badge>
