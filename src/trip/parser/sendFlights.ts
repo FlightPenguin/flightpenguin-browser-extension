@@ -1,3 +1,4 @@
+import { MissingFieldParserError } from "../../shared/errors";
 import { sendFlightsEvent } from "../../shared/events";
 import { FlightSearchFormData } from "../../shared/types/FlightSearchFormData";
 import { UnprocessedFlightSearchResult } from "../../shared/types/UnprocessedFlightSearchResult";
@@ -36,8 +37,10 @@ export const sendFlights = async ({ flightCards, formData }: SendFlightsProps): 
 
     const flight = await getFlight({ flightCard, formData });
     flights.push(flight);
-    if (flight.id && flightCard.dataset.index) {
-      idToIndexMap[flight.id] = flightCard.dataset.index;
+    const shoppingId = getShoppingId(flightCard);
+
+    if (flight.id && shoppingId) {
+      idToIndexMap[flight.id] = shoppingId;
     }
 
     lastFlightCard = flightCard;
@@ -87,4 +90,17 @@ const scrollToCardOrBottom = async (flightCard: HTMLDivElement): Promise<void> =
     console.log("scrolling to bottom");
     window.scrollTo({ top: document.body.scrollHeight, behavior: "smooth" });
   }
+};
+
+const getShoppingId = (flightCard: HTMLDivElement): string => {
+  const shoppingElement = flightCard.querySelector("div[data-shoppingid]") as HTMLDivElement;
+  if (!shoppingElement) {
+    throw new MissingFieldParserError("Unable to find shopping id container in flight card");
+  }
+
+  if (!shoppingElement.dataset.shoppingid) {
+    throw new MissingFieldParserError("Unable to extract shopping id");
+  }
+
+  return shoppingElement.dataset.shoppingid;
 };
