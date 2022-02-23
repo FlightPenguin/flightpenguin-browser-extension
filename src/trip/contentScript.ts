@@ -19,6 +19,7 @@ import { suppressOfferFlightPenguinPopup } from "../shared/utilities/suppressOff
 import { getFlightContainer } from "./parser/getFlightContainer";
 import { FlightObserver } from "./parser/observer";
 import { getFlightPenguinId } from "./shared/getFlightPenguinId";
+import { ensureBookTogetherSelected } from "./ui/ensureBookTogetherSelected";
 import { hasNoResults } from "./ui/hasNoResults";
 import { highlightFlightCard } from "./ui/highlightFlightCard";
 
@@ -31,6 +32,7 @@ chrome.runtime.onMessage.addListener(async function (message, sender, sendRespon
       try {
         suppressOfferFlightPenguinPopup();
         sendProcessing("trip");
+        await ensureBookTogetherSelected();
         observer = new FlightObserver({ formData: message.formData });
         await attachObserver(observer);
         pollForNoResults({ pollForNoResultsCheck: hasNoResults, providerName: "trip", searchType: "BOTH" });
