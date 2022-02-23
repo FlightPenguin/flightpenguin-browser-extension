@@ -220,6 +220,7 @@ export const SearchResults = ({
             }}
             onClear={() => {
               setReturnFlightDetails(null);
+              setReturnsComplete(false);
             }}
             onUpdateFormClick={onUpdateFormClick}
           />
