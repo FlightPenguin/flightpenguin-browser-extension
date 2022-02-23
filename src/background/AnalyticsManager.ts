@@ -77,7 +77,7 @@ export class AnalyticsManager {
         // @ts-ignore
         window.ga = function () {
           // eslint-disable-next-line prefer-rest-params
-          console.log(arguments);
+          console.debug(arguments);
         };
       }
     }
