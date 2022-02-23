@@ -1,12 +1,16 @@
 import { MissingElementLookupError } from "../../shared/errors";
 
-const MODAL_CLOSE_SELECTOR = "button[data-icon='tool-close']";
+const CLOSE_BUTTON_TEXT_SELECTOR = "title[id='undefined-close-toolbar-title']";
 
 export const closeFlightDetailsModal = (): void => {
-  const modalCloseElement: HTMLElement = document.querySelector(MODAL_CLOSE_SELECTOR) as HTMLElement;
-  if (!modalCloseElement) {
-    throw new MissingElementLookupError(`Unable to find modal close element via ${MODAL_CLOSE_SELECTOR}`);
+  const closeButtonTextElement = document.querySelector(CLOSE_BUTTON_TEXT_SELECTOR) as HTMLTitleElement;
+  if (!closeButtonTextElement) {
+    throw new MissingElementLookupError(`Unable to find modal close text element via ${closeButtonTextElement}`);
   }
 
-  modalCloseElement.click();
+  const button = closeButtonTextElement.closest("button") as HTMLButtonElement;
+  if (!button) {
+    throw new MissingElementLookupError(`Unable to find modal close button`);
+  }
+  button.click();
 };
