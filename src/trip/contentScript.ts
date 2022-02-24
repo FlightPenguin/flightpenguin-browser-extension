@@ -30,6 +30,7 @@ chrome.runtime.onMessage.addListener(async function (message, sender, sendRespon
   switch (message.event) {
     case "BEGIN_PARSING":
       try {
+        document.cookie = "IBU_FLIGHT_LIST_STYLE=Merged";
         suppressOfferFlightPenguinPopup();
         sendProcessing("trip");
         await ensureBookTogetherSelected();
