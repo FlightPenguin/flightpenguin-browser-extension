@@ -1,3 +1,4 @@
+import { getUrl as getCheapoairUrl } from "../cheapoair/mappings/getUrl";
 import { getUrl as getExpediaUrl } from "../expedia/mappings/getUrl";
 import { getUrl as getKiwiUrl } from "../kiwi/mappings/getUrl";
 import { sendFailedScraper } from "../shared/events";
@@ -7,7 +8,6 @@ import { Itinerary } from "../shared/types/Itinerary";
 import { MessageResponse } from "../shared/types/MessageResponse";
 import { ProcessedFlightSearchResult } from "../shared/types/ProcessedFlightSearchResult";
 import { WindowConfig } from "../shared/types/WindowConfig";
-import { getExtensionUrl } from "../shared/utilities/getExtensionUrl";
 import { getUrl as getSouthwestUrl } from "../southwest/mappings/getUrl";
 import { getUrl as getTripUrl } from "../trip/mappings/getUrl";
 import {
@@ -50,6 +50,7 @@ const providerURLBaseMap: { [key: string]: (formData: FlightSearchFormData) => s
   southwest: getSouthwestUrl,
   expedia: getExpediaUrl,
   kiwi: getKiwiUrl,
+  cheapoair: getCheapoairUrl,
 };
 
 export class ProviderManager {

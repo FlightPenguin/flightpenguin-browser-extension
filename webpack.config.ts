@@ -5,6 +5,7 @@ const EnvkeyWebpackPlugin = require("envkey-webpack-plugin");
 
 const defaultEntry = {
   background: "./src/background.js",
+  cheapoair: "./src/cheapoair/contentScript.ts",
   index: "./src/index.js",
   southwest: "./src/southwest/contentScript.ts",
   southwestEmpty: "./src/southwest/emptyResultsContentScript.ts",
@@ -44,7 +45,7 @@ const basePlugins = [
   new ProgressPlugin({}),
   new DefinePlugin({
     "process.env.BUMBAG_ENV": JSON.stringify("not test"),
-    "process.env.VERSION": JSON.stringify("1.14.7"),
+    "process.env.VERSION": JSON.stringify("1.15.0"),
   }),
   new EnvkeyWebpackPlugin({
     permitted: [

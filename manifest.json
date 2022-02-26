@@ -1,6 +1,6 @@
 {
   "name": "FlightPenguin",
-  "version": "1.14.7",
+  "version": "1.15.0",
   "description": "Search flights",
   "background": {
     "page": "src/background.html",
@@ -28,6 +28,14 @@
       "js": [
         "src/shared/sentry.js",
         "dist/trip.bundle.js"
+      ]
+    },
+    {
+      "matches": ["https://www.cheapoair.com/air/listing?*"],
+      "css": ["src/shared/contentScript.css"],
+      "js": [
+        "src/shared/sentry.js",
+        "dist/cheapoair.bundle.js"
       ]
     },
     {
@@ -110,7 +118,8 @@
         "https://www.southwest.com/air/booking/select.html?*",
         "https://www.southwest.com/air/booking/index.html?*",
         "https://www.expedia.com/Flights-Search?*",
-        "https://www.kiwi.com/us/search/results/*"
+        "https://www.kiwi.com/us/search/results/*",
+        "https://www.cheapoair.com/air/*"
       ],
       "js": [
         "src/shared/sentry.js",
