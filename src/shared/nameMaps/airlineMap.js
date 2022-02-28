@@ -83,6 +83,7 @@ const AirlineMap = {
     "Cathay Dragon": { display: "Cathay", color: "#2A645A", code: "CX" },
     "EVA Airways": { display: "EVA", color: "#6F9F64", code: "BR" },
     "China Airlines": { display: "China Airlines", color: "#DAABB1", code: "CI" },
+    ANA: { display: "ANA", color: "#254897", code: "NH" },
     "All Nippon Airways": { display: "ANA", color: "#254897", code: "NH" },
     "ANA Airlines": { display: "ANA", color: "#254897", code: "NH" },
     "Japan Airlines": { display: "Japan Airlines", color: "#E56E69", code: "JL" },
@@ -112,7 +113,12 @@ const AirlineMap = {
     "Qatar Airways": { display: "Qatar Airways", color: "#5C0632", code: "QR" },
     "Jazeera Airways": { display: "Jazeera Airways", color: "#1484C4", code: "J9" },
     "Etihad Airways": { display: "Etihad Airways", color: "#251019", code: "EY" },
-    "Korean Air": { display: "Korean Air", color: "154D9E", code: "KE" },
+    "Korean Air": { display: "Korean Air", color: "#154D9E", code: "KE" },
+    "LATAM Airlines": { display: "LATAM Airlines", color: "#2A0087", code: "LA" },
+    Aerolineas: { display: "Aerolineas", color: "#007ac2", code: "AR" },
+    Avianca: { display: "Avianca", color: "#DA291C", code: "AV" },
+    "Azul Linhas Aereas Brasileiras": { display: "Azul Brazilian", color: "#6ca9db", code: "AD" },
+    "Copa Airlines": { display: "Copa", color: "#0060a9", code: "CM" },
   },
   getAirlineName: function (airlineName) {
     if (!airlineName || typeof airlineName !== "string") {
