@@ -73,7 +73,7 @@ describe("getLayoverMultiplier tests", () => {
         isLayoverStop: false,
       };
       const value = getLayoverMultiplier(layover);
-      expect(value).toEqual(1.5);
+      expect(value).toEqual(1.9);
     });
   });
 
