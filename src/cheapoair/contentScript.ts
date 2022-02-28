@@ -14,6 +14,7 @@ import { sendFailedScraper, sendFlightsEvent, sendScraperComplete } from "../sha
 import { sendFailed, sendProcessing } from "../shared/events/analytics/scrapers";
 import { FlightSearchFormData } from "../shared/types/FlightSearchFormData";
 import { addBackToSearchButton } from "../shared/ui/backToSearch";
+import { getFlightPenguinTripId } from "../shared/utilities/getFlightPenguinTripId";
 import { suppressOfferFlightPenguinPopup } from "../shared/utilities/suppressOfferFlightPenguinPopup";
 import { getFlightsOnPage } from "./parser/getFlightsOnPage";
 import { waitForPageLoad } from "./parser/waitForPageLoad";
@@ -44,12 +45,8 @@ chrome.runtime.onMessage.addListener(async function (message, sender, sendRespon
       }
       break;
     case "HIGHLIGHT_FLIGHT":
-      try {
-        await openBookingLink(getFlightPenguinId(message.selectedDepartureId, message.selectedReturnId), idMap);
-        addBackToSearchButton();
-      } catch (e) {
-        debugger;
-      }
+      await openBookingLink(getFlightPenguinTripId(message.selectedDepartureId, message.selectedReturnId), idMap);
+      addBackToSearchButton();
       break;
     case "CLEAR_SELECTION":
       chrome.runtime.sendMessage({ event: "PROVIDER_READY", provider: "cheapoair" });
@@ -83,8 +80,4 @@ const getAllFlights = async (formData: FlightSearchFormData) => {
 
     await getAllFlights(formData);
   }
-};
-
-const getFlightPenguinId = (departureId: string, returnId: string): string => {
-  return `${departureId}-${returnId}`;
 };

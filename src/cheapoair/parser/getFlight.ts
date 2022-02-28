@@ -1,11 +1,11 @@
 import { ParserError } from "../../shared/errors";
 import { FlightDetails } from "../../shared/types/FlightDetails";
 import { FlightSearchFormData } from "../../shared/types/FlightSearchFormData";
+import { getFlightPenguinTripId } from "../../shared/utilities/getFlightPenguinTripId";
 import { CheapoAirFlight } from "../typings/Flight";
 import { closeFlightSegmentCard } from "../ui/closeFlightSegmentCard";
 import { openFlightSegmentCard } from "../ui/openFlightSegmentCard";
 import { getAllFlightsDetails } from "./flightCard/getAllFlightsDetails";
-import { getCheapoAirFlightId } from "./flightCard/getCheapoAirFlightId";
 import { getFare } from "./flightCard/getFare";
 import { getAllFlightLegs } from "./flightLegsCard/getAllFlightLegs";
 import { shouldSkipCard } from "./shouldSkipCard";
@@ -13,6 +13,7 @@ import { shouldSkipCard } from "./shouldSkipCard";
 export const getFlight = async (
   flightCard: HTMLElement,
   formData: FlightSearchFormData,
+  cheapoAirId: string,
 ): Promise<CheapoAirFlight | null> => {
   if (shouldSkipCard(flightCard)) {
     setVisited(flightCard);
@@ -62,16 +63,9 @@ export const getFlight = async (
     departureFlight,
     returnFlight,
     fare: fare,
-    id: getFlightPenguinId(departureFlight.id, returnFlight && returnFlight.id),
-    cheapoAirId: await getCheapoAirFlightId(flightCard, formData.roundtrip),
+    id: getFlightPenguinTripId(departureFlight.id, returnFlight ? returnFlight.id : ""),
+    cheapoAirId: cheapoAirId,
   };
-};
-
-const getFlightPenguinId = (departureFlightId: string, returnFlightId: string | null): string => {
-  if (returnFlightId) {
-    return `${departureFlightId}-${returnFlightId}`;
-  }
-  return `${departureFlightId}`;
 };
 
 const setVisited = (flightCard: HTMLElement): void => {

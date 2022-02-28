@@ -6,7 +6,7 @@ export const getBookingUrl = (cheapoAirId: string): string => {
   const url = new URL("https://www.cheapoair.com/air/payment");
   const idTokens = getIdParts(cheapoAirId);
 
-  url.searchParams.append("isExitIntent", "false");
+  url.searchParams.append("isExitIntent", "true");
   url.searchParams.append("ffcid", "-1");
   url.searchParams.append("showupsellpopup", "false");
   url.searchParams.append("sid", `${Math.random() * 10 + 1}`);
