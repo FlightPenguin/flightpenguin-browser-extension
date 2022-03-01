@@ -13,5 +13,6 @@ export const getAirline = (flightContainer: HTMLDivElement): string => {
     throw new MissingFieldParserError("Unable to extract airline name");
   }
 
-  return airlineElement.textContent;
+  const rawText = airlineElement.textContent;
+  return rawText.includes("with others") ? "Multiple airlines" : rawText;
 };

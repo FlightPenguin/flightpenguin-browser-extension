@@ -17,7 +17,20 @@ export const getFlightTimes = (flightContainer: HTMLDivElement): { departureTime
   }
 
   return {
-    departureTime: dTimeElement.textContent.toLowerCase().replace("next day", "+1"),
-    arrivalTime: aTimeElement.textContent.toLowerCase().replace("next day", "+1"),
+    departureTime: getCleanTime(dTimeElement.textContent.toLowerCase()),
+    arrivalTime: getCleanTime(aTimeElement.textContent.toLowerCase()),
   };
 };
+
+const getCorrectedDay = (rawText: string): string => {
+  if (rawText.includes("+") || rawText.includes("next")) {
+    return rawText.includes("next") ? rawText.replace("next day", "+1") : rawText.replace(/\s+days/, "");
+  }
+  return rawText;
+};
+
+const getCleanTime = (rawText: string): string => {
+  return getCorrectedDay(rawText).replace(/^0/, "");
+};
+
+// TODO: Test this and modal block during search, figure out 'back to flight penguin', modal block, and delay in redirecting
