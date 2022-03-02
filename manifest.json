@@ -1,6 +1,7 @@
 {
-  "name": "FlightPenguin",
-  "version": "1.14.7",
+  "name": "FlightPenguin | Flight search from the team that built Hipmunk",
+  "short_name": "FlightPenguin",
+  "version": "1.14.8",
   "description": "Search flights",
   "background": {
     "page": "src/background.html",
