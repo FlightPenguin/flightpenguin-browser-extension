@@ -31,7 +31,7 @@
       ]
     },
     {
-      "matches": ["https://www.cheapoair.com/air/listing?*"],
+      "matches": ["https://www.cheapoair.com/air*"],
       "css": ["src/shared/contentScript.css"],
       "js": [
         "src/shared/sentry.js",
