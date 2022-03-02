@@ -52,7 +52,7 @@ export const getFlight = async (
           fromTime: flightsDetails.returnDetails.departureTime,
           layovers: flightLegs.returnLegs,
           operatingAirline: flightsDetails.returnDetails.airline,
-          marketingAirline: flightsDetails.departureDetails.airline,
+          marketingAirline: flightsDetails.returnDetails.airline,
           toTime: flightsDetails.returnDetails.arrivalTime,
         })
       : null;
