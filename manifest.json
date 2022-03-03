@@ -2,7 +2,7 @@
   "name": "FlightPenguin",
   "short_name": "FlightPenguin",
   "version": "1.14.9",
-  "description": "Built by some of the same people who built Hipmunk, Flight Penguin takes the pain out of flight search.",
+  "description": "From some of the builders of Hipmunk, Flight Penguin takes the pain out of flight search.",
   "background": {
     "page": "src/background.html",
     "persistent": false
