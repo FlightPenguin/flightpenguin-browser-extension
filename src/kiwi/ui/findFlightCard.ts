@@ -1,10 +1,6 @@
-import { MissingElementLookupError } from "../../shared/errors";
+import { waitForAppearance } from "../../shared/utilities/waitFor";
 
-export const findFlightCard = (id: string): HTMLDivElement => {
+export const findFlightCard = async (id: string): Promise<HTMLDivElement> => {
   const desiredFlightCardSelector = `div[data-fpid*='${id}']`;
-  const flightCard = document.querySelector(desiredFlightCardSelector) as HTMLDivElement;
-  if (!flightCard) {
-    throw new MissingElementLookupError(`Unable to find flight with id ${id}`);
-  }
-  return flightCard;
+  return (await waitForAppearance(3000, desiredFlightCardSelector)) as HTMLDivElement;
 };
