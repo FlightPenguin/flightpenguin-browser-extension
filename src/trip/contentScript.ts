@@ -73,8 +73,8 @@ const highlightFlight = async (departureId: string, returnId: string): Promise<v
 
   if (observer) {
     const flightPenguinId = getFlightPenguinId(departureId, returnId);
-    const flightIndex = observer.getFlightIndex(flightPenguinId);
-    await highlightFlightCard(flightIndex);
+    // const flightIndex = observer.getFlightIndex(flightPenguinId);
+    await highlightFlightCard(flightPenguinId);
     addBackToSearchButton();
   } else {
     throw new Error("Tried to lookup trip.com index, observer not initialized");
