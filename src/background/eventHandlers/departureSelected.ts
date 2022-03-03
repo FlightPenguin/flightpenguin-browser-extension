@@ -1,4 +1,5 @@
 import { findReturnFlights, sortFlights } from "../../dataModels";
+import { UnprocessedFlightSearchResult } from "../../shared/types/UnprocessedFlightSearchResult";
 import { PROVIDERS_NEEDING_RETURNS } from "../constants";
 import { ProviderManager } from "../ProviderManager";
 
@@ -115,11 +116,13 @@ const getRoundtripProviderReturns = (
     }),
   );
 
-  const returnList = sortFlights(
-    findReturnFlights(departure, filteredItineraries),
-    filteredItineraries,
-    providerManager.getFormCabinValue(),
+  const returnFlights = findReturnFlights(departure, filteredItineraries).filter(
+    (flight: UnprocessedFlightSearchResult) =>
+      flight.departureFlight?.operatingAirlineDetails?.display !== "WN" &&
+      flight.departureFlight?.marketingAirlineDetails?.display !== "WN",
   );
+
+  const returnList = sortFlights(returnFlights, filteredItineraries, providerManager.getFormCabinValue());
   providerManager.addReturns(returnList);
 
   const message = {

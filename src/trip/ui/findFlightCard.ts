@@ -1,15 +1,7 @@
-import { MissingElementLookupError } from "../../shared/errors";
+import { waitForAppearance } from "../../shared/utilities/waitFor";
 
-export const findFlightCard = (indexValue: string): HTMLDivElement => {
-  const desiredShoppingElementSelector = `div[data-shoppingid='${indexValue}']`;
-  const shoppingElement = document.querySelector(desiredShoppingElementSelector) as HTMLDivElement;
-  if (!shoppingElement) {
-    throw new MissingElementLookupError(`Unable to find flight with shopping id ${indexValue}`);
-  }
-
-  const flightCard = shoppingElement.closest("div[data-testid*='u-flight-card']") as HTMLDivElement;
-  if (!flightCard) {
-    throw new MissingElementLookupError(`Unable to find flight card for shopping id ${indexValue}`);
-  }
-  return flightCard;
+export const findFlightCard = async (tripId: string): Promise<HTMLDivElement> => {
+  const flightCardSelector = `div[data-fpid='${tripId}']`;
+  // we may be in the middle of a reprocessing, give a little bit of time...
+  return (await waitForAppearance(3000, flightCardSelector)) as HTMLDivElement;
 };

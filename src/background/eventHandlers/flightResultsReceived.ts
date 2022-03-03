@@ -48,13 +48,19 @@ export const handleFlightResultsReceived = (
     const { itineraries: updatedItineraries } = providerManager.getItineraries();
 
     const departuresToSend = sortFlights(updatedDepartures, updatedItineraries, providerManager.getFormCabinValue());
+    const returnsToSend = providerManager.getReturns().filter((flight) => {
+      return (
+        flight.returnFlight?.operatingAirlineDetails?.display !== "WN" &&
+        flight.returnFlight?.marketingAirlineDetails?.display !== "WN"
+      );
+    });
 
     const nextMessage = {
       event: "FLIGHT_RESULTS_FOR_CLIENT",
       flights: {
         departureList: departuresToSend,
         itins: updatedItineraries,
-        returnList: sortFlights(providerManager.getReturns(), updatedItineraries, providerManager.getFormCabinValue()),
+        returnList: sortFlights(returnsToSend, updatedItineraries, providerManager.getFormCabinValue()),
         updatedAt: new Date(),
       },
       meta: {

@@ -1,3 +1,4 @@
+import { getParsedDate } from "../../components/utilities/forms";
 import { getTripId } from "../../shared/parser/getTripId";
 import { FlightDetails } from "../../shared/types/FlightDetails";
 import { FlightSearchFormData } from "../../shared/types/FlightSearchFormData";
@@ -29,7 +30,7 @@ export const getFlight = async ({ flightCard, formData }: GetFlightProps): Promi
         : null,
   });
 
-  const layoverDetails = await getModalData(flightCard, formData.roundtrip, formData.fromDate, tripId);
+  const layoverDetails = await getModalData(flightCard, formData.roundtrip, formData.fromDate, formData.toDate, tripId);
 
   const departureFlight = new FlightDetails({
     departureDate: formData.fromDate,
@@ -46,7 +47,7 @@ export const getFlight = async ({ flightCard, formData }: GetFlightProps): Promi
 
   const returnFlight = formData.roundtrip
     ? new FlightDetails({
-        departureDate: formData.fromDate,
+        departureDate: formData.toDate,
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore
         duration: flightCardDetails.return.duration,

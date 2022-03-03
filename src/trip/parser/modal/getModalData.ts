@@ -20,6 +20,7 @@ export const getModalData = async (
   flightCard: HTMLDivElement,
   roundtrip: boolean,
   departureDate: string,
+  returnDate: string,
   flightId: string,
 ): Promise<LayoversData> => {
   // minimize time modal is open
@@ -39,7 +40,7 @@ export const getModalData = async (
   return roundtrip
     ? {
         departure: getLayoverDetails(departureContainer as HTMLDivElement, departureDate),
-        return: getLayoverDetails(returnContainer as HTMLDivElement, departureDate),
+        return: getLayoverDetails(returnContainer as HTMLDivElement, returnDate),
       }
     : { departure: getLayoverDetails(departureContainer as HTMLDivElement, departureDate) };
 };

@@ -13,11 +13,12 @@ export const handleFlightReturnResultsReceived = (
     return; // TODO: Enhance
   }
 
-  const filteredFlights = flights.filter(
-    (flight) =>
+  const filteredFlights = flights.filter((flight) => {
+    return (
       flight.returnFlight?.operatingAirlineDetails?.display !== "WN" &&
-      flight.returnFlight?.marketingAirlineDetails?.display !== "WN",
-  );
+      flight.returnFlight?.marketingAirlineDetails?.display !== "WN"
+    );
+  });
 
   const windowId = providerManager.getWindowId(providerName);
   const tabId = providerManager.getTabId(providerName);
