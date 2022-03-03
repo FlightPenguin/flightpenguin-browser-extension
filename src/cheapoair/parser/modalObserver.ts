@@ -7,29 +7,23 @@ export class CheapoairModalObserver {
   constructor() {
     this.enabled = false;
 
-    const modalDenyList = ["upgrade to", "be refreshed", "speak to"];
-
     this.observer = new MutationObserver(async function (mutations) {
       for await (const mutation of mutations) {
         for await (const element of Array.from(mutation.addedNodes as NodeListOf<HTMLElement>)) {
-          if (
-            element.id === "modal" &&
-            modalDenyList.some((denyText) => {
-              return element.textContent && element.textContent.toLowerCase().includes(denyText);
-            })
-          ) {
-            console.error("CLOSING MODAL");
-            await closeModal(element as HTMLDivElement);
-          }
+          await closeModal(element as HTMLDivElement);
         }
       }
     });
   }
 
   beginObservation(): void {
-    // TODO: do I need childlist/subtree?  that's expensive yo
-    this.observer.observe(document.body, { childList: true, subtree: true });
-    this.enabled = true;
+    const modal = this.getModalElement();
+    if (modal) {
+      this.observer.observe(modal, { childList: true });
+      this.enabled = true;
+    } else {
+      this.enabled = false;
+    }
   }
 
   endObservation(): void {
@@ -39,5 +33,9 @@ export class CheapoairModalObserver {
 
   isEnabled(): boolean {
     return this.enabled;
+  }
+
+  getModalElement(): HTMLDivElement | null {
+    return document.querySelector("div[id=modal]");
   }
 }
