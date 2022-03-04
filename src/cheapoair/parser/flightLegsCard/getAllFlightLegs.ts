@@ -1,3 +1,4 @@
+import { getParsedDate } from "../../../components/utilities/forms";
 import { FlightLeg } from "../../../shared/types/FlightLeg";
 import { FlightSearchFormData } from "../../../shared/types/FlightSearchFormData";
 import { getTripContainers } from "./getTripContainers";
@@ -8,8 +9,10 @@ export const getAllFlightLegs = (
   formData: FlightSearchFormData,
 ): { departureLegs: FlightLeg[]; returnLegs: FlightLeg[] | null } => {
   const tripContainers = getTripContainers(flightCard, formData.roundtrip);
-  const departureFlightLegs = getTripLegs(tripContainers.departureContainer);
-  const returnFlightLegs = tripContainers.returnContainer ? getTripLegs(tripContainers.returnContainer) : null;
+  const departureFlightLegs = getTripLegs(tripContainers.departureContainer, getParsedDate(formData.fromDate));
+  const returnFlightLegs = tripContainers.returnContainer
+    ? getTripLegs(tripContainers.returnContainer, getParsedDate(formData.toDate))
+    : null;
 
   return { departureLegs: departureFlightLegs, returnLegs: returnFlightLegs };
 };
