@@ -31,6 +31,11 @@ export const sendFlights = async ({ flightCards, formData }: SendFlightsProps): 
       if (hide) {
         flightCard.style.display = "none";
         flightCard.dataset.fpVisited = "true";
+      } else {
+        const shouldScroll = shouldScrollToPlaceholder(flightCard);
+        if (shouldScroll) {
+          scrollToCardOrBottom(flightCard);
+        }
       }
       continue;
     }
@@ -103,4 +108,18 @@ const getShoppingId = (flightCard: HTMLDivElement): string => {
   }
 
   return shoppingElement.dataset.shoppingid;
+};
+
+const shouldScrollToPlaceholder = (flightCard: HTMLDivElement): boolean => {
+  /* Unfortunately, nodes are sometimes deleted and then readded with placeholder values by trip.com as what appears
+     to be a rendering performance management tool for them.  So, the flight is updated with new info in their vdom,
+     but not in the dom and so we don't get that info.  We should check if the dom has a rendered element that has been
+     visited with a higher index than this card.  If so, go scroll to it so the observer says hello...
+   */
+  const lastVisited = Array.from(document.querySelectorAll("div") as NodeListOf<HTMLDivElement>).slice(-1)[0];
+  return (
+    !!lastVisited.dataset.index &&
+    !!flightCard.dataset.index &&
+    Number(lastVisited.dataset.index) > Number(flightCard.dataset.index)
+  );
 };
