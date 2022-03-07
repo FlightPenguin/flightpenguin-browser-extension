@@ -1,7 +1,7 @@
 {
   "name": "FlightPenguin",
   "short_name": "FlightPenguin",
-  "version": "1.14.10",
+  "version": "1.15.0",
   "description": "From some of the builders of Hipmunk, Flight Penguin takes the pain out of flight search.",
   "background": {
     "page": "src/background.html",
@@ -29,6 +29,14 @@
       "js": [
         "src/shared/sentry.js",
         "dist/trip.bundle.js"
+      ]
+    },
+    {
+      "matches": ["https://www.cheapoair.com/air*"],
+      "css": ["src/shared/contentScript.css"],
+      "js": [
+        "src/shared/sentry.js",
+        "dist/cheapoair.bundle.js"
       ]
     },
     {
@@ -111,7 +119,8 @@
         "https://www.southwest.com/air/booking/select.html?*",
         "https://www.southwest.com/air/booking/index.html?*",
         "https://www.expedia.com/Flights-Search?*",
-        "https://www.kiwi.com/us/search/results/*"
+        "https://www.kiwi.com/us/search/results/*",
+        "https://www.cheapoair.com/air/*"
       ],
       "js": [
         "src/shared/sentry.js",
