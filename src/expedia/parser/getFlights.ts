@@ -74,7 +74,7 @@ export const getFlights = async (
 
     closeFlightDetailsModal();
 
-    await pause(100);
+    await pause(250);
   }
   return flights;
 };
