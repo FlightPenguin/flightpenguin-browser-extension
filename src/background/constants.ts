@@ -11,7 +11,7 @@ export const SUPPORTED_PROVIDERS = [
   "expedia",
   "kiwi",
   // "southwest",
-  "trip",
+  // "trip",
 ];
 
 // eslint-disable-next-line @typescript-eslint/no-empty-function

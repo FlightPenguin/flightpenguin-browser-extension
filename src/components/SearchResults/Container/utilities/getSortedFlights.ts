@@ -26,8 +26,8 @@ const getSortValue = (
   itineraries: { [keyof: string]: ProcessedItinerary },
   dimension: FlightSortDimension,
 ): number => {
-  const itinA = itineraries[getItineraryId(a, itineraries)];
-  const itinB = itineraries[getItineraryId(b, itineraries)];
+  const itinA = itineraries[getItineraryId(a, itineraries) || ""];
+  const itinB = itineraries[getItineraryId(b, itineraries) || ""];
 
   switch (dimension) {
     case "ata":
@@ -41,7 +41,16 @@ const getSortValue = (
     case "duration":
       return a.durationMinutes - b.durationMinutes;
     case "fare":
-      return itinA.fareNumber - itinB.fareNumber;
+      if (!itinA && !itinB) {
+        return 0;
+      } else if (!!itinA && !itinB) {
+        return -1;
+      } else if (!itinA && !!itinB) {
+        return 1;
+      } else {
+        return itinA.fareNumber - itinB.fareNumber;
+      }
+      break;
     case "pain":
       return a.pain - b.pain;
   }
@@ -50,10 +59,6 @@ const getSortValue = (
 const getItineraryId = (
   flight: ProcessedFlightSearchResult,
   itineraries: { [keyof: string]: ProcessedItinerary },
-): string => {
-  const id = flight.itinIds.find((itinId) => Object.prototype.hasOwnProperty.call(itineraries, itinId));
-  if (!id) {
-    throw new Error("Unable to determine itinerary ID");
-  }
-  return id;
+): string | undefined => {
+  return flight.itinIds.find((itinId) => Object.prototype.hasOwnProperty.call(itineraries, itinId));
 };
