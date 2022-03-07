@@ -1,6 +1,6 @@
 import { MissingElementLookupError, MissingFieldParserError } from "../../../shared/errors";
 
-const AIRLINE_NAME_REGEX = /(?<airlineName>^.*[a-z])(?<flightCode>[A-Z][A-Z0-9]{3,10}$)/;
+const AIRLINE_NAME_REGEX = /(?<airlineName>^.*[a-z])(?<flightCode>[A-Z][A-Z0-9]{1,10}$)/;
 
 export const getAirlineNames = (container: HTMLDivElement): { marketingAirlineName: string } => {
   const nameContainer = container.previousSibling as HTMLDivElement;
@@ -12,11 +12,21 @@ export const getAirlineNames = (container: HTMLDivElement): { marketingAirlineNa
     throw new MissingElementLookupError("Unable to get plane data via sibling");
   }
 
-  if (!nameContainer.textContent) {
-    throw new MissingFieldParserError("Unable to find text in name container");
+  const flightNumberElement = nameContainer.querySelector("span");
+  if (!flightNumberElement) {
+    throw new MissingElementLookupError("Unable to find flight number span");
   }
 
-  const matches = nameContainer.textContent.match(AIRLINE_NAME_REGEX);
+  const flightElement = flightNumberElement.parentElement as HTMLDivElement;
+  if (!flightElement) {
+    throw new MissingElementLookupError("Unable to find parent of flight number span");
+  }
+
+  if (!flightElement.textContent) {
+    throw new MissingFieldParserError("Unable to find text in flight name element container");
+  }
+
+  const matches = flightElement.textContent.match(AIRLINE_NAME_REGEX);
   if (!matches || !matches.groups) {
     throw new MissingFieldParserError("Name text does not match regex");
   }
