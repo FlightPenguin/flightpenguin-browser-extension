@@ -19,6 +19,7 @@ import { getIntervalInfo } from "./utilities/getIntervalInfo";
 import { getSkeletonIntervalInfo } from "./utilities/getSkeletonIntervalInfo";
 import { getSkeletonItinerariesWithFlightDates } from "./utilities/getSkeletonItinerariesWithFlightDates";
 import { getSortedFlights } from "./utilities/getSortedFlights";
+import { isReadyToRenderResults } from "./utilities/isReadyToRenderResults";
 
 interface TimelimeContainerProps {
   resultsContainerWidth: number;
@@ -109,10 +110,15 @@ const TimelineContainer = ({
       },
     });
 
-    const sortedFlights = getSortedFlights({ flights: filteredFlights, itineraries, dimension: sortDimension });
-    setDisplayFlights(sortedFlights);
+    if (itineraries && !!Object.keys(itineraries).length) {
+      const sortedFlights = getSortedFlights({ flights: filteredFlights, itineraries, dimension: sortDimension });
+      setDisplayFlights(sortedFlights);
+    } else {
+      setDisplayFlights(filteredFlights);
+    }
   }, [
     flights,
+    itineraries,
     selectedFlightDetails,
     filterDateRange,
     filterStops,
@@ -206,7 +212,7 @@ const TimelineContainer = ({
       </Box>
       <Box data-name={`${flightType.toLowerCase()}-container`} display="flex">
         <Box className="border-flex-box" display="flex" borderLeft="default" width="100%">
-          {flights.length ? (
+          {isReadyToRenderResults({ flights, itineraries }) ? (
             !displayFlights.length &&
             (filterDateRange.lowerBound ||
               filterDateRange.upperBound ||

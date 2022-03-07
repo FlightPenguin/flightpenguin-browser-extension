@@ -57,7 +57,7 @@ export const SearchResults = ({
     if (departureFlightDetails?.flight) {
       filteredItineraries = Object.fromEntries(
         Object.entries(flights.itineraries).filter(([id, itinerary]) => {
-          return id.startsWith(departureFlightDetails.flightPenguinId);
+          return id.startsWith(departureFlightDetails.flightPenguinId) && itinerary.retFlight;
         }),
       );
     }
