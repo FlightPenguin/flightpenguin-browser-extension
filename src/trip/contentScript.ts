@@ -37,7 +37,9 @@ chrome.runtime.onMessage.addListener(async function (message, sender, sendRespon
         suppressOfferFlightPenguinPopup();
         sendProcessing("trip");
         formData = message.formData as FlightSearchFormData;
-        await ensureBookTogetherSelected();
+        if (formData.roundtrip) {
+          await ensureBookTogetherSelected();
+        }
         observer = new FlightObserver({ formData });
         await attachObserver(observer);
         pollForNoResults({ pollForNoResultsCheck: hasNoResults, providerName: "trip", searchType: "BOTH" });
