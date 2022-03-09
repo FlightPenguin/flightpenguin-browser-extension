@@ -1,0 +1,168 @@
+import { differenceInCalendarDays } from "date-fns";
+
+import { Flight } from "./Flight";
+import { Layover } from "./Layover";
+import { Location, LocationInput } from "./Location";
+import { TripComponent, TripComponentInput } from "./TripComponent";
+import { getFormattedDuration } from "./utilities/getFormattedDuration";
+import { getFormattedTime } from "./utilities/getFormattedTime";
+import { getParsedISODate } from "./utilities/getParsedISODate";
+import { getParsedNumber } from "./utilities/getParsedNumber";
+import { getTimezoneOffset } from "./utilities/getTimezoneOffset";
+
+export interface TripInput {
+  arrivalDateTime: Date;
+  arrivalLocation: LocationInput;
+  departureDateTime: Date;
+  departureLocation: LocationInput;
+  durationMinutes: number | string;
+  tripComponents: TripComponentInput[];
+}
+
+export class Trip {
+  private arrivalDateTime: Date;
+  private arrivalLocation: Location;
+  private departureDateTime: Date;
+  private departureLocation: Location;
+  private durationMinutes: number;
+  private tripComponents: TripComponent[];
+
+  private carriers: string[];
+  private id: string;
+  private layoverCount: number;
+  private layoverAirportNames: string[];
+  private pain: number;
+
+  constructor({
+    arrivalDateTime,
+    arrivalLocation,
+    departureDateTime,
+    departureLocation,
+    durationMinutes,
+    tripComponents,
+  }: TripInput) {
+    this.arrivalDateTime = getParsedISODate(arrivalDateTime);
+    this.arrivalLocation = new Location(arrivalLocation);
+    this.departureDateTime = getParsedISODate(departureDateTime);
+    this.departureLocation = new Location(departureLocation);
+    this.durationMinutes = getParsedNumber(durationMinutes);
+    this.tripComponents = tripComponents.map((tripComponent) => {
+      return new TripComponent(tripComponent);
+    });
+
+    this.carriers = this.getCalculatedCarriers();
+    this.id = this.getCalculatedId();
+    this.layoverAirportNames = this.getCalculatedLayoverAirportNames();
+    this.layoverCount = this.getCalculatedLayoverCount();
+    this.pain = this.getCalculatedPain();
+  }
+
+  getArrivalDateTime(): Date {
+    return this.arrivalDateTime;
+  }
+
+  getArrivalLocation(): Location {
+    return this.arrivalLocation;
+  }
+
+  getCarriers(): string[] {
+    return this.carriers;
+  }
+
+  getDepartureDateTime(): Date {
+    return this.departureDateTime;
+  }
+
+  getDepartureLocation(): Location {
+    return this.departureLocation;
+  }
+
+  getDisplayArrivalTime(): string {
+    const excessDays = differenceInCalendarDays(this.arrivalDateTime, this.departureDateTime);
+    return getFormattedTime(this.arrivalDateTime, excessDays);
+  }
+
+  getDisplayDepartureTime(): string {
+    return getFormattedTime(this.departureDateTime);
+  }
+
+  getDisplayDuration(): string {
+    return getFormattedDuration(this.durationMinutes);
+  }
+
+  getDurationMinutes(): number {
+    return this.durationMinutes;
+  }
+
+  getId(): string {
+    return this.id;
+  }
+
+  getLayoverAirportNames(): string[] {
+    return this.layoverAirportNames;
+  }
+
+  getLayoverCount(): number {
+    return this.layoverCount;
+  }
+
+  getPain(): number {
+    return this.pain;
+  }
+
+  getTimezoneOffset(): number {
+    return getTimezoneOffset(this.arrivalDateTime, this.departureDateTime, this.durationMinutes);
+  }
+
+  getFlights(): Flight[] {
+    return this.tripComponents
+      .filter((tripComponent) => {
+        return tripComponent.getType() === "FLIGHT";
+      })
+      .map((tripComponent) => {
+        return tripComponent.getObject() as Flight;
+      });
+  }
+
+  getLayovers(): Layover[] {
+    return this.tripComponents
+      .filter((tripComponent) => {
+        return tripComponent.getType() === "LAYOVER";
+      })
+      .map((tripComponent) => {
+        return tripComponent.getObject() as Layover;
+      });
+  }
+
+  getCalculatedCarriers(): string[] {
+    const flights = this.getFlights();
+    const airlineNames = flights.map((flight) => flight.getAirline().getName());
+    return Array.from(new Set(airlineNames));
+  }
+
+  getCalculatedId(): string {
+    const carriers = this.getCalculatedCarriers();
+    const carrierNames = carriers.join("+");
+    return `${this.getDisplayDepartureTime()}-${this.getArrivalDateTime()}-${carrierNames}`;
+  }
+
+  getCalculatedLayoverAirportNames(): string[] {
+    const layovers = this.getLayovers();
+    const departureAirportCodes = layovers.map((layover) => layover.getDepartureLocation().getCode());
+    const arrivalAirportCodes = layovers.map((layover) => layover.getArrivalLocation().getCode());
+    return Array.from(new Set([...departureAirportCodes, ...arrivalAirportCodes]));
+  }
+
+  getCalculatedLayoverCount(): number {
+    const layovers = this.getLayovers();
+    return layovers.length;
+  }
+
+  getCalculatedPain(): number {
+    return this.tripComponents
+      .map((tripComponent) => {
+        return tripComponent.getObject().getPain();
+      })
+      .reduce((currentTotal, a) => currentTotal + a, 0);
+  }
+}
