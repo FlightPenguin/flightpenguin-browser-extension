@@ -10,12 +10,15 @@ import { getParsedISODate } from "./utilities/getParsedISODate";
 import { getParsedNumber } from "./utilities/getParsedNumber";
 import { getTimezoneOffset } from "./utilities/getTimezoneOffset";
 
-export interface TripInput {
+export interface TripInputMetadata {
   arrivalDateTime: Date;
   arrivalLocation: LocationInput;
   departureDateTime: Date;
   departureLocation: LocationInput;
   durationMinutes: number | string;
+}
+
+export interface TripInput extends TripInputMetadata {
   tripComponents: TripComponentInput[];
 }
 
@@ -141,9 +144,12 @@ export class Trip {
   }
 
   getCalculatedId(): string {
-    const carriers = this.getCalculatedCarriers();
-    const carrierNames = carriers.join("+");
-    return `${this.getDisplayDepartureTime()}-${this.getArrivalDateTime()}-${carrierNames}`;
+    const flights = this.getFlights();
+    return flights
+      .map((flight) => {
+        return flight.getId();
+      })
+      .join("-");
   }
 
   getCalculatedLayoverAirportNames(): string[] {

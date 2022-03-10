@@ -13,7 +13,7 @@ import { suppressOfferFlightPenguinPopup } from "shared/utilities/suppressOfferF
 
 import {
   sendFailedScraper,
-  sendFlightsEvent,
+  sendItinerariesEvent,
   sendNoFlightsEvent,
   sendReturnFlightsEvent,
   sendScraperComplete,
@@ -56,7 +56,7 @@ const scrapeDepartureFlights = async (formData) => {
   try {
     const flights = await getFlights(null, 75000, formData);
     if (flights) {
-      sendFlightsEvent("expedia", flights);
+      sendItinerariesEvent("expedia", flights);
       sendScraperComplete("expedia", "DEPARTURE");
       sendSuccess("expedia", flights.length);
     } else {

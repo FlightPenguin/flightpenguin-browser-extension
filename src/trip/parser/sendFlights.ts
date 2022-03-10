@@ -1,5 +1,5 @@
 import { MissingFieldParserError } from "../../shared/errors";
-import { sendFlightsEvent } from "../../shared/events";
+import { sendItinerariesEvent } from "../../shared/events";
 import { FlightSearchFormData } from "../../shared/types/FlightSearchFormData";
 import { UnprocessedFlightSearchResult } from "../../shared/types/UnprocessedFlightSearchResult";
 import { scrollToTop } from "../../shared/ui/scrollToTop";
@@ -54,7 +54,7 @@ export const sendFlights = async ({ flightCards, formData }: SendFlightsProps): 
   }
 
   if (flights.length) {
-    sendFlightsEvent("trip", flights);
+    sendItinerariesEvent("trip", flights);
   }
 
   if (lastFlightCard) {

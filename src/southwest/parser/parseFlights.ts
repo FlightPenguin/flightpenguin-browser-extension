@@ -1,4 +1,4 @@
-import { sendFlightsEvent, sendNoFlightsEvent } from "../../shared/events";
+import { sendItinerariesEvent, sendNoFlightsEvent } from "../../shared/events";
 import { UnprocessedFlightSearchResult } from "../../shared/types/UnprocessedFlightSearchResult";
 import { SearchResult } from "../types/SearchResult";
 import { getUnprocessedSearchResults } from "./getUnprocessedSearchResults";
@@ -15,6 +15,6 @@ export const parseFlights = (searchResults: SearchResult): UnprocessedFlightSear
   const departureFlights = departures.details;
   const returnFlights = returns ? returns.details : [];
   const results = getUnprocessedSearchResults({ departures: departureFlights, returns: returnFlights });
-  sendFlightsEvent("southwest", results);
+  sendItinerariesEvent("southwest", results);
   return results;
 };

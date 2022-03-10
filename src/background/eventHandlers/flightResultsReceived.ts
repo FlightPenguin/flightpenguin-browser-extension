@@ -1,85 +1,41 @@
-import { makeItins, sortFlights } from "../../dataModels";
-import { UnprocessedFlightSearchResult } from "../../shared/types/UnprocessedFlightSearchResult";
+import { Itinerary, ItineraryInput } from "../../shared/types/newtypes/Itinerary";
 import { ProviderManager } from "../ProviderManager";
 
 export const handleFlightResultsReceived = (
   providerManager: ProviderManager,
-  flights: UnprocessedFlightSearchResult[],
+  itinerariesInputs: ItineraryInput[],
   providerName: string,
 ): undefined | void => {
-  if (flights.length === 0) {
+  if (itinerariesInputs.length === 0) {
     console.debug("Received flight results... but the list was empty");
     return; // TODO: Enhance
   }
 
-  const filteredFlights = flights.filter(
-    (flight) =>
-      flight.departureFlight?.operatingAirlineDetails?.display !== "WN" &&
-      flight.departureFlight?.marketingAirlineDetails?.display !== "WN",
-  );
+  const newItineraries = itinerariesInputs.map((input) => {
+    return new Itinerary(input);
+  });
+  newItineraries.forEach((itinerary) => providerManager.addItinerary(itinerary));
 
   const windowId = providerManager.getWindowId(providerName);
   const tabId = providerManager.getTabId(providerName);
   if (windowId === null || windowId === undefined || tabId === null || tabId === undefined) {
     console.debug("No windows available in flight results");
+
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    window.Sentry.captureMessage(`No window found for ${providerName}`);
     return; // TODO: Better handle
   }
 
-  const { itineraries: existingItineraries, version: existingItinerariesVersion } = providerManager.getItineraries();
-  const existingDepartures = providerManager.getDepartures();
+  const itineraries = providerManager.getItineraries();
+  providerManager.setPartialReturn(providerName, "DEPARTURE");
 
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  // @ts-ignore
-  const { departures, itins: itineraries } = makeItins(
-    filteredFlights,
-    existingDepartures,
-    existingItineraries,
-    providerName,
-    windowId,
-    tabId,
-  );
-
-  const setSuccessful = providerManager.setItineraries({ ...itineraries }, existingItinerariesVersion);
-  if (setSuccessful) {
-    providerManager.setPartialReturn(providerName, "DEPARTURE");
-    providerManager.setDepartures({ ...departures });
-
-    const updatedDepartures = providerManager.getDepartures();
-    const { itineraries: updatedItineraries } = providerManager.getItineraries();
-
-    const departuresToSend = sortFlights(updatedDepartures, updatedItineraries, providerManager.getFormCabinValue());
-    const returnsToSend = providerManager.getReturns().filter((flight) => {
-      return (
-        flight.returnFlight?.operatingAirlineDetails?.display !== "WN" &&
-        flight.returnFlight?.marketingAirlineDetails?.display !== "WN"
-      );
-    });
-
-    const nextMessage = {
-      event: "FLIGHT_RESULTS_FOR_CLIENT",
-      flights: {
-        departureList: departuresToSend,
-        itins: updatedItineraries,
-        returnList: sortFlights(returnsToSend, updatedItineraries, providerManager.getFormCabinValue()),
-        updatedAt: new Date(),
-      },
-      meta: {
-        departures: {
-          airports: providerManager.getLayoverAirports("DEPARTURE"),
-          airlines: providerManager.getAirlines("DEPARTURE"),
-          layoverCounts: providerManager.getLayoverCounts("DEPARTURE"),
-        },
-        returns: {
-          airports: providerManager.getLayoverAirports("RETURN"),
-          airlines: providerManager.getAirlines("RETURN"),
-          layoverCounts: providerManager.getLayoverCounts("RETURN"),
-        },
-      },
-      formData: providerManager.getFormData(),
-    };
-    providerManager.sendMessageToIndexPage(nextMessage);
-  } else {
-    console.debug("Retrying processing of received flight results...");
-    return handleFlightResultsReceived(providerManager, flights, providerName);
-  }
+  const nextMessage = {
+    event: "FLIGHT_RESULTS_FOR_CLIENT",
+    itineraries,
+    formData: providerManager.getFormData(),
+  };
+  providerManager.sendMessageToIndexPage(nextMessage);
 };
+
+// TODO: do I need metadata, departures, returns, etc.? or is f/e smart enough?

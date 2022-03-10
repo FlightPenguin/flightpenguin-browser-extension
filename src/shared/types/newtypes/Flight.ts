@@ -110,7 +110,7 @@ export class Flight {
   getCalculatedId(): string {
     const airline = this.getAirline();
 
-    return `${this.getDisplayDepartureTime()}-${this.getArrivalDateTime()}-${airline.getName()}`;
+    return `${this.getDepartureDateTime().valueOf()}-${this.getArrivalDateTime().valueOf()}-${airline.getName()}`;
   }
 
   getCalculatedPain(): number {

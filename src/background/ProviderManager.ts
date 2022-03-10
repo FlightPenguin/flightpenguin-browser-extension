@@ -4,9 +4,10 @@ import { getUrl as getKiwiUrl } from "../kiwi/mappings/getUrl";
 import { sendFailedScraper } from "../shared/events";
 import { pause } from "../shared/pause";
 import { FlightSearchFormData } from "../shared/types/FlightSearchFormData";
-import { Itinerary } from "../shared/types/Itinerary";
+// import { Itinerary } from "../shared/types/Itinerary";
 import { MessageResponse } from "../shared/types/MessageResponse";
-import { ProcessedFlightSearchResult } from "../shared/types/ProcessedFlightSearchResult";
+import { Itinerary } from "../shared/types/newtypes/Itinerary";
+// import { ProcessedFlightSearchResult } from "../shared/types/ProcessedFlightSearchResult";
 import { WindowConfig } from "../shared/types/WindowConfig";
 import { getUrl as getSouthwestUrl } from "../southwest/mappings/getUrl";
 import { getUrl as getTripUrl } from "../trip/mappings/getUrl";
@@ -58,10 +59,7 @@ export class ProviderManager {
   private state: { [key: string]: ProviderState };
 
   private primaryTab: chrome.tabs.Tab | null;
-  private itineraries: { [key: string]: Itinerary };
-  private itinerariesVersion: number;
-  private departures: { [key: string]: any };
-  private returns: any[];
+  private itineraries: Itinerary[];
   private formData: FlightSearchFormData | null;
   private selectedProviders: string[];
 
@@ -69,10 +67,7 @@ export class ProviderManager {
     this.knownProviders = [];
     this.state = {};
 
-    this.itineraries = {};
-    this.itinerariesVersion = 0;
-    this.departures = {};
-    this.returns = [];
+    this.itineraries = [];
     this.selectedProviders = [];
 
     this.formData = null;
@@ -110,11 +105,11 @@ export class ProviderManager {
     return this.formData?.cabin || "econ";
   }
 
-  setSelectedProviders(providerNames: string[]) {
+  setSelectedProviders(providerNames: string[]): void {
     this.selectedProviders = providerNames;
   }
 
-  setStatus(providerName: string, status: StatusType, searchType: SearchType) {
+  setStatus(providerName: string, status: StatusType, searchType: SearchType): void {
     if (!this.state[providerName]) {
       this.state[providerName] = { ...defaultProviderState };
     }
@@ -227,44 +222,19 @@ export class ProviderManager {
     });
   }
 
-  getItineraries(): { itineraries: { [key: string]: Itinerary }; version: number } {
-    return { itineraries: this.itineraries, version: this.itinerariesVersion };
+  getItineraries(): Itinerary[] {
+    return this.itineraries;
   }
 
-  setItineraries(itineraries: { [key: string]: Itinerary }, version: number): boolean {
-    if (version === this.itinerariesVersion) {
-      this.itineraries = itineraries;
-      this.itinerariesVersion += 1;
-      return true;
-    } else {
-      return false;
-    }
-  }
-
-  getDepartures(): { [key: string]: any } {
-    return this.departures;
-  }
-
-  getDeparture(departureId: string): any {
-    return this.departures[departureId];
-  }
-
-  setDepartures(departures: any): void {
-    this.departures = departures;
-  }
-
-  getReturns(): any[] {
-    return this.returns;
-  }
-
-  addReturns(returns: any[]): void {
-    this.returns = this.returns.concat(returns).sort((a: any, b: any) => {
-      return a.pain - b.pain;
+  addItinerary(itinerary: Itinerary) {
+    const index = this.itineraries.findIndex((recordedItinerary) => {
+      return recordedItinerary.getId() === itinerary.getId();
     });
-  }
-
-  setReturns(returns: any[]): void {
-    this.returns = returns;
+    if (index >= 0) {
+      this.itineraries[index].addOrUpdateSource(itinerary.getTopSource());
+    } else {
+      this.itineraries.push(itinerary);
+    }
   }
 
   setReady(providerName: string, value: boolean): void {
@@ -295,10 +265,7 @@ export class ProviderManager {
     this.knownProviders.forEach((providerName) => {
       this.state[providerName] = { ...defaultProviderState };
     });
-    this.itineraries = {};
-    this.itinerariesVersion = 0;
-    this.departures = {};
-    this.returns = [];
+    this.itineraries = [];
   }
 
   setTimer(providerName: string, timeout: number, callback: () => void): void {
@@ -518,42 +485,5 @@ export class ProviderManager {
         }
       }
     });
-  }
-
-  getAirlines(flightType: FlightType): string[] {
-    const flights = Object.values(flightType === "DEPARTURE" ? this.departures : this.returns);
-    return [
-      ...new Set(
-        flights
-          .map((flight: ProcessedFlightSearchResult) => {
-            return flight.carriers;
-          })
-          .flat(),
-      ),
-    ].sort() as string[];
-  }
-
-  getLayoverAirports(flightType: FlightType): string[] {
-    const flights = Object.values(flightType === "DEPARTURE" ? this.departures : this.returns);
-    return [
-      ...new Set(
-        flights
-          .map((flight: ProcessedFlightSearchResult) => {
-            return flight.layoverAirports;
-          })
-          .flat(),
-      ),
-    ].sort() as string[];
-  }
-
-  getLayoverCounts(flightType: FlightType): number[] {
-    const flights = Object.values(flightType === "DEPARTURE" ? this.departures : this.returns);
-    return [
-      ...new Set(
-        flights.map((flight: ProcessedFlightSearchResult) => {
-          return flight.layoverCount;
-        }),
-      ),
-    ].sort() as number[];
   }
 }

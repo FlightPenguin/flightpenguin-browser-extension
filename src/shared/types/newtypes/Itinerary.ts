@@ -2,19 +2,27 @@ import { Trip, TripInput } from "./Trip";
 import { TripSource, TripSourceInput } from "./TripSource";
 
 export interface ItineraryInput {
-  source: TripSourceInput;
+  sources: TripSourceInput[];
   trips: TripInput[];
 }
 
 export class Itinerary {
   private sources: TripSource[];
   private trips: Trip[];
+
+  private id: string;
   private pain: number;
 
-  constructor({ source, trips }: ItineraryInput) {
-    this.sources = [new TripSource(source)];
+  constructor({ sources, trips }: ItineraryInput) {
+    this.sources = sources.map((source) => new TripSource(source));
     this.trips = trips.map((trip) => new Trip(trip));
+
+    this.id = this.getCalculatedFlightPenguinId();
     this.pain = this.getCalculatedPain();
+  }
+
+  getId(): string {
+    return this.id;
   }
 
   getPain(): number {
@@ -36,7 +44,22 @@ export class Itinerary {
       .reduce((currentTotal, a) => currentTotal + a, 0);
   }
 
-  addSource(source: TripSource): void {
-    this.sources.push(source);
+  addOrUpdateSource(source: TripSource): void {
+    const index = this.sources.findIndex((existing) => {
+      return existing.getName() === source.getName();
+    });
+    if (index >= 0) {
+      this.sources[index] = source;
+    } else {
+      this.sources.push(source);
+    }
+  }
+
+  getCalculatedFlightPenguinId(): string {
+    return this.trips
+      .map((trip) => {
+        return trip.getId();
+      })
+      .join("-");
   }
 }

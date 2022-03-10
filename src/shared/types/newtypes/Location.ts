@@ -1,7 +1,7 @@
 import { getParsedNumber } from "./utilities/getParsedNumber";
 
 export interface LocationInput {
-  name: string;
+  name?: string;
   code: string;
   type: "AIRPORT" | "CITY";
   geopoint?: string;
@@ -10,7 +10,7 @@ export interface LocationInput {
 }
 
 export class Location {
-  private name: string;
+  private name: string | undefined;
   private code: string;
   private type: "AIRPORT" | "CITY";
   private geopoint: string | undefined;
@@ -27,7 +27,7 @@ export class Location {
     this.type = type;
   }
 
-  getName(): string {
+  getName(): string | undefined {
     return this.name;
   }
 

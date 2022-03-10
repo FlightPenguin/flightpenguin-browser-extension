@@ -1,4 +1,4 @@
-import { sendFailedScraper, sendFlightsEvent, sendScraperComplete } from "../shared/events";
+import { sendFailedScraper, sendItinerariesEvent, sendScraperComplete } from "../shared/events";
 import { sendFailed, sendProcessing } from "../shared/events/analytics/scrapers";
 import { FlightSearchFormData } from "../shared/types/FlightSearchFormData";
 import { getFlightPenguinTripId } from "../shared/utilities/getFlightPenguinTripId";
@@ -57,7 +57,7 @@ export const initMessageListener = (observer: CheapoairModalObserver): void => {
       flights.forEach((flight) => {
         idMap[flight.id] = flight.cheapoAirId;
       });
-      sendFlightsEvent("cheapoair", flights);
+      sendItinerariesEvent("cheapoair", flights);
     } else {
       complete = true;
     }
