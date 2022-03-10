@@ -1,7 +1,7 @@
 {
   "name": "FlightPenguin",
   "short_name": "FlightPenguin",
-  "version": "1.15.3",
+  "version": "1.15.4",
   "description": "From some of the builders of Hipmunk, Flight Penguin takes the pain out of flight search.",
   "background": {
     "page": "src/background.html",

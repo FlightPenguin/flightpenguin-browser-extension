@@ -8,17 +8,19 @@ window.Sentry.init({
   tracesSampleRate: 1.0,
 });
 
-import { sendFailed, sendProcessing, sendSuccess } from "shared/events/analytics/scrapers/index";
-import { suppressOfferFlightPenguinPopup } from "shared/utilities/suppressOfferFlightPenguinPopup";
-
 import {
   sendFailedScraper,
+  sendFlightNotFound,
   sendFlightsEvent,
   sendNoFlightsEvent,
   sendReturnFlightsEvent,
   sendScraperComplete,
-} from "../shared/events";
-import { addBackToSearchButton } from "../shared/ui/backToSearch";
+} from "shared/events";
+import { sendFailed, sendProcessing, sendSuccess } from "shared/events/analytics/scrapers/index";
+import { addBackToSearchButton } from "shared/ui/backToSearch";
+import { getFlightPenguinTripId } from "shared/utilities/getFlightPenguinTripId";
+import { suppressOfferFlightPenguinPopup } from "shared/utilities/suppressOfferFlightPenguinPopup";
+
 import { getFlights } from "./parser/getFlights";
 import { highlightFlightCard } from "./ui/highlightFlightCard";
 import { selectReturnFlight } from "./ui/selectReturnFlight";
@@ -39,8 +41,13 @@ chrome.runtime.onMessage.addListener(async function (message, sender, sendRespon
       await scrapeReturnFlights(message.departure, formData);
       break;
     case "HIGHLIGHT_FLIGHT":
-      await highlightFlightCard(message.selectedDepartureId, message.selectedReturnId);
-      addBackToSearchButton();
+      try {
+        await highlightFlightCard(message.selectedDepartureId, message.selectedReturnId);
+        addBackToSearchButton();
+      } catch (error) {
+        window.Sentry.captureException(error);
+        sendFlightNotFound(getFlightPenguinTripId(message.selectedDepartureId, message.selectedReturnId));
+      }
       break;
     case "CLEAR_SELECTION":
       history.back();

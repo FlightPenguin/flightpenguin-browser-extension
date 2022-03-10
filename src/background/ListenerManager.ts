@@ -2,6 +2,7 @@ import { AnalyticsManager } from "./AnalyticsManager";
 import {
   handleClearSelections,
   handleDepartureSelected,
+  handleFlightNotFound,
   handleFlightResultsReceived,
   handleFlightReturnResultsReceived,
   handleFocusWebpage,
@@ -65,6 +66,9 @@ export const ListenerManager = (providerManager: ProviderManager, analyticsManag
         break;
       case "HIGHLIGHT_TAB":
         handleHighlightTab(providerManager, message.selectedDepartureId, message.selectedReturnId);
+        break;
+      case "FLIGHT_NOT_FOUND":
+        handleFlightNotFound(providerManager, message.id);
         break;
       case "PROVIDER_READY":
         handleProviderReady(providerManager, message.provider);

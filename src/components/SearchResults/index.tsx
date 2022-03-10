@@ -51,6 +51,7 @@ export const SearchResults = ({
   const [tabInteractionFailed, setTabInteractionFailed] = useState(false);
   const [searchAgainDisabled, setSearchAgainDisabled] = useState(false);
   const [windowClosed, setWindowClosed] = useState(false);
+  const [flightNotFound, setFlightNotFound] = useState(false);
 
   useEffect(() => {
     let filteredItineraries = {};
@@ -88,6 +89,9 @@ export const SearchResults = ({
         case "WINDOW_CLOSED":
           setWindowClosed(true);
           break;
+        case "SELECTED_FLIGHT_NOT_FOUND":
+          setFlightNotFound(true);
+          break;
         case "HIGHLIGHT_TAB_FAILED":
           setTabInteractionFailed(true);
           break;
@@ -117,6 +121,7 @@ export const SearchResults = ({
     setTabInteractionFailed(false);
     setSearchMeta(undefined);
     setWindowClosed(false);
+    setFlightNotFound(false);
 
     sendFormDataToBackground(formData);
     setSearchAgainDisabled(false);
@@ -133,6 +138,24 @@ export const SearchResults = ({
           <Box width="100%" marginTop="major-1">
             <Button disabled={searchAgainDisabled} palette="primary" onClick={searchAgain}>
               Try again
+            </Button>
+          </Box>
+        </Alert>
+      </Box>
+    );
+  }
+
+  if (flightNotFound) {
+    return (
+      <Box alignX="center" marginTop="major-6">
+        <Alert title="Flight not available" type="danger">
+          <Box width="100%">
+            It looks like the flight you selected is no longer available. Most commonly this happens because all seats
+            have been booked or the search has been left open for too long, but there may be other errors.
+          </Box>
+          <Box width="100%" marginTop="major-1">
+            <Button disabled={searchAgainDisabled} palette="primary" onClick={searchAgain}>
+              Search again
             </Button>
           </Box>
         </Alert>

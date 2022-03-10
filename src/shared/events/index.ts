@@ -2,6 +2,7 @@ export * from "./sendAnalyticsEvent";
 export * from "./sendAnalyticsUserIdentified";
 export * from "./sendAnalyticsPageView";
 export * from "./sendFailedScraper";
+export * from "./sendFlightNotFound";
 export * from "./sendFlights";
 export * from "./sendNoFlights";
 export * from "./sendOpenExtension";

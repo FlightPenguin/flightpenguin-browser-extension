@@ -1,5 +1,6 @@
 export * from "./clearSelections";
 export * from "./departureSelected";
+export * from "./flightNotFound";
 export * from "./flightResultsReceived";
 export * from "./flightReturnResultsReceived";
 export * from "./focusWebpage";

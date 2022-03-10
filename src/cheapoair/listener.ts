@@ -1,4 +1,4 @@
-import { sendFailedScraper, sendFlightsEvent, sendScraperComplete } from "../shared/events";
+import { sendFailedScraper, sendFlightNotFound, sendFlightsEvent, sendScraperComplete } from "../shared/events";
 import { sendFailed, sendProcessing } from "../shared/events/analytics/scrapers";
 import { FlightSearchFormData } from "../shared/types/FlightSearchFormData";
 import { getFlightPenguinTripId } from "../shared/utilities/getFlightPenguinTripId";
@@ -35,8 +35,17 @@ export const initMessageListener = (observer: CheapoairModalObserver): void => {
         }
         break;
       case "HIGHLIGHT_FLIGHT":
-        await openBookingLink(getFlightPenguinTripId(message.selectedDepartureId, message.selectedReturnId), idMap);
-        observer.endObservation();
+        // eslint-disable-next-line no-case-declarations
+        const flightId = getFlightPenguinTripId(message.selectedDepartureId, message.selectedReturnId);
+        try {
+          await openBookingLink(flightId, idMap);
+          observer.endObservation();
+        } catch (error) {
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
+          window.Sentry.captureException(error);
+          sendFlightNotFound(flightId);
+        }
         break;
       case "CLEAR_SELECTION":
         chrome.runtime.sendMessage({ event: "PROVIDER_READY", provider: "cheapoair" });

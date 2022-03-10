@@ -241,6 +241,10 @@ export class ProviderManager {
     }
   }
 
+  removeItinerary(id: string): void {
+    delete this.itineraries[id];
+  }
+
   getDepartures(): { [key: string]: any } {
     return this.departures;
   }
