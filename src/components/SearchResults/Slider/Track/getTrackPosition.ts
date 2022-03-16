@@ -8,14 +8,14 @@ interface GetTrackPositionProps {
   index: number;
   intervals: number[];
   value: number[];
-  flightTimeContainerWidth: number;
+  tripContainerWidth: number;
 }
 
 export const getTrackPosition = ({
   value,
   index,
   intervals,
-  flightTimeContainerWidth,
+  tripContainerWidth,
 }: GetTrackPositionProps): { left: number; right: number } => {
   /*
   We need to adjust the position to the track to deal with the thumb positional adjustment.
@@ -23,27 +23,27 @@ export const getTrackPosition = ({
   Track 1: Between the thumbs
   Track 2: To the right of the thumbs
    */
-  validateInput({ value, index, intervals, flightTimeContainerWidth });
+  validateInput({ value, index, intervals, tripContainerWidth });
 
   const innerBoundary = getValueInRange({
-    value: getPositionByTick({ value: value[0], intervals, flightTimeContainerWidth, applyAdjustment: false }),
+    value: getPositionByTick({ value: value[0], intervals, tripContainerWidth, applyAdjustment: false }),
     minimumValue: 0,
-    maximumValue: flightTimeContainerWidth,
+    maximumValue: tripContainerWidth,
   });
   const outerBoundary = getValueInRange({
-    value: getPositionByTick({ value: value[1], intervals, flightTimeContainerWidth, applyAdjustment: false }),
+    value: getPositionByTick({ value: value[1], intervals, tripContainerWidth, applyAdjustment: false }),
     minimumValue: 0,
-    maximumValue: flightTimeContainerWidth,
+    maximumValue: tripContainerWidth,
   });
 
   let leftPosition;
   let rightPosition;
   if (index === 0) {
     leftPosition = 0;
-    rightPosition = new Decimal(flightTimeContainerWidth).minus(innerBoundary).toDecimalPlaces(2).toNumber();
+    rightPosition = new Decimal(tripContainerWidth).minus(innerBoundary).toDecimalPlaces(2).toNumber();
   } else if (index === 1) {
     leftPosition = innerBoundary;
-    rightPosition = new Decimal(flightTimeContainerWidth).minus(outerBoundary).toDecimalPlaces(2).toNumber();
+    rightPosition = new Decimal(tripContainerWidth).minus(outerBoundary).toDecimalPlaces(2).toNumber();
   } else {
     leftPosition = outerBoundary;
     rightPosition = 0;
@@ -55,11 +55,11 @@ export const getTrackPosition = ({
   };
 };
 
-const validateInput = ({ value, index, intervals, flightTimeContainerWidth }: GetTrackPositionProps): void => {
+const validateInput = ({ value, index, intervals, tripContainerWidth }: GetTrackPositionProps): void => {
   const invalidArgs = [] as InvalidArgument[];
 
-  if (Number.isNaN(flightTimeContainerWidth)) {
-    invalidArgs.push({ argumentName: "flightTimeContainerWidth", value: flightTimeContainerWidth });
+  if (Number.isNaN(tripContainerWidth)) {
+    invalidArgs.push({ argumentName: "tripContainerWidth", value: tripContainerWidth });
   }
 
   if (Number.isNaN(index)) {

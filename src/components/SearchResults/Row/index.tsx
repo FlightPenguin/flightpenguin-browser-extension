@@ -2,51 +2,38 @@ import { Badge, Box, List, Tag, Text } from "bumbag";
 import isEqual from "lodash.isequal";
 import React, { useEffect, useState } from "react";
 
-import { sendSelectedFlight } from "../../../shared/events";
-import { ProcessedFlightSearchResult } from "../../../shared/types/ProcessedFlightSearchResult";
-import { ProcessedItinerary } from "../../../shared/types/ProcessedItinerary";
+import { DisplayableTrip } from "../../../shared/types/newtypes/DisplayableTrip";
+import { TripComponent } from "../../../shared/types/newtypes/TripComponent";
 import { PaymentType } from "../../constants";
-import { FlightSelection } from "../FlightSelection";
-import { FlightLegend } from "./FlightLegend";
-import { FlightSegmentBox } from "./FlightSegment";
-import { FlightSegment } from "./FlightSegment/FlightSegment";
-import { getFlightSegments } from "./FlightSegment/utilities/getFlightSegments";
-import { getSegmentContainerPositions } from "./FlightSegment/utilities/getSegmentContainerPositions";
+import { TripComponentContainer } from "./TripComponent";
+import { TripLegend } from "./TripLegend";
 
 interface TimelineRowProps {
-  itinerary: ProcessedItinerary;
-  flight: ProcessedFlightSearchResult;
-  flightType: "DEPARTURE" | "RETURN";
-  intervalCount: number;
-  increment: number;
-  startHourOffset: number;
-  from: string;
-  to: string;
+  displayableTrip: DisplayableTrip;
+  containerStartTime: Date;
+  containerEndTime: Date;
+  intervalWidth: number;
   paymentType: PaymentType;
   index: number;
   skeleton: boolean;
   selected: boolean;
   legendContainerWidth: number;
-  flightTimeContainerWidth: number;
+  tripContainerWidth: number;
   resultsContainerWidth: number;
-  onSelection: (details: FlightSelection) => void;
+  onSelection: (trip: DisplayableTrip) => void;
 }
 
 const TimelineRow = ({
-  itinerary,
-  flight,
-  flightType,
-  intervalCount,
-  increment,
-  startHourOffset,
-  from,
-  to,
+  displayableTrip,
+  containerEndTime,
+  containerStartTime,
+  intervalWidth,
   paymentType,
   index,
   selected,
   skeleton,
   legendContainerWidth,
-  flightTimeContainerWidth,
+  tripContainerWidth,
   resultsContainerWidth,
   onSelection,
 }: TimelineRowProps): React.ReactElement => {
@@ -74,21 +61,6 @@ const TimelineRow = ({
     );
   }
 
-  const flightSegments = getFlightSegments(
-    flight,
-    from,
-    to,
-    increment,
-    startHourOffset,
-    intervalCount,
-    flightTimeContainerWidth,
-  );
-  const flightPenguinId = flight.id;
-  const { left, right } = getSegmentContainerPositions(flightSegments);
-  const intervalWidth = flightTimeContainerWidth / (intervalCount - 1);
-  const departureAirport = flightSegments[0].from;
-  const arrivalAirport = flightSegments.slice(-1)[0].to;
-
   const rowHighlightStyle = selected
     ? {}
     : {
@@ -97,8 +69,24 @@ const TimelineRow = ({
       };
   const showWhenSelected = selected ? "visible" : "hidden";
   const skeletonBlur = skeleton ? `blur(8px)` : "";
-  const arrivalTextColor = flight.timezoneOffset ? "warning" : "black";
-  const departureTextColor = flight.timezoneOffset ? "info" : "black";
+  const timezoneOffset = displayableTrip.getTrip().getTimezoneOffset();
+  const arrivalTextColor = timezoneOffset ? "warning" : "black";
+  const departureTextColor = timezoneOffset ? "info" : "black";
+
+  const componentsWithPositions = displayableTrip
+    .getTrip()
+    .getTripComponents()
+    .map((tripComponent: TripComponent) => {
+      return {
+        tripComponent: tripComponent,
+        layout: tripComponent
+          .getObject()
+          .getTimebarPositions({ containerStartTime, containerEndTime, containerWidth: tripContainerWidth }),
+      };
+    });
+  const left = componentsWithPositions[0].layout.startX;
+  const finalComponentLayout = componentsWithPositions.slice(-1)[0].layout;
+  const right = finalComponentLayout.startX + finalComponentLayout.width;
 
   return (
     <List.Item
@@ -112,8 +100,7 @@ const TimelineRow = ({
         if (skeleton || selected) {
           return;
         }
-        onSelection({ flight, itinerary, flightPenguinId });
-        sendSelectedFlight(flightType, flightPenguinId);
+        onSelection(displayableTrip);
       }}
       role="group"
       cursor={skeleton ? "not-allowed" : selected ? "auto" : "pointer"}
@@ -129,14 +116,9 @@ const TimelineRow = ({
       // @ts-ignore
       _focus={rowHighlightStyle}
     >
-      <FlightLegend
-        legendWidth={legendContainerWidth}
-        itinerary={itinerary}
-        flight={flight}
-        paymentType={paymentType}
-      />
+      <TripLegend legendWidth={legendContainerWidth} displayableTrip={displayableTrip} paymentType={paymentType} />
       <Box
-        data-name={"flight-container"}
+        data-name={"trip-container"}
         position="relative"
         display="flex"
         alignX="center"
@@ -146,8 +128,8 @@ const TimelineRow = ({
         background={`repeating-linear-gradient(to right, #e6e6eb, #e6e6eb 3px, transparent 1px, transparent ${intervalWidth}px)`}
       >
         <Box
-          data-name="flight-segments"
-          data-content={flight.duration}
+          data-name="trip-flights"
+          data-content={displayableTrip.getTrip().getDisplayDuration()}
           left={`${left}px`}
           display="flex"
           alignX="center"
@@ -169,10 +151,17 @@ const TimelineRow = ({
               _groupFocus={{ visibility: "visible" }}
               _groupHover={{ visibility: "visible" }}
             >
-              {flight.duration}
+              {displayableTrip.getTrip().getDisplayDuration()}
             </Text>
-            {flightSegments.map((flightSegment: FlightSegment) => {
-              return <FlightSegmentBox flightSegment={flightSegment} left={left} key={flightSegment.id} />;
+            {componentsWithPositions.map((wrapper) => {
+              return (
+                <TripComponentContainer
+                  tripComponent={wrapper.tripComponent}
+                  layout={wrapper.layout}
+                  left={left}
+                  key={wrapper.tripComponent.getObject().getId()}
+                />
+              );
             })}
           </Box>
         </Box>
@@ -190,10 +179,10 @@ const TimelineRow = ({
           backgroundColor="white"
           color={departureTextColor}
         >
-          {flight.fromTime}
-          {!!flight.timezoneOffset && (
+          {displayableTrip.getTrip().getDisplayDepartureTime()}
+          {!!timezoneOffset && (
             <Badge isAttached palette="info">
-              {departureAirport}
+              {displayableTrip.getTrip().getDepartureLocation().getCode()}
             </Badge>
           )}
         </Tag>
@@ -210,10 +199,10 @@ const TimelineRow = ({
           backgroundColor="white"
           color={arrivalTextColor}
         >
-          {flight.toLocalTime}
-          {!!flight.timezoneOffset && (
+          {displayableTrip.getTrip().getDisplayArrivalTime()}
+          {!!timezoneOffset && (
             <Badge isAttached palette="warning">
-              {arrivalAirport}
+              {displayableTrip.getTrip().getArrivalLocation().getCode()}
             </Badge>
           )}
         </Tag>
@@ -223,24 +212,17 @@ const TimelineRow = ({
 };
 
 export default React.memo(TimelineRow, (previous, next) => {
-  return isEqual(
-    {
-      itineraryId: previous.itinerary.id,
-      flightId: previous.flight.id,
-      intervalCount: previous.intervalCount,
-      increment: previous.increment,
-      startHourOffset: previous.startHourOffset,
-      selected: previous.selected,
-      flightTimeContainerWidth: previous.flightTimeContainerWidth,
-    },
-    {
-      itineraryId: next.itinerary.id,
-      flightId: next.flight.id,
-      intervalCount: next.intervalCount,
-      increment: next.increment,
-      startHourOffset: next.startHourOffset,
-      selected: next.selected,
-      flightTimeContainerWidth: next.flightTimeContainerWidth,
-    },
-  );
+  return isEqual(getComparableProperties(previous), getComparableProperties(next));
 });
+
+const getComparableProperties = (row: TimelineRowProps) => {
+  return {
+    tripId: row.displayableTrip.getTrip().getId(),
+    containerStartTime: row.containerStartTime,
+    containerEndTime: row.containerEndTime,
+    intervalWidth: row.intervalWidth,
+    index: row.index,
+    selected: row.selected,
+    tripContainerWidth: row.tripContainerWidth,
+  };
+};

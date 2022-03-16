@@ -2,7 +2,6 @@ import { Box, Text, Tooltip } from "bumbag";
 import { addDays, addMinutes, format } from "date-fns";
 import React from "react";
 
-import { FlightType } from "../../../background/constants";
 import { getWeekdayName } from "../../../shared/utilities/getWeekdayName";
 
 interface TimeCellProps {
@@ -14,7 +13,6 @@ interface TimeCellProps {
   departureAirportCode: string;
   arrivalAirportCode: string;
   timeFontSize: string;
-  flightType: FlightType;
 }
 
 export const TimeCell = ({
@@ -26,15 +24,12 @@ export const TimeCell = ({
   departureAirportCode,
   arrivalAirportCode,
   timeFontSize,
-  flightType,
 }: TimeCellProps) => {
-  const multiplier = flightType === "DEPARTURE" ? -1 : 1;
-
   const date = addDays(startDate, daysCounter);
   const minutes = interval * 60;
   const time = addMinutes(date, minutes);
   const displayTime = format(time, "h aaa");
-  const offsetTime = addMinutes(time, tzOffset * multiplier);
+  const offsetTime = addMinutes(time, tzOffset);
   const displayOffsetTime = format(offsetTime, "h aaa");
 
   const isMidnight = displayTime.toUpperCase() === "12 AM";

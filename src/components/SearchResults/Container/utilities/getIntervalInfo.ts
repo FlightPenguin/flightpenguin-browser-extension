@@ -1,25 +1,53 @@
-import { ProcessedItinerary } from "../../../../shared/types/ProcessedItinerary";
-import { getEarliestFlight } from "./getEarliestFlight";
-import { getFlights } from "./getFlights";
-import { getIncrement } from "./getIncrement";
-import { getIntervals } from "./getIntervals";
-import { getLatestFlight } from "./getLatestFlight";
-import { getStartHour } from "./getStartHour";
-import { getTableTimeBounds } from "./getTableTimeBounds";
+import { addDays, differenceInHours, max, min, startOfDay } from "date-fns";
+
+import { DisplayableTrip } from "../../../../shared/types/newtypes/DisplayableTrip";
 
 export const getIntervalInfo = (
-  itineraries: ProcessedItinerary[],
-  flightType: "DEPARTURE" | "RETURN",
-  rowMaxWidth: number,
-): { lowerBound: number; upperBound: number; startHour: number; increment: number; intervals: number[] } => {
-  const flights = getFlights(itineraries, flightType);
-  const earliestFlight = getEarliestFlight(flights);
-  const latestFlight = getLatestFlight(flights);
-  const { lowerBound, upperBound } = getTableTimeBounds(earliestFlight, latestFlight);
+  trips: DisplayableTrip[],
+  tripContainerWidth: number,
+): { earliestTime: Date; latestTime: Date; intervals: number[]; intervalWidth: number } => {
+  const { earliestTime, latestTime } = getEarliestAndLatestTimes(trips);
+  const intervals = getIntervals(earliestTime, latestTime);
+  const intervalWidth = tripContainerWidth / (intervals.length - 1);
+  return { earliestTime, latestTime, intervals, intervalWidth };
+};
 
-  const startHour = getStartHour(lowerBound);
-  const increment = getIncrement({ lowerBound, upperBound, startHour, flightTimeContainerWidth: rowMaxWidth });
-  const intervals = getIntervals(startHour, increment, rowMaxWidth, upperBound);
+export const getEarliestAndLatestTimes = (trips: DisplayableTrip[]): { earliestTime: Date; latestTime: Date } => {
+  const [departureTimes, arrivalTimes] = trips.reduce(
+    ([departureTimes, arrivalTimes], trip) => {
+      departureTimes.push(trip.getTrip().getDepartureDateTime());
+      arrivalTimes.push(trip.getTrip().getArrivalDateTime());
+      return [departureTimes, arrivalTimes];
+    },
+    [[] as Date[], [] as Date[]],
+  );
+  const earliestTime = startOfDay(min(departureTimes));
+  const latestTime = startOfDay(addDays(max(arrivalTimes), 1));
+  return { earliestTime, latestTime };
+};
 
-  return { lowerBound, upperBound, startHour, increment, intervals };
+const getIntervals = (earliestTime: Date, latestTime: Date): number[] => {
+  const hours = differenceInHours(latestTime, earliestTime);
+  const increment = getIntervalSpacing(hours);
+
+  const intervals: number[] = [];
+  let time = 0;
+
+  while (time <= hours + increment) {
+    intervals.push(time);
+    time += increment;
+  }
+  return intervals;
+};
+
+const getIntervalSpacing = (hours: number): number => {
+  if (hours > 144) {
+    return 12;
+  } else if (hours > 72) {
+    return 6;
+  } else if (hours <= 24) {
+    return 2;
+  } else {
+    return 4;
+  }
 };

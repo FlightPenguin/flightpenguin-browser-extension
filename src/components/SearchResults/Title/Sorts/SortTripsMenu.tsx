@@ -1,23 +1,23 @@
 import { DropdownMenu, Group, Tag } from "bumbag";
 import React, { useState } from "react";
 
-import { FlightSortDimension, FlightSortDimensionDisplayMap } from "../../../constants";
+import { TripSortDimension, TripSortDimensionDisplayMap } from "../../../constants";
 
-interface SortFlightsMenuProps {
+interface SortTripsMenuProps {
   loading: boolean;
-  flightCount: number;
-  filteredFlightCount: number;
-  onChange: (dimension: FlightSortDimension) => void;
+  tripCount: number;
+  filteredTripCount: number;
+  onChange: (dimension: TripSortDimension) => void;
 }
 
-export const SortFlightsMenu = ({
+export const SortTripsMenu = ({
   loading,
-  flightCount,
-  filteredFlightCount,
+  tripCount,
+  filteredTripCount,
   onChange,
-}: SortFlightsMenuProps): React.ReactElement => {
-  const [selectedSortDimension, setSelectedSortDimension] = useState<FlightSortDimension>("pain");
-  const flightCountText = getFlightCountText(loading, flightCount, filteredFlightCount);
+}: SortTripsMenuProps): React.ReactElement => {
+  const [selectedSortDimension, setSelectedSortDimension] = useState<TripSortDimension>("pain");
+  const tripCountText = getTripCountText(loading, tripCount, filteredTripCount);
 
   return (
     <DropdownMenu
@@ -30,8 +30,8 @@ export const SortFlightsMenu = ({
             type="radio"
             value={selectedSortDimension}
             onChange={(values: string | string[], value: string) => {
-              setSelectedSortDimension(value as FlightSortDimension);
-              onChange(value as FlightSortDimension);
+              setSelectedSortDimension(value as TripSortDimension);
+              onChange(value as TripSortDimension);
             }}
           >
             <DropdownMenu.OptionItem value="pain">Pain</DropdownMenu.OptionItem>
@@ -49,7 +49,7 @@ export const SortFlightsMenu = ({
     >
       <Group>
         <Tag variant="outlined" fontSize="clamp(.5rem, .6vw, .75rem)">
-          {flightCountText}
+          {tripCountText}
         </Tag>
         <Tag palette={selectedSortDimension !== "pain" ? "primary" : "text"} fontSize="clamp(.5rem, .6vw, .75rem)">
           Sort
@@ -59,14 +59,14 @@ export const SortFlightsMenu = ({
   );
 };
 
-const getFlightCountText = (loading: boolean, flightCount: number, filteredFlightCount: number): string => {
-  if (flightCount < 1) {
-    return loading ? "Searching for flights..." : "";
+const getTripCountText = (loading: boolean, tripCount: number, filteredTripCount: number): string => {
+  if (tripCount < 1) {
+    return loading ? "Searching for trips..." : "";
   } else {
-    if (filteredFlightCount !== flightCount) {
-      return `Showing ${filteredFlightCount} of ${flightCount}${loading ? "+" : ""} flights`;
+    if (filteredTripCount !== tripCount) {
+      return `Showing ${filteredTripCount} of ${tripCount}${loading ? "+" : ""} trips`;
     } else {
-      return `${flightCount}${loading ? "+" : ""} flights`;
+      return `${tripCount}${loading ? "+" : ""} trips`;
     }
   }
 };

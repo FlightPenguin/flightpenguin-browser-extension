@@ -1,26 +1,21 @@
 import { Box, Text } from "bumbag";
 import React from "react";
 
-import { ProcessedFlightSearchResult } from "../../../../shared/types/ProcessedFlightSearchResult";
-import { ProcessedItinerary } from "../../../../shared/types/ProcessedItinerary";
+import { DisplayableTrip } from "../../../../shared/types/newtypes/DisplayableTrip";
 import { PaymentType } from "../../../constants";
 import { getPointsValue } from "../../../utilities/forms/getPointsValue";
 
-interface FlightLegendProps {
+interface TripLegendProps {
   legendWidth: number;
-  itinerary: ProcessedItinerary;
-  flight: ProcessedFlightSearchResult;
+  displayableTrip: DisplayableTrip;
   paymentType: PaymentType;
 }
 
-export const FlightLegend = ({
-  flight,
-  itinerary,
-  legendWidth,
-  paymentType,
-}: FlightLegendProps): React.ReactElement => {
+export const TripLegend = ({ displayableTrip, legendWidth, paymentType }: TripLegendProps): React.ReactElement => {
   const fareValue =
-    paymentType === "CASH" ? `$${itinerary.fareNumber}` : `${getPointsValue(itinerary.fareNumber, paymentType)} pts`;
+    paymentType === "CASH"
+      ? `$${displayableTrip.getLowestFare()}`
+      : `${getPointsValue(displayableTrip.getLowestFare(), paymentType)} pts`;
 
   return (
     <Box
@@ -54,7 +49,7 @@ export const FlightLegend = ({
             overflow="hidden"
             maxHeight="80px"
           >
-            {flight.operatingAirline.display}
+            {displayableTrip.getTrip().getDisplayCarriers()}
           </Text>
         </Box>
       )}

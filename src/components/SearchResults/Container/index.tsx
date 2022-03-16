@@ -1,57 +1,52 @@
 import { Alert, Badge, Box, Button } from "bumbag";
+import { addDays, startOfToday } from "date-fns";
 import isEqual from "lodash.isequal";
-import uniqBy from "lodash.uniqby";
 import React, { useEffect, useState } from "react";
 
 import { FlightSearchFormData } from "../../../shared/types/FlightSearchFormData";
-import { ProcessedFlightSearchResult } from "../../../shared/types/ProcessedFlightSearchResult";
-import { ProcessedItinerary } from "../../../shared/types/ProcessedItinerary";
-import { SearchLegMeta } from "../../../shared/types/SearchMeta";
-import { FlightSortDimension, sidePaddingWidth } from "../../constants";
-import { FlightSelection } from "../FlightSelection";
+import { DisplayableTrip } from "../../../shared/types/newtypes/DisplayableTrip";
+import { SearchTripMeta } from "../../../shared/types/SearchMeta";
+import { sidePaddingWidth, TripSortDimension } from "../../constants";
 import TimelineGrid from "../Grid";
 import TimelineHeader from "../Header";
 import TimelineTitle from "../Title";
-import _skeletonItineraries from "./skeletonItineraries.json";
-import { getFilteredFlights } from "./utilities/getFilteredFlights";
-import { getFlightRowComponentsWidth } from "./utilities/getFlightRowComponentsWidth";
+import { getFilteredTrips } from "./utilities/getFilteredTrips";
 import { getIntervalInfo } from "./utilities/getIntervalInfo";
 import { getSkeletonIntervalInfo } from "./utilities/getSkeletonIntervalInfo";
-import { getSkeletonItinerariesWithFlightDates } from "./utilities/getSkeletonItinerariesWithFlightDates";
-import { getSortedFlights } from "./utilities/getSortedFlights";
-import { isReadyToRenderResults } from "./utilities/isReadyToRenderResults";
+import { getSkeletonTrips } from "./utilities/getSkeletonTrips";
+import { getSortedTrips } from "./utilities/getSortedTrips";
+import { getTimelineRowComponentsWidth } from "./utilities/getTimelineRowComponentsWidth";
 
-interface TimelimeContainerProps {
+interface TimelineContainerProps {
   resultsContainerWidth: number;
-  flightType: "DEPARTURE" | "RETURN";
-  itineraries: { [keyof: string]: ProcessedItinerary };
-  flights: ProcessedFlightSearchResult[];
+  eligibleTrips: DisplayableTrip[];
+  containerIndex: number;
   formData: FlightSearchFormData;
-  meta: SearchLegMeta;
+  meta: SearchTripMeta;
   loading: boolean;
-  onSelection: (details: FlightSelection) => void;
+  onSelection: (trip: DisplayableTrip) => void;
   onClear: () => void;
   onUpdateFormClick: () => void;
 }
 
 const TimelineContainer = ({
   resultsContainerWidth,
-  flightType,
-  flights,
-  itineraries,
+  eligibleTrips,
+  containerIndex,
   formData,
   meta,
   loading,
   onSelection,
   onClear,
   onUpdateFormClick,
-}: TimelimeContainerProps): React.ReactElement => {
-  const { legendContainerWidth, flightSegmentsContainerWidth: flightTimeContainerWidth } = getFlightRowComponentsWidth({
+}: TimelineContainerProps): React.ReactElement => {
+  const { legendContainerWidth, tripContainerWidth } = getTimelineRowComponentsWidth({
     resultsContainerWidth,
   });
+  const [departureLocation, arrivalLocation] =
+    formData.roundtrip && containerIndex === 1 ? [formData.to, formData.from] : [formData.from, formData.to];
 
-  const [skeletonItineraries, setSkeletonItineraries] = useState<{ [keyof: string]: ProcessedItinerary }>({});
-  const [skeletonFlights, setSkeletonFlights] = useState<ProcessedFlightSearchResult[]>([]);
+  const [skeletonTrips, setSkeletonTrips] = useState<DisplayableTrip[]>([] as DisplayableTrip[]);
 
   const [filterDateRange, setFilterDateRange] = useState<{ lowerBound: Date | null; upperBound: Date | null }>({
     lowerBound: null,
@@ -60,48 +55,45 @@ const TimelineContainer = ({
   const [filterStops, setFilterStops] = useState<number[] | undefined>(undefined);
   const [filterCarriers, setFilterCarriers] = useState<string[] | undefined>(undefined);
   const [filterLayoverCities, setFilterLayoverCities] = useState<string[] | undefined>(undefined);
-  const [sortDimension, setSortDimension] = useState<FlightSortDimension>("pain");
+  const [sortDimension, setSortDimension] = useState<TripSortDimension>("pain");
 
-  const [selectedFlightDetails, setSelectedFlightDetails] = useState<FlightSelection | null>(null);
-  const [displayFlights, setDisplayFlights] = useState<ProcessedFlightSearchResult[]>([]);
+  const [selectedTrip, setSelectedTrip] = useState<DisplayableTrip | null>(null);
+  const [displayTrips, setDisplayTrips] = useState<DisplayableTrip[]>([]);
   const [intervalInfo, setIntervalInfo] = useState<{
-    startHour: number;
-    increment: number;
     intervals: number[];
+    intervalWidth: number;
+    earliestTime: Date;
+    latestTime: Date;
     timezoneOffset: number;
-  }>(getSkeletonIntervalInfo({ flightTimeContainerWidth }));
+  }>({
+    intervals: [0, 4, 8, 12, 16, 20, 24],
+    earliestTime: startOfToday(),
+    latestTime: addDays(startOfToday(), 1),
+    timezoneOffset: 0,
+    intervalWidth: tripContainerWidth / 6, // denominator is intervals.length - 1,
+  });
 
   const [updateSearchButtonDisabled, setUpdateSearchButtonDisabled] = useState(false);
 
   useEffect(() => {
-    if (!flights.length) {
-      const intervalInfo = getSkeletonIntervalInfo({ flightTimeContainerWidth });
+    if (!eligibleTrips.length) {
+      const intervalInfo = getSkeletonIntervalInfo({ containerIndex, formData, tripContainerWidth });
       setIntervalInfo(intervalInfo);
     }
-  }, [resultsContainerWidth, flights]);
+  }, [resultsContainerWidth, eligibleTrips]);
 
   useEffect(() => {
-    const itins = getSkeletonItinerariesWithFlightDates({
-      itineraries: _skeletonItineraries,
-      fromDate: formData.fromDate,
-      toDate: formData.toDate,
-    });
-    setSkeletonItineraries(itins);
-    setSkeletonFlights(
-      Object.keys(_skeletonItineraries).map((itineraryId) => {
-        const itinerary = itins[itineraryId];
-        return flightType === "RETURN" && itinerary.retFlight ? itinerary.retFlight : itinerary.depFlight;
-      }),
-    );
-  }, [_skeletonItineraries]);
+    const trips = getSkeletonTrips(formData, containerIndex);
+    setSkeletonTrips(trips);
+  }, [formData, containerIndex]);
 
   useEffect(() => {
-    if (selectedFlightDetails) {
+    if (selectedTrip) {
       return;
     }
 
-    const filteredFlights = getFilteredFlights({
-      flightSearchResults: flights,
+    const filteredTrips = getFilteredTrips({
+      displayTrips: eligibleTrips,
       filterProperties: {
         dateRange: filterDateRange,
         layoverCount: filterStops,
@@ -110,42 +102,23 @@ const TimelineContainer = ({
       },
     });
 
-    if (itineraries && !!Object.keys(itineraries).length) {
-      const sortedFlights = getSortedFlights({ flights: filteredFlights, itineraries, dimension: sortDimension });
-      setDisplayFlights(sortedFlights);
+    if (displayTrips && !!Object.keys(displayTrips).length) {
+      const sortedTrips = getSortedTrips({ trips: filteredTrips, dimension: sortDimension });
+      setDisplayTrips(sortedTrips);
     } else {
-      setDisplayFlights(filteredFlights);
+      setDisplayTrips(filteredTrips);
     }
-  }, [
-    flights,
-    itineraries,
-    selectedFlightDetails,
-    filterDateRange,
-    filterStops,
-    filterCarriers,
-    filterLayoverCities,
-    sortDimension,
-  ]);
+  }, [eligibleTrips, selectedTrip, filterDateRange, filterStops, filterCarriers, filterLayoverCities, sortDimension]);
 
   useEffect(() => {
-    if (
-      Object.keys(itineraries).length &&
-      Object.values(itineraries).some((itinerary) => {
-        const flight = flightType === "RETURN" ? itinerary.retFlight : itinerary.depFlight;
-        return !!flight;
-      })
-    ) {
-      const { intervals, increment, startHour } = getIntervalInfo(
-        Object.values(itineraries),
-        flightType,
-        flightTimeContainerWidth,
-      );
-      const timezoneOffset = Object.values(itineraries)[0].depFlight?.timezoneOffset || 0;
-      setIntervalInfo({ intervals, increment, startHour, timezoneOffset });
+    if (Object.keys(eligibleTrips).length) {
+      const { earliestTime, latestTime, intervals, intervalWidth } = getIntervalInfo(eligibleTrips, tripContainerWidth);
+      const timezoneOffset = eligibleTrips[0].getTrip().getTimezoneOffset() || 0;
+      setIntervalInfo({ intervals, earliestTime, latestTime, timezoneOffset, intervalWidth });
     }
-  }, [itineraries, resultsContainerWidth]);
+  }, [eligibleTrips, resultsContainerWidth]);
 
-  if (!loading && !flights.length) {
+  if (!loading && !eligibleTrips.length) {
     return (
       <Box alignX="center" marginTop="major-6">
         <Alert title="No flights found" type="warning">
@@ -168,7 +141,7 @@ const TimelineContainer = ({
   }
 
   const clearContainerSelection = () => {
-    setSelectedFlightDetails(null);
+    setSelectedTrip(null);
     onClear();
   };
 
@@ -186,34 +159,38 @@ const TimelineContainer = ({
       <Box display="flex" flexDirection="row">
         <TimelineTitle
           key="search-title"
-          flightType={flightType}
+          arrivalLocation={arrivalLocation}
+          containerIndex={containerIndex}
+          departureLocation={departureLocation}
           loading={loading}
           legendContainerWidth={legendContainerWidth}
-          flightCount={uniqBy(flights, "id").length}
-          filteredFlightCount={displayFlights.length}
+          tripCount={eligibleTrips.length}
+          filteredTripCount={displayTrips.length}
           onLayoverCountFilterChange={(values: number[]) => setFilterStops(values)}
           onAirlinesFilterChange={(values: string[]) => setFilterCarriers(values)}
           onSortDimensionChange={(value) => setSortDimension(value)}
           meta={meta}
-          flightSelected={!!selectedFlightDetails}
+          tripSelected={!!selectedTrip}
         />
         <TimelineHeader
-          formData={formData}
-          flightType={flightType}
+          arrivalLocation={arrivalLocation}
+          departureLocation={departureLocation}
           intervals={intervalInfo.intervals}
           tzOffset={intervalInfo.timezoneOffset}
           onSliderChange={(minDate: Date, maxDate: Date) => {
             setFilterDateRange({ lowerBound: minDate, upperBound: maxDate });
           }}
-          sliderDisabled={!!selectedFlightDetails}
-          flightCount={displayFlights.length}
-          flightTimeContainerWidth={flightTimeContainerWidth}
+          sliderDisabled={!!selectedTrip}
+          tripCount={eligibleTrips.length}
+          tripContainerWidth={tripContainerWidth}
+          intervalWidth={intervalInfo.intervalWidth}
+          startDate={intervalInfo.earliestTime}
         />
       </Box>
-      <Box data-name={`${flightType.toLowerCase()}-container`} display="flex">
+      <Box data-name={`trip-grid-wrapper-${containerIndex}`} display="flex">
         <Box className="border-flex-box" display="flex" borderLeft="default" width="100%">
-          {isReadyToRenderResults({ flights, itineraries }) ? (
-            !displayFlights.length &&
+          {eligibleTrips && eligibleTrips.length ? (
+            !eligibleTrips.length &&
             (filterDateRange.lowerBound ||
               filterDateRange.upperBound ||
               filterStops !== undefined ||
@@ -227,45 +204,41 @@ const TimelineContainer = ({
               </Box>
             ) : (
               <TimelineGrid
-                flights={displayFlights}
-                itineraries={itineraries}
-                startHour={intervalInfo.startHour}
-                increment={intervalInfo.increment}
-                intervalCount={intervalInfo.intervals.length}
-                flightType={flightType}
+                trips={displayTrips}
+                containerStartTime={intervalInfo.earliestTime}
+                containerEndTime={intervalInfo.latestTime}
+                intervalWidth={intervalInfo.intervalWidth}
                 formData={formData}
                 skeleton={false}
-                selectedFlight={selectedFlightDetails?.flight}
+                selectedTrip={selectedTrip}
                 legendContainerWidth={legendContainerWidth}
                 resultsContainerWidth={resultsContainerWidth}
-                flightTimeContainerWidth={flightTimeContainerWidth}
-                onSelection={(details: FlightSelection) => {
-                  setSelectedFlightDetails(details);
-                  setDisplayFlights([details.flight]);
-                  onSelection(details);
+                tripContainerWidth={tripContainerWidth}
+                onSelection={(trip: DisplayableTrip) => {
+                  setSelectedTrip(trip);
+                  setDisplayTrips([trip]);
+                  onSelection(trip);
                 }}
               />
             )
           ) : (
             <TimelineGrid
-              flights={skeletonFlights}
-              itineraries={skeletonItineraries}
-              startHour={intervalInfo.startHour}
-              increment={intervalInfo.increment}
-              intervalCount={intervalInfo.intervals.length}
-              flightType={flightType}
+              trips={skeletonTrips}
+              containerStartTime={intervalInfo.earliestTime}
+              containerEndTime={intervalInfo.latestTime}
+              intervalWidth={intervalInfo.intervalWidth}
               formData={formData}
               skeleton={true}
-              selectedFlight={undefined}
+              selectedTrip={null}
               legendContainerWidth={legendContainerWidth}
-              flightTimeContainerWidth={flightTimeContainerWidth}
+              tripContainerWidth={tripContainerWidth}
               resultsContainerWidth={resultsContainerWidth}
               onSelection={() => {}} // eslint-disable-line @typescript-eslint/no-empty-function
             />
           )}
         </Box>
       </Box>
-      {selectedFlightDetails && (
+      {selectedTrip && (
         <Badge isAttached size="large" palette="danger">
           <Box marginBottom="5px" fontSize={200} cursor="pointer" onClick={clearContainerSelection}>
             x
@@ -277,24 +250,16 @@ const TimelineContainer = ({
 };
 
 export default React.memo(TimelineContainer, (previous, next) => {
-  return isEqual(
-    {
-      flights: previous.flights,
-      meta: previous.meta,
-      itineraries: previous.itineraries,
-      formData: previous.formData,
-      flightType: previous.flightType,
-      loading: previous.loading,
-      resultsContainerWidth: previous.resultsContainerWidth,
-    },
-    {
-      flights: next.flights,
-      meta: next.meta,
-      itineraries: next.itineraries,
-      formData: next.formData,
-      flightType: next.flightType,
-      loading: next.loading,
-      resultsContainerWidth: next.resultsContainerWidth,
-    },
-  );
+  return isEqual(getComparableProperties(previous), getComparableProperties(next));
 });
+
+const getComparableProperties = (container: TimelineContainerProps) => {
+  return {
+    trips: container.eligibleTrips,
+    width: container.resultsContainerWidth,
+    index: container.containerIndex,
+    formData: container.formData,
+    loading: container.loading,
+    meta: container.meta,
+  };
+};

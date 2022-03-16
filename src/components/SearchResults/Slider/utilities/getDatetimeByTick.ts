@@ -6,7 +6,6 @@ interface GetDatetimeByTickProps {
   startDate: Date;
   value: number;
   timezoneOffset?: number;
-  flightType: FlightType;
 }
 
 interface GetDatetimeByTickOutput {
@@ -20,13 +19,10 @@ export const getDatetimeByTick = ({
   startDate,
   value,
   timezoneOffset,
-  flightType,
 }: GetDatetimeByTickProps): GetDatetimeByTickOutput => {
-  const timezoneMultiplier = flightType === "DEPARTURE" ? -1 : 1;
-
   let datetime = addMinutes(startDate, value * 15);
   if (timezoneOffset) {
-    datetime = addMinutes(datetime, timezoneOffset * timezoneMultiplier);
+    datetime = addMinutes(datetime, timezoneOffset);
   }
 
   let formattableDatetime = datetime;

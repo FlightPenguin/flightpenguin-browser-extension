@@ -18,10 +18,9 @@ interface ThumbProps {
   intervals: number[];
   heightValue: number;
   touched: boolean;
-  flightCount: number;
+  tripCount: number;
   timezoneOffset: number;
-  flightTimeContainerWidth: number;
-  flightType: FlightType;
+  tripContainerWidth: number;
 }
 
 const widthValue = thumbWidthValue;
@@ -36,10 +35,9 @@ const Thumb = ({
   intervals,
   heightValue,
   touched,
-  flightCount,
+  tripCount,
   timezoneOffset,
-  flightTimeContainerWidth,
-  flightType,
+  tripContainerWidth,
 }: ThumbProps): React.ReactElement => {
   const [inUse, setInUse] = useState(false);
 
@@ -54,9 +52,8 @@ const Thumb = ({
     startDate,
     value,
     timezoneOffset: state.index === 1 ? timezoneOffset : 0,
-    flightType,
   });
-  const position = getPositionByTick({ intervals, value, flightTimeContainerWidth });
+  const position = getPositionByTick({ intervals, value, tripContainerWidth });
   const color = timezoneOffset ? (state.index === 0 ? "info" : "warning") : "black";
 
   return (
@@ -122,7 +119,7 @@ const Thumb = ({
       <Box
         width="100%"
         marginTop="6px"
-        height={`${rowHeight * flightCount}px`}
+        height={`${rowHeight * tripCount}px`}
         display={inUse && ![minimumValue, maximumValue].includes(value) ? "flex" : "none"}
         flexDirection="row"
       >
@@ -158,9 +155,8 @@ const getValuesForMemoCheck = ({
   intervals,
   minimumValue,
   maximumValue,
-  flightCount,
-  flightTimeContainerWidth,
-  flightType,
+  tripCount,
+  tripContainerWidth,
 }: ThumbProps) => {
   return {
     index: state.index,
@@ -170,8 +166,7 @@ const getValuesForMemoCheck = ({
     intervals: intervals,
     minimumValue,
     maximumValue,
-    flightCount,
-    flightTimeContainerWidth,
-    flightType,
+    tripCount,
+    tripContainerWidth,
   };
 };

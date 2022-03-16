@@ -1,19 +1,18 @@
 import { useDebounce } from "@react-hook/debounce";
 import { Alert, Box, Button } from "bumbag";
 import isEqual from "lodash.isequal";
+import range from "lodash.range";
 import React, { useEffect, useState } from "react";
 
 import { AnalyticsManager } from "../../background/AnalyticsManager";
-import { sendHighlightTab } from "../../shared/events";
+import { sendHighlightTab, sendTripFlightSelected } from "../../shared/events";
 import { sendClearSelections } from "../../shared/events/sendClearSelections";
 import { sendIndexUnload } from "../../shared/events/sendIndexUnload";
 import { FlightSearchFormData } from "../../shared/types/FlightSearchFormData";
-import { ProcessedFlightSearchResult } from "../../shared/types/ProcessedFlightSearchResult";
-import { ProcessedItinerary } from "../../shared/types/ProcessedItinerary";
-import { SearchLegMeta, SearchMeta } from "../../shared/types/SearchMeta";
+import { DisplayableTrip, DisplayableTripInput } from "../../shared/types/newtypes/DisplayableTrip";
+import { SearchTripMeta, SearchTripMetaDefault } from "../../shared/types/SearchMeta";
 import { sendFormDataToBackground } from "../SearchForm/utilities/sendFormDataToBackground";
 import TimelineContainer from "./Container";
-import { FlightSelection } from "./FlightSelection";
 
 interface SearchResultsProps {
   formData: FlightSearchFormData;
@@ -27,63 +26,51 @@ export const SearchResults = ({
   onUpdateFormClick,
 }: SearchResultsProps): React.ReactElement => {
   const analytics = new AnalyticsManager(`${process.env.GOOGLE_ANALYTICS_TRACKING_ID}`, false);
+  const maxContainerIndex = formData.roundtrip ? 2 : 1;
+  const minContainerIndex = 1;
+  const containerRange = range(minContainerIndex, maxContainerIndex + 1);
 
-  const [flights, setFlights] = useDebounce<{
-    itineraries: { [keyof: string]: ProcessedItinerary };
-    departureFlights: ProcessedFlightSearchResult[];
-    returnFlights: ProcessedFlightSearchResult[];
-  }>(
-    {
-      itineraries: {},
-      departureFlights: [],
-      returnFlights: [],
-    },
+  const [tripGroups, setTripGroups] = useDebounce<DisplayableTrip[][]>(
+    containerRange.map((num) => {
+      return [] as DisplayableTrip[];
+    }),
     500,
     true,
   );
-  const [returnItineraries, setReturnItineraries] = useState({});
-  const [searchMeta, setSearchMeta] = useDebounce<SearchMeta | undefined>(undefined, 500, true);
+  const [searchMeta, setSearchMeta] = useDebounce<SearchTripMeta[]>(
+    containerRange.map((num) => {
+      return SearchTripMetaDefault;
+    }),
+    500,
+    true,
+  );
+  const [tripGroupComplete, setTripGroupComplete] = useState<boolean[]>(
+    containerRange.map((num) => {
+      return false;
+    }),
+  );
+  const [tripSelection, setTripSelection] = useState<(DisplayableTrip | null)[]>(
+    containerRange.map((num) => {
+      return null;
+    }),
+  );
+  const [activeContainerIndex, setActiveContainerIndex] = useState(minContainerIndex);
 
-  const [departuresComplete, setDeparturesComplete] = useState(false);
-  const [returnsComplete, setReturnsComplete] = useState(false);
-  const [departureFlightDetails, setDepartureFlightDetails] = useState<FlightSelection | null>(null);
-  const [returnFlightDetails, setReturnFlightDetails] = useState<FlightSelection | null>(null);
   const [tabInteractionFailed, setTabInteractionFailed] = useState(false);
   const [searchAgainDisabled, setSearchAgainDisabled] = useState(false);
   const [windowClosed, setWindowClosed] = useState(false);
-
-  useEffect(() => {
-    let filteredItineraries = {};
-    if (departureFlightDetails?.flight) {
-      filteredItineraries = Object.fromEntries(
-        Object.entries(flights.itineraries).filter(([id, itinerary]) => {
-          return id.startsWith(departureFlightDetails.flightPenguinId) && itinerary.retFlight;
-        }),
-      );
-    }
-    setReturnItineraries(filteredItineraries);
-  }, [setReturnItineraries, departureFlightDetails, flights]);
 
   useEffect(() => {
     chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       sendResponse({ received: true, responderName: "searchResults" });
       console.debug(message);
       switch (message.event) {
-        case "FLIGHT_RESULTS_FOR_CLIENT":
-        case "RETURN_FLIGHTS_FOR_CLIENT":
-          setFlights({
-            itineraries: message.flights.itins,
-            departureFlights: message.flights.departureList,
-            returnFlights: message.flights.returnList,
-          });
+        case "TRIP_RESULTS_FOR_CLIENT":
+          setTripGroups(message.trips);
           setSearchMeta(message.meta);
           break;
         case "SCRAPING_COMPLETED":
-          if (message?.searchType === "RETURN") {
-            setReturnsComplete(true);
-          } else {
-            setDeparturesComplete(true);
-          }
+          setTripGroupComplete(message.tripGroupsComplete);
           break;
         case "WINDOW_CLOSED":
           setWindowClosed(true);
@@ -105,17 +92,30 @@ export const SearchResults = ({
 
   const searchAgain = async () => {
     setSearchAgainDisabled(true);
-    setFlights({
-      itineraries: {},
-      departureFlights: [],
-      returnFlights: [],
-    });
-    setDeparturesComplete(false);
-    setReturnsComplete(false);
-    setDepartureFlightDetails(null);
-    setReturnFlightDetails(null);
+
+    setTripGroups(
+      containerRange.map((num) => {
+        return [] as DisplayableTrip[];
+      }),
+    );
+    setTripGroupComplete(
+      containerRange.map((num) => {
+        return false;
+      }),
+    );
+    setTripSelection(
+      containerRange.map((num) => {
+        return null;
+      }),
+    );
+    setSearchMeta(
+      containerRange.map((num) => {
+        return SearchTripMetaDefault;
+      }),
+    );
+    setActiveContainerIndex(minContainerIndex);
+
     setTabInteractionFailed(false);
-    setSearchMeta(undefined);
     setWindowClosed(false);
 
     sendFormDataToBackground(formData);
@@ -149,83 +149,64 @@ export const SearchResults = ({
       paddingTop="50px"
       width="100%"
     >
-      <TimelineContainer
-        flightType="DEPARTURE"
-        itineraries={flights.itineraries}
-        flights={flights.departureFlights}
-        formData={formData}
-        meta={
-          searchMeta
-            ? searchMeta.departures
-            : ({ layoverCounts: [] as number[], airlines: [] as string[], airports: [] as string[] } as SearchLegMeta)
+      {containerRange.map((containerIndex) => {
+        if (containerIndex <= activeContainerIndex) {
+          return (
+            <TimelineContainer
+              containerIndex={containerIndex}
+              eligibleTrips={tripGroups[containerIndex]}
+              formData={formData}
+              key={`timeline-container-${containerIndex}`}
+              loading={!tripSelection[containerIndex] && !tripGroupComplete[containerIndex]}
+              meta={searchMeta[containerIndex]}
+              onClear={() => {
+                const newActiveContainerIndex = containerIndex - 1;
+
+                setActiveContainerIndex(newActiveContainerIndex);
+                setTripSelection(
+                  tripSelection.map((tripSelection, index) => {
+                    const selectionContainerIndex = index + 1;
+                    if (selectionContainerIndex > newActiveContainerIndex) {
+                      return null;
+                    }
+                    return tripSelection;
+                  }),
+                );
+                sendClearSelections(containerIndex);
+              }}
+              onSelection={(trip: DisplayableTrip) => {
+                const newActiveContainerIndex = containerIndex + 1;
+
+                setActiveContainerIndex(newActiveContainerIndex);
+                setTripSelection(
+                  tripSelection.map((selection, index) => {
+                    const selectionContainerIndex = index + 1;
+                    if (index === selectionContainerIndex) {
+                      return selection;
+                    }
+                    return trip;
+                  }),
+                );
+                sendTripFlightSelected(trip, containerIndex);
+                if (containerIndex === maxContainerIndex) {
+                  analytics.track({
+                    category: "flight search",
+                    action: `trip selection`,
+                    label: window.location.host,
+                  });
+                }
+                analytics.track({
+                  category: "flight search",
+                  action: `trip flight selection`,
+                  label: window.location.host,
+                });
+              }}
+              onUpdateFormClick={onUpdateFormClick}
+              resultsContainerWidth={resultsContainerWidth}
+            />
+          );
         }
-        loading={!departureFlightDetails && !departuresComplete}
-        resultsContainerWidth={resultsContainerWidth}
-        onSelection={(details) => {
-          setDepartureFlightDetails(details);
-          analytics.track({
-            category: "flight search",
-            action: "departure selection",
-            label: window.location.host,
-          });
-          if (!formData?.roundtrip) {
-            sendHighlightTab(details.flightPenguinId, "");
-            analytics.track({
-              category: "flight search",
-              action: "flight selection",
-              label: window.location.host,
-            });
-          }
-        }}
-        onClear={() => {
-          sendClearSelections();
-          setDepartureFlightDetails(null);
-          setFlights({ ...flights, returnFlights: [] });
-          setReturnsComplete(false);
-        }}
-        onUpdateFormClick={onUpdateFormClick}
-      />
-      {!!departureFlightDetails && formData.roundtrip && (
-        <>
-          <Box height="50px" />
-          <TimelineContainer
-            flightType="RETURN"
-            itineraries={returnItineraries}
-            flights={flights.returnFlights}
-            formData={formData}
-            meta={
-              searchMeta
-                ? searchMeta.returns
-                : ({
-                    layoverCounts: [] as number[],
-                    airlines: [] as string[],
-                    airports: [] as string[],
-                  } as SearchLegMeta)
-            }
-            loading={!returnFlightDetails && !returnsComplete}
-            resultsContainerWidth={resultsContainerWidth}
-            onSelection={(details) => {
-              setReturnFlightDetails(details);
-              sendHighlightTab(departureFlightDetails?.flightPenguinId, details.flightPenguinId);
-              analytics.track({
-                category: "flight search",
-                action: "return selection",
-                label: window.location.host,
-              });
-              analytics.track({
-                category: "flight search",
-                action: "flight selection",
-                label: window.location.host,
-              });
-            }}
-            onClear={() => {
-              setReturnFlightDetails(null);
-              setReturnsComplete(false);
-            }}
-            onUpdateFormClick={onUpdateFormClick}
-          />
-        </>
-      )}
+      })}
     </Box>
   );
 };

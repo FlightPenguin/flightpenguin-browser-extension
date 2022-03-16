@@ -1,46 +1,47 @@
-import { Box, Text } from "bumbag";
+import { Box } from "bumbag";
 import isEqual from "lodash.isequal";
 import React from "react";
 
-import { FlightSearchFormData } from "../../../shared/types/FlightSearchFormData";
+import { Airport } from "../../SearchForm/api/airports/Airport";
 import TimelineSlider from "../Slider";
 import { TimeCell } from "./TimeCell";
-import { getFlightInfo } from "./utilities/getFlightInfo";
 import { getFontSize } from "./utilities/getFontSize";
 
 interface TimelineHeaderProps {
-  formData: FlightSearchFormData;
-  flightType: "DEPARTURE" | "RETURN";
+  arrivalLocation: Airport;
+  departureLocation: Airport;
   intervals: number[];
   tzOffset: number;
   onSliderChange: (minDate: Date, maxDate: Date) => void;
   sliderDisabled: boolean;
-  flightCount: number;
-  flightTimeContainerWidth: number;
+  tripCount: number;
+  tripContainerWidth: number;
+  intervalWidth: number;
+  startDate: Date;
 }
 
 const TimelineHeader = ({
-  formData,
-  flightType,
+  arrivalLocation,
+  departureLocation,
   intervals,
   tzOffset,
   onSliderChange,
   sliderDisabled,
-  flightCount,
-  flightTimeContainerWidth,
+  tripCount,
+  tripContainerWidth,
+  startDate,
+  intervalWidth,
 }: TimelineHeaderProps): React.ReactElement => {
   let daysCounter = 0;
-  const intervalWidth = flightTimeContainerWidth / (intervals.length - 1);
-  const { startDate, departureAirportCode, arrivalAirportCode } = getFlightInfo(formData, flightType);
   const timeFontSize = getFontSize(intervals.length);
 
   return (
     <Box
-      className={`${flightType.toLowerCase()}-header`}
+      className={`${departureLocation.label}-${arrivalLocation.label}-header`}
       display="flex"
       flexDirection="row"
       flexWrap="wrap"
-      width={`${flightTimeContainerWidth + intervalWidth}px`}
+      width={`${tripContainerWidth + intervalWidth}px`}
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
       marginLeft={`-${intervalWidth / 2}px`}
@@ -59,9 +60,8 @@ const TimelineHeader = ({
               startDate={startDate}
               daysCounter={daysCounter}
               timeFontSize={timeFontSize}
-              departureAirportCode={departureAirportCode}
-              arrivalAirportCode={arrivalAirportCode}
-              flightType={flightType}
+              departureAirportCode={departureLocation.label}
+              arrivalAirportCode={arrivalLocation.label}
               key={`interval-header-${interval}`}
             />
           );
@@ -72,11 +72,10 @@ const TimelineHeader = ({
         intervalWidth={intervalWidth}
         startDate={startDate}
         onRangeChange={onSliderChange}
-        flightCount={flightCount}
+        tripCount={tripCount}
         disabled={sliderDisabled}
         timezoneOffset={tzOffset}
-        flightTimeContainerWidth={flightTimeContainerWidth}
-        flightType={flightType}
+        tripContainerWidth={tripContainerWidth}
       />
     </Box>
   );

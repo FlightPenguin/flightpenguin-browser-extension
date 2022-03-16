@@ -1,466 +1,454 @@
 {
-	"8:00am-9:30am-Southwest-1:00pm-2:30pm-Southwest": {
-		"depFlight": {
-			"fromTime": "8:00am",
-			"toTime": "9:30am",
-			"fromTimeDetails": {
-				"hours": 8,
-				"displayHours": 8,
-				"minutes": 0,
-				"timeOfDay": "am",
-				"excessDays": null,
-				"excessDayCount": 0
-			},
-			"toTimeDetails": {
-				"hours": 9,
-				"displayHours": 9,
-				"minutes": 30,
-				"timeOfDay": "am",
-				"excessDays": null,
-				"excessDayCount": 0
-			},
-			"operatingAirline": {
-				"display": "Southwest",
-				"color": "#F6C04D",
-				"code": "WN"
-			},
-			"id": "8:00am-9:30am-Southwest",
-			"duration": "1h 30m",
-			"durationMinutes": 90,
-			"layovers": [],
-			"itinIds": [
-				"8:00am-9:30am-Southwest-1:00pm-2:30pm-Southwest"
-			],
-			"timezoneOffset": 0,
-			"pain": 14
-		},
-		"retFlight": {
-			"fromTime": "1:00pm",
-			"toTime": "2:30pm",
-			"fromTimeDetails": {
-				"hours": 13,
-				"displayHours": 1,
-				"minutes": 0,
-				"timeOfDay": "pm",
-				"excessDays": null,
-				"excessDayCount": 0
-			},
-			"toTimeDetails": {
-				"hours": 14,
-				"displayHours": 2,
-				"minutes": 30,
-				"timeOfDay": "pm",
-				"excessDays": null,
-				"excessDayCount": 0
-			},
-			"operatingAirline": {
-				"display": "Southwest",
-				"color": "#F6C04D",
-				"code": "WN"
-			},
-			"id": "1:00pm-2:30pm-Southwest",
-			"duration": "1h 30m",
-			"durationMinutes": 90,
-			"layovers": [],
-			"itinIds": [
-				"8:00am-9:30am-Southwest-1:00pm-2:30pm-Southwest"
-			],
-			"timezoneOffset": 0,
-			"pain": 14
-		},
-		"id": "8:00am-9:30am-Southwest-1:00pm-2:30pm-Southwest",
-		"provider": "southwest",
-		"windowId": 353,
-		"tabId": 354,
-		"fareNumber": 293
-	},
-	"5:00am-7:00am-jetBlue-6:00am-8:00am-jetBlue": {
-		"depFlight": {
-			"fromTime": "5:00am",
-			"toTime": "7:00am",
-			"fromTimeDetails": {
-				"hours": 5,
-				"displayHours": 5,
-				"minutes": 0,
-				"timeOfDay": "am",
-				"excessDays": null,
-				"excessDayCount": 0
-			},
-			"toTimeDetails": {
-				"hours": 7,
-				"displayHours": 7,
-				"minutes": 0,
-				"timeOfDay": "am",
-				"excessDays": null,
-				"excessDayCount": 0
-			},
-			"operatingAirline": {
-				"display": "jetBlue",
-				"color": "#5F90C8",
-				"code": "B6"
-			},
-			"id": "5:00am-7:00am-jetBlue",
-			"duration": "2h 00m",
-			"durationMinutes": 120,
-			"layovers": [],
-			"itinIds": [
-				"5:00am-7:00am-jetBlue-6:00am-8:00am-jetBlue"
-			],
-			"timezoneOffset": 0,
-			"pain": 15
-		},
-		"retFlight": {
-			"fromTime": "6:00am",
-			"toTime": "8:00am",
-			"fromTimeDetails": {
-				"hours": 6,
-				"displayHours": 6,
-				"minutes": 0,
-				"timeOfDay": "am",
-				"excessDays": null,
-				"excessDayCount": 0
-			},
-			"toTimeDetails": {
-				"hours": 8,
-				"displayHours": 8,
-				"minutes": 0,
-				"timeOfDay": "am",
-				"excessDays": null,
-				"excessDayCount": 0
-			},
-			"operatingAirline": {
-				"display": "jetBlue",
-				"color": "#5F90C8",
-				"code": "B6"
-			},
-			"id": "6:00am-8:00am-jetBlue",
-			"duration": "2h 00m",
-			"durationMinutes": 120,
-			"layovers": [],
-			"itinIds": [
-				"5:00am-7:00am-jetBlue-6:00am-8:00am-jetBlue"
-			],
-			"timezoneOffset": 0,
-			"pain": 15
-		},
-		"id": "5:00am-7:00am-jetBlue-6:00am-8:00am-jetBlue",
-		"provider": "expedia",
-		"windowId": 102,
-		"tabId": 103,
-		"fareNumber": 273
-	},
-	"5:05pm-8:45pm-United-1:05pm-6:00pm-United": {
-		"depFlight": {
-			"fromTime": "5:05pm",
-			"toTime": "8:45pm",
-			"fromTimeDetails": {
-				"hours": 17,
-				"displayHours": 5,
-				"minutes": 5,
-				"timeOfDay": "pm",
-				"excessDays": null,
-				"excessDayCount": 0
-			},
-			"toTimeDetails": {
-				"hours": 20,
-				"displayHours": 8,
-				"minutes": 45,
-				"timeOfDay": "pm",
-				"excessDays": null,
-				"excessDayCount": 0
-			},
-			"operatingAirline": {
-				"display": "United",
-				"color": "#235EA6",
-				"code": "UA"
-			},
-			"id": "5:05pm-8:45pm-United",
-			"duration": "3h 40m",
-			"durationMinutes": 220,
-			"layovers": [{
-					"fromTime": "5:05pm",
-					"toTime": "6:40pm",
-					"operatingAirline": {
-						"display": "United",
-						"color": "#235EA6",
-						"code": "UA"
-					},
-					"duration": "1h 35m",
-					"from": "SFO",
-					"to": "LAS",
-					"timezoneOffset": 0,
-					"isLayoverStop": false
-				},
-				{
-					"fromTime": "6:40pm",
-					"toTime": "7:35pm",
-					"from": "LAS",
-					"to": "LAS",
-					"isLayoverStop": true,
-					"operatingAirline": {
-						"display": "Layover at LAS.",
-						"color": "transparent"
-					},
-					"duration": "55m",
-					"timezoneOffset": 0
-				},
-				{
-					"fromTime": "7:35pm",
-					"toTime": "8:45pm",
-					"operatingAirline": {
-						"display": "United",
-						"color": "#235EA6",
-						"code": "UA"
-					},
-					"duration": "1h 10m",
-					"from": "LAS",
-					"to": "LAX",
-					"timezoneOffset": 0,
-					"isLayoverStop": false
-				}
-			],
-			"itinIds": [
-				"5:05pm-8:45pm-United-1:05pm-6:00pm-United"
-			],
-			"timezoneOffset": 0,
-			"pain": 19
-		},
-		"retFlight": {
-			"fromTime": "1:05pm",
-			"toTime": "6:00pm",
-			"fromTimeDetails": {
-				"hours": 13,
-				"displayHours": 1,
-				"minutes": 5,
-				"timeOfDay": "pm",
-				"excessDays": null,
-				"excessDayCount": 0
-			},
-			"toTimeDetails": {
-				"hours": 18,
-				"displayHours": 6,
-				"minutes": 0,
-				"timeOfDay": "pm",
-				"excessDays": null,
-				"excessDayCount": 0
-			},
-			"operatingAirline": {
-				"display": "United",
-				"color": "#235EA6",
-				"code": "UA"
-			},
-			"id": "1:05pm-6:00pm-United",
-			"duration": "4h 55m",
-			"durationMinutes": 295,
-			"layovers": [{
-					"fromTime": "1:05pm",
-					"toTime": "2:35pm",
-					"operatingAirline": {
-						"display": "United",
-						"color": "#235EA6",
-						"code": "UA"
-					},
-					"duration": "1h 30m",
-					"from": "LAX",
-					"to": "PHX",
-					"timezoneOffset": 0,
-					"isLayoverStop": false
-				},
-				{
-					"fromTime": "2:35pm",
-					"toTime": "4:00pm",
-					"from": "PHX",
-					"to": "PHX",
-					"isLayoverStop": true,
-					"operatingAirline": {
-						"display": "Layover at PHX.",
-						"color": "transparent"
-					},
-					"duration": "1h 25m",
-					"timezoneOffset": 0
-				},
-				{
-					"fromTime": "4:00pm",
-					"toTime": "6:00pm",
-					"operatingAirline": {
-						"display": "United",
-						"color": "#235EA6",
-						"code": "UA"
-					},
-					"duration": "2h 0m",
-					"from": "PHX",
-					"to": "SFO",
-					"timezoneOffset": 0,
-					"isLayoverStop": false
-				}
-			],
-			"itinIds": [
-				"5:05pm-8:45pm-United-1:05pm-6:00pm-United"
-			],
-			"timezoneOffset": 0,
-			"pain": 19
-		},
-		"id": "5:05pm-8:45pm-United-1:05pm-6:00pm-United",
-		"provider": "kiwi",
-		"windowId": 105,
-		"tabId": 106,
-		"fareNumber": 331
-	},
-	"11:50am-4:45pm-Delta-1:35pm-8:00pm-Delta": {
-		"depFlight": {
-			"fromTime": "11:50am",
-			"toTime": "4:45pm",
-			"fromTimeDetails": {
-				"hours": 11,
-				"displayHours": 11,
-				"minutes": 50,
-				"timeOfDay": "am",
-				"excessDays": null,
-				"excessDayCount": 0
-			},
-			"toTimeDetails": {
-				"hours": 16,
-				"displayHours": 4,
-				"minutes": 45,
-				"timeOfDay": "pm",
-				"excessDays": null,
-				"excessDayCount": 0
-			},
-			"operatingAirline": {
-				"display": "Delta",
-				"color": "#EE722E",
-				"code": "DL"
-			},
-			"id": "11:50am-4:45pm-Delta",
-			"duration": "4h 55m",
-			"durationMinutes": 295,
-			"layovers": [{
-					"fromTime": "11:50am",
-					"toTime": "1:50pm",
-					"operatingAirline": {
-						"display": "Delta",
-						"color": "#EE722E",
-						"code": "DL"
-					},
-					"duration": "2h 0m",
-					"from": "SFO",
-					"to": "PHX",
-					"timezoneOffset": 0,
-					"isLayoverStop": false
-				},
-				{
-					"fromTime": "1:50pm",
-					"toTime": "3:20pm",
-					"from": "PHX",
-					"to": "PHX",
-					"isLayoverStop": true,
-					"operatingAirline": {
-						"display": "Layover at PHX.",
-						"color": "transparent"
-					},
-					"duration": "1h 30m",
-					"timezoneOffset": 0
-				},
-				{
-					"fromTime": "3:20pm",
-					"toTime": "4:45pm",
-					"operatingAirline": {
-						"display": "Delta",
-						"color": "#EE722E",
-						"code": "DL"
-					},
-					"duration": "1h 25m",
-					"from": "PHX",
-					"to": "LAX",
-					"timezoneOffset": 0,
-					"isLayoverStop": false
-				}
-			],
-			"itinIds": [
-				"11:50am-4:45pm-Delta-1:35pm-8:00pm-Delta"
-			],
-			"timezoneOffset": 0,
-			"pain": 20
-		},
-		"retFlight": {
-			"fromTime": "1:35pm",
-			"toTime": "8:00pm",
-			"fromTimeDetails": {
-				"hours": 13,
-				"displayHours": 1,
-				"minutes": 35,
-				"timeOfDay": "pm",
-				"excessDays": null,
-				"excessDayCount": 0
-			},
-			"toTimeDetails": {
-				"hours": 20,
-				"displayHours": 8,
-				"minutes": 0,
-				"timeOfDay": "pm",
-				"excessDays": null,
-				"excessDayCount": 0
-			},
-			"operatingAirline": {
-				"display": "Delta",
-				"color": "#EE722E",
-				"code": "DL"
-			},
-			"id": "1:35pm-8:00pm-Delta",
-			"duration": "6h 25m",
-			"durationMinutes": 385,
-			"layovers": [{
-					"fromTime": "1:35pm",
-					"toTime": "2:45pm",
-					"operatingAirline": {
-						"display": "Delta",
-						"color": "#EE722E",
-						"code": "DL"
-					},
-					"duration": "1h 10m",
-					"from": "LAX",
-					"to": "LAS",
-					"timezoneOffset": 0,
-					"isLayoverStop": false
-				},
-				{
-					"fromTime": "2:45pm",
-					"toTime": "6:25pm",
-					"from": "LAS",
-					"to": "LAS",
-					"duration": "3h 40m",
-					"timezoneOffset": 0,
-					"isLayoverStop": true,
-					"operatingAirline": {
-						"display": "Layover at LAS.",
-						"color": "transparent"
-					}
-				},
-				{
-					"fromTime": "6:25pm",
-					"toTime": "8:00pm",
-					"operatingAirline": {
-						"display": "Delta",
-						"color": "#EE722E",
-						"code": "DL"
-					},
-					"duration": "1h 35m",
-					"from": "LAS",
-					"to": "SFO",
-					"timezoneOffset": 0,
-					"isLayoverStop": false
-				}
-			],
-			"itinIds": [
-				"11:50am-4:45pm-Delta-1:35pm-8:00pm-Delta"
-			],
-			"timezoneOffset": 0,
-			"pain": 20
-		},
-		"id": "11:50am-4:45pm-Delta-1:35pm-8:00pm-Delta",
-		"provider": "skyscanner",
-		"windowId": 107,
-		"tabId": 108,
-		"fareNumber": 331
-	}
+  "8:00am-9:30am-Southwest-1:00pm-2:30pm-Southwest": {
+    "depFlight": {
+      "fromTime": "8:00am",
+      "toTime": "9:30am",
+      "fromTimeDetails": {
+        "hours": 8,
+        "displayHours": 8,
+        "minutes": 0,
+        "timeOfDay": "am",
+        "excessDays": null,
+        "excessDayCount": 0
+      },
+      "toTimeDetails": {
+        "hours": 9,
+        "displayHours": 9,
+        "minutes": 30,
+        "timeOfDay": "am",
+        "excessDays": null,
+        "excessDayCount": 0
+      },
+      "operatingAirline": {
+        "display": "Southwest",
+        "color": "#F6C04D",
+        "code": "WN"
+      },
+      "id": "8:00am-9:30am-Southwest",
+      "duration": "1h 30m",
+      "durationMinutes": 90,
+      "layovers": [],
+      "itinIds": ["8:00am-9:30am-Southwest-1:00pm-2:30pm-Southwest"],
+      "timezoneOffset": 0,
+      "pain": 14
+    },
+    "retFlight": {
+      "fromTime": "1:00pm",
+      "toTime": "2:30pm",
+      "fromTimeDetails": {
+        "hours": 13,
+        "displayHours": 1,
+        "minutes": 0,
+        "timeOfDay": "pm",
+        "excessDays": null,
+        "excessDayCount": 0
+      },
+      "toTimeDetails": {
+        "hours": 14,
+        "displayHours": 2,
+        "minutes": 30,
+        "timeOfDay": "pm",
+        "excessDays": null,
+        "excessDayCount": 0
+      },
+      "operatingAirline": {
+        "display": "Southwest",
+        "color": "#F6C04D",
+        "code": "WN"
+      },
+      "id": "1:00pm-2:30pm-Southwest",
+      "duration": "1h 30m",
+      "durationMinutes": 90,
+      "layovers": [],
+      "itinIds": ["8:00am-9:30am-Southwest-1:00pm-2:30pm-Southwest"],
+      "timezoneOffset": 0,
+      "pain": 14
+    },
+    "id": "8:00am-9:30am-Southwest-1:00pm-2:30pm-Southwest",
+    "provider": "southwest",
+    "windowId": 353,
+    "tabId": 354,
+    "fareNumber": 293
+  },
+  "5:00am-7:00am-jetBlue-6:00am-8:00am-jetBlue": {
+    "depFlight": {
+      "fromTime": "5:00am",
+      "toTime": "7:00am",
+      "fromTimeDetails": {
+        "hours": 5,
+        "displayHours": 5,
+        "minutes": 0,
+        "timeOfDay": "am",
+        "excessDays": null,
+        "excessDayCount": 0
+      },
+      "toTimeDetails": {
+        "hours": 7,
+        "displayHours": 7,
+        "minutes": 0,
+        "timeOfDay": "am",
+        "excessDays": null,
+        "excessDayCount": 0
+      },
+      "operatingAirline": {
+        "display": "jetBlue",
+        "color": "#5F90C8",
+        "code": "B6"
+      },
+      "id": "5:00am-7:00am-jetBlue",
+      "duration": "2h 00m",
+      "durationMinutes": 120,
+      "layovers": [],
+      "itinIds": ["5:00am-7:00am-jetBlue-6:00am-8:00am-jetBlue"],
+      "timezoneOffset": 0,
+      "pain": 15
+    },
+    "retFlight": {
+      "fromTime": "6:00am",
+      "toTime": "8:00am",
+      "fromTimeDetails": {
+        "hours": 6,
+        "displayHours": 6,
+        "minutes": 0,
+        "timeOfDay": "am",
+        "excessDays": null,
+        "excessDayCount": 0
+      },
+      "toTimeDetails": {
+        "hours": 8,
+        "displayHours": 8,
+        "minutes": 0,
+        "timeOfDay": "am",
+        "excessDays": null,
+        "excessDayCount": 0
+      },
+      "operatingAirline": {
+        "display": "jetBlue",
+        "color": "#5F90C8",
+        "code": "B6"
+      },
+      "id": "6:00am-8:00am-jetBlue",
+      "duration": "2h 00m",
+      "durationMinutes": 120,
+      "layovers": [],
+      "itinIds": ["5:00am-7:00am-jetBlue-6:00am-8:00am-jetBlue"],
+      "timezoneOffset": 0,
+      "pain": 15
+    },
+    "id": "5:00am-7:00am-jetBlue-6:00am-8:00am-jetBlue",
+    "provider": "expedia",
+    "windowId": 102,
+    "tabId": 103,
+    "fareNumber": 273
+  },
+  "5:05pm-8:45pm-United-1:05pm-6:00pm-United": {
+    "depFlight": {
+      "fromTime": "5:05pm",
+      "toTime": "8:45pm",
+      "fromTimeDetails": {
+        "hours": 17,
+        "displayHours": 5,
+        "minutes": 5,
+        "timeOfDay": "pm",
+        "excessDays": null,
+        "excessDayCount": 0
+      },
+      "toTimeDetails": {
+        "hours": 20,
+        "displayHours": 8,
+        "minutes": 45,
+        "timeOfDay": "pm",
+        "excessDays": null,
+        "excessDayCount": 0
+      },
+      "operatingAirline": {
+        "display": "United",
+        "color": "#235EA6",
+        "code": "UA"
+      },
+      "id": "5:05pm-8:45pm-United",
+      "duration": "3h 40m",
+      "durationMinutes": 220,
+      "layovers": [
+        {
+          "fromTime": "5:05pm",
+          "toTime": "6:40pm",
+          "operatingAirline": {
+            "display": "United",
+            "color": "#235EA6",
+            "code": "UA"
+          },
+          "duration": "1h 35m",
+          "from": "SFO",
+          "to": "LAS",
+          "timezoneOffset": 0,
+          "isLayoverStop": false
+        },
+        {
+          "fromTime": "6:40pm",
+          "toTime": "7:35pm",
+          "from": "LAS",
+          "to": "LAS",
+          "isLayoverStop": true,
+          "operatingAirline": {
+            "display": "Layover at LAS.",
+            "color": "transparent"
+          },
+          "duration": "55m",
+          "timezoneOffset": 0
+        },
+        {
+          "fromTime": "7:35pm",
+          "toTime": "8:45pm",
+          "operatingAirline": {
+            "display": "United",
+            "color": "#235EA6",
+            "code": "UA"
+          },
+          "duration": "1h 10m",
+          "from": "LAS",
+          "to": "LAX",
+          "timezoneOffset": 0,
+          "isLayoverStop": false
+        }
+      ],
+      "itinIds": ["5:05pm-8:45pm-United-1:05pm-6:00pm-United"],
+      "timezoneOffset": 0,
+      "pain": 19
+    },
+    "retFlight": {
+      "fromTime": "1:05pm",
+      "toTime": "6:00pm",
+      "fromTimeDetails": {
+        "hours": 13,
+        "displayHours": 1,
+        "minutes": 5,
+        "timeOfDay": "pm",
+        "excessDays": null,
+        "excessDayCount": 0
+      },
+      "toTimeDetails": {
+        "hours": 18,
+        "displayHours": 6,
+        "minutes": 0,
+        "timeOfDay": "pm",
+        "excessDays": null,
+        "excessDayCount": 0
+      },
+      "operatingAirline": {
+        "display": "United",
+        "color": "#235EA6",
+        "code": "UA"
+      },
+      "id": "1:05pm-6:00pm-United",
+      "duration": "4h 55m",
+      "durationMinutes": 295,
+      "layovers": [
+        {
+          "fromTime": "1:05pm",
+          "toTime": "2:35pm",
+          "operatingAirline": {
+            "display": "United",
+            "color": "#235EA6",
+            "code": "UA"
+          },
+          "duration": "1h 30m",
+          "from": "LAX",
+          "to": "PHX",
+          "timezoneOffset": 0,
+          "isLayoverStop": false
+        },
+        {
+          "fromTime": "2:35pm",
+          "toTime": "4:00pm",
+          "from": "PHX",
+          "to": "PHX",
+          "isLayoverStop": true,
+          "operatingAirline": {
+            "display": "Layover at PHX.",
+            "color": "transparent"
+          },
+          "duration": "1h 25m",
+          "timezoneOffset": 0
+        },
+        {
+          "fromTime": "4:00pm",
+          "toTime": "6:00pm",
+          "operatingAirline": {
+            "display": "United",
+            "color": "#235EA6",
+            "code": "UA"
+          },
+          "duration": "2h 0m",
+          "from": "PHX",
+          "to": "SFO",
+          "timezoneOffset": 0,
+          "isLayoverStop": false
+        }
+      ],
+      "itinIds": ["5:05pm-8:45pm-United-1:05pm-6:00pm-United"],
+      "timezoneOffset": 0,
+      "pain": 19
+    },
+    "id": "5:05pm-8:45pm-United-1:05pm-6:00pm-United",
+    "provider": "kiwi",
+    "windowId": 105,
+    "tabId": 106,
+    "fareNumber": 331
+  },
+  "11:50am-4:45pm-Delta-1:35pm-8:00pm-Delta": {
+    "depFlight": {
+      "fromTime": "11:50am",
+      "toTime": "4:45pm",
+      "fromTimeDetails": {
+        "hours": 11,
+        "displayHours": 11,
+        "minutes": 50,
+        "timeOfDay": "am",
+        "excessDays": null,
+        "excessDayCount": 0
+      },
+      "toTimeDetails": {
+        "hours": 16,
+        "displayHours": 4,
+        "minutes": 45,
+        "timeOfDay": "pm",
+        "excessDays": null,
+        "excessDayCount": 0
+      },
+      "operatingAirline": {
+        "display": "Delta",
+        "color": "#EE722E",
+        "code": "DL"
+      },
+      "id": "11:50am-4:45pm-Delta",
+      "duration": "4h 55m",
+      "durationMinutes": 295,
+      "layovers": [
+        {
+          "fromTime": "11:50am",
+          "toTime": "1:50pm",
+          "operatingAirline": {
+            "display": "Delta",
+            "color": "#EE722E",
+            "code": "DL"
+          },
+          "duration": "2h 0m",
+          "from": "SFO",
+          "to": "PHX",
+          "timezoneOffset": 0,
+          "isLayoverStop": false
+        },
+        {
+          "fromTime": "1:50pm",
+          "toTime": "3:20pm",
+          "from": "PHX",
+          "to": "PHX",
+          "isLayoverStop": true,
+          "operatingAirline": {
+            "display": "Layover at PHX.",
+            "color": "transparent"
+          },
+          "duration": "1h 30m",
+          "timezoneOffset": 0
+        },
+        {
+          "fromTime": "3:20pm",
+          "toTime": "4:45pm",
+          "operatingAirline": {
+            "display": "Delta",
+            "color": "#EE722E",
+            "code": "DL"
+          },
+          "duration": "1h 25m",
+          "from": "PHX",
+          "to": "LAX",
+          "timezoneOffset": 0,
+          "isLayoverStop": false
+        }
+      ],
+      "itinIds": ["11:50am-4:45pm-Delta-1:35pm-8:00pm-Delta"],
+      "timezoneOffset": 0,
+      "pain": 20
+    },
+    "retFlight": {
+      "fromTime": "1:35pm",
+      "toTime": "8:00pm",
+      "fromTimeDetails": {
+        "hours": 13,
+        "displayHours": 1,
+        "minutes": 35,
+        "timeOfDay": "pm",
+        "excessDays": null,
+        "excessDayCount": 0
+      },
+      "toTimeDetails": {
+        "hours": 20,
+        "displayHours": 8,
+        "minutes": 0,
+        "timeOfDay": "pm",
+        "excessDays": null,
+        "excessDayCount": 0
+      },
+      "operatingAirline": {
+        "display": "Delta",
+        "color": "#EE722E",
+        "code": "DL"
+      },
+      "id": "1:35pm-8:00pm-Delta",
+      "duration": "6h 25m",
+      "durationMinutes": 385,
+      "layovers": [
+        {
+          "fromTime": "1:35pm",
+          "toTime": "2:45pm",
+          "operatingAirline": {
+            "display": "Delta",
+            "color": "#EE722E",
+            "code": "DL"
+          },
+          "duration": "1h 10m",
+          "from": "LAX",
+          "to": "LAS",
+          "timezoneOffset": 0,
+          "isLayoverStop": false
+        },
+        {
+          "fromTime": "2:45pm",
+          "toTime": "6:25pm",
+          "from": "LAS",
+          "to": "LAS",
+          "duration": "3h 40m",
+          "timezoneOffset": 0,
+          "isLayoverStop": true,
+          "operatingAirline": {
+            "display": "Layover at LAS.",
+            "color": "transparent"
+          }
+        },
+        {
+          "fromTime": "6:25pm",
+          "toTime": "8:00pm",
+          "operatingAirline": {
+            "display": "Delta",
+            "color": "#EE722E",
+            "code": "DL"
+          },
+          "duration": "1h 35m",
+          "from": "LAS",
+          "to": "SFO",
+          "timezoneOffset": 0,
+          "isLayoverStop": false
+        }
+      ],
+      "itinIds": ["11:50am-4:45pm-Delta-1:35pm-8:00pm-Delta"],
+      "timezoneOffset": 0,
+      "pain": 20
+    },
+    "id": "11:50am-4:45pm-Delta-1:35pm-8:00pm-Delta",
+    "provider": "skyscanner",
+    "windowId": 107,
+    "tabId": 108,
+    "fareNumber": 331
+  }
 }

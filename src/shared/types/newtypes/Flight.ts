@@ -6,6 +6,7 @@ import { getFormattedDuration } from "./utilities/getFormattedDuration";
 import { getFormattedTime } from "./utilities/getFormattedTime";
 import { getParsedISODate } from "./utilities/getParsedISODate";
 import { getParsedNumber } from "./utilities/getParsedNumber";
+import { getTimebarPositions } from "./utilities/getTimebarPositions";
 import { getTimezoneOffset } from "./utilities/getTimezoneOffset";
 
 export interface FlightInput {
@@ -115,5 +116,26 @@ export class Flight {
 
   getCalculatedPain(): number {
     return 0;
+  }
+
+  getTimebarPositions({
+    containerStartTime,
+    containerEndTime,
+    containerWidth,
+  }: {
+    containerStartTime: Date;
+    containerEndTime: Date;
+    containerWidth: number;
+  }): {
+    startX: number;
+    width: number;
+  } {
+    return getTimebarPositions({
+      containerStartTime,
+      containerEndTime,
+      containerWidth,
+      timebarStartTime: this.departureDateTime,
+      timebarEndTime: this.arrivalDateTime,
+    });
   }
 }

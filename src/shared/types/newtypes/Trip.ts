@@ -33,7 +33,7 @@ export class Trip {
   private carriers: string[];
   private id: string;
   private layoverCount: number;
-  private layoverAirportNames: string[];
+  private layoverAirportCodes: string[];
   private pain: number;
 
   constructor({
@@ -55,7 +55,7 @@ export class Trip {
 
     this.carriers = this.getCalculatedCarriers();
     this.id = this.getCalculatedId();
-    this.layoverAirportNames = this.getCalculatedLayoverAirportNames();
+    this.layoverAirportCodes = this.getCalculatedLayoverAirportCodes();
     this.layoverCount = this.getCalculatedLayoverCount();
     this.pain = this.getCalculatedPain();
   }
@@ -70,6 +70,10 @@ export class Trip {
 
   getCarriers(): string[] {
     return this.carriers;
+  }
+
+  getDisplayCarriers(): string {
+    return this.carriers.join(", ");
   }
 
   getDepartureDateTime(): Date {
@@ -102,7 +106,7 @@ export class Trip {
   }
 
   getLayoverAirportNames(): string[] {
-    return this.layoverAirportNames;
+    return this.layoverAirportCodes;
   }
 
   getLayoverCount(): number {
@@ -115,6 +119,10 @@ export class Trip {
 
   getTimezoneOffset(): number {
     return getTimezoneOffset(this.arrivalDateTime, this.departureDateTime, this.durationMinutes);
+  }
+
+  getTripComponents(): TripComponent[] {
+    return this.tripComponents;
   }
 
   getFlights(): Flight[] {
@@ -152,7 +160,7 @@ export class Trip {
       .join("-");
   }
 
-  getCalculatedLayoverAirportNames(): string[] {
+  getCalculatedLayoverAirportCodes(): string[] {
     const layovers = this.getLayovers();
     const departureAirportCodes = layovers.map((layover) => layover.getDepartureLocation().getCode());
     const arrivalAirportCodes = layovers.map((layover) => layover.getArrivalLocation().getCode());
@@ -170,5 +178,40 @@ export class Trip {
         return tripComponent.getObject().getPain();
       })
       .reduce((currentTotal, a) => currentTotal + a, 0);
+  }
+
+  isArrivingBeforeTime(boundaryTime: Date | null): boolean {
+    if (!boundaryTime) {
+      return true;
+    }
+    return this.arrivalDateTime <= boundaryTime;
+  }
+
+  isDepartingAfterTime(boundaryTime: Date | null): boolean {
+    if (!boundaryTime) {
+      return true;
+    }
+    return this.departureDateTime >= boundaryTime;
+  }
+
+  isLayoverCountInRange(layoverCount: number[] | undefined): boolean {
+    if (layoverCount && layoverCount.length >= 1) {
+      return layoverCount.includes(this.layoverCount);
+    }
+    return true;
+  }
+
+  isLayoverInCity(layoverCityCodes: string[] | undefined): boolean {
+    if (layoverCityCodes && layoverCityCodes.length >= 1) {
+      return layoverCityCodes.every((city) => this.layoverAirportCodes.includes(city));
+    }
+    return true;
+  }
+
+  isFlownByCarriers(carriers: string[] | undefined): boolean {
+    if (carriers && carriers.length >= 1) {
+      return this.carriers.every((carrier) => carriers.includes(carrier));
+    }
+    return true;
   }
 }

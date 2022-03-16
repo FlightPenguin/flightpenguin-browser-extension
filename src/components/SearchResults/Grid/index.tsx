@@ -2,76 +2,60 @@ import { Box, List as BumbagList } from "bumbag";
 import React from "react";
 import { List, ListRowRenderer, WindowScroller } from "react-virtualized";
 
-import { FlightType } from "../../../background/constants";
 import { FlightSearchFormData } from "../../../shared/types/FlightSearchFormData";
-import { ProcessedFlightSearchResult } from "../../../shared/types/ProcessedFlightSearchResult";
-import { ProcessedItinerary } from "../../../shared/types/ProcessedItinerary";
+import { DisplayableTrip } from "../../../shared/types/newtypes/DisplayableTrip";
 import { rowHeight } from "../../constants";
 import { getPaymentType } from "../../SearchForm/utilities/getPaymentType";
-import { getCheapestItinerary } from "../Container/utilities/getCheapestItinerary";
-import { getFlightPenguinId } from "../Container/utilities/getFlightPenguinId";
-import { FlightSelection } from "../FlightSelection";
 import TimelineRow from "../Row";
-import { getDepartureAirport } from "./utlilities/getDepartureAirport";
 
 interface TimelineGridProps {
-  flights: ProcessedFlightSearchResult[];
-  itineraries: { [keyof: string]: ProcessedItinerary };
-  startHour: number;
-  increment: number;
-  intervalCount: number;
-  flightType: FlightType;
+  trips: DisplayableTrip[];
+  containerStartTime: Date;
+  containerEndTime: Date;
+  intervalWidth: number;
   formData: FlightSearchFormData;
   skeleton: boolean;
-  selectedFlight: ProcessedFlightSearchResult | undefined;
-  onSelection: (details: FlightSelection) => void;
+  selectedTrip: DisplayableTrip | null;
+  onSelection: (trip: DisplayableTrip) => void;
   legendContainerWidth: number;
-  flightTimeContainerWidth: number;
+  tripContainerWidth: number;
   resultsContainerWidth: number;
 }
 
 const TimelineGrid = ({
-  flights,
-  itineraries,
-  startHour,
-  increment,
-  intervalCount,
-  flightType,
+  trips,
+  containerEndTime,
+  containerStartTime,
+  intervalWidth,
   formData,
   skeleton,
-  selectedFlight,
+  selectedTrip,
   onSelection,
   legendContainerWidth,
-  flightTimeContainerWidth,
+  tripContainerWidth,
   resultsContainerWidth,
 }: TimelineGridProps): React.ReactElement => {
   const rowRender: ListRowRenderer = ({ index, key, style }) => {
-    const flight = flights[index];
-    const cheapestItinerary = getCheapestItinerary(flight, itineraries);
-    const flightPenguinId = getFlightPenguinId(flight);
+    const trip = trips[index];
     const paymentMethod = getPaymentType(formData);
 
     return (
       <Box key={key} style={style} width={`${resultsContainerWidth}px`}>
         <TimelineRow
-          flight={flight}
-          itinerary={cheapestItinerary}
-          flightType={flightType}
-          intervalCount={intervalCount}
-          increment={increment}
-          startHourOffset={startHour}
-          key={`itinerary-${flightPenguinId}`}
-          from={getDepartureAirport({ formData, flight })}
-          to={formData.to.value.toUpperCase()}
+          displayableTrip={trip}
+          containerStartTime={containerStartTime}
+          containerEndTime={containerEndTime}
+          intervalWidth={intervalWidth}
+          key={`trip-timeline-row-${trip.getTrip().getId()}`}
           index={index}
-          selected={!!selectedFlight && selectedFlight.id === flight.id}
+          selected={!!selectedTrip && selectedTrip.getTrip().getId() === trip.getTrip().getId()}
           legendContainerWidth={legendContainerWidth}
-          flightTimeContainerWidth={flightTimeContainerWidth}
+          tripContainerWidth={tripContainerWidth}
           resultsContainerWidth={resultsContainerWidth}
           skeleton={skeleton}
           paymentType={paymentMethod}
-          onSelection={(details: FlightSelection) => {
-            onSelection(details);
+          onSelection={(trip: DisplayableTrip) => {
+            onSelection(trip);
           }}
         />
       </Box>
@@ -88,8 +72,8 @@ const TimelineGrid = ({
               height={height}
               isScrolling={isScrolling}
               onScroll={onChildScroll}
-              overscanRowCount={8}
-              rowCount={flights.length}
+              overscanRowCount={5}
+              rowCount={trips.length}
               rowHeight={rowHeight}
               rowRenderer={rowRender}
               scrollTop={scrollTop}

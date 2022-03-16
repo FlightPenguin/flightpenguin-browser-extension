@@ -1,3 +1,5 @@
+import { DisplayableTrip } from "../../../../shared/types/newtypes/DisplayableTrip";
+
 export const getIntervals = (
   startHour: number,
   increment: number,
