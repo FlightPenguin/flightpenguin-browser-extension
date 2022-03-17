@@ -1,7 +1,8 @@
+import debounce from "lodash.debounce";
+
 import { sendFailedScraper, sendScraperComplete } from "../../shared/events";
 import { sendFailed, sendSuccess } from "../../shared/events/analytics/scrapers";
 import { FlightSearchFormData } from "../../shared/types/FlightSearchFormData";
-import { stopScrollingNow } from "../../shared/ui/stopScrolling";
 import { sendFlights } from "./sendFlights";
 
 interface FlightObserverProps {
@@ -12,49 +13,32 @@ const FLIGHT_CARD_SELECTOR = "div[data-testid*='u-flight-card']";
 
 export class FlightObserver {
   private observer: MutationObserver;
-  private flightPenguinIdToIndexMap: { [keyOf: string]: string };
+  private flightCards: HTMLDivElement[];
+  private formData: FlightSearchFormData;
+  private counter: number;
 
   constructor({ formData }: FlightObserverProps) {
-    this.flightPenguinIdToIndexMap = {};
+    this.counter = 0;
+    this.flightCards = [];
+    this.formData = formData;
 
     // eslint-disable-next-line @typescript-eslint/no-this-alias
     const that = this;
     this.observer = new MutationObserver(async function (mutations) {
-      const flightCards: HTMLDivElement[] = [];
       for (const mutation of mutations) {
         Array.from(mutation.addedNodes as NodeListOf<HTMLElement>).forEach((element) => {
           if (element.dataset?.index) {
-            flightCards.push(element as HTMLDivElement);
+            that.flightCards.push(element as HTMLDivElement);
           } else {
             const parent = !!element && !!element.closest && (element.closest(FLIGHT_CARD_SELECTOR) as HTMLElement);
             if (parent) {
-              flightCards.push(parent as HTMLDivElement);
+              that.flightCards.push(parent as HTMLDivElement);
             }
           }
         });
       }
-      try {
-        // eslint-disable-next-line prefer-const
-        let { complete, idToIndexMap: batchMap } = await sendFlights({ flightCards, formData: formData });
-        Object.entries(batchMap).forEach(([flightPenguinId, indexValue]) => {
-          that.flightPenguinIdToIndexMap[flightPenguinId] = indexValue;
-        });
-        if (Object.keys(that.flightPenguinIdToIndexMap).length >= 100) {
-          stopScrollingNow("reached max flights");
-        }
-        if (complete) {
-          sendScraperComplete("trip", "BOTH");
-          sendSuccess("trip", Object.keys(that.flightPenguinIdToIndexMap).length);
-        }
-      } catch (error) {
-        that.endObservation();
-        console.error(error);
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
-        window.Sentry.captureException(error);
-        sendFailedScraper("trip", error, "ALL");
-        sendFailed("trip");
-      }
+      const debouncedSendFlights = debounce(that.sendFlights.bind(that), 300, { maxWait: 1000 });
+      debouncedSendFlights();
     });
   }
 
@@ -66,7 +50,38 @@ export class FlightObserver {
     this.observer.disconnect();
   }
 
-  getFlightIndex(flightPenguinId: string) {
-    return this.flightPenguinIdToIndexMap[flightPenguinId];
+  async sendFlights(): Promise<void> {
+    console.error("INVOKING");
+    const flightCards = [] as HTMLDivElement[];
+    let hasMoreFlightCards = this.flightCards.length;
+    while (hasMoreFlightCards) {
+      const flightCard = this.flightCards.pop();
+      flightCards.push(flightCard as HTMLDivElement);
+      hasMoreFlightCards = this.flightCards.length;
+    }
+    console.error(`Processing ${flightCards.length} cards, ${this.flightCards.length} remaining`);
+    this.counter += flightCards.length;
+
+    if (flightCards.length) {
+      try {
+        // eslint-disable-next-line prefer-const
+        let { complete } = await sendFlights({
+          flightCards,
+          formData: this.formData,
+        });
+        if (complete) {
+          sendScraperComplete("trip", "BOTH");
+          sendSuccess("trip", this.counter);
+        }
+      } catch (error) {
+        this.endObservation();
+        console.error(error);
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
+        window.Sentry.captureException(error);
+        sendFailedScraper("trip", error, "ALL");
+        sendFailed("trip");
+      }
+    }
   }
 }
