@@ -1,7 +1,8 @@
 import { Itinerary, ItineraryInput } from "../../shared/types/newtypes/Itinerary";
 import { ProviderManager } from "../ProviderManager";
+import { getTripGroupsAndMeta } from "./utilities/getTripGroupsAndMetadata";
 
-export const handleFlightResultsReceived = (
+export const handleItineraryResultsReceived = (
   providerManager: ProviderManager,
   itinerariesInputs: ItineraryInput[],
   providerName: string,
@@ -28,14 +29,13 @@ export const handleFlightResultsReceived = (
   }
 
   const itineraries = providerManager.getItineraries();
-  providerManager.setPartialReturn(providerName, "DEPARTURE");
+  const { tripGroups, meta } = getTripGroupsAndMeta(itineraries, providerManager.getSelectedTrips());
 
   const nextMessage = {
-    event: "FLIGHT_RESULTS_FOR_CLIENT",
-    itineraries,
+    event: "TRIP_RESULTS_FOR_CLIENT",
+    trips: tripGroups,
+    meta,
     formData: providerManager.getFormData(),
   };
   providerManager.sendMessageToIndexPage(nextMessage);
 };
-
-// TODO: do I need metadata, departures, returns, etc.? or is f/e smart enough?

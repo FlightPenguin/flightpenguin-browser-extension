@@ -23,6 +23,7 @@ export interface TripInput extends TripInputMetadata {
 }
 
 export class Trip {
+  // effectively a group of flights+layovers that take you from location A to location B.
   private arrivalDateTime: Date;
   private arrivalLocation: Location;
   private departureDateTime: Date;
@@ -105,7 +106,7 @@ export class Trip {
     return this.id;
   }
 
-  getLayoverAirportNames(): string[] {
+  getLayoverAirportCodes(): string[] {
     return this.layoverAirportCodes;
   }
 

@@ -1,3 +1,4 @@
+import { DisplayableTrip } from "./DisplayableTrip";
 import { Trip, TripInput } from "./Trip";
 import { TripSource, TripSourceInput } from "./TripSource";
 
@@ -27,6 +28,10 @@ export class Itinerary {
 
   getPain(): number {
     return this.pain;
+  }
+
+  getTrips(): Trip[] {
+    return this.trips;
   }
 
   getTopSource(): TripSource {
@@ -61,5 +66,20 @@ export class Itinerary {
         return trip.getId();
       })
       .join("-");
+  }
+
+  getMaxIndexMatch(selectedTrips: DisplayableTrip[]): number {
+    let index = 0;
+    let matching = true;
+
+    while (matching) {
+      const itineraryTrip = this.trips[index];
+      const selectedTrip = selectedTrips[index] && selectedTrips[index].getTrip();
+      matching = itineraryTrip.getId() === selectedTrip.getId();
+      if (matching) {
+        index += 1;
+      }
+    }
+    return index;
   }
 }

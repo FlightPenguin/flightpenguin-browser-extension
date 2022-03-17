@@ -2,12 +2,12 @@ import { AnalyticsManager } from "./AnalyticsManager";
 import {
   handleClearSelections,
   handleDepartureSelected,
-  handleFlightResultsReceived,
   handleFlightReturnResultsReceived,
   handleFocusWebpage,
   handleFormDataReceived,
   handleHighlightTab,
   handleIndexUnloaded,
+  handleItineraryResultsReceived,
   handleLogAnalyticsEvent,
   handleLogAnalyticsPageView,
   handleLogAnalyticsUserIdentified,
@@ -54,8 +54,8 @@ export const ListenerManager = (providerManager: ProviderManager, analyticsManag
           sender,
         );
         break;
-      case "FLIGHT_RESULTS_RECEIVED":
-        handleFlightResultsReceived(providerManager, message.itineraries, message.provider);
+      case "ITINERARY_RESULTS":
+        handleItineraryResultsReceived(providerManager, message.itineraries, message.provider);
         break;
       case "RETURN_FLIGHTS_RECEIVED":
         handleFlightReturnResultsReceived(providerManager, message.flights, message.provider);

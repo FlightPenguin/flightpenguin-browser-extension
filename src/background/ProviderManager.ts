@@ -6,7 +6,9 @@ import { pause } from "../shared/pause";
 import { FlightSearchFormData } from "../shared/types/FlightSearchFormData";
 // import { Itinerary } from "../shared/types/Itinerary";
 import { MessageResponse } from "../shared/types/MessageResponse";
+import { DisplayableTrip } from "../shared/types/newtypes/DisplayableTrip";
 import { Itinerary } from "../shared/types/newtypes/Itinerary";
+import { SearchTripMeta } from "../shared/types/SearchMeta";
 // import { ProcessedFlightSearchResult } from "../shared/types/ProcessedFlightSearchResult";
 import { WindowConfig } from "../shared/types/WindowConfig";
 import { getUrl as getSouthwestUrl } from "../southwest/mappings/getUrl";
@@ -57,8 +59,11 @@ const providerURLBaseMap: { [key: string]: (formData: FlightSearchFormData) => s
 export class ProviderManager {
   private knownProviders: string[];
   private state: { [key: string]: ProviderState };
-
+  private selectedTrips: DisplayableTrip[];
+  private tripGroups: DisplayableTrip[][];
+  private tripGroupsMetadata: SearchTripMeta[];
   private primaryTab: chrome.tabs.Tab | null;
+
   private itineraries: Itinerary[];
   private formData: FlightSearchFormData | null;
   private selectedProviders: string[];
@@ -66,6 +71,9 @@ export class ProviderManager {
   constructor() {
     this.knownProviders = [];
     this.state = {};
+    this.selectedTrips = [];
+    this.tripGroups = [];
+    this.tripGroupsMetadata = [];
 
     this.itineraries = [];
     this.selectedProviders = [];
@@ -89,6 +97,10 @@ export class ProviderManager {
 
   getPrimaryTabId(): number | undefined {
     return this.primaryTab?.id;
+  }
+
+  getSelectedTrips(): DisplayableTrip[] {
+    return this.selectedTrips;
   }
 
   setFormData(formData: FlightSearchFormData): void {

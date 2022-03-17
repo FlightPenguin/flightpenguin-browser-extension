@@ -1,6 +1,6 @@
 export * from "./clearSelections";
 export * from "./departureSelected";
-export * from "./flightResultsReceived";
+export * from "./itineraryResultsReceived";
 export * from "./flightReturnResultsReceived";
 export * from "./focusWebpage";
 export * from "./formDataReceived";
