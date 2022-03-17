@@ -38,11 +38,11 @@ export const SearchResults = ({
       departureFlights: [],
       returnFlights: [],
     },
-    500,
+    250,
     true,
   );
   const [returnItineraries, setReturnItineraries] = useState({});
-  const [searchMeta, setSearchMeta] = useDebounce<SearchMeta | undefined>(undefined, 500, true);
+  const [searchMeta, setSearchMeta] = useDebounce<SearchMeta | undefined>(undefined, 250, true);
 
   const [departuresComplete, setDeparturesComplete] = useState(false);
   const [returnsComplete, setReturnsComplete] = useState(false);
