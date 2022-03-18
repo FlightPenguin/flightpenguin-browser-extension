@@ -4,30 +4,25 @@ import { getUrl as getKiwiUrl } from "../kiwi/mappings/getUrl";
 import { sendFailedScraper } from "../shared/events";
 import { pause } from "../shared/pause";
 import { FlightSearchFormData } from "../shared/types/FlightSearchFormData";
-// import { Itinerary } from "../shared/types/Itinerary";
 import { MessageResponse } from "../shared/types/MessageResponse";
 import { DisplayableTrip } from "../shared/types/newtypes/DisplayableTrip";
 import { Itinerary } from "../shared/types/newtypes/Itinerary";
-import { SearchTripMeta } from "../shared/types/SearchMeta";
-// import { ProcessedFlightSearchResult } from "../shared/types/ProcessedFlightSearchResult";
 import { WindowConfig } from "../shared/types/WindowConfig";
 import { getUrl as getSouthwestUrl } from "../southwest/mappings/getUrl";
 import { getUrl as getTripUrl } from "../trip/mappings/getUrl";
 import {
   DEFAULT_ON_READY_FUNCTION,
-  FlightType,
+  PROVIDERS_NEEDING_RETURNS,
   PROVIDERS_SUPPORTING_POINTS_SEARCH,
-  SearchType,
   SUPPORTED_PROVIDERS,
 } from "./constants";
 import { isExtensionOpen } from "./state";
 
-type StatusType = "PENDING" | "PARSING" | "PARTIAL_RETURN_CONTINUING" | "FAILED" | "SUCCESS";
+type StatusType = "PENDING" | "PARSING" | "FAILED" | "SUCCESS";
 
 interface ProviderState {
   alertOnWindowClose: boolean;
-  departureStatus: StatusType;
-  returnStatus: StatusType;
+  status: StatusType;
   tab?: chrome.tabs.Tab;
   window?: chrome.windows.Window;
   ready: boolean;
@@ -37,11 +32,9 @@ interface ProviderState {
 }
 
 const terminalStates = ["FAILED", "SUCCESS"];
-const successStates = ["SUCCESS"];
 const defaultProviderState: ProviderState = {
   alertOnWindowClose: true,
-  departureStatus: "PENDING" as StatusType,
-  returnStatus: "PENDING" as StatusType,
+  status: "PENDING",
   ready: true,
   onReady: DEFAULT_ON_READY_FUNCTION,
   timer: null,
@@ -91,6 +84,16 @@ export class ProviderManager {
     });
   }
 
+  isExpectingMoreSearching(): boolean {
+    const providers = this.selectedProviders.length ? this.selectedProviders : this.knownProviders;
+    return providers.every((providerName) => {
+      const tripProvider = PROVIDERS_NEEDING_RETURNS.includes(providerName);
+      const status = this.getStatus(providerName) || "PENDING";
+
+      return !((tripProvider && status === "FAILED") || (!tripProvider && terminalStates.includes(status)));
+    });
+  }
+
   getPrimaryTabId(): number | undefined {
     return this.primaryTab?.id;
   }
@@ -132,124 +135,38 @@ export class ProviderManager {
     return this.formData;
   }
 
-  getFormCabinValue(): string {
-    return this.formData?.cabin || "econ";
-  }
-
   setSelectedProviders(providerNames: string[]): void {
     this.selectedProviders = providerNames;
   }
 
-  setStatus(providerName: string, status: StatusType, searchType: SearchType): void {
+  setStatus(providerName: string, status: StatusType): void {
     if (!this.state[providerName]) {
       this.state[providerName] = { ...defaultProviderState };
     }
-
-    if (searchType === "DEPARTURE") {
-      this.state[providerName]["departureStatus"] = status;
-    } else if (searchType === "RETURN") {
-      this.state[providerName]["returnStatus"] = status;
-    } else {
-      this.state[providerName]["departureStatus"] = status;
-      this.state[providerName]["returnStatus"] = status;
-    }
+    this.state[providerName]["status"] = status;
   }
 
-  setPending(providerName: string, searchType: SearchType): void {
-    this.setStatus(providerName, "PENDING", searchType);
-  }
-
-  setParsing(providerName: string, searchType: SearchType): void {
-    this.setStatus(providerName, "PARSING", searchType);
+  setParsing(providerName: string): void {
+    this.setStatus(providerName, "PARSING");
     this.incrementParsingAttempts(providerName);
   }
 
-  setFailed(providerName: string, searchType: SearchType): void {
-    this.setStatus(providerName, "FAILED", searchType);
+  setFailed(providerName: string): void {
+    this.setStatus(providerName, "FAILED");
   }
 
-  setSuccessful(providerName: string, searchType: SearchType): void {
-    this.setStatus(providerName, "SUCCESS", searchType);
+  setSuccessful(providerName: string): void {
+    this.setStatus(providerName, "SUCCESS");
   }
 
-  setPartialReturn(providerName: string, searchType: SearchType): void {
-    let status;
-    if (searchType === "BOTH") {
-      status = this.getStatus(providerName, "DEPARTURE") && this.getStatus(providerName, "RETURN");
-    } else {
-      status = this.getStatus(providerName, searchType);
-    }
-    if (!status || !terminalStates.includes(status)) {
-      this.setStatus(providerName, "PARTIAL_RETURN_CONTINUING", searchType);
-    }
+  getStatus(providerName: string): StatusType | undefined {
+    return this.state[providerName]["status"];
   }
 
-  getStatus(providerName: string, searchType: FlightType): StatusType | undefined {
-    return searchType === "DEPARTURE" ? this.getDepartureStatus(providerName) : this.getReturnStatus(providerName);
-  }
-
-  getDepartureStatus(providerName: string): StatusType | undefined {
-    return this.state[providerName]["departureStatus"];
-  }
-
-  getReturnStatus(providerName: string): StatusType | undefined {
-    return this.state[providerName]["returnStatus"];
-  }
-
-  isProviderDepartureComplete(providerName: string): boolean {
-    const status = this.getDepartureStatus(providerName);
-    return status ? terminalStates.includes(status) : false;
-  }
-
-  isProviderReturnComplete(providerName: string): boolean {
-    const status = this.getReturnStatus(providerName);
-    return status ? terminalStates.includes(status) : false;
-  }
-
-  isDepartureComplete(): boolean {
-    return this.knownProviders.every((providerName) => {
-      return this.isProviderDepartureComplete(providerName);
-    });
-  }
-
-  isReturnComplete(): boolean {
+  isComplete(): boolean {
     const providers = this.selectedProviders.length ? this.selectedProviders : this.knownProviders;
     return providers.every((providerName) => {
-      return this.isProviderReturnComplete(providerName);
-    });
-  }
-
-  isComplete(searchType: SearchType): boolean {
-    let status;
-    if (searchType === "BOTH") {
-      status = this.isDepartureComplete() && this.isReturnComplete();
-    } else if (searchType === "DEPARTURE") {
-      status = this.isDepartureComplete();
-    } else {
-      status = this.isReturnComplete();
-    }
-    return status;
-  }
-
-  isProviderDepartureSuccessful(providerName: string): boolean {
-    const status = this.getDepartureStatus(providerName);
-    return status ? successStates.includes(status) : false;
-  }
-
-  isProviderReturnSuccessful(providerName: string): boolean {
-    const status = this.getReturnStatus(providerName);
-    return status ? successStates.includes(status) : false;
-  }
-
-  isDepartureSuccessful(): boolean {
-    return this.knownProviders.every((providerName) => {
-      return this.isProviderDepartureSuccessful(providerName);
-    });
-  }
-
-  isReturnSuccessful(): boolean {
-    return this.knownProviders.every((providerName) => {
-      return this.isProviderReturnSuccessful(providerName);
+      return terminalStates.includes(this.getStatus(providerName) || "PENDING");
     });
   }
 
@@ -257,7 +174,7 @@ export class ProviderManager {
     return this.itineraries;
   }
 
-  addItinerary(itinerary: Itinerary) {
+  addItinerary(itinerary: Itinerary): void {
     const index = this.itineraries.findIndex((recordedItinerary) => {
       return recordedItinerary.getId() === itinerary.getId();
     });
@@ -327,10 +244,6 @@ export class ProviderManager {
     return this.state[providerName].tab?.id;
   }
 
-  getTabIndex(providerName: string): number | undefined {
-    return this.state[providerName].tab?.index;
-  }
-
   getWindowId(providerName: string): number | undefined {
     return this.state[providerName].window?.id;
   }
@@ -366,7 +279,7 @@ export class ProviderManager {
     message: Record<string, unknown>,
     messageResponseCallback: (response: MessageResponse | null) => void,
   ): Promise<void> {
-    this.setParsing(provider, "BOTH"); // de facto starting...
+    this.setParsing(provider); // de facto starting...
 
     const { height, width, left, top } = windowConfig;
     // eslint-disable-next-line @typescript-eslint/no-this-alias
@@ -392,7 +305,7 @@ export class ProviderManager {
             });
           } else {
             const error = new Error("Unable to create window - no window!");
-            sendFailedScraper(provider, error, "ALL");
+            sendFailedScraper(provider, error);
             throw error;
           }
         },
@@ -428,15 +341,10 @@ export class ProviderManager {
       return this.createWindow(url, providerName, windowConfig, message, (response: MessageResponse | null) => {
         console.debug(response);
         if (!response || !response.received) {
-          this.setFailed(providerName, "DEPARTURE");
-          this.sendMessageToIndexPage({
-            event: "SCRAPER_COMPLETE",
-            providerName: providerName,
-            status: "FAILED",
-          });
+          this.setFailed(providerName);
           this.closeWindow(providerName);
-          if (this.isComplete("DEPARTURE")) {
-            this.sendMessageToIndexPage({ event: "SCRAPING_COMPLETED", searchType: "DEPARTURE" }, 3000);
+          if (this.isComplete()) {
+            this.sendMessageToIndexPage({ event: "SCRAPING_STATUS", complete: true }, 3000);
           }
         }
       });
@@ -467,23 +375,18 @@ export class ProviderManager {
     this.state[providerName].attempts += 1;
   }
 
-  retry(providerName: string, windowConfig: WindowConfig, searchType: SearchType): boolean {
+  retry(providerName: string, windowConfig: WindowConfig): boolean {
     this.closeWindow(providerName);
-    if (this.state[providerName].attempts < 2 && !!this.formData && ["DEPARTURE", "BOTH"].includes(searchType)) {
+    if (this.state[providerName].attempts < 2 && !!this.formData && this.selectedTrips.length === 0) {
       const url = providerURLBaseMap[providerName](this.formData);
       const message = { event: "BEGIN_PARSING", message: this.formData };
       const promise = this.createWindow(url, providerName, windowConfig, message, (response) => {
         console.debug(response);
         if (!response || !response.received) {
-          this.setFailed(providerName, searchType);
-          this.sendMessageToIndexPage({
-            event: "SCRAPER_COMPLETE",
-            providerName: providerName,
-            status: "FAILED",
-          });
+          this.setFailed(providerName);
           this.closeWindow(providerName);
-          if (this.isComplete(searchType)) {
-            this.sendMessageToIndexPage({ event: "SCRAPING_COMPLETED", searchType }, 3000);
+          if (this.isComplete()) {
+            this.sendMessageToIndexPage({ event: "SCRAPING_STATUS", complete: true }, 3000);
           }
         }
       });

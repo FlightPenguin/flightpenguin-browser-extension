@@ -40,17 +40,10 @@ export const ListenerManager = (providerManager: ProviderManager, analyticsManag
         handleNoFlightsFound(providerManager, message.provider, message.searchType);
         break;
       case "SUCCESSFUL_SCRAPER":
-        handleScraperSuccess(providerManager, message.providerName, message.searchType);
+        handleScraperSuccess(providerManager, message.providerName);
         break;
       case "FAILED_SCRAPER":
-        handleScraperFailed(
-          providerManager,
-          message.providerName,
-          message.description,
-          message.searchType,
-          message.windowConfig,
-          sender,
-        );
+        handleScraperFailed(providerManager, message.providerName, message.description, message.windowConfig, sender);
         break;
       case "ITINERARY_RESULTS":
         handleItineraryResultsReceived(providerManager, message.itineraries, message.provider);

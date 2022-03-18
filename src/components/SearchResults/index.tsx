@@ -45,11 +45,7 @@ export const SearchResults = ({
     500,
     true,
   );
-  const [tripGroupComplete, setTripGroupComplete] = useState<boolean[]>(
-    containerRange.map((num) => {
-      return false;
-    }),
-  );
+  const [currentTripGroupScrapingComplete, setCurrentTripGroupScrapingComplete] = useState(false);
   const [tripSelection, setTripSelection] = useState<(DisplayableTrip | null)[]>(
     containerRange.map((num) => {
       return null;
@@ -76,8 +72,8 @@ export const SearchResults = ({
           );
           setSearchMeta(message.meta);
           break;
-        case "SCRAPING_COMPLETED":
-          setTripGroupComplete(message.tripGroupsComplete);
+        case "SCRAPING_STATUS":
+          setCurrentTripGroupScrapingComplete(message.complete);
           break;
         case "WINDOW_CLOSED":
           setWindowClosed(true);
@@ -105,11 +101,7 @@ export const SearchResults = ({
         return [] as DisplayableTrip[];
       }),
     );
-    setTripGroupComplete(
-      containerRange.map((num) => {
-        return false;
-      }),
-    );
+    setCurrentTripGroupScrapingComplete(false);
     setTripSelection(
       containerRange.map((num) => {
         return null;
@@ -165,7 +157,7 @@ export const SearchResults = ({
               eligibleTrips={tripGroups[arrayIndex]}
               formData={formData}
               key={`timeline-container-${containerIndex}`}
-              loading={!tripSelection[arrayIndex] && !tripGroupComplete[arrayIndex]}
+              loading={!tripSelection[arrayIndex] && !currentTripGroupScrapingComplete}
               meta={searchMeta[arrayIndex]}
               onClear={() => {
                 const newActiveContainerIndex = containerIndex - 1;

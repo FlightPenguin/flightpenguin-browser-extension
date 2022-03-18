@@ -1,10 +1,6 @@
 import { WindowConfig } from "../types/WindowConfig";
 
-export const sendFailedScraper = (
-  providerName: string,
-  error: Error,
-  searchType: "DEPARTURE" | "RETURN" | "ALL",
-): void => {
+export const sendFailedScraper = (providerName: string, error: Error): void => {
   const windowConfig: WindowConfig = {
     height: window.outerHeight,
     width: window.outerWidth,
@@ -13,7 +9,6 @@ export const sendFailedScraper = (
   };
   chrome.runtime.sendMessage({
     event: "FAILED_SCRAPER",
-    searchType: searchType,
     providerName: providerName,
     description: `${error.name} ${error.message}`,
     windowConfig,

@@ -1,27 +1,23 @@
 import { WindowConfig } from "../../shared/types/WindowConfig";
-import { SearchType } from "../constants";
 import { ProviderManager } from "../ProviderManager";
 
 export const handleScraperFailed = (
   providerManager: ProviderManager,
   providerName: string,
   errorDescription: string,
-  searchType: SearchType,
   windowConfig: WindowConfig,
   sender: chrome.runtime.MessageSender,
   close = true,
-) => {
-  providerManager.setFailed(providerName, searchType);
-  const isRetrying = providerManager.retry(providerName, windowConfig, searchType);
+): void => {
+  providerManager.setFailed(providerName);
+  const isRetrying = providerManager.retry(providerName, windowConfig);
   if (!isRetrying) {
-    providerManager.sendMessageToIndexPage({ event: "SCRAPER_COMPLETE", providerName: providerName, status: "FAILED" });
     if (close) {
       providerManager.closeWindow(providerName);
     }
 
-    if (providerManager.isComplete(searchType)) {
-      const flightType = searchType === "BOTH" ? "DEPARTURE" : searchType;
-      providerManager.sendMessageToIndexPage({ event: "SCRAPING_COMPLETED", searchType: flightType }, 3000);
+    if (providerManager.isComplete()) {
+      providerManager.sendMessageToIndexPage({ event: "SCRAPING_STATUS", complete: true }, 3000);
     }
 
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment

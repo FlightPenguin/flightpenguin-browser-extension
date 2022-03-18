@@ -18,7 +18,6 @@ import { stopScrollingNow } from "../shared/ui/stopScrolling";
 import { suppressOfferFlightPenguinPopup } from "../shared/utilities/suppressOfferFlightPenguinPopup";
 import { getFlightContainer } from "./parser/getFlightContainer";
 import { FlightObserver } from "./parser/observer";
-import { getFlightPenguinId } from "./shared/getFlightPenguinId";
 import { hasNoResults } from "./ui/hasNoResults";
 import { highlightFlightCard } from "./ui/highlightFlightCard";
 
@@ -40,7 +39,7 @@ chrome.runtime.onMessage.addListener(async function (message, sender, sendRespon
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore
         window.Sentry.captureException(error);
-        sendFailedScraper("kiwi", error, "ALL");
+        sendFailedScraper("kiwi", error, "ITINERARY");
         sendFailed("kiwi");
       }
       break;
