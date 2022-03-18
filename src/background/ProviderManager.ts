@@ -60,8 +60,6 @@ export class ProviderManager {
   private knownProviders: string[];
   private state: { [key: string]: ProviderState };
   private selectedTrips: DisplayableTrip[];
-  private tripGroups: DisplayableTrip[][];
-  private tripGroupsMetadata: SearchTripMeta[];
   private primaryTab: chrome.tabs.Tab | null;
 
   private itineraries: Itinerary[];
@@ -72,8 +70,6 @@ export class ProviderManager {
     this.knownProviders = [];
     this.state = {};
     this.selectedTrips = [];
-    this.tripGroups = [];
-    this.tripGroupsMetadata = [];
 
     this.itineraries = [];
     this.selectedProviders = [];
