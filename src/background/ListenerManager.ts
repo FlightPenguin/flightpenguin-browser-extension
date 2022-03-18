@@ -73,7 +73,7 @@ export const ListenerManager = (providerManager: ProviderManager, analyticsManag
         handleFocusWebpage(providerManager);
         break;
       case "CLEAR_SELECTIONS":
-        handleClearSelections(providerManager);
+        handleClearSelections(providerManager, Number(message.activeContainerIndex));
         break;
       case "INDEX_UNLOAD":
         handleIndexUnloaded(providerManager);
