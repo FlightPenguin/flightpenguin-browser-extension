@@ -5,11 +5,11 @@ import range from "lodash.range";
 import React, { useEffect, useState } from "react";
 
 import { AnalyticsManager } from "../../background/AnalyticsManager";
-import { sendHighlightTab, sendTripSelected } from "../../shared/events";
+import { sendTripSelected } from "../../shared/events";
 import { sendClearSelections } from "../../shared/events/sendClearSelections";
 import { sendIndexUnload } from "../../shared/events/sendIndexUnload";
 import { FlightSearchFormData } from "../../shared/types/FlightSearchFormData";
-import { DisplayableTrip, DisplayableTripInput } from "../../shared/types/newtypes/DisplayableTrip";
+import { DisplayableTrip } from "../../shared/types/newtypes/DisplayableTrip";
 import { SearchTripMeta, SearchTripMetaDefault } from "../../shared/types/SearchMeta";
 import { sendFormDataToBackground } from "../SearchForm/utilities/sendFormDataToBackground";
 import TimelineContainer from "./Container";

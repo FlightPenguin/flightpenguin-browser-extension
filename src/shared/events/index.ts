@@ -7,5 +7,4 @@ export * from "./sendNoFlights";
 export * from "./sendOpenExtension";
 export * from "./sendReturnFlights";
 export * from "./sendTripSelected";
-export * from "./sendHighlightTab";
 export * from "./sendScraperComplete";
