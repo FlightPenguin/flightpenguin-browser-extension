@@ -103,6 +103,10 @@ export class ProviderManager {
     return this.selectedTrips;
   }
 
+  clearSelectedTrips(activeContainerIndex: number): void {
+    this.selectedTrips = this.selectedTrips.slice(0, activeContainerIndex);
+  }
+
   setFormData(formData: FlightSearchFormData): void {
     this.formData = formData;
     this.knownProviders = this.formData.searchByPoints ? PROVIDERS_SUPPORTING_POINTS_SEARCH : SUPPORTED_PROVIDERS;

@@ -172,7 +172,7 @@ export const SearchResults = ({
                     return tripSelection;
                   }),
                 );
-                sendClearSelections(containerIndex);
+                sendClearSelections(newActiveContainerIndex);
               }}
               onSelection={(trip: DisplayableTrip) => {
                 const newActiveContainerIndex = containerIndex + 1;
