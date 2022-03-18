@@ -1,11 +1,8 @@
 import { AnalyticsManager } from "./AnalyticsManager";
 import {
   handleClearSelections,
-  handleDepartureSelected,
-  handleFlightReturnResultsReceived,
   handleFocusWebpage,
   handleFormDataReceived,
-  handleHighlightTab,
   handleIndexUnloaded,
   handleItineraryResultsReceived,
   handleLogAnalyticsEvent,
@@ -16,6 +13,7 @@ import {
   handleProviderReady,
   handleScraperFailed,
   handleScraperSuccess,
+  handleTripSelected,
   handleUpdateRequest,
 } from "./eventHandlers";
 import { ProviderManager } from "./ProviderManager";
@@ -57,14 +55,8 @@ export const ListenerManager = (providerManager: ProviderManager, analyticsManag
       case "ITINERARY_RESULTS":
         handleItineraryResultsReceived(providerManager, message.itineraries, message.provider);
         break;
-      case "RETURN_FLIGHTS_RECEIVED":
-        handleFlightReturnResultsReceived(providerManager, message.flights, message.provider);
-        break;
-      case "DEPARTURE_SELECTED":
-        handleDepartureSelected(providerManager, message.departureId);
-        break;
-      case "HIGHLIGHT_TAB":
-        handleHighlightTab(providerManager, message.selectedDepartureId, message.selectedReturnId);
+      case "TRIP_SELECTED":
+        handleTripSelected(providerManager, message.trip);
         break;
       case "PROVIDER_READY":
         handleProviderReady(providerManager, message.provider);

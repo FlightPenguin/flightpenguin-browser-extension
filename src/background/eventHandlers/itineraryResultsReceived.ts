@@ -1,6 +1,7 @@
 import { Itinerary, ItineraryInput } from "../../shared/types/newtypes/Itinerary";
 import { ProviderManager } from "../ProviderManager";
 import { getTripGroupsAndMeta } from "./utilities/getTripGroupsAndMetadata";
+import { sendTripResultsToClient } from "./utilities/sendTripResultsToClient";
 
 export const handleItineraryResultsReceived = (
   providerManager: ProviderManager,
@@ -28,14 +29,5 @@ export const handleItineraryResultsReceived = (
     return; // TODO: Better handle
   }
 
-  const itineraries = providerManager.getItineraries();
-  const { tripGroups, meta } = getTripGroupsAndMeta(itineraries, providerManager.getSelectedTrips());
-
-  const nextMessage = {
-    event: "TRIP_RESULTS_FOR_CLIENT",
-    trips: tripGroups,
-    meta,
-    formData: providerManager.getFormData(),
-  };
-  providerManager.sendMessageToIndexPage(nextMessage);
+  sendTripResultsToClient(providerManager);
 };

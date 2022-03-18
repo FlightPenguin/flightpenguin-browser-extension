@@ -6,6 +6,6 @@ export * from "./sendItineraries";
 export * from "./sendNoFlights";
 export * from "./sendOpenExtension";
 export * from "./sendReturnFlights";
-export * from "./sendTripFlightSelected";
+export * from "./sendTripSelected";
 export * from "./sendHighlightTab";
 export * from "./sendScraperComplete";

@@ -99,8 +99,27 @@ export class ProviderManager {
     return this.selectedTrips;
   }
 
+  addSelectedTrip(trip: DisplayableTrip): void {
+    this.selectedTrips.push(trip);
+  }
+
   clearSelectedTrips(activeContainerIndex: number): void {
     this.selectedTrips = this.selectedTrips.slice(0, activeContainerIndex);
+  }
+
+  getSelectedTripsId(): string {
+    return this.selectedTrips.map((trip) => trip.getTrip().getId()).join("-");
+  }
+
+  getSelectedItinerary(): Itinerary {
+    const itineraryId = this.getSelectedTripsId();
+    const itinerary = this.itineraries.filter((itinerary) => {
+      return itinerary.getId() === itineraryId;
+    })[0];
+    if (!itinerary) {
+      throw new Error("Unable to find itinerary matching selections");
+    }
+    return itinerary;
   }
 
   setFormData(formData: FlightSearchFormData): void {
@@ -497,5 +516,13 @@ export class ProviderManager {
         }
       }
     });
+  }
+
+  isAtMaxSelections(): boolean {
+    if (!this.formData) {
+      return false;
+    }
+    const maxSelections = this.formData.roundtrip ? 2 : 1;
+    return this.selectedTrips.length === maxSelections;
   }
 }

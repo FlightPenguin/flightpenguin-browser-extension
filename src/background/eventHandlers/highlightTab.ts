@@ -1,14 +1,8 @@
 import { MessageResponse } from "../../shared/types/MessageResponse";
 import { ProviderManager } from "../ProviderManager";
 
-export const handleHighlightTab = (providerManager: ProviderManager, departureId: string, returnId: string) => {
-  let key = departureId;
-  if (returnId) {
-    key += `-${returnId}`;
-  }
-  const { itineraries } = providerManager.getItineraries();
-  const itinerary = itineraries[key];
-  highlightTab(providerManager, itinerary);
+export const handleHighlightTab = (providerManager: ProviderManager) => {
+  // const itinerary = highlightTab(providerManager, itinerary);
 };
 
 function highlightTab(providerManager: ProviderManager, itinerary: any) {

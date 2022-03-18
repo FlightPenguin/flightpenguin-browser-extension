@@ -5,7 +5,7 @@ import range from "lodash.range";
 import React, { useEffect, useState } from "react";
 
 import { AnalyticsManager } from "../../background/AnalyticsManager";
-import { sendHighlightTab, sendTripFlightSelected } from "../../shared/events";
+import { sendHighlightTab, sendTripSelected } from "../../shared/events";
 import { sendClearSelections } from "../../shared/events/sendClearSelections";
 import { sendIndexUnload } from "../../shared/events/sendIndexUnload";
 import { FlightSearchFormData } from "../../shared/types/FlightSearchFormData";
@@ -187,7 +187,7 @@ export const SearchResults = ({
                     return trip;
                   }),
                 );
-                sendTripFlightSelected(trip, containerIndex);
+                sendTripSelected(trip, containerIndex);
                 if (containerIndex === maxContainerIndex) {
                   analytics.track({
                     category: "flight search",
