@@ -9,7 +9,8 @@ import { sendTripSelected } from "../../shared/events";
 import { sendClearSelections } from "../../shared/events/sendClearSelections";
 import { sendIndexUnload } from "../../shared/events/sendIndexUnload";
 import { FlightSearchFormData } from "../../shared/types/FlightSearchFormData";
-import { DisplayableTrip } from "../../shared/types/newtypes/DisplayableTrip";
+import { DisplayableTrip, DisplayableTripInput } from "../../shared/types/newtypes/DisplayableTrip";
+import { Trip, TripInput } from "../../shared/types/newtypes/Trip";
 import { SearchTripMeta, SearchTripMetaDefault } from "../../shared/types/SearchMeta";
 import { sendFormDataToBackground } from "../SearchForm/utilities/sendFormDataToBackground";
 import TimelineContainer from "./Container";
@@ -66,7 +67,13 @@ export const SearchResults = ({
       console.debug(message);
       switch (message.event) {
         case "TRIP_RESULTS_FOR_CLIENT":
-          setTripGroups(message.trips);
+          setTripGroups(
+            message.trips.map((tripGroups: DisplayableTripInput[]) => {
+              return tripGroups.map((dTripInput) => {
+                return new DisplayableTrip(dTripInput);
+              });
+            }),
+          );
           setSearchMeta(message.meta);
           break;
         case "SCRAPING_COMPLETED":
@@ -151,14 +158,15 @@ export const SearchResults = ({
     >
       {containerRange.map((containerIndex) => {
         if (containerIndex <= activeContainerIndex) {
+          const arrayIndex = Math.max(containerIndex - 1, 0);
           return (
             <TimelineContainer
               containerIndex={containerIndex}
-              eligibleTrips={tripGroups[containerIndex]}
+              eligibleTrips={tripGroups[arrayIndex]}
               formData={formData}
               key={`timeline-container-${containerIndex}`}
-              loading={!tripSelection[containerIndex] && !tripGroupComplete[containerIndex]}
-              meta={searchMeta[containerIndex]}
+              loading={!tripSelection[arrayIndex] && !tripGroupComplete[arrayIndex]}
+              meta={searchMeta[arrayIndex]}
               onClear={() => {
                 const newActiveContainerIndex = containerIndex - 1;
 

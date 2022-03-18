@@ -69,6 +69,10 @@ export class Itinerary {
   }
 
   getMaxIndexMatch(selectedTrips: DisplayableTrip[]): number {
+    if (selectedTrips.length === 0) {
+      return 0;
+    }
+
     let index = 0;
     let matching = true;
 

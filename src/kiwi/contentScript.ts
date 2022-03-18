@@ -47,7 +47,7 @@ chrome.runtime.onMessage.addListener(async function (message, sender, sendRespon
     case "HIGHLIGHT_FLIGHT":
       try {
         stopScrollingNow("flight selected");
-        await highlightFlightCard(getFlightPenguinId(message.selectedDepartureId, message.selectedReturnId));
+        await highlightFlightCard(message.itineraryId);
         addBackToSearchButton();
       } catch (error) {
         console.error(error);

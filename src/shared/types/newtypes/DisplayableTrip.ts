@@ -1,7 +1,7 @@
-import { Trip } from "./Trip";
+import { Trip, TripInput } from "./Trip";
 
 export interface DisplayableTripInput {
-  trip: Trip;
+  trip: Trip | TripInput;
   lowestFare: number;
 }
 
@@ -10,7 +10,7 @@ export class DisplayableTrip {
   private lowestFare: number;
 
   constructor({ trip, lowestFare }: DisplayableTripInput) {
-    this.trip = trip;
+    this.trip = trip.constructor.name === "Trip" ? (trip as Trip) : new Trip(trip as TripInput);
     this.lowestFare = lowestFare;
   }
 
