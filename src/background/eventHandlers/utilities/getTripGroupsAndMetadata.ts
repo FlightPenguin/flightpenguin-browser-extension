@@ -9,7 +9,7 @@ export const getTripGroupsAndMeta = (
   itineraries: Itinerary[],
   tripsSelections: DisplayableTrip[],
 ): { tripGroups: DisplayableTrip[][]; meta: SearchTripMeta[] } => {
-  const containerNumber = tripsSelections.length;
+  const containerNumber = tripsSelections.length + 1;
 
   const tripGroups = range(1, containerNumber + 1).map((num) => {
     return [] as DisplayableTrip[];
@@ -20,9 +20,9 @@ export const getTripGroupsAndMeta = (
 
   itineraries.forEach((itinerary) => {
     const highestMatchedIndex = itinerary.getMaxIndexMatch(tripsSelections);
-    if (highestMatchedIndex) {
+    if (highestMatchedIndex !== undefined && highestMatchedIndex !== null && !isNaN(highestMatchedIndex)) {
       const lowestFare = itinerary.getTopSource().getFare();
-      const trips = itinerary.getTrips().slice(0, highestMatchedIndex);
+      const trips = itinerary.getTrips().slice(0, highestMatchedIndex + 1);
       trips.forEach((trip, index) => {
         const tripGroup = tripGroups[index];
         const meta = metas[index];
