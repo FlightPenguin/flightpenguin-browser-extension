@@ -7,7 +7,7 @@ import { getParsedDate } from "../../../utilities/forms";
 
 export const getSkeletonTrips = (formData: FlightSearchFormData, containerIndex: number): DisplayableTrip[] => {
   const [departureLocation, arrivalLocation, departureDate] =
-    formData.roundtrip && containerIndex === 1
+    formData.roundtrip && containerIndex === 2
       ? [formData.to, formData.from, getParsedDate(formData.toDate)]
       : [formData.from, formData.to, getParsedDate(formData.fromDate)];
 

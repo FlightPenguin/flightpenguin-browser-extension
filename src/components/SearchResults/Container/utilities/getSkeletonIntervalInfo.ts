@@ -22,7 +22,7 @@ export const getSkeletonIntervalInfo = ({
   formData,
   tripContainerWidth,
 }: GetSkeletonIntervalInfoInput): GetSkeletonIntervalInfoOutput => {
-  const baseDate = getParsedDate(formData.roundtrip && containerIndex === 1 ? formData.toDate : formData.fromDate);
+  const baseDate = getParsedDate(formData.roundtrip && containerIndex === 2 ? formData.toDate : formData.fromDate);
   const earliestTime = startOfDay(baseDate);
   const latestTime = addDays(earliestTime, 1);
   const intervals = [0, 4, 8, 12, 16, 20, 24];

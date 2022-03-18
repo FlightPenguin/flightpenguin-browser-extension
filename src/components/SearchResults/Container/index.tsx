@@ -44,7 +44,7 @@ const TimelineContainer = ({
     resultsContainerWidth,
   });
   const [departureLocation, arrivalLocation] =
-    formData.roundtrip && containerIndex === 1 ? [formData.to, formData.from] : [formData.from, formData.to];
+    formData.roundtrip && containerIndex === 2 ? [formData.to, formData.from] : [formData.from, formData.to];
 
   const [skeletonTrips, setSkeletonTrips] = useState<DisplayableTrip[]>([] as DisplayableTrip[]);
 
