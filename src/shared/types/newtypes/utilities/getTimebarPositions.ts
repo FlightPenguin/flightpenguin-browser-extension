@@ -27,6 +27,10 @@ export const getTimebarPositions = ({
   timebarStartTime,
   timebarEndTime,
 }: GetTimebarPositionsInput): GetTimebarPositionsOutput => {
+  // we have a container that is actually a bit larger.  we need to get the 'right' calculations...
+  // are our intervalWidth calculations right?
+  // should we just 'add' the increment to the end time?
+
   const pxPerMinute = getPixelsPerMinute({
     startTime: containerStartTime,
     endTime: containerEndTime,

@@ -25,7 +25,7 @@ export const getSkeletonIntervalInfo = ({
   const baseDate = getParsedDate(formData.roundtrip && containerIndex === 2 ? formData.toDate : formData.fromDate);
   const earliestTime = startOfDay(baseDate);
   const latestTime = addDays(earliestTime, 1);
-  const intervals = [0, 4, 8, 12, 16, 20, 24];
+  const intervals = [0, 4, 8, 12, 16, 20, 24, 28];
   const intervalWidth = tripContainerWidth / (intervals.length - 1);
   return { earliestTime, latestTime, intervals, intervalWidth, timezoneOffset: 0 };
 };

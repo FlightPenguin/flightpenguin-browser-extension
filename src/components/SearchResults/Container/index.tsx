@@ -66,7 +66,7 @@ const TimelineContainer = ({
     latestTime: Date;
     timezoneOffset: number;
   }>({
-    intervals: [0, 4, 8, 12, 16, 20, 24],
+    intervals: [0, 4, 8, 12, 16, 20, 24, 28],
     earliestTime: startOfToday(),
     latestTime: addDays(startOfToday(), 1),
     timezoneOffset: 0,
