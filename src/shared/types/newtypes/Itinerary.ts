@@ -79,7 +79,7 @@ export class Itinerary {
     while (matching) {
       const itineraryTrip = this.trips[index];
       const selectedTrip = selectedTrips[index] && selectedTrips[index].getTrip();
-      matching = itineraryTrip.getId() === selectedTrip.getId();
+      matching = selectedTrip && itineraryTrip.getId() === selectedTrip.getId();
       if (matching) {
         index += 1;
       }

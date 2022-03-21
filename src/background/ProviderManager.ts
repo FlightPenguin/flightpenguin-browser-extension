@@ -425,7 +425,14 @@ export class ProviderManager {
     if (!this.formData) {
       return false;
     }
-    const maxSelections = this.formData.roundtrip ? 2 : 1;
+    const maxSelections = this.getMaxSelectionsCount();
     return this.selectedTrips.length === maxSelections;
+  }
+
+  getMaxSelectionsCount(): number {
+    if (!this.formData) {
+      return 2;
+    }
+    return this.formData.roundtrip ? 2 : 1;
   }
 }

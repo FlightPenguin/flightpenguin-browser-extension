@@ -8,13 +8,12 @@ import { SearchTripMeta, SearchTripMetaDefault } from "../../../shared/types/Sea
 export const getTripGroupsAndMeta = (
   itineraries: Itinerary[],
   tripsSelections: DisplayableTrip[],
+  expectedArrayLength: number,
 ): { tripGroups: DisplayableTrip[][]; meta: SearchTripMeta[] } => {
-  const containerNumber = tripsSelections.length + 1;
-
-  const tripGroups = range(1, containerNumber + 1).map((num) => {
+  const tripGroups = range(1, expectedArrayLength + 1).map((num) => {
     return [] as DisplayableTrip[];
   });
-  const metas = range(1, containerNumber + 1).map((num) => {
+  const metas = range(1, expectedArrayLength + 1).map((num) => {
     return SearchTripMetaDefault;
   });
 

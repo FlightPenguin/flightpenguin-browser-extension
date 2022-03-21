@@ -10,7 +10,6 @@ import { sendClearSelections } from "../../shared/events/sendClearSelections";
 import { sendIndexUnload } from "../../shared/events/sendIndexUnload";
 import { FlightSearchFormData } from "../../shared/types/FlightSearchFormData";
 import { DisplayableTrip, DisplayableTripInput } from "../../shared/types/newtypes/DisplayableTrip";
-import { Trip, TripInput } from "../../shared/types/newtypes/Trip";
 import { SearchTripMeta, SearchTripMetaDefault } from "../../shared/types/SearchMeta";
 import { sendFormDataToBackground } from "../SearchForm/utilities/sendFormDataToBackground";
 import TimelineContainer from "./Container";
@@ -152,58 +151,63 @@ export const SearchResults = ({
         if (containerIndex <= activeContainerIndex) {
           const arrayIndex = Math.max(containerIndex - 1, 0);
           return (
-            <TimelineContainer
-              containerIndex={containerIndex}
-              eligibleTrips={tripGroups[arrayIndex]}
-              formData={formData}
-              key={`timeline-container-${containerIndex}`}
-              loading={!tripSelection[arrayIndex] && !currentTripGroupScrapingComplete}
-              meta={searchMeta[arrayIndex]}
-              onClear={() => {
-                const newActiveContainerIndex = containerIndex - 1;
+            <React.Fragment>
+              {containerIndex > 1 && <Box height="50px" />}
+              <TimelineContainer
+                containerIndex={containerIndex}
+                eligibleTrips={tripGroups[arrayIndex]}
+                formData={formData}
+                key={`timeline-container-${containerIndex}`}
+                loading={!tripSelection[arrayIndex] && !currentTripGroupScrapingComplete}
+                meta={searchMeta[arrayIndex]}
+                onClear={() => {
+                  const newActiveContainerIndex = containerIndex - 1;
 
-                setActiveContainerIndex(newActiveContainerIndex);
-                setTripSelection(
-                  tripSelection.map((tripSelection, index) => {
-                    const selectionContainerIndex = index + 1;
-                    if (selectionContainerIndex > newActiveContainerIndex) {
-                      return null;
-                    }
-                    return tripSelection;
-                  }),
-                );
-                sendClearSelections(newActiveContainerIndex);
-              }}
-              onSelection={(trip: DisplayableTrip) => {
-                const newActiveContainerIndex = containerIndex + 1;
+                  setActiveContainerIndex(newActiveContainerIndex);
+                  setTripSelection(
+                    tripSelection.map((tripSelection, index) => {
+                      const selectionContainerIndex = index + 1;
+                      if (selectionContainerIndex > newActiveContainerIndex) {
+                        return null;
+                      }
+                      return tripSelection;
+                    }),
+                  );
+                  sendClearSelections(newActiveContainerIndex);
+                }}
+                onSelection={(trip: DisplayableTrip) => {
+                  setCurrentTripGroupScrapingComplete(false);
 
-                setActiveContainerIndex(newActiveContainerIndex);
-                setTripSelection(
-                  tripSelection.map((selection, index) => {
-                    const selectionContainerIndex = index + 1;
-                    if (index === selectionContainerIndex) {
-                      return selection;
-                    }
-                    return trip;
-                  }),
-                );
-                sendTripSelected(trip, containerIndex);
-                if (containerIndex === maxContainerIndex) {
+                  const newActiveContainerIndex = containerIndex + 1;
+
+                  setActiveContainerIndex(newActiveContainerIndex);
+                  setTripSelection(
+                    tripSelection.map((existingSelection, index) => {
+                      const selectionContainerIndex = index + 1;
+                      if (containerIndex === selectionContainerIndex) {
+                        return trip;
+                      }
+                      return existingSelection;
+                    }),
+                  );
+                  sendTripSelected(trip, containerIndex);
+                  if (containerIndex === maxContainerIndex) {
+                    analytics.track({
+                      category: "flight search",
+                      action: `trip selection`,
+                      label: window.location.host,
+                    });
+                  }
                   analytics.track({
                     category: "flight search",
-                    action: `trip selection`,
+                    action: `trip flight selection`,
                     label: window.location.host,
                   });
-                }
-                analytics.track({
-                  category: "flight search",
-                  action: `trip flight selection`,
-                  label: window.location.host,
-                });
-              }}
-              onUpdateFormClick={onUpdateFormClick}
-              resultsContainerWidth={resultsContainerWidth}
-            />
+                }}
+                onUpdateFormClick={onUpdateFormClick}
+                resultsContainerWidth={resultsContainerWidth}
+              />
+            </React.Fragment>
           );
         }
       })}
