@@ -107,7 +107,8 @@ export class ProviderManager {
   }
 
   clearSelectedTrips(activeContainerIndex: number): void {
-    this.selectedTrips = this.selectedTrips.slice(0, activeContainerIndex);
+    const arrayIndex = activeContainerIndex - 1;
+    this.selectedTrips = this.selectedTrips.slice(0, arrayIndex);
   }
 
   getSelectedTripsId(): string {

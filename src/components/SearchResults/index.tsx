@@ -161,19 +161,17 @@ export const SearchResults = ({
                 loading={!tripSelection[arrayIndex] && !currentTripGroupScrapingComplete}
                 meta={searchMeta[arrayIndex]}
                 onClear={() => {
-                  const newActiveContainerIndex = containerIndex - 1;
-
-                  setActiveContainerIndex(newActiveContainerIndex);
+                  setActiveContainerIndex(containerIndex);
                   setTripSelection(
                     tripSelection.map((tripSelection, index) => {
                       const selectionContainerIndex = index + 1;
-                      if (selectionContainerIndex > newActiveContainerIndex) {
+                      if (selectionContainerIndex > containerIndex) {
                         return null;
                       }
                       return tripSelection;
                     }),
                   );
-                  sendClearSelections(newActiveContainerIndex);
+                  sendClearSelections(containerIndex);
                 }}
                 onSelection={(trip: DisplayableTrip) => {
                   setCurrentTripGroupScrapingComplete(false);
