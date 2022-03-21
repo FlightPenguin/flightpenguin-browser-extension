@@ -7,13 +7,11 @@ interface PollForNoResultsInput {
   maxChecks?: number;
   providerName: string;
   pollForNoResultsCheck: () => boolean;
-  searchType: SearchType;
 }
 
 export const pollForNoResults = async ({
   pollForNoResultsCheck,
   providerName,
-  searchType,
   interval = 10000,
   maxChecks = 12,
 }: PollForNoResultsInput): Promise<void> => {
@@ -27,7 +25,7 @@ export const pollForNoResults = async ({
     checkNo += 1;
     if (intervalResult) {
       console.debug(`Found no results for ${providerName}`);
-      sendNoFlightsEvent(providerName, searchType);
+      sendNoFlightsEvent(providerName);
       noResults = intervalResult;
     } else {
       console.debug(`completed poll ${checkNo}`);

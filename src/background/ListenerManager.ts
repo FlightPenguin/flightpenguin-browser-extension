@@ -37,7 +37,7 @@ export const ListenerManager = (providerManager: ProviderManager, analyticsManag
         handleFormDataReceived(providerManager, message.formData, message.windowConfig);
         break;
       case "NO_FLIGHTS_FOUND":
-        handleNoFlightsFound(providerManager, message.provider, message.searchType);
+        handleNoFlightsFound(providerManager, message.provider);
         break;
       case "SUCCESSFUL_SCRAPER":
         handleScraperSuccess(providerManager, message.providerName);

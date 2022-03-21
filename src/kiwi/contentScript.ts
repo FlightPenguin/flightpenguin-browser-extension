@@ -33,13 +33,13 @@ chrome.runtime.onMessage.addListener(async function (message, sender, sendRespon
         sendProcessing("kiwi");
         observer = new FlightObserver({ formData: message.formData });
         await attachObserver(observer);
-        pollForNoResults({ pollForNoResultsCheck: hasNoResults, providerName: "kiwi", searchType: "BOTH" });
+        pollForNoResults({ pollForNoResultsCheck: hasNoResults, providerName: "kiwi" });
       } catch (error) {
         console.error(error);
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore
         window.Sentry.captureException(error);
-        sendFailedScraper("kiwi", error, "ITINERARY");
+        sendFailedScraper("kiwi", error);
         sendFailed("kiwi");
       }
       break;
