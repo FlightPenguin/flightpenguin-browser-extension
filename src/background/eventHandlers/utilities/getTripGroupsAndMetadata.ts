@@ -50,7 +50,12 @@ export const getTripGroupsAndMeta = (
 
   return {
     tripGroups: tripGroups.map((tripGroup) => {
-      return uniqBy(tripGroup, (trip) => {
+      const sortedTripGroup = tripGroup.sort((a: DisplayableTrip, b: DisplayableTrip) => {
+        return a.getTrip().getId() === b.getTrip().getId()
+          ? a.getLowestFare() - b.getLowestFare()
+          : a.getTrip().getId().localeCompare(b.getTrip().getId());
+      });
+      return uniqBy(sortedTripGroup, (trip) => {
         return trip.getTrip().getId();
       });
     }),
