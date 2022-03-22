@@ -22,7 +22,7 @@ export const handleScraperFailed = (
 
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
-    window.Sentry.captureException(new Error(`Scraper (${searchType}) failed for ${providerName}`), {
+    window.Sentry.captureException(new Error(`Scraper failed for ${providerName}`), {
       extra: providerManager.getFormData(),
       details: errorDescription,
     });
