@@ -162,33 +162,35 @@ export const SearchResults = ({
                 meta={searchMeta[arrayIndex]}
                 onClear={() => {
                   setActiveContainerIndex(containerIndex);
-                  setTripSelection(
-                    tripSelection.map((tripSelection, index) => {
-                      const selectionContainerIndex = index + 1;
-                      if (selectionContainerIndex > containerIndex) {
-                        return null;
-                      }
-                      return tripSelection;
-                    }),
+                  const currentSelections = tripSelection.map((tripSelection, index) => {
+                    const selectionContainerIndex = index + 1;
+                    if (selectionContainerIndex > containerIndex) {
+                      return null;
+                    }
+                    return tripSelection;
+                  });
+                  setTripSelection(currentSelections);
+                  sendClearSelections(
+                    currentSelections.filter((trip) => {
+                      return !!trip;
+                    }) as DisplayableTrip[],
                   );
-                  sendClearSelections(containerIndex);
                 }}
                 onSelection={(trip: DisplayableTrip) => {
                   setCurrentTripGroupScrapingComplete(false);
 
                   const newActiveContainerIndex = containerIndex + 1;
+                  const selectedTrips = tripSelection.map((existingSelection, index) => {
+                    const selectionContainerIndex = index + 1;
+                    if (containerIndex === selectionContainerIndex) {
+                      return trip;
+                    }
+                    return existingSelection;
+                  });
 
                   setActiveContainerIndex(newActiveContainerIndex);
-                  setTripSelection(
-                    tripSelection.map((existingSelection, index) => {
-                      const selectionContainerIndex = index + 1;
-                      if (containerIndex === selectionContainerIndex) {
-                        return trip;
-                      }
-                      return existingSelection;
-                    }),
-                  );
-                  sendTripSelected(trip, containerIndex);
+                  setTripSelection(selectedTrips);
+                  sendTripSelected(selectedTrips.filter((trip) => !!trip) as DisplayableTrip[]);
                   if (containerIndex === maxContainerIndex) {
                     analytics.track({
                       category: "flight search",

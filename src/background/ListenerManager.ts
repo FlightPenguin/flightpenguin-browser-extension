@@ -49,7 +49,7 @@ export const ListenerManager = (providerManager: ProviderManager, analyticsManag
         handleItineraryResultsReceived(providerManager, message.itineraries, message.provider);
         break;
       case "TRIP_SELECTED":
-        handleTripSelected(providerManager, message.trip);
+        handleTripSelected(providerManager, message.selectedTrips);
         break;
       case "PROVIDER_READY":
         handleProviderReady(providerManager, message.provider);
@@ -58,7 +58,7 @@ export const ListenerManager = (providerManager: ProviderManager, analyticsManag
         handleFocusWebpage(providerManager);
         break;
       case "CLEAR_SELECTIONS":
-        handleClearSelections(providerManager, Number(message.activeContainerIndex));
+        handleClearSelections(providerManager, message.currentSelections);
         break;
       case "INDEX_UNLOAD":
         handleIndexUnloaded(providerManager);

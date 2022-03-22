@@ -1,8 +1,16 @@
+import { DisplayableTrip, DisplayableTripInput } from "../../shared/types/newtypes/DisplayableTrip";
 import { ProviderManager } from "../ProviderManager";
 import { sendTripResultsToClient } from "./utilities/sendTripResultsToClient";
 
-export const handleClearSelections = (providerManager: ProviderManager, activeContainerIndex: number): void => {
-  providerManager.clearSelectedTrips(activeContainerIndex);
+export const handleClearSelections = (
+  providerManager: ProviderManager,
+  currentSelections: DisplayableTripInput[],
+): void => {
+  providerManager.setSelectedTrips(
+    currentSelections.map((trip) => {
+      return new DisplayableTrip(trip);
+    }),
+  );
   sendTripResultsToClient(providerManager);
 
   // TODO: Handle providers needing trip per page

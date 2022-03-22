@@ -1,6 +1,8 @@
-export const sendClearSelections = (activeContainerIndex: number): void => {
+import { DisplayableTrip } from "../types/newtypes/DisplayableTrip";
+
+export const sendClearSelections = (currentSelections: DisplayableTrip[]): void => {
   chrome.runtime.sendMessage({
     event: "CLEAR_SELECTIONS",
-    activeContainerIndex,
+    currentSelections,
   });
 };

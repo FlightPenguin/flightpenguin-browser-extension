@@ -3,9 +3,11 @@ import { ProviderManager } from "../ProviderManager";
 import { highlightTab } from "./utilities/highlightTab";
 import { sendTripResultsToClient } from "./utilities/sendTripResultsToClient";
 
-export const handleTripSelected = (providerManager: ProviderManager, tripInput: DisplayableTripInput): void => {
-  const trip = new DisplayableTrip(tripInput);
-  providerManager.addSelectedTrip(trip);
+export const handleTripSelected = (providerManager: ProviderManager, tripInputs: DisplayableTripInput[]): void => {
+  const trips = tripInputs.map((tripInput) => {
+    return new DisplayableTrip(tripInput);
+  });
+  providerManager.setSelectedTrips(trips);
   if (providerManager.isAtMaxSelections()) {
     highlightTab(providerManager);
   } else {
