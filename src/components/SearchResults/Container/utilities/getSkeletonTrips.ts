@@ -59,7 +59,7 @@ export const getSkeletonTrips = (formData: FlightSearchFormData, containerIndex:
                 type: departureLocation?.raw?.city ? "CITY" : "AIRPORT",
               },
               durationMinutes: 120,
-              marketingAirline: { name: "JetBlue" },
+              marketingAirline: { name: "jetBlue" },
             },
           },
         ],
