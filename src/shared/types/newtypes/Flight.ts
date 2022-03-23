@@ -1,4 +1,4 @@
-import { differenceInCalendarDays } from "date-fns";
+import { addMinutes, differenceInCalendarDays } from "date-fns";
 
 import { CabinType } from "../../../background/constants";
 import { Airline, AirlineInput } from "./Airline";
@@ -135,12 +135,15 @@ export class Flight {
     startX: number;
     width: number;
   } {
+    const timezoneOffset = this.getTimezoneOffset();
+    const arrivalTimeUsingOriginTimezone = addMinutes(this.arrivalDateTime, timezoneOffset * -1);
+
     return getTimebarPositions({
       containerStartTime,
       containerEndTime,
       containerWidth,
       timebarStartTime: this.departureDateTime,
-      timebarEndTime: this.arrivalDateTime,
+      timebarEndTime: arrivalTimeUsingOriginTimezone,
     });
   }
 }

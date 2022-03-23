@@ -9,7 +9,6 @@ import { getParsedISODate } from "./utilities/getParsedISODate";
 import { getParsedNumber } from "./utilities/getParsedNumber";
 import { getTimebarPositions } from "./utilities/getTimebarPositions";
 import { getTimezoneOffset } from "./utilities/getTimezoneOffset";
-import { getFlightMultiplier } from "./utilities/pain/flight/getFlightMultiplier";
 import { getLayoverMultiplier } from "./utilities/pain/layover/getLayoverMultiplier";
 import { getCabinMultiplier } from "./utilities/pain/shared/getCabinMultiplier";
 import { getCostPerMinute } from "./utilities/pain/shared/getCostPerMinute";
