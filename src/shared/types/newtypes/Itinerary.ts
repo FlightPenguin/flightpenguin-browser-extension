@@ -1,3 +1,4 @@
+import { CabinType } from "../../../background/constants";
 import { DisplayableTrip } from "./DisplayableTrip";
 import { Trip, TripInput } from "./Trip";
 import { TripSource, TripSourceInput } from "./TripSource";
@@ -5,18 +6,21 @@ import { TripSource, TripSourceInput } from "./TripSource";
 export interface ItineraryInput {
   sources: TripSourceInput[];
   trips: TripInput[];
+  cabin: CabinType;
 }
 
 export class Itinerary {
   private sources: TripSource[];
   private trips: Trip[];
+  private cabin: CabinType;
 
   private id: string;
   private pain: number;
 
-  constructor({ sources, trips }: ItineraryInput) {
+  constructor({ sources, trips, cabin }: ItineraryInput) {
     this.sources = sources.map((source) => new TripSource(source));
     this.trips = trips.map((trip) => new Trip(trip));
+    this.cabin = cabin;
 
     this.id = this.getCalculatedFlightPenguinId();
     this.pain = this.getCalculatedPain();
@@ -42,11 +46,15 @@ export class Itinerary {
   }
 
   getCalculatedPain(): number {
-    return this.trips
+    const tripsCost = this.trips
       .map((trip) => {
-        return trip.getPain();
+        return trip.getCalculatedPain(this.cabin);
       })
-      .reduce((currentTotal, a) => currentTotal + a, 0);
+      .reduce((a, b) => {
+        return a + b;
+      });
+
+    return Math.pow(this.getTopSource().getFare(), 1.05) + tripsCost;
   }
 
   addOrUpdateSource(source: TripSource): void {

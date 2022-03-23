@@ -1,5 +1,6 @@
 import { differenceInCalendarDays } from "date-fns";
 
+import { CabinType } from "../../../background/constants";
 import { Airline, AirlineInput } from "./Airline";
 import { Location, LocationInput } from "./Location";
 import { getFormattedDuration } from "./utilities/getFormattedDuration";
@@ -8,6 +9,10 @@ import { getParsedISODate } from "./utilities/getParsedISODate";
 import { getParsedNumber } from "./utilities/getParsedNumber";
 import { getTimebarPositions } from "./utilities/getTimebarPositions";
 import { getTimezoneOffset } from "./utilities/getTimezoneOffset";
+import { getFlightMultiplier } from "./utilities/pain/flight/getFlightMultiplier";
+import { getCabinMultiplier } from "./utilities/pain/shared/getCabinMultiplier";
+import { getCostPerMinute } from "./utilities/pain/shared/getCostPerMinute";
+import { getSmoothDuration } from "./utilities/pain/shared/getSmoothDuration";
 
 export interface FlightInput {
   arrivalDateTime: Date;
@@ -29,7 +34,6 @@ export class Flight {
   private operatingAirline?: Airline;
 
   private id: string;
-  private pain: number;
   private type: string;
 
   constructor({
@@ -51,7 +55,6 @@ export class Flight {
     this.type = "FLIGHT";
 
     this.id = this.getCalculatedId();
-    this.pain = this.getCalculatedPain();
   }
 
   getAirline(): Airline {
@@ -96,10 +99,6 @@ export class Flight {
     return this.id;
   }
 
-  getPain(): number {
-    return this.pain;
-  }
-
   getTimezoneOffset(): number {
     return getTimezoneOffset(this.arrivalDateTime, this.departureDateTime, this.durationMinutes);
   }
@@ -114,8 +113,14 @@ export class Flight {
     return `${this.getDepartureDateTime().valueOf()}-${this.getArrivalDateTime().valueOf()}-${airline.getName()}`;
   }
 
-  getCalculatedPain(): number {
-    return 0;
+  getCalculatedPain(cabin: CabinType): number {
+    const durationMultiplier = getFlightMultiplier(this);
+
+    const smoothedDuration = getSmoothDuration(this.durationMinutes);
+    const cabinMultiplier = getCabinMultiplier(cabin);
+    const costPerMinute = getCostPerMinute(durationMultiplier);
+
+    return smoothedDuration * cabinMultiplier * costPerMinute;
   }
 
   getTimebarPositions({

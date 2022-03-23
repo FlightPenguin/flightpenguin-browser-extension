@@ -32,7 +32,7 @@ export const getItinerary = async ({ flightCard, formData }: GetFlightProps): Pr
   });
 
   const sourceInput: TripSourceInput = { fare, name: "kiwi" };
-  const itinerary = new Itinerary({ sources: [sourceInput], trips: tripInputs });
+  const itinerary = new Itinerary({ sources: [sourceInput], trips: tripInputs, cabin: formData.cabin || "econ" });
   setFlightId(flightCard, itinerary.getId());
 
   return itinerary;

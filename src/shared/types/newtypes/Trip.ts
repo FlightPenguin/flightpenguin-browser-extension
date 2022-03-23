@@ -1,5 +1,6 @@
 import { differenceInCalendarDays } from "date-fns";
 
+import { CabinType } from "../../../background/constants";
 import { Flight } from "./Flight";
 import { Layover } from "./Layover";
 import { Location, LocationInput } from "./Location";
@@ -35,7 +36,6 @@ export class Trip {
   private id: string;
   private layoverCount: number;
   private layoverAirportCodes: string[];
-  private pain: number;
 
   constructor({
     arrivalDateTime,
@@ -58,7 +58,6 @@ export class Trip {
     this.id = this.getCalculatedId();
     this.layoverAirportCodes = this.getCalculatedLayoverAirportCodes();
     this.layoverCount = this.getCalculatedLayoverCount();
-    this.pain = this.getCalculatedPain();
   }
 
   getArrivalDateTime(): Date {
@@ -112,10 +111,6 @@ export class Trip {
 
   getLayoverCount(): number {
     return this.layoverCount;
-  }
-
-  getPain(): number {
-    return this.pain;
   }
 
   getTimezoneOffset(): number {
@@ -173,12 +168,24 @@ export class Trip {
     return layovers.length;
   }
 
-  getCalculatedPain(): number {
-    return this.tripComponents
+  getCalculatedPain(cabin: CabinType) {
+    const layoverCount = this.getCalculatedLayoverCount();
+    const layoverTax = 1 + 0.05 * layoverCount;
+
+    const durationCost = this.tripComponents
       .map((tripComponent) => {
-        return tripComponent.getObject().getPain();
+        const object = tripComponent.getObject();
+        const pain = object.getCalculatedPain(cabin);
+        if (!pain) {
+          throw new Error("Zero score pain!");
+        }
+        return pain;
       })
-      .reduce((currentTotal, a) => currentTotal + a, 0);
+      .reduce((a, b) => {
+        return a + b;
+      });
+
+    return Math.pow(durationCost, layoverTax);
   }
 
   isArrivingBeforeTime(boundaryTime: Date | null): boolean {

@@ -1,5 +1,6 @@
 import { differenceInCalendarDays } from "date-fns";
 
+import { CabinType } from "../../../background/constants";
 import { Airline } from "./Airline";
 import { Location, LocationInput } from "./Location";
 import { getFormattedDuration } from "./utilities/getFormattedDuration";
@@ -8,6 +9,11 @@ import { getParsedISODate } from "./utilities/getParsedISODate";
 import { getParsedNumber } from "./utilities/getParsedNumber";
 import { getTimebarPositions } from "./utilities/getTimebarPositions";
 import { getTimezoneOffset } from "./utilities/getTimezoneOffset";
+import { getFlightMultiplier } from "./utilities/pain/flight/getFlightMultiplier";
+import { getLayoverMultiplier } from "./utilities/pain/layover/getLayoverMultiplier";
+import { getCabinMultiplier } from "./utilities/pain/shared/getCabinMultiplier";
+import { getCostPerMinute } from "./utilities/pain/shared/getCostPerMinute";
+import { getSmoothDuration } from "./utilities/pain/shared/getSmoothDuration";
 
 export interface LayoverInput {
   arrivalDateTime: Date | string;
@@ -25,7 +31,6 @@ export class Layover {
   private durationMinutes: number;
 
   private id: string;
-  private pain: number;
   private type: string;
 
   constructor({
@@ -43,7 +48,6 @@ export class Layover {
     this.type = "LAYOVER";
 
     this.id = this.getCalculatedId();
-    this.pain = this.getCalculatedPain();
   }
 
   getAirline(): Airline {
@@ -87,10 +91,6 @@ export class Layover {
     return this.id;
   }
 
-  getPain(): number {
-    return this.pain;
-  }
-
   getType(): string {
     return this.type;
   }
@@ -108,8 +108,14 @@ export class Layover {
     return `${this.getDepartureDateTime().valueOf()}-${this.getArrivalDateTime().valueOf()}-${locationToken}`;
   }
 
-  getCalculatedPain(): number {
-    return 0;
+  getCalculatedPain(cabin: CabinType): number {
+    const durationMultiplier = getLayoverMultiplier(this);
+
+    const smoothedDuration = getSmoothDuration(this.durationMinutes);
+    const cabinMultiplier = getCabinMultiplier(cabin);
+    const costPerMinute = getCostPerMinute(durationMultiplier);
+
+    return smoothedDuration * cabinMultiplier * costPerMinute;
   }
 
   isTransfer(): boolean {
