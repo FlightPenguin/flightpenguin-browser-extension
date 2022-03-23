@@ -151,7 +151,7 @@ export const SearchResults = ({
         if (containerIndex <= activeContainerIndex) {
           const arrayIndex = Math.max(containerIndex - 1, 0);
           return (
-            <React.Fragment>
+            <React.Fragment key={`timeline-container-wrapper-${containerIndex}`}>
               {containerIndex > 1 && <Box height="50px" />}
               <TimelineContainer
                 containerIndex={containerIndex}

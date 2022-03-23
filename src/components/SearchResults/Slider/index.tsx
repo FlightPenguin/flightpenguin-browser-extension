@@ -75,6 +75,7 @@ const TimelineSlider = ({
         renderThumb={(props, state) => {
           return (
             <Thumb
+              key={`slider-thumb-${state.index}`}
               state={state}
               props={props}
               minimumValue={0}
@@ -92,6 +93,7 @@ const TimelineSlider = ({
         renderTrack={(props, state) => {
           return (
             <Track
+              key={`slider-track-${state.index}`}
               state={state}
               props={props}
               heightValue={heightValue}

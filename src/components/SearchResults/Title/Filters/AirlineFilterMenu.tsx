@@ -40,7 +40,7 @@ export const AirlineFilterMenu = ({ airlines, onChange }: FilterMenuProps): Reac
           >
             {airlines.map((value) => {
               return (
-                <DropdownMenu.OptionItem value={value}>
+                <DropdownMenu.OptionItem value={value} key={`option-${value}`}>
                   <Box display="flex" flexDirection="row" flexWrap="nowrap" justifyContent="space-between" width="100%">
                     <Box display="flex">{value}</Box>
                     <Box
