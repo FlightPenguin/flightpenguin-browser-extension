@@ -12,9 +12,9 @@ export const getTripComponentTooltipText = (tripComponent: TripComponent): strin
       text += `With transfer to ${layover.getDepartureLocation().getCode()}`;
       text += "\n";
     }
-    text += `Begins at ${layover.getDisplayDepartureTime()} local time`;
+    text += `Begins at ${layover.getDisplayArrivalTime()} local time`;
     text += "\n";
-    text += `Ends at ${layover.getDisplayArrivalTime()} local time`;
+    text += `Ends at ${layover.getDisplayDepartureTime()} local time`;
     text += "\n";
     text += `Layover duration of ${layover.getDisplayDuration()}`;
   } else {
