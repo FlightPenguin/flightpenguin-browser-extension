@@ -14,6 +14,7 @@ export const getSkeletonTrips = (formData: FlightSearchFormData, containerIndex:
   return [
     new DisplayableTrip({
       lowestFare: 293,
+      itineraryPainScore: 3,
       trip: new Trip({
         arrivalDateTime: addMinutes(addHours(departureDate, 9), 30),
         arrivalLocation: { code: arrivalLocation.label, type: arrivalLocation?.raw?.city ? "CITY" : "AIRPORT" },
@@ -24,14 +25,15 @@ export const getSkeletonTrips = (formData: FlightSearchFormData, containerIndex:
           {
             type: "FLIGHT",
             object: {
-              arrivalDateTime: addMinutes(addHours(departureDate, 9), 30),
+              arrivalLocalDateTime: addMinutes(addHours(departureDate, 9), 30),
               arrivalLocation: { code: arrivalLocation.label, type: arrivalLocation?.raw?.city ? "CITY" : "AIRPORT" },
-              departureDateTime: addHours(departureDate, 8),
+              departureLocalDateTime: addHours(departureDate, 8),
               departureLocation: {
                 code: departureLocation.label,
                 type: departureLocation?.raw?.city ? "CITY" : "AIRPORT",
               },
               durationMinutes: 90,
+              elapsedTimezoneOffset: 0,
               marketingAirline: { name: "Delta" },
             },
           },
@@ -41,6 +43,7 @@ export const getSkeletonTrips = (formData: FlightSearchFormData, containerIndex:
 
     new DisplayableTrip({
       lowestFare: 273,
+      itineraryPainScore: 5,
       trip: new Trip({
         arrivalDateTime: addHours(departureDate, 7),
         arrivalLocation: { code: arrivalLocation.label, type: arrivalLocation?.raw?.city ? "CITY" : "AIRPORT" },
@@ -51,14 +54,15 @@ export const getSkeletonTrips = (formData: FlightSearchFormData, containerIndex:
           {
             type: "FLIGHT",
             object: {
-              arrivalDateTime: addHours(departureDate, 7),
+              arrivalLocalDateTime: addHours(departureDate, 7),
               arrivalLocation: { code: arrivalLocation.label, type: arrivalLocation?.raw?.city ? "CITY" : "AIRPORT" },
-              departureDateTime: addHours(departureDate, 5),
+              departureLocalDateTime: addHours(departureDate, 5),
               departureLocation: {
                 code: departureLocation.label,
                 type: departureLocation?.raw?.city ? "CITY" : "AIRPORT",
               },
               durationMinutes: 120,
+              elapsedTimezoneOffset: 0,
               marketingAirline: { name: "jetBlue" },
             },
           },
@@ -68,6 +72,7 @@ export const getSkeletonTrips = (formData: FlightSearchFormData, containerIndex:
 
     new DisplayableTrip({
       lowestFare: 331,
+      itineraryPainScore: 10,
       trip: new Trip({
         arrivalDateTime: addMinutes(addHours(departureDate, 20), 45),
         arrivalLocation: { code: "ABC", type: "AIRPORT" },
@@ -78,38 +83,42 @@ export const getSkeletonTrips = (formData: FlightSearchFormData, containerIndex:
           {
             type: "FLIGHT",
             object: {
-              arrivalDateTime: addMinutes(addHours(departureDate, 18), 40),
+              arrivalLocalDateTime: addMinutes(addHours(departureDate, 18), 40),
               arrivalLocation: { code: "ABC", type: "AIRPORT" },
-              departureDateTime: addMinutes(addHours(departureDate, 17), 5),
+              departureLocalDateTime: addMinutes(addHours(departureDate, 17), 5),
               departureLocation: {
                 code: departureLocation.label,
                 type: departureLocation?.raw?.city ? "CITY" : "AIRPORT",
               },
               durationMinutes: 95,
+              elapsedTimezoneOffset: 0,
               marketingAirline: { name: "United" },
             },
           },
           {
             type: "LAYOVER",
             object: {
-              arrivalDateTime: addMinutes(addHours(departureDate, 18), 40),
+              arrivalLocalDateTime: addMinutes(addHours(departureDate, 18), 40),
               arrivalLocation: { code: "ABC", type: "AIRPORT" },
-              departureDateTime: addMinutes(addHours(departureDate, 19), 35),
+              arrivalTripStartDateTime: addMinutes(addHours(departureDate, 18), 40),
+              departureLocalDateTime: addMinutes(addHours(departureDate, 19), 35),
               departureLocation: { code: "ABC", type: "AIRPORT" },
+              departureTripStartDateTime: addMinutes(addHours(departureDate, 19), 35),
               durationMinutes: 55,
             },
           },
           {
             type: "FLIGHT",
             object: {
-              arrivalDateTime: addMinutes(addHours(departureDate, 20), 45),
+              arrivalLocalDateTime: addMinutes(addHours(departureDate, 20), 45),
               arrivalLocation: {
                 code: arrivalLocation.label,
                 type: arrivalLocation?.raw?.city ? "CITY" : "AIRPORT",
               },
-              departureDateTime: addMinutes(addHours(departureDate, 19), 35),
+              departureLocalDateTime: addMinutes(addHours(departureDate, 19), 35),
               departureLocation: { code: "ABC", type: "AIRPORT" },
               durationMinutes: 70,
+              elapsedTimezoneOffset: 0,
               marketingAirline: { name: "Spirit" },
             },
           },
@@ -119,6 +128,7 @@ export const getSkeletonTrips = (formData: FlightSearchFormData, containerIndex:
 
     new DisplayableTrip({
       lowestFare: 338,
+      itineraryPainScore: 20,
       trip: new Trip({
         arrivalDateTime: addMinutes(addHours(departureDate, 16), 45),
         arrivalLocation: { code: "DEF", type: "AIRPORT" },
@@ -129,38 +139,42 @@ export const getSkeletonTrips = (formData: FlightSearchFormData, containerIndex:
           {
             type: "FLIGHT",
             object: {
-              arrivalDateTime: addMinutes(addHours(departureDate, 13), 50),
+              arrivalLocalDateTime: addMinutes(addHours(departureDate, 13), 50),
               arrivalLocation: { code: "DEF", type: "AIRPORT" },
-              departureDateTime: addMinutes(addHours(departureDate, 11), 50),
+              departureLocalDateTime: addMinutes(addHours(departureDate, 11), 50),
               departureLocation: {
                 code: departureLocation.label,
                 type: departureLocation?.raw?.city ? "CITY" : "AIRPORT",
               },
               durationMinutes: 120,
+              elapsedTimezoneOffset: 0,
               marketingAirline: { name: "Frontier" },
             },
           },
           {
             type: "LAYOVER",
             object: {
-              arrivalDateTime: addMinutes(addHours(departureDate, 13), 50),
+              arrivalLocalDateTime: addMinutes(addHours(departureDate, 13), 50),
               arrivalLocation: { code: "DEF", type: "AIRPORT" },
-              departureDateTime: addMinutes(addHours(departureDate, 15), 20),
+              arrivalTripStartDateTime: addMinutes(addHours(departureDate, 13), 50),
+              departureLocalDateTime: addMinutes(addHours(departureDate, 15), 20),
               departureLocation: { code: "DEF", type: "AIRPORT" },
+              departureTripStartDateTime: addMinutes(addHours(departureDate, 15), 20),
               durationMinutes: 90,
             },
           },
           {
             type: "FLIGHT",
             object: {
-              arrivalDateTime: addMinutes(addHours(departureDate, 16), 45),
+              arrivalLocalDateTime: addMinutes(addHours(departureDate, 16), 45),
               arrivalLocation: {
                 code: arrivalLocation.label,
                 type: arrivalLocation?.raw?.city ? "CITY" : "AIRPORT",
               },
-              departureDateTime: addMinutes(addHours(departureDate, 15), 20),
+              departureLocalDateTime: addMinutes(addHours(departureDate, 15), 20),
               departureLocation: { code: "ABC", type: "AIRPORT" },
               durationMinutes: 85,
+              elapsedTimezoneOffset: 0,
               marketingAirline: { name: "WN" },
             },
           },

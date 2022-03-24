@@ -15,34 +15,42 @@ import { getCostPerMinute } from "./utilities/pain/shared/getCostPerMinute";
 import { getSmoothDuration } from "./utilities/pain/shared/getSmoothDuration";
 
 export interface LayoverInput {
-  arrivalDateTime: Date | string;
+  arrivalLocalDateTime: Date | string;
   arrivalLocation: LocationInput;
-  departureDateTime: Date | string;
+  arrivalTripStartDateTime: Date | string;
+  departureLocalDateTime: Date | string;
   departureLocation: LocationInput;
+  departureTripStartDateTime: Date | string;
   durationMinutes: number;
 }
 
 export class Layover {
+  private arrivalLocalDateTime: Date;
   private arrivalLocation: Location;
-  private arrivalDateTime: Date;
+  private arrivalTripStartDateTime: Date;
+  private departureLocalDateTime: Date;
   private departureLocation: Location;
-  private departureDateTime: Date;
+  private departureTripStartDateTime: Date;
   private durationMinutes: number;
 
   private id: string;
   private type: string;
 
   constructor({
-    arrivalDateTime,
+    arrivalLocalDateTime,
     arrivalLocation,
-    departureDateTime,
+    arrivalTripStartDateTime,
+    departureLocalDateTime,
     departureLocation,
+    departureTripStartDateTime,
     durationMinutes,
   }: LayoverInput) {
-    this.arrivalDateTime = getParsedISODate(arrivalDateTime);
+    this.arrivalLocalDateTime = getParsedISODate(arrivalLocalDateTime);
     this.arrivalLocation = new Location(arrivalLocation);
-    this.departureDateTime = getParsedISODate(departureDateTime);
+    this.arrivalTripStartDateTime = getParsedISODate(arrivalTripStartDateTime);
+    this.departureLocalDateTime = getParsedISODate(departureLocalDateTime);
     this.departureLocation = new Location(departureLocation);
+    this.departureTripStartDateTime = getParsedISODate(departureTripStartDateTime);
     this.durationMinutes = getParsedNumber(durationMinutes);
     this.type = "LAYOVER";
 
@@ -53,29 +61,48 @@ export class Layover {
     return new Airline({ name: `Layover in ${this.departureLocation.getCode()}` });
   }
 
-  getArrivalDateTime(): Date {
-    return this.arrivalDateTime;
+  getArrivalLocalDateTime(): Date {
+    return this.arrivalLocalDateTime;
   }
 
   getArrivalLocation(): Location {
     return this.arrivalLocation;
   }
 
-  getDepartureDateTime(): Date {
-    return this.departureDateTime;
+  getArrivalTripStartDateTime(): Date {
+    return this.arrivalTripStartDateTime;
+  }
+
+  getDepartureLocalDateTime(): Date {
+    return this.departureLocalDateTime;
   }
 
   getDepartureLocation(): Location {
     return this.departureLocation;
   }
 
-  getDisplayArrivalTime(): string {
-    const excessDays = differenceInCalendarDays(this.arrivalDateTime, this.departureDateTime);
-    return getFormattedTime(this.arrivalDateTime, excessDays);
+  getDepartureTripStartDateTime(): Date {
+    return this.departureTripStartDateTime;
   }
 
-  getDisplayDepartureTime(): string {
-    return getFormattedTime(this.departureDateTime);
+  getDisplayArrivalLocalTime(): string {
+    const excessDays = differenceInCalendarDays(this.arrivalLocalDateTime, this.departureLocalDateTime);
+
+    return getFormattedTime(this.arrivalLocalDateTime, excessDays);
+  }
+
+  getDisplayArrivalTripStartTime(): string {
+    const excessDays = differenceInCalendarDays(this.arrivalTripStartDateTime, this.departureTripStartDateTime);
+
+    return getFormattedTime(this.arrivalTripStartDateTime, excessDays);
+  }
+
+  getDisplayDepartureLocalTime(): string {
+    return getFormattedTime(this.departureLocalDateTime);
+  }
+
+  getDisplayDepartureTripStartTime(): string {
+    return getFormattedTime(this.departureTripStartDateTime);
   }
 
   getDisplayDuration(): string {
@@ -95,7 +122,7 @@ export class Layover {
   }
 
   getTimezoneOffset(): number {
-    return getTimezoneOffset(this.arrivalDateTime, this.departureDateTime, this.durationMinutes);
+    return getTimezoneOffset(this.arrivalLocalDateTime, this.departureLocalDateTime, this.durationMinutes);
   }
 
   getCalculatedId(): string {
@@ -104,7 +131,7 @@ export class Layover {
       locationToken = `${locationToken}+${this.getArrivalLocation().getCode()}`;
     }
 
-    return `${this.getDepartureDateTime().valueOf()}-${this.getArrivalDateTime().valueOf()}-${locationToken}`;
+    return `${this.getDepartureLocalDateTime().valueOf()}-${this.getArrivalLocalDateTime().valueOf()}-${locationToken}`;
   }
 
   getCalculatedPain(cabin: CabinType): number {
@@ -137,8 +164,8 @@ export class Layover {
       containerStartTime,
       containerEndTime,
       containerWidth,
-      timebarStartTime: this.arrivalDateTime,
-      timebarEndTime: this.departureDateTime,
+      timebarStartTime: this.arrivalTripStartDateTime,
+      timebarEndTime: this.departureTripStartDateTime,
     });
   }
 }
