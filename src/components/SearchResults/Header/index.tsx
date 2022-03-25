@@ -1,4 +1,5 @@
 import { Box } from "bumbag";
+import { startOfDay } from "date-fns";
 import isEqual from "lodash.isequal";
 import React from "react";
 
@@ -47,17 +48,18 @@ const TimelineHeader = ({
       marginLeft={`-${intervalWidth / 2}px`}
     >
       <Box flexBasis="100%" display="flex" flexDirection="row">
-        {intervals.map((interval) => {
-          if (interval % 24 === 0 && interval !== 0) {
+        {intervals.map((interval, index) => {
+          if ([0, 1].includes(interval % 24) && ![0, 1].includes(interval)) {
             daysCounter += 1;
           }
 
           return (
             <TimeCell
+              index={index}
               interval={interval}
               intervalWidth={intervalWidth}
               tzOffset={tzOffset}
-              startDate={startDate}
+              startDate={startOfDay(startDate)}
               daysCounter={daysCounter}
               timeFontSize={timeFontSize}
               departureAirportCode={departureLocation.label}

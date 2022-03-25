@@ -84,6 +84,7 @@ const TimelineRow = ({
           .getTimebarPositions({ containerStartTime, containerEndTime, containerWidth: tripContainerWidth }),
       };
     });
+
   const left = componentsWithPositions[0].layout.startX;
   const finalComponentLayout = componentsWithPositions.slice(-1)[0].layout;
   const right = finalComponentLayout.startX + finalComponentLayout.width;
