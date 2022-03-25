@@ -16,10 +16,10 @@ import { getSmoothDuration } from "./utilities/pain/shared/getSmoothDuration";
 
 export interface LayoverInput {
   arrivalLocalDateTime: Date | string;
-  arrivalLocation: LocationInput;
+  arrivalLocation: Location | LocationInput;
   arrivalTripStartDateTime: Date | string;
   departureLocalDateTime: Date | string;
-  departureLocation: LocationInput;
+  departureLocation: Location | LocationInput;
   departureTripStartDateTime: Date | string;
   durationMinutes: number;
 }
@@ -46,10 +46,16 @@ export class Layover {
     durationMinutes,
   }: LayoverInput) {
     this.arrivalLocalDateTime = getParsedISODate(arrivalLocalDateTime);
-    this.arrivalLocation = new Location(arrivalLocation);
+    this.arrivalLocation =
+      arrivalLocation.constructor.name === "Location"
+        ? (arrivalLocation as Location)
+        : new Location(arrivalLocation as LocationInput);
     this.arrivalTripStartDateTime = getParsedISODate(arrivalTripStartDateTime);
     this.departureLocalDateTime = getParsedISODate(departureLocalDateTime);
-    this.departureLocation = new Location(departureLocation);
+    this.departureLocation =
+      departureLocation.constructor.name === "Location"
+        ? (departureLocation as Location)
+        : new Location(departureLocation as LocationInput);
     this.departureTripStartDateTime = getParsedISODate(departureTripStartDateTime);
     this.durationMinutes = getParsedNumber(durationMinutes);
     this.type = "LAYOVER";

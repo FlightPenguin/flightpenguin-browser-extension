@@ -5,6 +5,7 @@ import { Flight } from "./Flight";
 import { Layover } from "./Layover";
 import { Location, LocationInput } from "./Location";
 import { TripComponent, TripComponentInput } from "./TripComponent";
+import { createLayoverInput } from "./utilities/createLayoverInput";
 import { getFormattedDuration } from "./utilities/getFormattedDuration";
 import { getFormattedTime } from "./utilities/getFormattedTime";
 import { getParsedISODate } from "./utilities/getParsedISODate";
@@ -50,9 +51,11 @@ export class Trip {
     this.departureDateTime = getParsedISODate(departureDateTime);
     this.departureLocation = new Location(departureLocation);
     this.durationMinutes = getParsedNumber(durationMinutes);
+
     this.tripComponents = tripComponents.map((tripComponent) => {
       return new TripComponent(tripComponent);
     });
+    this.addLayovers();
 
     this.carriers = this.getCalculatedCarriers();
     this.id = this.getCalculatedId();
@@ -221,5 +224,24 @@ export class Trip {
       return this.carriers.every((carrier) => carriers.includes(carrier));
     }
     return true;
+  }
+
+  addLayovers(): void {
+    if (this.getFlights().length === 1 || this.getLayovers().length >= 1) {
+      return;
+    }
+    let previousFlight: Flight | null = null;
+    const tripComponents: TripComponent[] = [];
+    this.getTripComponents().forEach((tripComponent) => {
+      const flight = tripComponent.getObject() as Flight;
+      if (previousFlight) {
+        const layoverInput = createLayoverInput(previousFlight, flight);
+        const layover = new TripComponent({ object: layoverInput, type: "LAYOVER" });
+        tripComponents.push(layover);
+      }
+      tripComponents.push(tripComponent);
+      previousFlight = flight;
+    });
+    this.tripComponents = tripComponents;
   }
 }
