@@ -37,7 +37,7 @@ export class FlightObserver {
           const { complete } = await sendFlights({ flightCards, formData: formData });
 
           if (complete) {
-            sendScraperComplete("kiwi", "ITINERARY");
+            sendScraperComplete("kiwi");
             sendSuccess("kiwi", that.flightCount);
             that.endObservation();
           }
@@ -47,7 +47,7 @@ export class FlightObserver {
           // eslint-disable-next-line @typescript-eslint/ban-ts-comment
           // @ts-ignore
           window.Sentry.captureException(error);
-          sendFailedScraper("kiwi", error, "ITINERARY");
+          sendFailedScraper("kiwi", error);
           sendFailed("kiwi");
         }
       }
