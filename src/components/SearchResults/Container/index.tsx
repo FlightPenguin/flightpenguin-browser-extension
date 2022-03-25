@@ -102,7 +102,7 @@ const TimelineContainer = ({
       },
     });
 
-    if (displayTrips && !!Object.keys(displayTrips).length) {
+    if (filteredTrips && !!Object.keys(filteredTrips).length) {
       const sortedTrips = getSortedTrips({ trips: filteredTrips, dimension: sortDimension });
       setDisplayTrips(sortedTrips);
     } else {
