@@ -375,7 +375,7 @@ export class ProviderManager {
     this.closeWindow(providerName);
     if (this.state[providerName].attempts < 2 && !!this.formData && this.selectedTrips.length === 0) {
       const url = providerURLBaseMap[providerName](this.formData);
-      const message = { event: "BEGIN_PARSING", message: this.formData };
+      const message = { event: "BEGIN_PARSING", formData: this.formData };
       const promise = this.createWindow(url, providerName, windowConfig, message, (response) => {
         console.debug(response);
         if (!response || !response.received) {
