@@ -33,7 +33,7 @@ export const TripLegend = ({ displayableTrip, legendWidth, paymentType }: TripLe
           fontSize={paymentType === "CASH" ? "clamp(1rem, 2vw, 2rem)" : "clamp(1rem, 1.33vw, 1.5rem)"}
           fontWeight="700"
         >
-          {fareValue} {Math.round(displayableTrip.getPain(), 2)}
+          {fareValue}
         </Text>
       </Box>
 
