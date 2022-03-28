@@ -1,20 +1,24 @@
+import { CabinType } from "../../../background/constants";
 import { Trip, TripInput } from "./Trip";
 
 export interface DisplayableTripInput {
-  trip: Trip | TripInput;
+  cabin: CabinType;
   lowestFare: number;
-  itineraryPainScore: number;
+  trip: Trip | TripInput;
 }
 
 export class DisplayableTrip {
-  private trip: Trip;
+  private cabin: CabinType;
   private lowestFare: number;
-  private itineraryPainScore: number;
+  private pain: number;
+  private trip: Trip;
 
-  constructor({ trip, lowestFare, itineraryPainScore }: DisplayableTripInput) {
-    this.trip = trip.constructor.name === "Trip" ? (trip as Trip) : new Trip(trip as TripInput);
+  constructor({ cabin, lowestFare, trip }: DisplayableTripInput) {
+    this.cabin = cabin;
     this.lowestFare = lowestFare;
-    this.itineraryPainScore = itineraryPainScore;
+    this.trip = trip.constructor.name === "Trip" ? (trip as Trip) : new Trip(trip as TripInput);
+
+    this.pain = this.getCalculatedPain();
   }
 
   getTrip(): Trip {
@@ -25,7 +29,12 @@ export class DisplayableTrip {
     return this.lowestFare;
   }
 
-  getItineraryPain(): number {
-    return this.itineraryPainScore;
+  getPain(): number {
+    return this.pain;
+  }
+
+  getCalculatedPain(): number {
+    const tripCost = this.trip.getCalculatedPain(this.cabin);
+    return Math.pow(this.lowestFare, 1.05) + tripCost;
   }
 }

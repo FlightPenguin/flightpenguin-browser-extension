@@ -11,5 +11,7 @@ const AWFUL_CARRIERS = [
 ];
 
 export const getAwfulCarrierMultiplier = (flight: Flight): number => {
-  return AWFUL_CARRIERS.some((shortNameString) => flight.getAirline().getName().includes(shortNameString)) ? 0.9 : 0;
+  return AWFUL_CARRIERS.some((shortNameString) => flight.getAirline().getName().toLowerCase().includes(shortNameString))
+    ? 0.9
+    : 0;
 };

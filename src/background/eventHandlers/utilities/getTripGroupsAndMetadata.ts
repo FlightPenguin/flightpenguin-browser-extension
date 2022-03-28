@@ -26,7 +26,7 @@ export const getTripGroupsAndMeta = (
         const tripGroup = tripGroups[index];
         const meta = metas[index];
 
-        const displayableTrip = new DisplayableTrip({ trip, lowestFare, itineraryPainScore: itinerary.getPain() });
+        const displayableTrip = new DisplayableTrip({ trip, lowestFare, cabin: itinerary.getCabin() });
         tripGroup.push(displayableTrip);
 
         trip.getCarriers().forEach((carrier) => {

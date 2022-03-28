@@ -13,8 +13,8 @@ export const getSkeletonTrips = (formData: FlightSearchFormData, containerIndex:
 
   return [
     new DisplayableTrip({
+      cabin: formData.cabin || "econ",
       lowestFare: 293,
-      itineraryPainScore: 3,
       trip: new Trip({
         arrivalDateTime: addMinutes(addHours(departureDate, 9), 30),
         arrivalLocation: { code: arrivalLocation.label, type: arrivalLocation?.raw?.city ? "CITY" : "AIRPORT" },
@@ -42,8 +42,8 @@ export const getSkeletonTrips = (formData: FlightSearchFormData, containerIndex:
     }),
 
     new DisplayableTrip({
+      cabin: formData.cabin || "econ",
       lowestFare: 273,
-      itineraryPainScore: 5,
       trip: new Trip({
         arrivalDateTime: addHours(departureDate, 7),
         arrivalLocation: { code: arrivalLocation.label, type: arrivalLocation?.raw?.city ? "CITY" : "AIRPORT" },
@@ -71,8 +71,8 @@ export const getSkeletonTrips = (formData: FlightSearchFormData, containerIndex:
     }),
 
     new DisplayableTrip({
+      cabin: formData.cabin || "econ",
       lowestFare: 331,
-      itineraryPainScore: 10,
       trip: new Trip({
         arrivalDateTime: addMinutes(addHours(departureDate, 20), 45),
         arrivalLocation: { code: "ABC", type: "AIRPORT" },
@@ -127,8 +127,8 @@ export const getSkeletonTrips = (formData: FlightSearchFormData, containerIndex:
     }),
 
     new DisplayableTrip({
+      cabin: formData.cabin || "econ",
       lowestFare: 338,
-      itineraryPainScore: 20,
       trip: new Trip({
         arrivalDateTime: addMinutes(addHours(departureDate, 16), 45),
         arrivalLocation: { code: "DEF", type: "AIRPORT" },

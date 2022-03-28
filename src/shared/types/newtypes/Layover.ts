@@ -145,9 +145,9 @@ export class Layover {
 
     const smoothedDuration = getSmoothDuration(this.durationMinutes);
     const cabinMultiplier = getCabinMultiplier(cabin);
-    const costPerMinute = getCostPerMinute(durationMultiplier);
+    const costPerMinute = getCostPerMinute(cabinMultiplier);
 
-    return smoothedDuration * cabinMultiplier * costPerMinute;
+    return smoothedDuration * durationMultiplier * cabinMultiplier * costPerMinute;
   }
 
   isTransfer(): boolean {

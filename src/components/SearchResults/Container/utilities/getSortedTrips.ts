@@ -27,6 +27,6 @@ const getSortValue = (a: DisplayableTrip, b: DisplayableTrip, dimension: TripSor
     case "fare":
       return a.getLowestFare() - b.getLowestFare();
     case "pain":
-      return a.getItineraryPain() - b.getItineraryPain();
+      return a.getPain() - b.getPain();
   }
 };

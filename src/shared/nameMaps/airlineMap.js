@@ -98,6 +98,7 @@ const AirlineMap = {
     Finnair: { display: "Finnair", color: "#7F1F89", code: "AY" },
     "Scandinavian Airlines": { display: "Scandinavian", color: "#2B3087", code: "SK" },
     SAS: { display: "Scandinavian", color: "#2B3087", code: "SK" },
+    Austrian: { display: "Austrian", color: "#D41C04", code: "OS" },
     "Austrian Airlines": { display: "Austrian", color: "#D41C04", code: "OS" },
     "Aer Lingus": { display: "Aer Lingus", color: "#008274", code: "EI" },
     Aeroflot: { display: "Aeroflot", color: "#3C72A8", code: "SU" },

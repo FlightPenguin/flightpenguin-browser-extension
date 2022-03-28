@@ -26,6 +26,10 @@ export class Itinerary {
     this.pain = this.getCalculatedPain();
   }
 
+  getCabin(): CabinType {
+    return this.cabin;
+  }
+
   getId(): string {
     return this.id;
   }
