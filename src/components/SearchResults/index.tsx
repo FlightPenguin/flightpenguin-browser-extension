@@ -138,6 +138,8 @@ export const SearchResults = ({
     );
   }
 
+  console.error(tripGroups);
+
   return (
     <Box
       className="search-results-container"
@@ -164,7 +166,7 @@ export const SearchResults = ({
                   setActiveContainerIndex(containerIndex);
                   const currentSelections = tripSelection.map((tripSelection, index) => {
                     const selectionContainerIndex = index + 1;
-                    if (selectionContainerIndex > containerIndex) {
+                    if (selectionContainerIndex >= containerIndex) {
                       return null;
                     }
                     return tripSelection;
