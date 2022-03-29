@@ -1,4 +1,4 @@
-export interface CheapoairFlightDetails {
+export interface CheapoairTripDetails {
   airline: string;
   departureTime: string;
   arrivalTime: string;

@@ -1,4 +1,4 @@
-import { addYears, differenceInCalendarDays, parse } from "date-fns";
+import { addYears, differenceInCalendarDays, parse, startOfDay } from "date-fns";
 
 import { MissingElementLookupError, MissingFieldParserError } from "../../../shared/errors";
 
@@ -61,7 +61,7 @@ const getDepartureDate = (flightContainer: HTMLDivElement, previousDepartureDate
   }
 
   let departureDate = parse(departureDateElement.textContent, "MMM dd", new Date());
-  if (departureDate < previousDepartureDate) {
+  if (startOfDay(departureDate) < startOfDay(previousDepartureDate)) {
     departureDate = addYears(departureDate, 1);
   }
   return departureDate;
