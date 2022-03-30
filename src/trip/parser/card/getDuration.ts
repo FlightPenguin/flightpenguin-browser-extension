@@ -2,7 +2,7 @@ import { MissingElementLookupError, MissingFieldParserError } from "../../../sha
 
 const DURATION_SELECTOR = "div.flight-info-duration";
 
-export const getFlightDuration = (container: HTMLDivElement): { duration: string } => {
+export const getDuration = (container: HTMLDivElement): { duration: string } => {
   const durationContainer = container.querySelector(DURATION_SELECTOR);
   if (!durationContainer) {
     throw new MissingElementLookupError("Unable to find flight duration container");

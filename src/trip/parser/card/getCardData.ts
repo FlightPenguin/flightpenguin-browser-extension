@@ -1,6 +1,6 @@
 import { getFlightId } from "../../../shared/parser/getFlightId";
+import { getDuration } from "./getDuration";
 import { getFare } from "./getFare";
-import { getFlightDuration } from "./getFlightDuration";
 import { getFlightTimes } from "./getFlightTimes";
 import { getMarketingAirlineName } from "./getMarketingAirlineName";
 
@@ -20,7 +20,7 @@ interface FlightsCardData {
 
 const DETAILS_CONTAINER_SELECTOR = "div.flight-info";
 
-export const getFlightCardData = (flightCard: HTMLDivElement, roundtrip: boolean): FlightsCardData => {
+export const getCardData = (flightCard: HTMLDivElement, roundtrip: boolean): FlightsCardData => {
   const { fare } = getFare(flightCard);
 
   const [departureContainer, returnContainer] = flightCard.querySelectorAll(DETAILS_CONTAINER_SELECTOR);
@@ -44,7 +44,7 @@ export const getFlightCardData = (flightCard: HTMLDivElement, roundtrip: boolean
 
 const getFlightContainerDetails = (container: HTMLDivElement): FlightCardData => {
   const { arrivalTime, departureTime } = getFlightTimes(container);
-  const { duration } = getFlightDuration(container);
+  const { duration } = getDuration(container);
   const { marketingAirline } = getMarketingAirlineName(container);
   const id = getFlightId({ arrivalTime, departureTime, airlineName: marketingAirline });
 

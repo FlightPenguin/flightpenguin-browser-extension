@@ -2,7 +2,7 @@ import { sendFailedScraper, sendScraperComplete } from "../../shared/events";
 import { sendFailed, sendSuccess } from "../../shared/events/analytics/scrapers";
 import { FlightSearchFormData } from "../../shared/types/FlightSearchFormData";
 import { stopScrollingNow } from "../../shared/ui/stopScrolling";
-import { sendFlights } from "./sendFlights";
+import { sendItineraries } from "./sendItineraries";
 
 interface FlightObserverProps {
   formData: FlightSearchFormData;
@@ -35,7 +35,7 @@ export class FlightObserver {
       }
       try {
         // eslint-disable-next-line prefer-const
-        let { complete, idToIndexMap: batchMap } = await sendFlights({ flightCards, formData: formData });
+        let { complete, idToIndexMap: batchMap } = await sendItineraries({ flightCards, formData: formData });
         Object.entries(batchMap).forEach(([flightPenguinId, indexValue]) => {
           that.flightPenguinIdToIndexMap[flightPenguinId] = indexValue;
         });
@@ -43,7 +43,7 @@ export class FlightObserver {
           stopScrollingNow("reached max flights");
         }
         if (complete) {
-          sendScraperComplete("trip", "BOTH");
+          sendScraperComplete("trip");
           sendSuccess("trip", Object.keys(that.flightPenguinIdToIndexMap).length);
         }
       } catch (error) {
@@ -52,7 +52,7 @@ export class FlightObserver {
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore
         window.Sentry.captureException(error);
-        sendFailedScraper("trip", error, "ALL");
+        sendFailedScraper("trip", error);
         sendFailed("trip");
       }
     });

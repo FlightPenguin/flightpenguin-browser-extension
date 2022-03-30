@@ -1,10 +1,10 @@
 import { MissingFieldParserError } from "../../shared/errors";
 import { sendItinerariesEvent } from "../../shared/events";
 import { FlightSearchFormData } from "../../shared/types/FlightSearchFormData";
-import { UnprocessedFlightSearchResult } from "../../shared/types/UnprocessedFlightSearchResult";
+import { Itinerary } from "../../shared/types/newtypes/Itinerary";
 import { scrollToTop } from "../../shared/ui/scrollToTop";
 import { stopScrollingCheck, stopScrollingNow } from "../../shared/ui/stopScrolling";
-import { getFlight } from "./getFlight";
+import { getItinerary } from "./getItinerary";
 import { isComplete } from "./isParsingComplete";
 import { shouldScrollToPlaceholder } from "./shouldScrollToPlaceholder";
 
@@ -21,8 +21,8 @@ interface SendFlightsResults {
 const UNRETRIEVED_SELECTOR = "div.list-placeholder";
 const VISITED_FLIGHT_CARD_SELECTOR = "div[data-fpid]";
 
-export const sendFlights = async ({ flightCards, formData }: SendFlightsProps): Promise<SendFlightsResults> => {
-  const flights: UnprocessedFlightSearchResult[] = [];
+export const sendItineraries = async ({ flightCards, formData }: SendFlightsProps): Promise<SendFlightsResults> => {
+  const itineraries: Itinerary[] = [];
   const idToIndexMap: Record<string, string> = {};
 
   let lastFlightCard;
@@ -42,19 +42,19 @@ export const sendFlights = async ({ flightCards, formData }: SendFlightsProps): 
       continue;
     }
 
-    const flight = await getFlight({ flightCard, formData });
-    flights.push(flight);
+    const itinerary = await getItinerary({ flightCard, formData });
+    itineraries.push(itinerary);
     const shoppingId = getShoppingId(flightCard);
 
-    if (flight.id && shoppingId) {
-      idToIndexMap[flight.id] = shoppingId;
+    if (itinerary.getId() && shoppingId) {
+      idToIndexMap[itinerary.getId()] = shoppingId;
     }
 
     lastFlightCard = flightCard;
   }
 
-  if (flights.length) {
-    sendItinerariesEvent("trip", flights);
+  if (itineraries.length) {
+    sendItinerariesEvent("trip", itineraries);
   }
 
   if (lastFlightCard) {

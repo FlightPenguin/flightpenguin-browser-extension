@@ -2,8 +2,8 @@ import { MissingElementLookupError, MissingFieldParserError } from "../../../sha
 
 const FARE_ELEMENT_SELECTOR = "span.o-price-flight";
 
-export const getFare = (flightCard: HTMLDivElement): { fare: string } => {
-  const fareElement = flightCard.querySelector(FARE_ELEMENT_SELECTOR) as HTMLElement;
+export const getFare = (card: HTMLDivElement): { fare: string } => {
+  const fareElement = card.querySelector(FARE_ELEMENT_SELECTOR) as HTMLElement;
   if (!fareElement) {
     throw new MissingElementLookupError("Unable to find fare element");
   }
