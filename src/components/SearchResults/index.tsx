@@ -138,8 +138,6 @@ export const SearchResults = ({
     );
   }
 
-  console.error(tripGroups);
-
   return (
     <Box
       className="search-results-container"
