@@ -10,10 +10,10 @@ Sentry.init({
   tracesSampleRate: 1.0,
 });
 
-import { sendFailedScraper, sendScraperComplete } from "../shared/events";
+import { sendFailedScraper, sendItineraryNotFound, sendScraperComplete } from "../shared/events";
 import { sendFailed, sendProcessing, sendSuccess } from "../shared/events/analytics/scrapers";
 import { addBackToSearchButton } from "../shared/ui/backToSearch";
-import { setScraperFlag } from "../shared/utilities/isScraperFlag";
+import { getFlightPenguinTripId } from "../shared/utilities/getFlightPenguinTripId";
 import { suppressOfferFlightPenguinPopup } from "../shared/utilities/suppressOfferFlightPenguinPopup";
 import { parseFlights } from "./parser/parseFlights";
 import { setFlightIds } from "./parser/setFlightIds";
@@ -49,6 +49,7 @@ chrome.runtime.onMessage.addListener(async function (message, sender, sendRespon
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore
         window.Sentry.captureException(error);
+        sendItineraryNotFound(getFlightPenguinTripId(message.selectedDepartureId, message.selectedReturnId));
       }
       break;
     case "CLEAR_SELECTION":

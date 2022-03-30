@@ -4,6 +4,7 @@ import {
   handleFocusWebpage,
   handleFormDataReceived,
   handleIndexUnloaded,
+  handleItineraryNotFound,
   handleItineraryResultsReceived,
   handleLogAnalyticsEvent,
   handleLogAnalyticsPageView,
@@ -50,6 +51,9 @@ export const ListenerManager = (providerManager: ProviderManager, analyticsManag
         break;
       case "TRIP_SELECTED":
         handleTripSelected(providerManager, message.selectedTrips);
+        break;
+      case "ITINERARY_NOT_FOUND":
+        handleItineraryNotFound(providerManager, message.id);
         break;
       case "PROVIDER_READY":
         handleProviderReady(providerManager, message.provider);

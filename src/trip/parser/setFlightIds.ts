@@ -47,7 +47,7 @@ export const setFlightIds = async (formData: FlightSearchFormData): Promise<void
       const flightCardIndex = Number(flightCard.dataset.index);
       if (flightCardIndex && flightCardIndex <= maxIndex) {
         const flight = await getItinerary({ flightCard, formData });
-        console.log(`retagged flight ${flight.id}`);
+        console.log(`retagged flight ${flight.getId()}`);
       }
     }
   }

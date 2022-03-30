@@ -1,9 +1,9 @@
 export * from "./clearSelections";
-export * from "./tripSelected";
-export * from "./itineraryResultsReceived";
 export * from "./focusWebpage";
 export * from "./formDataReceived";
 export * from "./indexUnloaded";
+export * from "./itineraryNotFound";
+export * from "./itineraryResultsReceived";
 export * from "./logAnalyticsEvent";
 export * from "./logAnalyticsUserIdentified";
 export * from "./logAnalyticsPageView";
@@ -12,4 +12,5 @@ export * from "./openExtension";
 export * from "./providerReady";
 export * from "./scraperFailed";
 export * from "./scraperSuccess";
+export * from "./tripSelected";
 export * from "./updateRequest";

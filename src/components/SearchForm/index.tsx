@@ -28,6 +28,7 @@ import {
   setNearbyAirportCache,
 } from "../utilities/geography/getNearbyAirportData";
 import { Airport } from "./api/airports/Airport";
+import { SearchAirport } from "./api/airports/SearchAirport";
 import { MatchedLabel } from "./components/SelectMenu/MatchedLabel";
 import { getFridayAfterNext } from "./utilities/getFridayAfterNext";
 import { getMatchingAirports } from "./utilities/getMatchingAirports";
@@ -175,7 +176,7 @@ export const SearchForm = ({
   const searchAirports = useCallback(
     async ({ searchText }) => {
       setAirportSearchText(searchText);
-      return { options: getMatchingAirports(searchText, airports, cities) };
+      return { options: getMatchingAirports(searchText, airports as SearchAirport[], cities) };
     },
     [setAirportSearchText],
   );

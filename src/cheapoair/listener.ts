@@ -1,4 +1,4 @@
-import { sendFailedScraper, sendItinerariesEvent, sendScraperComplete } from "../shared/events";
+import { sendFailedScraper, sendItinerariesEvent, sendItineraryNotFound, sendScraperComplete } from "../shared/events";
 import { sendFailed, sendProcessing } from "../shared/events/analytics/scrapers";
 import { FlightSearchFormData } from "../shared/types/FlightSearchFormData";
 import { Itinerary } from "../shared/types/newtypes/Itinerary";
@@ -35,8 +35,15 @@ export const initMessageListener = (observer: CheapoairModalObserver): void => {
         }
         break;
       case "HIGHLIGHT_FLIGHT":
-        await openBookingLink(message.itineraryId, knownItineraries);
-        observer.endObservation();
+        try {
+          await openBookingLink(message.itineraryId, knownItineraries);
+          observer.endObservation();
+        } catch (error) {
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
+          window.Sentry.captureException(error);
+          sendItineraryNotFound(message.itineraryId);
+        }
         break;
       case "CLEAR_SELECTION":
         chrome.runtime.sendMessage({ event: "PROVIDER_READY", provider: "cheapoair" });

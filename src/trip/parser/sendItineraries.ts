@@ -1,4 +1,3 @@
-import { MissingFieldParserError } from "../../shared/errors";
 import { sendItinerariesEvent } from "../../shared/events";
 import { FlightSearchFormData } from "../../shared/types/FlightSearchFormData";
 import { Itinerary } from "../../shared/types/newtypes/Itinerary";
@@ -15,7 +14,6 @@ interface SendFlightsProps {
 
 interface SendFlightsResults {
   complete: boolean;
-  idToIndexMap: Record<string, string>;
 }
 
 const UNRETRIEVED_SELECTOR = "div.list-placeholder";
@@ -23,7 +21,6 @@ const VISITED_FLIGHT_CARD_SELECTOR = "div[data-fpid]";
 
 export const sendItineraries = async ({ flightCards, formData }: SendFlightsProps): Promise<SendFlightsResults> => {
   const itineraries: Itinerary[] = [];
-  const idToIndexMap: Record<string, string> = {};
 
   let lastFlightCard;
   for (const node of flightCards) {
@@ -44,11 +41,6 @@ export const sendItineraries = async ({ flightCards, formData }: SendFlightsProp
 
     const itinerary = await getItinerary({ flightCard, formData });
     itineraries.push(itinerary);
-    const shoppingId = getShoppingId(flightCard);
-
-    if (itinerary.getId() && shoppingId) {
-      idToIndexMap[itinerary.getId()] = shoppingId;
-    }
 
     lastFlightCard = flightCard;
   }
@@ -65,9 +57,9 @@ export const sendItineraries = async ({ flightCards, formData }: SendFlightsProp
     } else {
       await scrollToCardOrBottom(lastFlightCard);
     }
-    return { complete, idToIndexMap };
+    return { complete };
   }
-  return { complete: false, idToIndexMap };
+  return { complete: false };
 };
 
 const shouldSkipCard = (flightCard: HTMLDivElement): { skip: boolean; hide: boolean } => {
@@ -97,17 +89,4 @@ const scrollToCardOrBottom = async (flightCard: HTMLDivElement): Promise<void> =
     console.log("scrolling to bottom");
     window.scrollTo({ top: document.body.scrollHeight, behavior: "smooth" });
   }
-};
-
-const getShoppingId = (flightCard: HTMLDivElement): string => {
-  const shoppingElement = flightCard.querySelector("div[data-shoppingid]") as HTMLDivElement;
-  if (!shoppingElement) {
-    throw new MissingFieldParserError("Unable to find shopping id container in flight card");
-  }
-
-  if (!shoppingElement.dataset.shoppingid) {
-    throw new MissingFieldParserError("Unable to extract shopping id");
-  }
-
-  return shoppingElement.dataset.shoppingid;
 };

@@ -34,14 +34,14 @@ export const SearchResults = ({
     containerRange.map((num) => {
       return [] as DisplayableTrip[];
     }),
-    500,
+    250,
     true,
   );
   const [searchMeta, setSearchMeta] = useDebounce<SearchTripMeta[]>(
     containerRange.map((num) => {
       return SearchTripMetaDefault;
     }),
-    500,
+    250,
     true,
   );
   const [currentTripGroupScrapingComplete, setCurrentTripGroupScrapingComplete] = useState(false);
@@ -55,6 +55,7 @@ export const SearchResults = ({
   const [tabInteractionFailed, setTabInteractionFailed] = useState(false);
   const [searchAgainDisabled, setSearchAgainDisabled] = useState(false);
   const [windowClosed, setWindowClosed] = useState(false);
+  const [itineraryNotFound, setItineraryNotFound] = useState(false);
 
   useEffect(() => {
     chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
@@ -76,6 +77,9 @@ export const SearchResults = ({
           break;
         case "WINDOW_CLOSED":
           setWindowClosed(true);
+          break;
+        case "SELECTED_ITINERARY_NOT_FOUND":
+          setItineraryNotFound(true);
           break;
         case "HIGHLIGHT_TAB_FAILED":
           setTabInteractionFailed(true);
@@ -115,6 +119,7 @@ export const SearchResults = ({
 
     setTabInteractionFailed(false);
     setWindowClosed(false);
+    setItineraryNotFound(false);
 
     sendFormDataToBackground(formData);
     setSearchAgainDisabled(false);
@@ -131,6 +136,24 @@ export const SearchResults = ({
           <Box width="100%" marginTop="major-1">
             <Button disabled={searchAgainDisabled} palette="primary" onClick={searchAgain}>
               Try again
+            </Button>
+          </Box>
+        </Alert>
+      </Box>
+    );
+  }
+
+  if (itineraryNotFound) {
+    return (
+      <Box alignX="center" marginTop="major-6">
+        <Alert title="Flight not available" type="danger">
+          <Box width="100%">
+            It looks like the flight you selected is no longer available. Most commonly this happens because all seats
+            have been booked or the search has been left open for too long, but there may be other errors.
+          </Box>
+          <Box width="100%" marginTop="major-1">
+            <Button disabled={searchAgainDisabled} palette="primary" onClick={searchAgain}>
+              Search again
             </Button>
           </Box>
         </Alert>

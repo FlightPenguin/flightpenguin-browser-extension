@@ -56,6 +56,7 @@ export class ProviderManager {
   private primaryTab: chrome.tabs.Tab | null;
 
   private itineraries: Itinerary[];
+  private deletedItineraryIds: string[];
   private formData: FlightSearchFormData | null;
   private selectedProviders: string[];
 
@@ -65,6 +66,7 @@ export class ProviderManager {
     this.selectedTrips = [];
 
     this.itineraries = [];
+    this.deletedItineraryIds = [];
     this.selectedProviders = [];
 
     this.formData = null;
@@ -167,7 +169,9 @@ export class ProviderManager {
   }
 
   getItineraries(): Itinerary[] {
-    return this.itineraries;
+    return this.itineraries.filter((itin) => {
+      return !this.deletedItineraryIds.includes(itin.getId());
+    });
   }
 
   addItinerary(itinerary: Itinerary): void {
@@ -179,6 +183,11 @@ export class ProviderManager {
     } else {
       this.itineraries.push(itinerary);
     }
+  }
+
+  removeItinerary(id: string): void {
+    // as events stream in, we may get the same itinerary resent/updated.  Simply deleting it from the array is insufficient
+    this.deletedItineraryIds.push(id);
   }
 
   setReady(providerName: string, value: boolean): void {
