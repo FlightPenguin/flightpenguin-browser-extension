@@ -40,14 +40,6 @@
       ]
     },
     {
-      "matches": ["https://www.expedia.com/Flights-Search?*"],
-      "css": ["src/shared/contentScript.css"],
-      "js": [
-        "src/shared/sentry.js",
-        "dist/expedia.bundle.js"
-      ]
-    },
-    {
       "matches": ["https://www.kiwi.com/us/search/results/*"],
       "css": ["src/shared/contentScript.css"],
       "js": [
@@ -118,7 +110,6 @@
         "https://www.trip.com/flights/*",
         "https://www.southwest.com/air/booking/select.html?*",
         "https://www.southwest.com/air/booking/index.html?*",
-        "https://www.expedia.com/Flights-Search?*",
         "https://www.kiwi.com/us/search/results/*",
         "https://www.cheapoair.com/air/*"
       ],

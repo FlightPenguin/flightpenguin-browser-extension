@@ -9,7 +9,6 @@ const defaultEntry = {
   index: "./src/index.js",
   southwest: "./src/southwest/contentScript.ts",
   southwestEmpty: "./src/southwest/emptyResultsContentScript.ts",
-  expedia: "./src/expedia/contentScript.js",
   kiwi: "./src/kiwi/contentScript.ts",
   trip: "./src/trip/contentScript.ts",
   generic: "./src/generic/contentScript.ts",
