@@ -1,6 +1,6 @@
 import { getUrl as getCheapoairUrl } from "../cheapoair/mappings/getUrl";
-import { getUrl as getExpediaUrl } from "../expedia/mappings/getUrl";
 import { getUrl as getKiwiUrl } from "../kiwi/mappings/getUrl";
+import { getUrl as getMomondoUrl } from "../momondo/mapping/getUrl";
 import { sendFailedScraper } from "../shared/events";
 import { pause } from "../shared/pause";
 import { FlightSearchFormData } from "../shared/types/FlightSearchFormData";
@@ -44,7 +44,7 @@ const defaultProviderState: ProviderState = {
 const providerURLBaseMap: { [key: string]: (formData: FlightSearchFormData) => string } = {
   trip: getTripUrl,
   southwest: getSouthwestUrl,
-  expedia: getExpediaUrl,
+  momondo: getMomondoUrl,
   kiwi: getKiwiUrl,
   cheapoair: getCheapoairUrl,
 };

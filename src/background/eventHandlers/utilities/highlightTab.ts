@@ -21,6 +21,7 @@ export const highlightTab = (providerManager: ProviderManager): void => {
         {
           event: "HIGHLIGHT_FLIGHT",
           itineraryId: itinerary.getId(),
+          sourceId: itinerary.getTopSource().getId() || "",
           provider: provider.getName(),
         },
         (response: MessageResponse) => {

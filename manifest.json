@@ -48,6 +48,14 @@
       ]
     },
     {
+      "matches": ["https://www.momondo.com/flight-search/*"],
+      "css": ["src/shared/contentScript.css"],
+      "js": [
+        "src/shared/sentry.js",
+        "dist/momondo.bundle.js"
+      ]
+    },
+    {
       "matches": ["https://flightpenguin.com/*"],
       "js": [
         "src/shared/sentry.js",
@@ -110,6 +118,8 @@
         "https://www.trip.com/flights/*",
         "https://www.southwest.com/air/booking/select.html?*",
         "https://www.southwest.com/air/booking/index.html?*",
+        "https://www.momondo.com/flight-search/*",
+        "https://www.momondo.com/book/*",
         "https://www.kiwi.com/us/search/results/*",
         "https://www.cheapoair.com/air/*"
       ],
