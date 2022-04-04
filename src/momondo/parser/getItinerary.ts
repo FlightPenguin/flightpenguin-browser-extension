@@ -5,11 +5,10 @@ import { FlightSearchFormData } from "../../shared/types/FlightSearchFormData";
 import { Itinerary } from "../../shared/types/newtypes/Itinerary";
 import { TripInput } from "../../shared/types/newtypes/Trip";
 import { getDurationInMinutes } from "../../shared/utilities/getDurationInMinutes";
-import { closeModal } from "../ui/modal/closeModal";
-import { openModal } from "../ui/modal/openModal";
 import { getCardData } from "./card/getCardData";
 import { getModalData } from "./modal/getModalData";
 import { getModal } from "./modal/tripContainer/getModal";
+import { updateBookingLinks } from "./modal/updateBookingLinks";
 
 export const getItinerary = async (
   itineraryCard: HTMLDivElement,
@@ -23,6 +22,7 @@ export const getItinerary = async (
   const cardData = getCardData(itineraryCard, expectedTripCount);
 
   const modal = await getModal(itineraryCard);
+  updateBookingLinks(modal);
   const modalData = await getModalData(modal, expectedTripCount, tripDepartureDates);
 
   if (modalData.length !== cardData.trips.length) {
