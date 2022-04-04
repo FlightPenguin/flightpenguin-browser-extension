@@ -15,14 +15,16 @@ import { sendFailed, sendProcessing } from "../shared/events/analytics/scrapers"
 import { pollForNoResults } from "../shared/parser/pollForNoResults";
 import { addBackToSearchButton } from "../shared/ui/backToSearch";
 import { stopScrollingNow } from "../shared/ui/stopScrolling";
-import { getFlightPenguinTripId } from "../shared/utilities/getFlightPenguinTripId";
 import { suppressOfferFlightPenguinPopup } from "../shared/utilities/suppressOfferFlightPenguinPopup";
+import { suppressRedirectOfferOnBookingPage } from "./booking/suppressRedirectOfferOnBookingPage";
 import { getResultsContainer } from "./parser/getResultsContainer";
 import { ItineraryObserver } from "./parser/observer";
 import { hasNoResults } from "./ui/hasNoResults";
 import { highlightItineraryCard } from "./ui/highlightItineraryCard";
 
 let observer: ItineraryObserver | null = null;
+
+suppressRedirectOfferOnBookingPage();
 
 chrome.runtime.onMessage.addListener(async function (message, sender, sendResponse) {
   sendResponse({ received: true, responderName: "momondo" });
@@ -54,7 +56,7 @@ chrome.runtime.onMessage.addListener(async function (message, sender, sendRespon
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore
         window.Sentry.captureException(error);
-        sendItineraryNotFound(getFlightPenguinTripId(message.selectedDepartureId, message.selectedReturnId));
+        sendItineraryNotFound(message.itineraryId);
       }
       break;
     default:

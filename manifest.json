@@ -48,7 +48,7 @@
       ]
     },
     {
-      "matches": ["https://www.momondo.com/flight-search/*"],
+      "matches": ["https://www.momondo.com/flight-search/*", "https://www.momondo.com/book/*"],
       "css": ["src/shared/contentScript.css"],
       "js": [
         "src/shared/sentry.js",

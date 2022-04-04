@@ -6,11 +6,13 @@ import { OfferFlightSearchModal } from "../components/Modals/";
 import { FlightPenguinTheme } from "../components/utilities/bumbag/theme";
 import { isReferrerDomainIdentical } from "../shared/utilities/isReferrerDomainIdentical";
 import { suppressOfferFlightPenguinPopup } from "../shared/utilities/suppressOfferFlightPenguinPopup";
+import { hasSuppressionFlag } from "./hasSuppressionFlag";
+import { isReferrerDomainMomondo } from "./isReferrerDomainMomondo";
 
 export const showFlightPenguinPopup = (): void => {
-  const suppress = sessionStorage.getItem("hasOfferedFlightPenguinSwitch");
+  const suppress = hasSuppressionFlag();
 
-  if (isReferrerDomainIdentical()) {
+  if (isReferrerDomainIdentical() || isReferrerDomainMomondo()) {
     suppressOfferFlightPenguinPopup();
   } else if (!suppress) {
     const div = document.createElement("div");
