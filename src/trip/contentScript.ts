@@ -16,7 +16,6 @@ import { pollForNoResults } from "../shared/parser/pollForNoResults";
 import { FlightSearchFormData } from "../shared/types/FlightSearchFormData";
 import { addBackToSearchButton } from "../shared/ui/backToSearch";
 import { stopScrollingNow } from "../shared/ui/stopScrolling";
-import { getFlightPenguinTripId } from "../shared/utilities/getFlightPenguinTripId";
 import { suppressOfferFlightPenguinPopup } from "../shared/utilities/suppressOfferFlightPenguinPopup";
 import { getFlightContainer } from "./parser/getFlightContainer";
 import { FlightObserver } from "./parser/observer";
@@ -61,7 +60,7 @@ chrome.runtime.onMessage.addListener(async function (message, sender, sendRespon
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore
         window.Sentry.captureException(error);
-        sendItineraryNotFound(getFlightPenguinTripId(message.selectedDepartureId, message.selectedReturnId));
+        sendItineraryNotFound(message.itineraryId);
       }
       break;
     default:
