@@ -33,7 +33,7 @@ export const sendItineraries = async ({ flightCards, formData }: SendFlightsProp
       } else {
         const shouldScroll = shouldScrollToPlaceholder(flightCard, true);
         if (shouldScroll) {
-          scrollToCardOrBottom(flightCard);
+          await scrollToCardOrBottom(flightCard);
         }
       }
       continue;
