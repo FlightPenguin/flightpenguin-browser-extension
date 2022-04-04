@@ -168,7 +168,7 @@ export class ProviderManager {
 
   getItineraries(): Itinerary[] {
     return this.itineraries.filter((itin) => {
-      return !this.deletedItineraryIds.includes(itin.getId());
+      return !this.deletedItineraryIds.includes(itin.getId()) && !itin.isDenyListed();
     });
   }
 

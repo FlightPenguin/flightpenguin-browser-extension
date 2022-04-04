@@ -98,4 +98,14 @@ export class Itinerary {
     }
     return index;
   }
+
+  isDenyListed(): boolean {
+    let deny = false;
+    this.trips.forEach((trip) => {
+      if (trip.getCarriers().includes("Southwest") || trip.getCarriers().includes("WN")) {
+        deny = true;
+      }
+    });
+    return deny;
+  }
 }
