@@ -8,7 +8,6 @@ import { MessageResponse } from "../shared/types/MessageResponse";
 import { DisplayableTrip } from "../shared/types/newtypes/DisplayableTrip";
 import { Itinerary } from "../shared/types/newtypes/Itinerary";
 import { WindowConfig } from "../shared/types/WindowConfig";
-import { getUrl as getSouthwestUrl } from "../southwest/mappings/getUrl";
 import { getUrl as getTripUrl } from "../trip/mappings/getUrl";
 import {
   DEFAULT_ON_READY_FUNCTION,
@@ -43,7 +42,6 @@ const defaultProviderState: ProviderState = {
 
 const providerURLBaseMap: { [key: string]: (formData: FlightSearchFormData) => string } = {
   trip: getTripUrl,
-  southwest: getSouthwestUrl,
   momondo: getMomondoUrl,
   kiwi: getKiwiUrl,
   cheapoair: getCheapoairUrl,
