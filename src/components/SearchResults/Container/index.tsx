@@ -3,8 +3,8 @@ import { addDays, startOfToday } from "date-fns";
 import isEqual from "lodash.isequal";
 import React, { useEffect, useState } from "react";
 
+import { DisplayableTrip } from "../../../shared/types/DisplayableTrip";
 import { FlightSearchFormData } from "../../../shared/types/FlightSearchFormData";
-import { DisplayableTrip } from "../../../shared/types/newtypes/DisplayableTrip";
 import { SearchTripMeta } from "../../../shared/types/SearchMeta";
 import { sidePaddingWidth, TripSortDimension } from "../../constants";
 import TimelineGrid from "../Grid";

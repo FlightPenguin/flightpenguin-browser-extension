@@ -2,7 +2,7 @@ import { sendItinerariesEvent } from "../../shared/events";
 import { getNextVisibleSibling } from "../../shared/parser/getNextVisibleSibling";
 import { pause } from "../../shared/pause";
 import { FlightSearchFormData } from "../../shared/types/FlightSearchFormData";
-import { Itinerary } from "../../shared/types/newtypes/Itinerary";
+import { Itinerary } from "../../shared/types/Itinerary";
 import { stopScrollingCheck, stopScrollingNow } from "../../shared/ui/stopScrolling";
 import { getItinerary } from "./getItinerary";
 import { isComplete } from "./isParsingComplete";

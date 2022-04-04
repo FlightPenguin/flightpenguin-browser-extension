@@ -1,8 +1,8 @@
 import { getParsedDate } from "../../../components/utilities/forms";
 import { getFlightDateFromTimeString } from "../../../shared/parser/getFlightDateFromTimeString";
 import { getParsedModalHtml } from "../../../shared/parser/modal/getParsedModalHtml";
-import { FlightInput } from "../../../shared/types/newtypes/Flight";
-import { getTimezoneOffset } from "../../../shared/types/newtypes/utilities/getTimezoneOffset";
+import { FlightInput } from "../../../shared/types/Flight";
+import { getTimezoneOffset } from "../../../shared/types/utilities/getTimezoneOffset";
 import { getDurationInMinutes } from "../../../shared/utilities/getDurationInMinutes";
 import { getAirlineNames } from "./getAirlineNames";
 import { getAirportCodes } from "./getAirportCodes";

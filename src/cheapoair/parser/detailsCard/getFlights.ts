@@ -1,6 +1,6 @@
 import { getParsedDate } from "../../../components/utilities/forms";
+import { FlightInput } from "../../../shared/types/Flight";
 import { FlightSearchFormData } from "../../../shared/types/FlightSearchFormData";
-import { FlightInput } from "../../../shared/types/newtypes/Flight";
 import { getTripContainers } from "./getTripContainers";
 import { getTripFlights } from "./getTripFlights";
 

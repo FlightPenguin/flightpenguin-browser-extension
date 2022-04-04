@@ -1,4 +1,4 @@
-import { DisplayableTrip } from "../../../../shared/types/newtypes/DisplayableTrip";
+import { DisplayableTrip } from "../../../../shared/types/DisplayableTrip";
 import { TripSortDimension } from "../../../constants";
 
 interface GetSortedFlightsProps {

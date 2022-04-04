@@ -1,6 +1,6 @@
 import { sendItinerariesEvent } from "../../shared/events";
 import { FlightSearchFormData } from "../../shared/types/FlightSearchFormData";
-import { Itinerary } from "../../shared/types/newtypes/Itinerary";
+import { Itinerary } from "../../shared/types/Itinerary";
 import { stopScrollingCheck } from "../../shared/ui/stopScrolling";
 import { clickLoadMoreButton } from "../ui/clickLoadMoreButton";
 import { scrollToItineraryCard } from "../ui/scrollToItineraryCard";

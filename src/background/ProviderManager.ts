@@ -3,10 +3,10 @@ import { getUrl as getKiwiUrl } from "../kiwi/mappings/getUrl";
 import { getUrl as getMomondoUrl } from "../momondo/mapping/getUrl";
 import { sendFailedScraper } from "../shared/events";
 import { pause } from "../shared/pause";
+import { DisplayableTrip } from "../shared/types/DisplayableTrip";
 import { FlightSearchFormData } from "../shared/types/FlightSearchFormData";
+import { Itinerary } from "../shared/types/Itinerary";
 import { MessageResponse } from "../shared/types/MessageResponse";
-import { DisplayableTrip } from "../shared/types/newtypes/DisplayableTrip";
-import { Itinerary } from "../shared/types/newtypes/Itinerary";
 import { WindowConfig } from "../shared/types/WindowConfig";
 import { getUrl as getTripUrl } from "../trip/mappings/getUrl";
 import {

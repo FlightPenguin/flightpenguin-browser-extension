@@ -1,7 +1,7 @@
 import { sendFailedScraper, sendItinerariesEvent, sendItineraryNotFound, sendScraperComplete } from "../shared/events";
 import { sendFailed, sendProcessing } from "../shared/events/analytics/scrapers";
 import { FlightSearchFormData } from "../shared/types/FlightSearchFormData";
-import { Itinerary } from "../shared/types/newtypes/Itinerary";
+import { Itinerary } from "../shared/types/Itinerary";
 import { suppressOfferFlightPenguinPopup } from "../shared/utilities/suppressOfferFlightPenguinPopup";
 import { getItinerariesOnPage } from "./parser/getItinerariesOnPage";
 import { CheapoairModalObserver } from "./parser/modalObserver";

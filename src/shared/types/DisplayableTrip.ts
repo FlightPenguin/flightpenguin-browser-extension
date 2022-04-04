@@ -1,4 +1,4 @@
-import { CabinType } from "../../../background/constants";
+import { CabinType } from "../../background/constants";
 import { Trip, TripInput } from "./Trip";
 
 export interface DisplayableTripInput {

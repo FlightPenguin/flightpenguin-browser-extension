@@ -2,8 +2,8 @@ import { Badge, Box, List, Tag, Text } from "bumbag";
 import isEqual from "lodash.isequal";
 import React, { useEffect, useState } from "react";
 
-import { DisplayableTrip } from "../../../shared/types/newtypes/DisplayableTrip";
-import { TripComponent } from "../../../shared/types/newtypes/TripComponent";
+import { DisplayableTrip } from "../../../shared/types/DisplayableTrip";
+import { TripComponent } from "../../../shared/types/TripComponent";
 import { PaymentType } from "../../constants";
 import { TripComponentContainer } from "./TripComponent";
 import { TripLegend } from "./TripLegend";

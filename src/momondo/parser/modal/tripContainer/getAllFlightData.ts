@@ -1,5 +1,5 @@
-import { FlightInput } from "../../../../shared/types/newtypes/Flight";
-import { getTimezoneOffset } from "../../../../shared/types/newtypes/utilities/getTimezoneOffset";
+import { FlightInput } from "../../../../shared/types/Flight";
+import { getTimezoneOffset } from "../../../../shared/types/utilities/getTimezoneOffset";
 import { getFlightData } from "./flightContainer/getFlightData";
 import { getFlightContainers } from "./getFlightContainers";
 

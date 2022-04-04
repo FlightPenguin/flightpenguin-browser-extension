@@ -1,5 +1,5 @@
 import { MissingElementLookupError, MissingFieldParserError } from "../../../../../shared/errors";
-import { LocationInput } from "../../../../../shared/types/newtypes/Location";
+import { LocationInput } from "../../../../../shared/types/Location";
 
 const ELEMENT_SELECTOR = "span[class*='station']";
 

@@ -2,8 +2,8 @@ import { Box, List as BumbagList } from "bumbag";
 import React from "react";
 import { List, ListRowRenderer, WindowScroller } from "react-virtualized";
 
+import { DisplayableTrip } from "../../../shared/types/DisplayableTrip";
 import { FlightSearchFormData } from "../../../shared/types/FlightSearchFormData";
-import { DisplayableTrip } from "../../../shared/types/newtypes/DisplayableTrip";
 import { rowHeight } from "../../constants";
 import { getPaymentType } from "../../SearchForm/utilities/getPaymentType";
 import TimelineRow from "../Row";

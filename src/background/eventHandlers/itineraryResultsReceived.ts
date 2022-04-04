@@ -1,4 +1,4 @@
-import { Itinerary, ItineraryInput } from "../../shared/types/newtypes/Itinerary";
+import { Itinerary, ItineraryInput } from "../../shared/types/Itinerary";
 import { ProviderManager } from "../ProviderManager";
 import { getTripGroupsAndMeta } from "./utilities/getTripGroupsAndMetadata";
 import { sendTripResultsToClient } from "./utilities/sendTripResultsToClient";

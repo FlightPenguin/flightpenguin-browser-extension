@@ -1,5 +1,5 @@
 import { ParserError } from "../../../shared/errors";
-import { FlightInput } from "../../../shared/types/newtypes/Flight";
+import { FlightInput } from "../../../shared/types/Flight";
 import { getTripContainers } from "./getTripContainers";
 import { getAllFlightData } from "./tripContainer/getAllFlightData";
 

@@ -1,4 +1,4 @@
-import AirlineMap from "../../nameMaps/airlineMap";
+import AirlineMap from "../nameMaps/airlineMap";
 
 export interface AirlineInput {
   name: string;

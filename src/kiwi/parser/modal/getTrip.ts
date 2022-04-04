@@ -1,7 +1,7 @@
 import { MissingElementLookupError } from "../../../shared/errors";
-import { FlightInput } from "../../../shared/types/newtypes/Flight";
-import { TripComponentInput } from "../../../shared/types/newtypes/TripComponent";
-import { getTimezoneOffset } from "../../../shared/types/newtypes/utilities/getTimezoneOffset";
+import { FlightInput } from "../../../shared/types/Flight";
+import { TripComponentInput } from "../../../shared/types/TripComponent";
+import { getTimezoneOffset } from "../../../shared/types/utilities/getTimezoneOffset";
 import { getAirlineName } from "./getAirlineName";
 import { getAirports } from "./getAirports";
 import { getDuration } from "./getDuration";

@@ -1,4 +1,4 @@
-import { CabinType } from "../../../../../../background/constants";
+import { CabinType } from "../../../../../background/constants";
 
 export const getCabinMultiplier = (cabin: CabinType): number => {
   switch (cabin) {

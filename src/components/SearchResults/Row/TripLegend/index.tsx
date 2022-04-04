@@ -1,7 +1,7 @@
 import { Box, Text } from "bumbag";
 import React from "react";
 
-import { DisplayableTrip } from "../../../../shared/types/newtypes/DisplayableTrip";
+import { DisplayableTrip } from "../../../../shared/types/DisplayableTrip";
 import { PaymentType } from "../../../constants";
 import { getPointsValue } from "../../../utilities/forms/getPointsValue";
 

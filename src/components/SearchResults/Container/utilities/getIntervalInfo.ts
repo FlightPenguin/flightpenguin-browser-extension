@@ -9,7 +9,7 @@ import {
   startOfHour,
 } from "date-fns";
 
-import { DisplayableTrip } from "../../../../shared/types/newtypes/DisplayableTrip";
+import { DisplayableTrip } from "../../../../shared/types/DisplayableTrip";
 
 export const getIntervalInfo = (
   trips: DisplayableTrip[],

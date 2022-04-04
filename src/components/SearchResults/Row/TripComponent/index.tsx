@@ -1,7 +1,7 @@
 import { Box, Text, Tooltip } from "bumbag";
 import React from "react";
 
-import { TripComponent } from "../../../../shared/types/newtypes/TripComponent";
+import { TripComponent } from "../../../../shared/types/TripComponent";
 import { getTripComponentTooltipText } from "./utilities/getTripComponentTooltipText";
 
 interface TripComponentContainerInput {

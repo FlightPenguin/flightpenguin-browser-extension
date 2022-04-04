@@ -1,6 +1,6 @@
-import { Flight } from "../../../../../shared/types/newtypes/Flight";
-import { Layover } from "../../../../../shared/types/newtypes/Layover";
-import { TripComponent } from "../../../../../shared/types/newtypes/TripComponent";
+import { Flight } from "../../../../../shared/types/Flight";
+import { Layover } from "../../../../../shared/types/Layover";
+import { TripComponent } from "../../../../../shared/types/TripComponent";
 
 export const getTripComponentTooltipText = (tripComponent: TripComponent): string => {
   let text;

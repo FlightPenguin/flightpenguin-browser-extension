@@ -1,4 +1,4 @@
-import { FlightInput } from "../../../../../shared/types/newtypes/Flight";
+import { FlightInput } from "../../../../../shared/types/Flight";
 import { getDurationInMinutes } from "../../../../../shared/utilities/getDurationInMinutes";
 import { getAirlineName } from "./getAirlineName";
 import { getArrivalInfo } from "./getArrivalInfo";

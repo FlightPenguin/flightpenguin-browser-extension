@@ -1,8 +1,8 @@
 import range from "lodash.range";
 import uniqBy from "lodash.uniqby";
 
-import { DisplayableTrip } from "../../../shared/types/newtypes/DisplayableTrip";
-import { Itinerary } from "../../../shared/types/newtypes/Itinerary";
+import { DisplayableTrip } from "../../../shared/types/DisplayableTrip";
+import { Itinerary } from "../../../shared/types/Itinerary";
 import { SearchTripMeta, SearchTripMetaDefault } from "../../../shared/types/SearchMeta";
 
 export const getTripGroupsAndMeta = (

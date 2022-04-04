@@ -1,4 +1,4 @@
-import { TripInputMetadata } from "../../../shared/types/newtypes/Trip";
+import { TripInputMetadata } from "../../../shared/types/Trip";
 import { getAirports } from "./getAirports";
 import { getDuration } from "./getDuration";
 import { getFlightTimes } from "./getFlightTimes";

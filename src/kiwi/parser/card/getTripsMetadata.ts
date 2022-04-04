@@ -1,5 +1,5 @@
 import { MissingElementLookupError, MissingFieldParserError } from "../../../shared/errors";
-import { TripInputMetadata } from "../../../shared/types/newtypes/Trip";
+import { TripInputMetadata } from "../../../shared/types/Trip";
 import { getTripMetadata } from "./getTripMetadata";
 
 const TRIP_CONTAINER_SELECTOR = "div[class*='ResultCardSection'][class*='ResultCardItinerary']";

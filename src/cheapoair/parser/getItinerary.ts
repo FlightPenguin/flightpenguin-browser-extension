@@ -1,9 +1,9 @@
 import { ParserError } from "../../shared/errors";
 import { getFlightDateFromTimeString } from "../../shared/parser/getFlightDateFromTimeString";
 import { FlightSearchFormData } from "../../shared/types/FlightSearchFormData";
-import { Itinerary } from "../../shared/types/newtypes/Itinerary";
-import { TripInput } from "../../shared/types/newtypes/Trip";
-import { TripSourceInput } from "../../shared/types/newtypes/TripSource";
+import { Itinerary } from "../../shared/types/Itinerary";
+import { TripInput } from "../../shared/types/Trip";
+import { TripSourceInput } from "../../shared/types/TripSource";
 import { getDurationInMinutes } from "../../shared/utilities/getDurationInMinutes";
 import { closeDetailsCard } from "../ui/closeDetailsCard";
 import { openDetailsCard } from "../ui/openDetailsCard";

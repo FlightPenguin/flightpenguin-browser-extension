@@ -1,4 +1,4 @@
-import { CabinType } from "../../../background/constants";
+import { CabinType } from "../../background/constants";
 import { DisplayableTrip } from "./DisplayableTrip";
 import { Trip, TripInput } from "./Trip";
 import { TripSource, TripSourceInput } from "./TripSource";

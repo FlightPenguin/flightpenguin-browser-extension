@@ -1,4 +1,4 @@
-import { Itinerary } from "../../shared/types/newtypes/Itinerary";
+import { Itinerary } from "../../shared/types/Itinerary";
 import { BOOKING_ID_MAP_STORAGE_KEY, BOOKING_INDICATOR_STORAGE_KEY } from "../constants";
 import { getBookingUrl } from "../mappings/getBookingUrl";
 

@@ -1,8 +1,8 @@
 import { addHours, addMinutes } from "date-fns";
 
+import { DisplayableTrip } from "../../../../shared/types/DisplayableTrip";
 import { FlightSearchFormData } from "../../../../shared/types/FlightSearchFormData";
-import { DisplayableTrip } from "../../../../shared/types/newtypes/DisplayableTrip";
-import { Trip } from "../../../../shared/types/newtypes/Trip";
+import { Trip } from "../../../../shared/types/Trip";
 import { getParsedDate } from "../../../utilities/forms";
 
 export const getSkeletonTrips = (formData: FlightSearchFormData, containerIndex: number): DisplayableTrip[] => {

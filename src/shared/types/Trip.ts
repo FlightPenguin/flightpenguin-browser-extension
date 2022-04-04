@@ -1,6 +1,6 @@
 import { differenceInCalendarDays } from "date-fns";
 
-import { CabinType } from "../../../background/constants";
+import { CabinType } from "../../background/constants";
 import { Flight } from "./Flight";
 import { Layover } from "./Layover";
 import { Location, LocationInput } from "./Location";

@@ -1,4 +1,4 @@
-import { DisplayableTrip } from "../types/newtypes/DisplayableTrip";
+import { DisplayableTrip } from "../types/DisplayableTrip";
 
 export const sendTripSelected = (selectedTrips: DisplayableTrip[]): void => {
   chrome.runtime.sendMessage({

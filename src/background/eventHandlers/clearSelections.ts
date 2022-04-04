@@ -1,4 +1,4 @@
-import { DisplayableTrip, DisplayableTripInput } from "../../shared/types/newtypes/DisplayableTrip";
+import { DisplayableTrip, DisplayableTripInput } from "../../shared/types/DisplayableTrip";
 import { ProviderManager } from "../ProviderManager";
 import { sendTripResultsToClient } from "./utilities/sendTripResultsToClient";
 

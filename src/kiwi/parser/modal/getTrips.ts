@@ -1,6 +1,6 @@
 import { MissingElementLookupError, MissingFieldParserError } from "../../../shared/errors";
 import { getParsedModalHtml } from "../../../shared/parser/modal/getParsedModalHtml";
-import { TripComponentInput } from "../../../shared/types/newtypes/TripComponent";
+import { TripComponentInput } from "../../../shared/types/TripComponent";
 import { getKiwiFlightId } from "../../shared/getKiwiFlightId";
 import { setModalHtml } from "../../ui/setModalHtml";
 import { getTrip } from "./getTrip";

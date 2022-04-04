@@ -1,5 +1,5 @@
 import { FlightSearchFormData } from "../../shared/types/FlightSearchFormData";
-import { Itinerary } from "../../shared/types/newtypes/Itinerary";
+import { Itinerary } from "../../shared/types/Itinerary";
 import { getContractIds } from "./getContractIds";
 import { getItinerary } from "./getItinerary";
 import { waitForPageLoad } from "./waitForPageLoad";

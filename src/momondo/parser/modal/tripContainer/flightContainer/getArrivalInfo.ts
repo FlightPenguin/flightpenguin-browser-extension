@@ -1,5 +1,5 @@
 import { MissingElementLookupError } from "../../../../../shared/errors";
-import { LocationInput } from "../../../../../shared/types/newtypes/Location";
+import { LocationInput } from "../../../../../shared/types/Location";
 import { getAirport } from "./getAirport";
 import { getFlightTime } from "./getFlightTime";
 

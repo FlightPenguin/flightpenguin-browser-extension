@@ -1,7 +1,7 @@
-import { differenceInCalendarDays } from "date-fns";
+import { addMinutes, differenceInCalendarDays } from "date-fns";
 
-import { CabinType } from "../../../background/constants";
-import { Airline } from "./Airline";
+import { CabinType } from "../../background/constants";
+import { Airline, AirlineInput } from "./Airline";
 import { Location, LocationInput } from "./Location";
 import { getFormattedDuration } from "./utilities/getFormattedDuration";
 import { getFormattedTime } from "./utilities/getFormattedTime";
@@ -9,22 +9,23 @@ import { getParsedISODate } from "./utilities/getParsedISODate";
 import { getParsedNumber } from "./utilities/getParsedNumber";
 import { getTimebarPositions } from "./utilities/getTimebarPositions";
 import { getTimezoneOffset } from "./utilities/getTimezoneOffset";
-import { getLayoverMultiplier } from "./utilities/pain/layover/getLayoverMultiplier";
+import { getFlightMultiplier } from "./utilities/pain/flight/getFlightMultiplier";
 import { getCabinMultiplier } from "./utilities/pain/shared/getCabinMultiplier";
 import { getCostPerMinute } from "./utilities/pain/shared/getCostPerMinute";
 import { getSmoothDuration } from "./utilities/pain/shared/getSmoothDuration";
 
-export interface LayoverInput {
+export interface FlightInput {
   arrivalLocalDateTime: Date | string;
-  arrivalLocation: Location | LocationInput;
-  arrivalTripStartDateTime: Date | string;
+  arrivalLocation: LocationInput;
   departureLocalDateTime: Date | string;
-  departureLocation: Location | LocationInput;
-  departureTripStartDateTime: Date | string;
-  durationMinutes: number;
+  departureLocation: LocationInput;
+  durationMinutes: number | string;
+  marketingAirline: AirlineInput;
+  operatingAirline?: AirlineInput;
+  elapsedTimezoneOffset: number;
 }
 
-export class Layover {
+export class Flight {
   private arrivalLocalDateTime: Date;
   private arrivalLocation: Location;
   private arrivalTripStartDateTime: Date;
@@ -32,6 +33,9 @@ export class Layover {
   private departureLocation: Location;
   private departureTripStartDateTime: Date;
   private durationMinutes: number;
+  private elapsedTimezoneOffset: number;
+  private marketingAirline: Airline;
+  private operatingAirline?: Airline;
 
   private id: string;
   private type: string;
@@ -39,32 +43,36 @@ export class Layover {
   constructor({
     arrivalLocalDateTime,
     arrivalLocation,
-    arrivalTripStartDateTime,
     departureLocalDateTime,
     departureLocation,
-    departureTripStartDateTime,
     durationMinutes,
-  }: LayoverInput) {
+    marketingAirline,
+    operatingAirline,
+    elapsedTimezoneOffset,
+  }: FlightInput) {
     this.arrivalLocalDateTime = getParsedISODate(arrivalLocalDateTime);
-    this.arrivalLocation =
-      arrivalLocation.constructor.name === "Location"
-        ? (arrivalLocation as Location)
-        : new Location(arrivalLocation as LocationInput);
-    this.arrivalTripStartDateTime = getParsedISODate(arrivalTripStartDateTime);
+    this.arrivalLocation = new Location(arrivalLocation);
     this.departureLocalDateTime = getParsedISODate(departureLocalDateTime);
-    this.departureLocation =
-      departureLocation.constructor.name === "Location"
-        ? (departureLocation as Location)
-        : new Location(departureLocation as LocationInput);
-    this.departureTripStartDateTime = getParsedISODate(departureTripStartDateTime);
+    this.departureLocation = new Location(departureLocation);
     this.durationMinutes = getParsedNumber(durationMinutes);
-    this.type = "LAYOVER";
+    this.elapsedTimezoneOffset = elapsedTimezoneOffset;
+    this.marketingAirline = new Airline(marketingAirline);
+    this.operatingAirline = operatingAirline ? new Airline(operatingAirline) : undefined;
+    this.type = "FLIGHT";
 
-    this.id = this.getCalculatedId();
+    this.departureTripStartDateTime = this.getCalculatedDepartureTripStartDateTime(
+      this.departureLocalDateTime,
+      this.elapsedTimezoneOffset,
+    );
+    this.arrivalTripStartDateTime = this.getCalculatedArrivalTripStartDateTime(
+      this.departureTripStartDateTime,
+      this.durationMinutes,
+    );
+    this.id = this.getCalculatedId(this.getAirline(), this.getDepartureLocalDateTime(), this.getArrivalLocalDateTime());
   }
 
   getAirline(): Airline {
-    return new Airline({ name: `Layover in ${this.departureLocation.getCode()}` });
+    return this.operatingAirline ? this.operatingAirline : this.marketingAirline;
   }
 
   getArrivalLocalDateTime(): Date {
@@ -123,35 +131,34 @@ export class Layover {
     return this.id;
   }
 
-  getType(): string {
-    return this.type;
-  }
-
   getTimezoneOffset(): number {
     return getTimezoneOffset(this.arrivalLocalDateTime, this.departureLocalDateTime, this.durationMinutes);
   }
 
-  getCalculatedId(): string {
-    let locationToken = this.getDepartureLocation().getCode();
-    if (this.getArrivalLocation() && this.getDepartureLocation().getCode() !== this.getArrivalLocation().getCode()) {
-      locationToken = `${locationToken}+${this.getArrivalLocation().getCode()}`;
-    }
-
-    return `${this.getDepartureLocalDateTime().valueOf()}-${this.getArrivalLocalDateTime().valueOf()}-${locationToken}`;
+  getType(): string {
+    return this.type;
   }
 
-  getCalculatedPain(cabin: CabinType): number {
-    const durationMultiplier = getLayoverMultiplier(this);
+  getCalculatedArrivalTripStartDateTime(departureTime: Date, durationMinutes: number): Date {
+    return addMinutes(departureTime, durationMinutes);
+  }
+
+  getCalculatedDepartureTripStartDateTime(departureLocalTime: Date, elapsedTimezoneOffset: number): Date {
+    return addMinutes(departureLocalTime, elapsedTimezoneOffset * -1);
+  }
+
+  getCalculatedId(airline: Airline, departureTime: Date, arrivalTime: Date): string {
+    return `${departureTime.valueOf()}-${arrivalTime.valueOf()}-${airline.getName()}`;
+  }
+
+  getCalculatedPain(cabin: CabinType, debug = false): number {
+    const durationMultiplier = getFlightMultiplier(this);
 
     const smoothedDuration = getSmoothDuration(this.durationMinutes);
     const cabinMultiplier = getCabinMultiplier(cabin);
     const costPerMinute = getCostPerMinute(cabinMultiplier);
 
     return smoothedDuration * durationMultiplier * cabinMultiplier * costPerMinute;
-  }
-
-  isTransfer(): boolean {
-    return this.departureLocation.getCode() !== this.arrivalLocation.getCode();
   }
 
   getTimebarPositions({
@@ -170,8 +177,8 @@ export class Layover {
       containerStartTime,
       containerEndTime,
       containerWidth,
-      timebarStartTime: this.arrivalTripStartDateTime,
-      timebarEndTime: this.departureTripStartDateTime,
+      timebarStartTime: this.departureTripStartDateTime,
+      timebarEndTime: this.arrivalTripStartDateTime,
     });
   }
 }
