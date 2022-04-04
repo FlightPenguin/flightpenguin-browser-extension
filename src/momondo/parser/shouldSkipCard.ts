@@ -1,9 +1,12 @@
-const AD_SELECTOR = "div[class*='Flights-Results-MultiModalUpsellResult']";
+const UPDATE_FILTER_AD_SELECTOR = "div[class*='Flights-Results-MultiModalUpsellResult']";
+const INLINE_AD_SELECTOR = "[class*='inlineAd']";
 
 export const shouldSkipCard = (itineraryCard: HTMLElement): boolean => {
-  return [isSponsoredCard(itineraryCard), isBusCard(itineraryCard), isAdvertisementCard(itineraryCard)].some(
-    (value) => value,
-  );
+  return [
+    isSponsoredCard(itineraryCard),
+    isBusCard(itineraryCard),
+    isUpdateFilterAdvertisementCard(itineraryCard),
+  ].some((value) => value);
 };
 
 const isBusCard = (itineraryCard: HTMLElement): boolean => {
@@ -14,14 +17,10 @@ const isBusCard = (itineraryCard: HTMLElement): boolean => {
   return rawText.toLowerCase().includes(" bus ");
 };
 
-const isAdvertisementCard = (itineraryCard: HTMLElement): boolean => {
-  return !!itineraryCard.closest(AD_SELECTOR);
+const isUpdateFilterAdvertisementCard = (itineraryCard: HTMLElement): boolean => {
+  return !!itineraryCard.closest(UPDATE_FILTER_AD_SELECTOR);
 };
 
 const isSponsoredCard = (itineraryCard: HTMLElement): boolean => {
-  const rawText = itineraryCard.textContent;
-  if (!rawText) {
-    return false;
-  }
-  return rawText.toLowerCase().includes(" sponsored ");
+  return !!itineraryCard.querySelector(INLINE_AD_SELECTOR);
 };
