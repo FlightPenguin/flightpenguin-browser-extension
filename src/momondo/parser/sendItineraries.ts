@@ -38,7 +38,7 @@ export const sendItineraries = async (
     sendItinerariesEvent("momondo", itineraries);
   }
 
-  const complete = isComplete();
+  const complete = await isComplete();
   if (!complete && !(await stopScrollingCheck(false))) {
     await clickLoadMoreButton();
   }
