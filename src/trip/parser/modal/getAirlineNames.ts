@@ -36,6 +36,7 @@ export const getAirlineNames = (container: HTMLDivElement): { marketingAirlineNa
 
   const airlineName = matches.groups["airlineName"];
   if (!airlineName) {
+    window.Sentry.captureMessage(`unexpected text match failure with text: ${flightElement.textContent}`);
     throw new MissingFieldParserError("Unable to extract airline name from regex");
   }
 
