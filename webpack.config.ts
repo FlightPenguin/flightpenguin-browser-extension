@@ -8,8 +8,6 @@ const defaultEntry = {
   cheapoair: "./src/cheapoair/contentScript.ts",
   index: "./src/index.js",
   momondo: "./src/momondo/contentScript.ts",
-  southwest: "./src/southwest/contentScript.ts",
-  southwestEmpty: "./src/southwest/emptyResultsContentScript.ts",
   kiwi: "./src/kiwi/contentScript.ts",
   trip: "./src/trip/contentScript.ts",
   generic: "./src/generic/contentScript.ts",
