@@ -14,13 +14,13 @@ describe("happy path", () => {
     const departureDateTime = startOfToday();
     const arrivalDateTime = addHours(startOfToday(), 2);
     const value = getTimezoneOffset(arrivalDateTime, departureDateTime, 60);
-    expect(value).toEqual(-60);
+    expect(value).toEqual(60);
   });
 
   it("is behind departure time", () => {
     const departureDateTime = startOfToday();
     const arrivalDateTime = addHours(startOfToday(), 2);
     const value = getTimezoneOffset(arrivalDateTime, departureDateTime, 180);
-    expect(value).toEqual(60);
+    expect(value).toEqual(-60);
   });
 });

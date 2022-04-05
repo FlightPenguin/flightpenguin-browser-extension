@@ -5,7 +5,7 @@ describe("sendItineraryNotFound happy path", () => {
     sendItineraryNotFound("abcd1234");
 
     expect(chrome.runtime.sendMessage).toBeCalledWith({
-      event: "FLIGHT_NOT_FOUND",
+      event: "ITINERARY_NOT_FOUND",
       id: "abcd1234",
     });
   });

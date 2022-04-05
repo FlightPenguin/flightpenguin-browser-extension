@@ -2,13 +2,15 @@ import { sendItinerariesEvent } from "./sendItineraries";
 
 describe("sendItineraries happy path", () => {
   it("calls chrome.runtime.sendMessage with the correct results", () => {
-    const flights = [{ cat: "meow" }];
+    const itineraries = [{ cat: "meow" }];
 
-    sendItinerariesEvent("donkey", flights);
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    sendItinerariesEvent("donkey", itineraries);
 
     expect(chrome.runtime.sendMessage).toBeCalledWith({
-      event: "FLIGHT_RESULTS_RECEIVED",
-      flights: flights,
+      event: "ITINERARY_RESULTS",
+      itineraries: itineraries,
       provider: "donkey",
     });
   });

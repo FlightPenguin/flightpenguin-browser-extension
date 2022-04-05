@@ -7,7 +7,7 @@ describe("getTrackPosition happy path tests", () => {
         const value = getTrackPosition({
           intervals: [0, 4, 8],
           index: 0,
-          flightTimeContainerWidth: 1117,
+          tripContainerWidth: 1117,
           value: [0, 32],
         });
         expect(value).toMatchObject({ left: 0, right: 1117 });
@@ -17,7 +17,7 @@ describe("getTrackPosition happy path tests", () => {
         const value = getTrackPosition({
           intervals: [0, 4, 8],
           index: 0,
-          flightTimeContainerWidth: 1117,
+          tripContainerWidth: 1117,
           value: [1, 32],
         });
         expect(value).toMatchObject({ left: 0, right: 1082.09 });
@@ -27,7 +27,7 @@ describe("getTrackPosition happy path tests", () => {
         const value = getTrackPosition({
           intervals: [0, 4, 8],
           index: 0,
-          flightTimeContainerWidth: 1117,
+          tripContainerWidth: 1117,
           value: [0, 31],
         });
         expect(value).toMatchObject({ left: 0, right: 1117 });
@@ -37,7 +37,7 @@ describe("getTrackPosition happy path tests", () => {
         const value = getTrackPosition({
           intervals: [0, 4, 8],
           index: 0,
-          flightTimeContainerWidth: 1117,
+          tripContainerWidth: 1117,
           value: [5, 27],
         });
         expect(value).toMatchObject({ left: 0, right: 942.47 });
@@ -49,7 +49,7 @@ describe("getTrackPosition happy path tests", () => {
         const value = getTrackPosition({
           intervals: [0, 4, 8],
           index: 0,
-          flightTimeContainerWidth: 1117,
+          tripContainerWidth: 1117,
           value: [0, 33],
         });
         expect(value).toMatchObject({ left: 0, right: 1117 });
@@ -59,7 +59,7 @@ describe("getTrackPosition happy path tests", () => {
         const value = getTrackPosition({
           intervals: [0, 4, 8],
           index: 0,
-          flightTimeContainerWidth: 1117,
+          tripContainerWidth: 1117,
           value: [-1, 32],
         });
         expect(value).toMatchObject({ left: 0, right: 1117 });
@@ -73,7 +73,7 @@ describe("getTrackPosition happy path tests", () => {
         const value = getTrackPosition({
           intervals: [0, 4, 8],
           index: 1,
-          flightTimeContainerWidth: 1117,
+          tripContainerWidth: 1117,
           value: [0, 32],
         });
         expect(value).toMatchObject({ left: 0, right: 0 });
@@ -83,7 +83,7 @@ describe("getTrackPosition happy path tests", () => {
         const value = getTrackPosition({
           intervals: [0, 4, 8],
           index: 1,
-          flightTimeContainerWidth: 1117,
+          tripContainerWidth: 1117,
           value: [1, 32],
         });
         expect(value).toMatchObject({ left: 34.91, right: 0 });
@@ -93,7 +93,7 @@ describe("getTrackPosition happy path tests", () => {
         const value = getTrackPosition({
           intervals: [0, 4, 8],
           index: 1,
-          flightTimeContainerWidth: 1117,
+          tripContainerWidth: 1117,
           value: [0, 31],
         });
         expect(value).toMatchObject({ left: 0, right: 34.91 });
@@ -103,7 +103,7 @@ describe("getTrackPosition happy path tests", () => {
         const value = getTrackPosition({
           intervals: [0, 4, 8],
           index: 1,
-          flightTimeContainerWidth: 1117,
+          tripContainerWidth: 1117,
           value: [5, 27],
         });
         expect(value).toMatchObject({ left: 174.53, right: 174.53 });
@@ -115,7 +115,7 @@ describe("getTrackPosition happy path tests", () => {
         const value = getTrackPosition({
           intervals: [0, 4, 8],
           index: 1,
-          flightTimeContainerWidth: 1117,
+          tripContainerWidth: 1117,
           value: [0, 33],
         });
         expect(value).toMatchObject({ left: 0, right: 0 });
@@ -125,7 +125,7 @@ describe("getTrackPosition happy path tests", () => {
         const value = getTrackPosition({
           intervals: [0, 4, 8],
           index: 1,
-          flightTimeContainerWidth: 1117,
+          tripContainerWidth: 1117,
           value: [-1, 32],
         });
         expect(value).toMatchObject({ left: 0, right: 0 });
@@ -139,7 +139,7 @@ describe("getTrackPosition happy path tests", () => {
         const value = getTrackPosition({
           intervals: [0, 4, 8],
           index: 2,
-          flightTimeContainerWidth: 1117,
+          tripContainerWidth: 1117,
           value: [0, 32],
         });
         expect(value).toMatchObject({ left: 1117, right: 0 });
@@ -149,7 +149,7 @@ describe("getTrackPosition happy path tests", () => {
         const value = getTrackPosition({
           intervals: [0, 4, 8],
           index: 2,
-          flightTimeContainerWidth: 1117,
+          tripContainerWidth: 1117,
           value: [1, 32],
         });
         expect(value).toMatchObject({ left: 1117, right: 0 });
@@ -159,7 +159,7 @@ describe("getTrackPosition happy path tests", () => {
         const value = getTrackPosition({
           intervals: [0, 4, 8],
           index: 2,
-          flightTimeContainerWidth: 1117,
+          tripContainerWidth: 1117,
           value: [0, 31],
         });
         expect(value).toMatchObject({ left: 1082.09, right: 0 });
@@ -169,7 +169,7 @@ describe("getTrackPosition happy path tests", () => {
         const value = getTrackPosition({
           intervals: [0, 4, 8],
           index: 2,
-          flightTimeContainerWidth: 1117,
+          tripContainerWidth: 1117,
           value: [5, 27],
         });
         expect(value).toMatchObject({ left: 942.47, right: 0 });
@@ -181,7 +181,7 @@ describe("getTrackPosition happy path tests", () => {
         const value = getTrackPosition({
           intervals: [0, 4, 8],
           index: 2,
-          flightTimeContainerWidth: 1117,
+          tripContainerWidth: 1117,
           value: [0, 33],
         });
         expect(value).toMatchObject({ left: 1117, right: 0 });
@@ -191,7 +191,7 @@ describe("getTrackPosition happy path tests", () => {
         const value = getTrackPosition({
           intervals: [0, 4, 8],
           index: 2,
-          flightTimeContainerWidth: 1117,
+          tripContainerWidth: 1117,
           value: [-1, 32],
         });
         expect(value).toMatchObject({ left: 1117, right: 0 });
@@ -206,7 +206,7 @@ describe("getTrackPosition invalid input", () => {
       getTrackPosition({
         intervals: [0, 4, 8, NaN],
         index: 2,
-        flightTimeContainerWidth: 1117,
+        tripContainerWidth: 1117,
         value: [0, 33],
       });
     }).toThrow("Invalid value(s) for intervals (0,4,8,NaN) in getTrackPosition");
@@ -217,21 +217,21 @@ describe("getTrackPosition invalid input", () => {
       getTrackPosition({
         intervals: [0, 4, 8],
         index: NaN,
-        flightTimeContainerWidth: 1117,
+        tripContainerWidth: 1117,
         value: [0, 33],
       });
     }).toThrow("Invalid value(s) for index (NaN) in getTrackPosition");
   });
 
-  it("has NaN for flightTimeContainerWidth", () => {
+  it("has NaN for tripContainerWidth", () => {
     expect(() => {
       getTrackPosition({
         intervals: [0, 4, 8],
         index: 2,
-        flightTimeContainerWidth: NaN,
+        tripContainerWidth: NaN,
         value: [0, 33],
       });
-    }).toThrow("Invalid value(s) for flightTimeContainerWidth (NaN) in getTrackPosition");
+    }).toThrow("Invalid value(s) for tripContainerWidth (NaN) in getTrackPosition");
   });
 
   it("has NaN in value", () => {
@@ -239,7 +239,7 @@ describe("getTrackPosition invalid input", () => {
       getTrackPosition({
         intervals: [0, 4, 8],
         index: 2,
-        flightTimeContainerWidth: 1117,
+        tripContainerWidth: 1117,
         value: [0, 33, NaN],
       });
     }).toThrow("Invalid value(s) for value (0,33,NaN) in getTrackPosition");
@@ -250,11 +250,11 @@ describe("getTrackPosition invalid input", () => {
       getTrackPosition({
         intervals: [0, 4, 8, NaN],
         index: NaN,
-        flightTimeContainerWidth: NaN,
+        tripContainerWidth: NaN,
         value: [0, 33, NaN],
       });
     }).toThrow(
-      "Invalid value(s) for flightTimeContainerWidth (NaN), index (NaN), intervals (0,4,8,NaN), value (0,33,NaN) in getTrackPosition",
+      "Invalid value(s) for tripContainerWidth (NaN), index (NaN), intervals (0,4,8,NaN), value (0,33,NaN) in getTrackPosition",
     );
   });
 });
