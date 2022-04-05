@@ -11,6 +11,7 @@ export const waitForDisappearance = async (
   if (doc.querySelector(selector)) {
     const loadingIndicator = await waitForTheElementToDisappear(selector, {
       timeout: loadingTimeout,
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
       scope: doc,
     });
@@ -29,12 +30,14 @@ export const waitForAppearance = async (
 ): Promise<HTMLElement> => {
   let container = doc.querySelector(selector);
   if (!container) {
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     container = await waitForTheElement(selector, { timeout: loadingTimeout, scope: doc });
     if (!container) {
       throw new LoadingTimeoutParserError(`Render of ${selector} failed to complete in ${loadingTimeout}`);
     }
   }
-  return container;
+  return container as HTMLElement;
 };
 
 export const waitForInvisible = async (

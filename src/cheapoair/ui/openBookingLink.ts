@@ -13,8 +13,7 @@ export const openBookingLink = async (itineraryId: string, knownItineraries: Iti
 
   sessionStorage.setItem(BOOKING_INDICATOR_STORAGE_KEY, cheapoAirId);
 
-  const url = getBookingUrl(cheapoAirId);
-  window.location.href = url;
+  window.location.href = getBookingUrl(cheapoAirId);
 };
 
 const getOrSetCachedIdMap = (knownItineraries: Itinerary[]) => {

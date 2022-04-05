@@ -1,4 +1,3 @@
-import { FlightSearchFormData } from "../../../shared/types/FlightSearchFormData";
 import { getBookingLink } from "./getBookingLink";
 import { getFare } from "./getFare";
 import { getTrackingId } from "./getTrackingId";

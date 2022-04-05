@@ -7,7 +7,6 @@ import { MarketingFooter } from "../../components/MarketingFooter";
 import { LoginModal, WelcomeModal } from "../../components/Modals";
 import NavigationBar from "../../components/NavigationBar";
 import { SearchForm } from "../../components/SearchForm";
-import { Airport } from "../../components/SearchForm/api/airports/Airport";
 import SearchFormDisplay from "../../components/SearchFormDisplay";
 import SearchResults from "../../components/SearchResults";
 import { SizeAlert } from "../../components/SizeAlert";

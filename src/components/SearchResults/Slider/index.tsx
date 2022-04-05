@@ -3,7 +3,6 @@ import isEqual from "lodash.isequal";
 import React, { useEffect, useState } from "react";
 import ReactSlider from "react-slider";
 
-import { FlightType } from "../../../background/constants";
 import { getDateValueInRange } from "../../../shared/utilities/getDateValueInRange";
 import Thumb from "./Thumb";
 import Track from "./Track";

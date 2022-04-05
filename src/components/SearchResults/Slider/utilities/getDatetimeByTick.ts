@@ -1,7 +1,5 @@
 import { addMinutes, format } from "date-fns";
 
-import { FlightType } from "../../../../background/constants";
-
 interface GetDatetimeByTickProps {
   startDate: Date;
   value: number;

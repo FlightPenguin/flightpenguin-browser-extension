@@ -6,6 +6,5 @@ export * from "./sendItineraries";
 export * from "./sendItineraryNotFound";
 export * from "./sendNoFlights";
 export * from "./sendOpenExtension";
-export * from "./sendReturnFlights";
 export * from "./sendTripSelected";
 export * from "./sendScraperComplete";

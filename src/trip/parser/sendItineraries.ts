@@ -17,7 +17,6 @@ interface SendFlightsResults {
 }
 
 const UNRETRIEVED_SELECTOR = "div.list-placeholder";
-const VISITED_FLIGHT_CARD_SELECTOR = "div[data-fpid]";
 
 export const sendItineraries = async ({ flightCards, formData }: SendFlightsProps): Promise<SendFlightsResults> => {
   const itineraries: Itinerary[] = [];

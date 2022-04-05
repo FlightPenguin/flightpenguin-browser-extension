@@ -1,4 +1,4 @@
-import { MissingElementLookupError, MissingFieldParserError } from "../../../shared/errors";
+import { MissingElementLookupError } from "../../../shared/errors";
 import { AirportDetails } from "../../../shared/types/AirportDetails";
 
 const AIRPORT_NAME_SELECTOR = "div[class*='StationName']";

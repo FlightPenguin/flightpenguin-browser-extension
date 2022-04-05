@@ -2,7 +2,6 @@ import { Box, Icon, Text } from "bumbag";
 import isEqual from "lodash.isequal";
 import React, { HTMLProps, useState } from "react";
 
-import { FlightType } from "../../../../background/constants";
 import { getValueInRange } from "../../../../shared/utilities/getValueInRange";
 import { rowHeight } from "../../../constants";
 import { thumbWidthValue, thumbWidthWrapperValue } from "../constants";

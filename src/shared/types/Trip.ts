@@ -171,7 +171,7 @@ export class Trip {
     return layovers.length;
   }
 
-  getCalculatedPain(cabin: CabinType) {
+  getCalculatedPain(cabin: CabinType): number {
     const layoverCount = this.getCalculatedLayoverCount();
     const layoverTax = 1 + 0.05 * layoverCount;
 

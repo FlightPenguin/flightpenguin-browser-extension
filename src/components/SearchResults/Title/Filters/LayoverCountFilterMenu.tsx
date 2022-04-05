@@ -1,4 +1,4 @@
-import { Box, DropdownMenu, Group, Tag, Text } from "bumbag";
+import { Box, DropdownMenu, Group, Tag } from "bumbag";
 import capitalize from "lodash.capitalize";
 import isEqual from "lodash.isequal";
 import * as numberToWords from "number-to-words";

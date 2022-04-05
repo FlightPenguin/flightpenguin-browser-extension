@@ -23,7 +23,7 @@ const getFlights = (tripSection: HTMLDivElement): FlightInput[] => {
   }
 
   let elapsedTimezoneOffset = 0;
-  const trip = Array.from(flightContainers)
+  return Array.from(flightContainers)
     .filter((flightContainer, index) => {
       if (index % 2 === 0) {
         return flightContainer;
@@ -39,7 +39,6 @@ const getFlights = (tripSection: HTMLDivElement): FlightInput[] => {
       elapsedTimezoneOffset += flightTimezoneOffset;
       return input;
     });
-  return trip;
 };
 
 const getFlightInput = (flightContainer: HTMLDivElement, elapsedTimezoneOffset: number): FlightInput => {

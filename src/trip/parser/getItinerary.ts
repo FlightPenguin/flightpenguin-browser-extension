@@ -1,5 +1,4 @@
 import { getFlightDateFromTimeString } from "../../shared/parser/getFlightDateFromTimeString";
-import { getTripId } from "../../shared/parser/getTripId";
 import { FlightSearchFormData } from "../../shared/types/FlightSearchFormData";
 import { Itinerary } from "../../shared/types/Itinerary";
 import { TripInput } from "../../shared/types/Trip";

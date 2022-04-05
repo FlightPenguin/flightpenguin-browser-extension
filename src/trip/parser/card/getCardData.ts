@@ -1,4 +1,3 @@
-import { getFlightId } from "../../../shared/parser/getFlightId";
 import { getDuration } from "./getDuration";
 import { getFare } from "./getFare";
 import { getFlightTimes } from "./getFlightTimes";
@@ -9,7 +8,6 @@ interface FlightCardData {
   departureTime: string;
   duration: string;
   marketingAirline: string;
-  id: string;
 }
 
 interface FlightsCardData {
@@ -46,7 +44,6 @@ const getFlightContainerDetails = (container: HTMLDivElement): FlightCardData =>
   const { arrivalTime, departureTime } = getFlightTimes(container);
   const { duration } = getDuration(container);
   const { marketingAirline } = getMarketingAirlineName(container);
-  const id = getFlightId({ arrivalTime, departureTime, airlineName: marketingAirline });
 
-  return { arrivalTime, departureTime, duration, id, marketingAirline };
+  return { arrivalTime, departureTime, duration, marketingAirline };
 };

@@ -26,7 +26,7 @@ export const TimeCell = ({
   departureAirportCode,
   arrivalAirportCode,
   timeFontSize,
-}: TimeCellProps) => {
+}: TimeCellProps): React.ReactElement => {
   const date = addDays(startDate, daysCounter);
   const time = addHours(date, interval);
   const displayTime = format(time, "h aaa");

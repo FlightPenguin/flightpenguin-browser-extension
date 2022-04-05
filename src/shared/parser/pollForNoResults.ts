@@ -1,4 +1,3 @@
-import { SearchType } from "../../background/constants";
 import { sendNoFlightsEvent } from "../events";
 import { pause } from "../pause";
 

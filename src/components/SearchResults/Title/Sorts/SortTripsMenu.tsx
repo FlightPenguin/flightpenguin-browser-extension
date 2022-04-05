@@ -1,7 +1,7 @@
 import { DropdownMenu, Group, Tag } from "bumbag";
 import React, { useState } from "react";
 
-import { TripSortDimension, TripSortDimensionDisplayMap } from "../../../constants";
+import { TripSortDimension } from "../../../constants";
 
 interface SortTripsMenuProps {
   loading: boolean;
