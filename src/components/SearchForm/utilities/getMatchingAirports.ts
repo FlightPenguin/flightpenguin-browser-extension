@@ -22,6 +22,14 @@ export const getMatchingAirports = (searchText: string, airports: SearchAirport[
     })
     .slice(0, 10)
     .sort((a, b) => {
+      if (cleanedText.length === 3) {
+        if (cleanedText.toUpperCase() === a.item.iataCode.toUpperCase()) {
+          return -1;
+        }
+        if (cleanedText.toUpperCase() === b.item.iataCode.toUpperCase()) {
+          return 1;
+        }
+      }
       return Number(b.item.flightsWeight) - Number(a.item.flightsWeight);
     })
     .map((record) => {
