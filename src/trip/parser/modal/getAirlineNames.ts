@@ -28,11 +28,15 @@ export const getAirlineNames = (container: HTMLDivElement): { marketingAirlineNa
 
   const matches = flightElement.textContent.match(AIRLINE_NAME_REGEX);
   if (!matches || !matches.groups) {
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    window.Sentry.captureMessage(`unexpected text match failure with text: ${flightElement.textContent}`);
     throw new MissingFieldParserError("Name text does not match regex");
   }
 
   const airlineName = matches.groups["airlineName"];
   if (!airlineName) {
+    window.Sentry.captureMessage(`unexpected text match failure with text: ${flightElement.textContent}`);
     throw new MissingFieldParserError("Unable to extract airline name from regex");
   }
 
