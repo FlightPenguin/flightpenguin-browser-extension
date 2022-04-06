@@ -1,4 +1,5 @@
 import { Box, Text, Tooltip } from "bumbag";
+import isEqual from "lodash.isequal";
 import React from "react";
 
 import { TripComponent } from "../../../../shared/types/TripComponent";
@@ -10,11 +11,7 @@ interface TripComponentContainerInput {
   layout: { startX: number; width: number };
 }
 
-export const TripComponentContainer = ({
-  tripComponent,
-  layout,
-  left,
-}: TripComponentContainerInput): React.ReactElement => {
+const TripComponentContainer = ({ tripComponent, layout, left }: TripComponentContainerInput): React.ReactElement => {
   const isLayover = tripComponent.getObject().getType() === "LAYOVER";
 
   return (
@@ -61,4 +58,16 @@ export const TripComponentContainer = ({
       )}
     </Box>
   );
+};
+
+export default React.memo(TripComponentContainer, (previous, next) => {
+  return isEqual(getComparableProperties(previous), getComparableProperties(next));
+});
+
+const getComparableProperties = (input: TripComponentContainerInput) => {
+  return {
+    tripComponent: input.tripComponent,
+    left: input.left,
+    layout: input.layout,
+  };
 };
