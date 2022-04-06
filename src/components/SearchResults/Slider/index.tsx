@@ -137,7 +137,7 @@ const getValuesForMemoCheck = ({
   tripContainerWidth,
 }: TimelineSliderProps) => {
   return {
-    intervalsCount: intervals.length,
+    intervals,
     startDate: startDate,
     intervalWidth: intervalWidth,
     disabled: disabled,

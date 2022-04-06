@@ -84,5 +84,29 @@ const TimelineHeader = ({
 };
 
 export default React.memo(TimelineHeader, (previous, next) => {
-  return isEqual(previous, next);
+  return isEqual(getValuesForMemoCheck(previous), getValuesForMemoCheck(next));
 });
+
+const getValuesForMemoCheck = ({
+  arrivalLocation,
+  departureLocation,
+  intervals,
+  tzOffset,
+  sliderDisabled,
+  tripCount,
+  tripContainerWidth,
+  startDate,
+  intervalWidth,
+}: TimelineHeaderProps) => {
+  return {
+    arrivalAirportCode: arrivalLocation.label,
+    departureAirportCode: departureLocation.label,
+    intervals,
+    tzOffset,
+    sliderDisabled,
+    tripCount,
+    tripContainerWidth,
+    startDate,
+    intervalWidth,
+  };
+};

@@ -239,5 +239,12 @@ export const SearchResults = ({
 };
 
 export default React.memo(SearchResults, (previous, next) => {
-  return isEqual(previous, next);
+  return isEqual(getValuesForMemoCheck(previous), getValuesForMemoCheck(next));
 });
+
+const getValuesForMemoCheck = ({ formData, resultsContainerWidth }: SearchResultsProps) => {
+  return {
+    formData,
+    resultsContainerWidth,
+  };
+};
