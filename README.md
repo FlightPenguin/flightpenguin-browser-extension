@@ -21,5 +21,24 @@
 ### How to develop
 
 1. Make changes.
-2. Run `npm run build`.
-3. Follow [Add the extension to Google Chrome](#Add-the-extension-to-Google-Chrome) or [Update the extension in Google Chrome](#Update-the-extension-in-Google-Chrome).
+2. Run `npm run build:dev`.
+
+### How to deploy
+1. Ensure versions match in webpack and manifest
+2. Ensure all commits are pushed, that you're in the main branch, etc.
+3. Run make_extension_folder_for_publishing.sh with the version number to be built
+4. Follow [Add the extension to Google Chrome](#Add-the-extension-to-Google-Chrome) or [Update the extension in Google Chrome](#Update-the-extension-in-Google-Chrome).
+
+
+### How to enable react-devtools
+
+1. npm install --save-dev react-devtools
+2. Add "react-devtools": "react-devtools" to package.json
+3. Add http://localhost:8097 to CSP in manifest.json (script-src)
+4. Add to index.html: <script src="http://localhost:8097"></script>
+5. Switch ReactDom import in index.js to use ReactDom/profiling
+6. Execute npm run react-devtools
+7. Load page
+8. Turn on profiling in react-devtools popup
+9. Profile away!
+10. Remove all this stuff...
