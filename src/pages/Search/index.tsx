@@ -3,6 +3,7 @@ import { onAuthStateChanged, User } from "firebase/auth";
 import React, { useEffect, useRef, useState } from "react";
 
 import { AnalyticsManager } from "../../background/AnalyticsManager";
+import { Crowdfunding } from "../../components/Crowdfunding";
 import { MarketingFooter } from "../../components/MarketingFooter";
 import { LoginModal, WelcomeModal } from "../../components/Modals";
 import NavigationBar from "../../components/NavigationBar";
@@ -158,6 +159,7 @@ export const SearchPage = (): React.ReactElement => {
               containerWidth={formContainerWidth}
               activeUser={activeUser}
             />
+            <Crowdfunding />
             <MarketingFooter />
           </React.Fragment>
         )}

@@ -8,6 +8,7 @@ import {
   faPlaneArrival,
   faPlaneDeparture,
   faSearch,
+  faSeedling,
   faSignOutAlt,
   faUser,
 } from "@fortawesome/free-solid-svg-icons";
@@ -25,6 +26,7 @@ export const FlightPenguinTheme: ThemeConfig = {
           faPlaneDeparture,
           faMapMarkerAlt,
           faSearch,
+          faSeedling,
           faSignOutAlt,
           faPen,
           faFilter,
