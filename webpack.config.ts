@@ -45,7 +45,7 @@ const basePlugins = [
   new ProgressPlugin({}),
   new DefinePlugin({
     "process.env.BUMBAG_ENV": JSON.stringify("not test"),
-    "process.env.VERSION": JSON.stringify("1.15.8"),
+    "process.env.VERSION": JSON.stringify("1.15.9"),
   }),
   new EnvkeyWebpackPlugin({
     permitted: [

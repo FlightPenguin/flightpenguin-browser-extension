@@ -3,11 +3,11 @@ import { onAuthStateChanged, User } from "firebase/auth";
 import React, { useEffect, useRef, useState } from "react";
 
 import { AnalyticsManager } from "../../background/AnalyticsManager";
+import { Crowdfunding } from "../../components/Crowdfunding";
 import { MarketingFooter } from "../../components/MarketingFooter";
 import { LoginModal, WelcomeModal } from "../../components/Modals";
 import NavigationBar from "../../components/NavigationBar";
 import { SearchForm } from "../../components/SearchForm";
-import { Airport } from "../../components/SearchForm/api/airports/Airport";
 import SearchFormDisplay from "../../components/SearchFormDisplay";
 import SearchResults from "../../components/SearchResults";
 import { SizeAlert } from "../../components/SizeAlert";
@@ -159,6 +159,7 @@ export const SearchPage = (): React.ReactElement => {
               containerWidth={formContainerWidth}
               activeUser={activeUser}
             />
+            <Crowdfunding />
             <MarketingFooter />
           </React.Fragment>
         )}
