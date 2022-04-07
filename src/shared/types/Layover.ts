@@ -64,6 +64,7 @@ export class Layover {
   }
 
   getAirline(): Airline {
+    // Please excuse the janky name and type abuse
     return new Airline({ name: `Layover in ${this.departureLocation.getCode()}` });
   }
 
@@ -128,7 +129,7 @@ export class Layover {
   }
 
   getTimezoneOffset(): number {
-    return getTimezoneOffset(this.arrivalLocalDateTime, this.departureLocalDateTime, this.durationMinutes);
+    return getTimezoneOffset(this.departureLocalDateTime, this.arrivalLocalDateTime, this.durationMinutes);
   }
 
   getCalculatedId(): string {

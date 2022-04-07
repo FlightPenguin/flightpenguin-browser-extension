@@ -151,7 +151,7 @@ export class Flight {
     return `${departureTime.valueOf()}-${arrivalTime.valueOf()}-${airline.getName()}`;
   }
 
-  getCalculatedPain(cabin: CabinType, debug = false): number {
+  getCalculatedPain(cabin: CabinType): number {
     const durationMultiplier = getFlightMultiplier(this);
 
     const smoothedDuration = getSmoothDuration(this.durationMinutes);

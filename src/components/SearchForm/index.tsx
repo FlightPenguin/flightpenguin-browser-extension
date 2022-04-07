@@ -675,7 +675,7 @@ export const SearchForm = ({
                     alignX="center"
                     paddingLeft="major-4"
                     paddingRight="major-4"
-                    disabled={formik.isSubmitting}
+                    disabled={!activeUser || formik.isSubmitting}
                     isLoading={formik.isSubmitting}
                     style={{ whiteSpace: "nowrap" }}
                   >

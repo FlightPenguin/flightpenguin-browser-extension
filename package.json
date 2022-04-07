@@ -7,7 +7,7 @@
     "build": "npx webpack -c ./webpack.production.config.js",
     "build:dev": "npx webpack -c webpack.development.config.js --watch",
     "prepare": "husky install",
-    "test": "jest"
+    "test": "export TZ=UTC && jest"
   },
   "jest": {
     "globals": {
