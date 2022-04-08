@@ -175,4 +175,8 @@ export class Layover {
       timebarEndTime: this.departureTripStartDateTime,
     });
   }
+
+  getAriaLabelText(): string {
+    return `A layover in ${this.getDepartureLocation().getCode()} lasting for ${this.getDisplayDuration()}.`;
+  }
 }

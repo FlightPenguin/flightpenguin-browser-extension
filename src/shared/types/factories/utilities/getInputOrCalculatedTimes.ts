@@ -60,7 +60,7 @@ export const getInputOrCalculatedTimes = ({
     const today = startOfToday();
     departureTime = faker.date.between(addHours(today, 5), addHours(today, 16));
     durationMinutes = faker.datatype.number({ min: 30, max: 600 });
-    arrivalTime = addMinutes(arrivalTime as Date, durationMinutes);
+    arrivalTime = addMinutes(departureTime, durationMinutes);
   }
 
   return { arrivalTime, departureTime, durationMinutes };

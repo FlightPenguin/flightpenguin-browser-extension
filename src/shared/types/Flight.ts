@@ -181,4 +181,8 @@ export class Flight {
       timebarEndTime: this.arrivalTripStartDateTime,
     });
   }
+
+  getAriaLabelText(): string {
+    return `${this.getAirline().getName()} flight leaving ${this.getDepartureLocation().getCode()} at ${this.getDisplayDepartureLocalTime()} and arriving in ${this.getArrivalLocation().getCode()} at ${this.getDisplayArrivalLocalTime()}.`;
+  }
 }

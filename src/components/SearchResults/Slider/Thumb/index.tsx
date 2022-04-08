@@ -110,7 +110,11 @@ const Thumb = ({
       >
         <Icon icon={state.index === 0 ? "solid-plane-departure" : "solid-plane-arrival"} color="white" fontSize="300" />
       </Box>
-      <Box marginTop="minor-1" tabIndex={0}>
+      <Box
+        marginTop="minor-1"
+        tabIndex={0}
+        aria-label={state.index === 0 ? "Filter flights to departures after" : "Filter flights to arrivals before"}
+      >
         <Text fontWeight="700" color={color}>
           {formattedTime}
         </Text>

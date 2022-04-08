@@ -17,6 +17,7 @@ export const Crowdfunding = (): React.ReactElement => {
         maxWidth="768px"
         footer={
           <Button
+            aria-label="Learn more about Flight Penguin's crowdfunding campaign"
             use="a"
             // eslint-disable-next-line @typescript-eslint/ban-ts-comment
             // @ts-ignore

@@ -111,4 +111,10 @@ describe("Layover happy path", () => {
       }),
     ).toEqual({ startX: 202.35, width: 137.03 });
   });
+
+  it("getAriaLabelText works", () => {
+    const layover = LayoverFactory.build({}, { transient: layoverInput });
+    const value = layover.getAriaLabelText();
+    expect(value).toEqual("A layover in MIA lasting for 3h 13m.");
+  });
 });

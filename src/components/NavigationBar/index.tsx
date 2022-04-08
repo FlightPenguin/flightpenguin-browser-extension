@@ -46,35 +46,36 @@ const NavigationBar = ({ firebaseLoaded, currentUser }: NavigationBarProps): Rea
       </TopNav.Section>
 
       <TopNav.Section paddingRight="major-2">
-        <TopNav.Item>
+        <TopNav.Item tabIndex={-1}>
           <Box height="32px" width="32px">
-            <FacebookShareButton title={socialTitle} url={getSocialUrl("facebook")}>
+            <FacebookShareButton tabIndex={0} title={`${socialTitle} on Facebook`} url={getSocialUrl("facebook")}>
               <FacebookIcon size={32} round />
             </FacebookShareButton>
           </Box>
         </TopNav.Item>
-        <TopNav.Item>
+        <TopNav.Item tabIndex={-1}>
           <Box height="32px" width="32px">
-            <TwitterShareButton title={socialTitle} url={getSocialUrl("twitter")}>
+            <TwitterShareButton tabIndex={0} title={`${socialTitle} on Twitter`} url={getSocialUrl("twitter")}>
               <TwitterIcon size={32} round />
             </TwitterShareButton>
           </Box>
         </TopNav.Item>
-        <TopNav.Item>
+        <TopNav.Item tabIndex={-1}>
           <Box height="32px" width="32px">
-            <LinkedinShareButton title={socialTitle} url={getSocialUrl("linkedin")}>
+            <LinkedinShareButton tabIndex={0} title={`${socialTitle} on LinkedIn`} url={getSocialUrl("linkedin")}>
               <LinkedinIcon size={32} round />
             </LinkedinShareButton>
           </Box>
         </TopNav.Item>
-        <TopNav.Item>
+        <TopNav.Item tabIndex={-1}>
           <Box height="32px" width="32px">
             {" "}
           </Box>
         </TopNav.Item>
         {firebaseLoaded && currentUser && profileInfo && profileInfo.email && (
-          <TopNav.Item>
+          <TopNav.Item tabIndex={-1}>
             <DropdownMenu
+              tabIndex={0}
               menu={
                 <React.Fragment>
                   <DropdownMenu.Group title="Profile" cursor="default">

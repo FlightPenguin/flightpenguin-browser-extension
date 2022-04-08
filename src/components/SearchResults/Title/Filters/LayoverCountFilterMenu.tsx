@@ -29,6 +29,7 @@ export const LayoverCountFilterMenu = ({ layoverCounts, onChange }: FilterMenuPr
       menu={
         <React.Fragment>
           <DropdownMenu.OptionGroup
+            aria-label="Drop down menu for filtering results by number of layovers"
             title="Stops"
             type="checkbox"
             value={values.map(String)}

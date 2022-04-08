@@ -1,5 +1,3 @@
-import { addMinutes } from "date-fns";
-
 import { AirlineInput } from "./Airline";
 import { FlightFactory } from "./factories/Flight";
 import { FlightInput } from "./Flight";
@@ -136,5 +134,11 @@ describe("Flight happy path", () => {
         containerWidth: 1024,
       }),
     ).toEqual({ startX: 159.75, width: 137.03 });
+  });
+
+  it("getAriaLabelText works", () => {
+    const flight = FlightFactory.build({}, { transient: flightInput });
+    const value = flight.getAriaLabelText();
+    expect(value).toEqual("United flight leaving CMH at 3:45am and arriving in DEN at 4:58am.");
   });
 });

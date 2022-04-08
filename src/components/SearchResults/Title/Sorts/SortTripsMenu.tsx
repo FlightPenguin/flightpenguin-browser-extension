@@ -21,6 +21,7 @@ export const SortTripsMenu = ({
 
   return (
     <DropdownMenu
+      aria-label="Drop down menu for sorting results"
       cursor="pointer"
       fontSize="clamp(.5rem, .6vw, .75rem)"
       menu={

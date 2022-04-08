@@ -22,6 +22,7 @@ export const AirlineFilterMenu = ({ airlines, onChange }: FilterMenuProps): Reac
 
   return (
     <DropdownMenu
+      aria-label="Drop down menu for filtering results by airlines"
       cursor="pointer"
       fontSize="clamp(.375rem, .6vw, .75rem)"
       menu={
