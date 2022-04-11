@@ -93,23 +93,23 @@ export class Layover {
   }
 
   getDisplayArrivalLocalTime(): string {
-    const excessDays = differenceInCalendarDays(this.arrivalLocalDateTime, this.departureLocalDateTime);
-
-    return getFormattedTime(this.arrivalLocalDateTime, excessDays);
+    return getFormattedTime(this.arrivalLocalDateTime);
   }
 
   getDisplayArrivalTripStartTime(): string {
-    const excessDays = differenceInCalendarDays(this.arrivalTripStartDateTime, this.departureTripStartDateTime);
-
-    return getFormattedTime(this.arrivalTripStartDateTime, excessDays);
+    return getFormattedTime(this.arrivalTripStartDateTime);
   }
 
   getDisplayDepartureLocalTime(): string {
-    return getFormattedTime(this.departureLocalDateTime);
+    const excessDays = differenceInCalendarDays(this.departureLocalDateTime, this.arrivalLocalDateTime);
+
+    return getFormattedTime(this.departureLocalDateTime, excessDays);
   }
 
   getDisplayDepartureTripStartTime(): string {
-    return getFormattedTime(this.departureTripStartDateTime);
+    const excessDays = differenceInCalendarDays(this.departureTripStartDateTime, this.arrivalTripStartDateTime);
+
+    return getFormattedTime(this.departureTripStartDateTime, excessDays);
   }
 
   getDisplayDuration(): string {
