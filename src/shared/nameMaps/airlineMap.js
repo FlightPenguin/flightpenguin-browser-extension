@@ -78,6 +78,7 @@ const AirlineMap = {
     "KLM-Royal Dutch Airlines": { display: "KLM", color: "#44A0DC", code: "KL" },
     "KLM Royal Dutch Airlines": { display: "KLM", color: "#44A0DC", code: "KL" },
     "Air France": { display: "Air France", color: "#DB3832", code: "AF" },
+    Turkish: { display: "Turkish", color: "#DB3832", code: "TK" },
     "Turkish Airlines": { display: "Turkish", color: "#DB3832", code: "TK" },
     "Cathay Pacific": { display: "Cathay", color: "#2A645A", code: "CX" },
     "Cathay Dragon": { display: "Cathay", color: "#2A645A", code: "CX" },
@@ -120,6 +121,13 @@ const AirlineMap = {
     Avianca: { display: "Avianca", color: "#DA291C", code: "AV" },
     "Azul Linhas Aereas Brasileiras": { display: "Azul Brazilian", color: "#6ca9db", code: "AD" },
     "Copa Airlines": { display: "Copa", color: "#0060a9", code: "CM" },
+    "LOT Polish": { display: "LOT Polish", color: "#1A3171", code: "LO" },
+    "Lot Polish": { display: "LOT Polish", color: "#1A3171", code: "LO" },
+    "LOT Polish Airlines": { display: "LOT Polish", color: "#1A3171", code: "LO" },
+    "Lot Polish Airlines": { display: "LOT Polish", color: "#1A3171", code: "LO" },
+    Egyptair: { display: "Egyptair", color: "#00265d", code: "MS" },
+    EgyptAir: { display: "Egyptair", color: "#00265d", code: "MS" },
+    EGYPTAIR: { display: "Egyptair", color: "#00265d", code: "MS" },
   },
   getAirlineName: function (airlineName) {
     if (!airlineName || typeof airlineName !== "string") {
