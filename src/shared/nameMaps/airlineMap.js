@@ -130,6 +130,12 @@ const AirlineMap = {
     Egyptair: { display: "Egyptair", color: "#00265d", code: "MS" },
     EgyptAir: { display: "Egyptair", color: "#00265d", code: "MS" },
     EGYPTAIR: { display: "Egyptair", color: "#00265d", code: "MS" },
+    "Malaysia Airlines": { display: "Malaysia", color: "#ED1C23", code: "MH" },
+    Malaysia: { display: "Malaysia", color: "#ED1C23", code: "MH" },
+    easyJet: { display: "easyJet", color: "#ff6600", code: "EC" },
+    EasyJet: { display: "easyJet", color: "#ff6600", code: "EC" },
+    Easyjet: { display: "easyJet", color: "#ff6600", code: "EC" },
+    Emirates: { display: "Emirates", color: "#D71A21", code: "EK" },
   },
   getAirlineName: function (airlineName) {
     if (!airlineName || typeof airlineName !== "string") {
