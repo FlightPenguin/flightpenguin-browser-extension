@@ -33,11 +33,14 @@ export const getItinerary = async (
     const flightInputs = modalData[index];
     const flightDate = tripDepartureDates[index];
 
+    const arrivalLocation = flightInputs.slice(-1)[0].arrivalLocation;
+    const departureLocation = flightInputs[0].departureLocation;
+
     return {
       arrivalDateTime: getFlightDateFromTimeString(trip.arrivalTime, flightDate),
-      arrivalLocation: { code: index === 1 ? formData.to.value : formData.from.value },
+      arrivalLocation,
       departureDateTime: getFlightDateFromTimeString(trip.departureTime, flightDate),
-      departureLocation: { code: index === 1 ? formData.from.value : formData.to.value },
+      departureLocation,
       durationMinutes: getDurationInMinutes(trip.duration),
       tripComponents: flightInputs.map((flightInput) => {
         return { type: "FLIGHT", object: flightInput };
