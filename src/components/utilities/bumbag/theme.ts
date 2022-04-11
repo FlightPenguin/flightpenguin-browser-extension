@@ -1,5 +1,6 @@
 import { faCalendar as faCalendarRegular, faLifeRing } from "@fortawesome/free-regular-svg-icons";
 import {
+  faBusinessTime,
   faCalendar as faCalendarSolid,
   faCog,
   faFilter,
@@ -8,7 +9,6 @@ import {
   faPlaneArrival,
   faPlaneDeparture,
   faSearch,
-  faSeedling,
   faSignOutAlt,
   faUser,
 } from "@fortawesome/free-solid-svg-icons";
@@ -19,6 +19,7 @@ export const FlightPenguinTheme: ThemeConfig = {
     iconSets: [
       {
         icons: [
+          faBusinessTime,
           faCalendarSolid,
           faCog,
           faUser,
@@ -26,7 +27,6 @@ export const FlightPenguinTheme: ThemeConfig = {
           faPlaneDeparture,
           faMapMarkerAlt,
           faSearch,
-          faSeedling,
           faSignOutAlt,
           faPen,
           faFilter,
