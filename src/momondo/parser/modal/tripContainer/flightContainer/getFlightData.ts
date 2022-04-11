@@ -10,14 +10,15 @@ export const getFlightData = (
   flightDate: Date,
   elapsedTimezoneOffset: number,
 ): FlightInput => {
-  const { arrivalTime: arrivalLocalDateTime, arrivalAirport: arrivalLocation } = getArrivalInfo(
-    flightContainer,
-    flightDate,
-  );
   const { departureTime: departureLocalDateTime, departureAirport: departureLocation } = getDepartureInfo(
     flightContainer,
     flightDate,
   );
+  const { arrivalTime: arrivalLocalDateTime, arrivalAirport: arrivalLocation } = getArrivalInfo(
+    flightContainer,
+    departureLocalDateTime,
+  );
+
   const marketingAirlineName = getAirlineName(flightContainer);
   const rawDuration = getDuration(flightContainer);
 
