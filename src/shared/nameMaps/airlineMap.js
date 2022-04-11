@@ -121,6 +121,7 @@ const AirlineMap = {
     Avianca: { display: "Avianca", color: "#DA291C", code: "AV" },
     "Azul Linhas Aereas Brasileiras": { display: "Azul Brazilian", color: "#6ca9db", code: "AD" },
     "Copa Airlines": { display: "Copa", color: "#0060a9", code: "CM" },
+    LOT: { display: "LOT Polish", color: "#1A3171", code: "LO" },
     "LOT Polish": { display: "LOT Polish", color: "#1A3171", code: "LO" },
     "Lot Polish": { display: "LOT Polish", color: "#1A3171", code: "LO" },
     "LOT Polish Airlines": { display: "LOT Polish", color: "#1A3171", code: "LO" },
@@ -136,6 +137,7 @@ const AirlineMap = {
     EasyJet: { display: "easyJet", color: "#ff6600", code: "EC" },
     Easyjet: { display: "easyJet", color: "#ff6600", code: "EC" },
     Emirates: { display: "Emirates", color: "#D71A21", code: "EK" },
+    Ryanair: { display: "Ryanair", color: "#f1c933", code: "FR" },
   },
   getAirlineName: function (airlineName) {
     if (!airlineName || typeof airlineName !== "string") {
