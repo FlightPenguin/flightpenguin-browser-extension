@@ -60,13 +60,13 @@ const getFlights = (container: HTMLDivElement, rawDepartureDate: string): Flight
       return !!testId && !testId.toLowerCase().startsWith(LAYOVER_SKIP_SELECTOR);
     })
     .forEach((flightContainer) => {
-      const { arrivalTime, departureTime } = getFlightTimes(flightContainer, departureDate);
+      const { arrivalTime: arrivalLocalDateTime, departureTime: departureLocalDateTime } = getFlightTimes(
+        flightContainer,
+        departureDate,
+      );
       const { arrivalAirportCode, departureAirportCode } = getAirportCodes(flightContainer);
       const { duration } = getFlightDuration(flightContainer);
       const { marketingAirlineName } = getAirlineNames(flightContainer);
-
-      const departureLocalDateTime = getFlightDateFromTimeString(departureTime, departureDate);
-      const arrivalLocalDateTime = getFlightDateFromTimeString(arrivalTime, departureLocalDateTime);
 
       const flight = {
         arrivalLocalDateTime,
