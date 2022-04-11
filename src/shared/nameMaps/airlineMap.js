@@ -125,6 +125,8 @@ const AirlineMap = {
     "Lot Polish": { display: "LOT Polish", color: "#1A3171", code: "LO" },
     "LOT Polish Airlines": { display: "LOT Polish", color: "#1A3171", code: "LO" },
     "Lot Polish Airlines": { display: "LOT Polish", color: "#1A3171", code: "LO" },
+    "LOT Airlines": { display: "LOT Polish", color: "#1A3171", code: "LO" },
+    "Lot Airlines": { display: "LOT Polish", color: "#1A3171", code: "LO" },
     Egyptair: { display: "Egyptair", color: "#00265d", code: "MS" },
     EgyptAir: { display: "Egyptair", color: "#00265d", code: "MS" },
     EGYPTAIR: { display: "Egyptair", color: "#00265d", code: "MS" },
