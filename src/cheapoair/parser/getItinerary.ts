@@ -40,9 +40,9 @@ export const getItinerary = async (
 
   const departureTrip = {
     arrivalDateTime: getFlightDateFromTimeString(tripsDetails.departureDetails.arrivalTime, formData.fromDate),
-    arrivalLocation: { code: formData.from.value },
+    arrivalLocation: { code: flights.departureFlights.slice(-1)[0].arrivalLocation.code },
     departureDateTime: getFlightDateFromTimeString(tripsDetails.departureDetails.departureTime, formData.fromDate),
-    departureLocation: { code: formData.to.value },
+    departureLocation: { code: flights.departureFlights[0].departureLocation.code },
     durationMinutes: getDurationInMinutes(tripsDetails.departureDetails.duration),
     tripComponents: flights.departureFlights.map((input) => {
       return { type: "FLIGHT", object: input };
@@ -54,9 +54,9 @@ export const getItinerary = async (
     formData.roundtrip && tripsDetails.returnDetails && flights.returnFlights
       ? ({
           arrivalDateTime: getFlightDateFromTimeString(tripsDetails.returnDetails.arrivalTime, formData.toDate),
-          arrivalLocation: { code: formData.to.value },
+          arrivalLocation: { code: flights.returnFlights.slice(-1)[0].arrivalLocation.code },
           departureDateTime: getFlightDateFromTimeString(tripsDetails.returnDetails.departureTime, formData.toDate),
-          departureLocation: { code: formData.from.value },
+          departureLocation: { code: flights.returnFlights[0].departureLocation.code },
           durationMinutes: getDurationInMinutes(tripsDetails.returnDetails.duration),
           tripComponents: flights.returnFlights.map((input) => {
             return { type: "FLIGHT", object: input };
