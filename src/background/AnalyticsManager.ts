@@ -75,10 +75,7 @@ export class AnalyticsManager {
       } else {
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore
-        window.ga = function () {
-          // eslint-disable-next-line prefer-rest-params
-          console.debug(arguments);
-        };
+        window.ga = function () {};
       }
     }
 
