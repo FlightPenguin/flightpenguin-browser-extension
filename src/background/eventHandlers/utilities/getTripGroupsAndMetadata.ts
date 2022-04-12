@@ -27,7 +27,31 @@ export const getTripGroupsAndMeta = (
         const meta = metas[index];
 
         const displayableTrip = new DisplayableTrip({ trip, lowestFare, cabin: itinerary.getCabin() });
-        tripGroup.push(displayableTrip);
+        if (displayableTrip.getPain()) {
+          tripGroup.push(displayableTrip);
+        } else {
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
+          window.Sentry.addBreadcrumb({
+            category: "backend",
+            message: `Zero pain for flight from ${displayableTrip
+              .getTrip()
+              .getDepartureLocation()
+              .getCode()} on ${displayableTrip.getTrip().getDepartureDateTime()} to ${displayableTrip
+              .getTrip()
+              .getArrivalLocation()
+              .getCode()}  on ${displayableTrip.getTrip().getArrivalDateTime()} with source ${itinerary
+              .getTopSource()
+              .getName()}`,
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-ignore
+            level: window.Sentry.Severity.Info,
+          });
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
+          window.Sentry.captureMessage("Trip without pain");
+          return;
+        }
 
         trip.getCarriers().forEach((carrier) => {
           if (!meta.airlines.includes(carrier)) {
