@@ -1,25 +1,31 @@
-import { getIncrement } from "./getIncrement";
-import { getIntervals } from "./getIntervals";
+import { addDays, startOfDay } from "date-fns";
+
+import { FlightSearchFormData } from "../../../../shared/types/FlightSearchFormData";
+import { getParsedDate } from "../../../utilities/forms";
 
 interface GetSkeletonIntervalInfoInput {
-  flightTimeContainerWidth: number;
+  formData: FlightSearchFormData;
+  tripContainerWidth: number;
+  containerIndex: number;
 }
 
 interface GetSkeletonIntervalInfoOutput {
-  startHour: number;
-  increment: number;
+  earliestTime: Date;
+  latestTime: Date;
   intervals: number[];
+  intervalWidth: number;
   timezoneOffset: number;
 }
 
 export const getSkeletonIntervalInfo = ({
-  flightTimeContainerWidth,
+  containerIndex,
+  formData,
+  tripContainerWidth,
 }: GetSkeletonIntervalInfoInput): GetSkeletonIntervalInfoOutput => {
-  const startHour = 0;
-  const endHour = 28;
-  const timezoneOffset = 0;
-
-  const increment = getIncrement({ lowerBound: startHour, upperBound: endHour, startHour, flightTimeContainerWidth });
-  const intervals = getIntervals(startHour, increment, flightTimeContainerWidth, endHour);
-  return { startHour, increment, intervals, timezoneOffset };
+  const baseDate = getParsedDate(formData.roundtrip && containerIndex === 2 ? formData.toDate : formData.fromDate);
+  const earliestTime = startOfDay(baseDate);
+  const latestTime = addDays(earliestTime, 1);
+  const intervals = [0, 4, 8, 12, 16, 20, 24, 28];
+  const intervalWidth = tripContainerWidth / (intervals.length - 1);
+  return { earliestTime, latestTime, intervals, intervalWidth, timezoneOffset: 0 };
 };

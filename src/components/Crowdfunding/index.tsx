@@ -12,11 +12,12 @@ export const Crowdfunding = (): React.ReactElement => {
       width="100%"
     >
       <Callout
-        iconProps={{ icon: "solid-seedling" }}
-        title="Interested in helping us grow?"
+        iconProps={{ icon: "solid-business-time" }}
+        title="Want to own part of Flight Penguin?"
         maxWidth="768px"
         footer={
           <Button
+            aria-label="Learn more about Flight Penguin's crowdfunding campaign"
             use="a"
             // eslint-disable-next-line @typescript-eslint/ban-ts-comment
             // @ts-ignore
@@ -29,8 +30,9 @@ export const Crowdfunding = (): React.ReactElement => {
           </Button>
         }
       >
-        Flight Penguin is raising a crowdfunding round through Wefunder. As an investor, you can help us stay focused on
-        our long term goal of building the best flight search engine possible with no ads or agreements with airlines.
+        We're offering our early users a chance to invest in Flight Penguin. People like you have been helping us grow
+        more than 20% a month since the start of the year, and we're just getting started. Details about our progress
+        and the raise are available on our crowdfunding page.
       </Callout>
     </Box>
   );

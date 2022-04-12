@@ -1,4 +1,4 @@
-import { Box, DropdownMenu, Group, Tag, Text } from "bumbag";
+import { Box, DropdownMenu, Group, Tag } from "bumbag";
 import capitalize from "lodash.capitalize";
 import isEqual from "lodash.isequal";
 import * as numberToWords from "number-to-words";
@@ -29,6 +29,7 @@ export const LayoverCountFilterMenu = ({ layoverCounts, onChange }: FilterMenuPr
       menu={
         <React.Fragment>
           <DropdownMenu.OptionGroup
+            aria-label="Drop down menu for filtering results by number of layovers"
             title="Stops"
             type="checkbox"
             value={values.map(String)}

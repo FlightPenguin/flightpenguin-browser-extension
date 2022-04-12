@@ -3,7 +3,7 @@ import debounce from "lodash.debounce";
 import { sendFailedScraper, sendScraperComplete } from "../../shared/events";
 import { sendFailed, sendSuccess } from "../../shared/events/analytics/scrapers";
 import { FlightSearchFormData } from "../../shared/types/FlightSearchFormData";
-import { sendFlights } from "./sendFlights";
+import { sendItineraries } from "./sendItineraries";
 
 interface FlightObserverProps {
   formData: FlightSearchFormData;
@@ -37,7 +37,7 @@ export class FlightObserver {
           }
         });
       }
-      const debouncedSendFlights = debounce(that.sendFlights.bind(that), 300, { maxWait: 1000 });
+      const debouncedSendFlights = debounce(that.sendItineraries.bind(that), 300, { maxWait: 1000 });
       debouncedSendFlights();
     });
   }
@@ -50,8 +50,7 @@ export class FlightObserver {
     this.observer.disconnect();
   }
 
-  async sendFlights(): Promise<void> {
-    console.error("INVOKING");
+  async sendItineraries(): Promise<void> {
     const flightCards = [] as HTMLDivElement[];
     let hasMoreFlightCards = this.flightCards.length;
     while (hasMoreFlightCards) {
@@ -59,18 +58,15 @@ export class FlightObserver {
       flightCards.push(flightCard as HTMLDivElement);
       hasMoreFlightCards = this.flightCards.length;
     }
-    console.error(`Processing ${flightCards.length} cards, ${this.flightCards.length} remaining`);
+    console.debug(`Processing ${flightCards.length} cards, ${this.flightCards.length} remaining`);
     this.counter += flightCards.length;
 
     if (flightCards.length) {
       try {
         // eslint-disable-next-line prefer-const
-        let { complete } = await sendFlights({
-          flightCards,
-          formData: this.formData,
-        });
+        let { complete } = await sendItineraries({ flightCards, formData: this.formData });
         if (complete) {
-          sendScraperComplete("trip", "BOTH");
+          sendScraperComplete("trip");
           sendSuccess("trip", this.counter);
         }
       } catch (error) {
@@ -79,7 +75,7 @@ export class FlightObserver {
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore
         window.Sentry.captureException(error);
-        sendFailedScraper("trip", error, "ALL");
+        sendFailedScraper("trip", error);
         sendFailed("trip");
       }
     }

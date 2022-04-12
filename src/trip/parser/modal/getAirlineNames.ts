@@ -1,7 +1,5 @@
 import { MissingElementLookupError, MissingFieldParserError } from "../../../shared/errors";
 
-const AIRLINE_NAME_REGEX = /(?<airlineName>^.*[a-z])(?<flightCode>[A-Z][A-Z0-9]{1,10}$)/;
-
 export const getAirlineNames = (container: HTMLDivElement): { marketingAirlineName: string } => {
   const nameContainer = container.previousSibling as HTMLDivElement;
   if (!nameContainer) {
@@ -26,19 +24,14 @@ export const getAirlineNames = (container: HTMLDivElement): { marketingAirlineNa
     throw new MissingFieldParserError("Unable to find text in flight name element container");
   }
 
-  const matches = flightElement.textContent.match(AIRLINE_NAME_REGEX);
-  if (!matches || !matches.groups) {
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
-    window.Sentry.captureMessage(`unexpected text match failure with text: ${flightElement.textContent}`);
-    throw new MissingFieldParserError("Name text does not match regex");
+  const textNode = flightElement.childNodes[0];
+  if (!textNode) {
+    throw new MissingElementLookupError("unable to get text element in flight name element");
   }
 
-  const airlineName = matches.groups["airlineName"];
-  if (!airlineName) {
-    window.Sentry.captureMessage(`unexpected text match failure with text: ${flightElement.textContent}`);
-    throw new MissingFieldParserError("Unable to extract airline name from regex");
+  if (!textNode.textContent) {
+    throw new MissingFieldParserError("Unable to extract airline text from text node");
   }
 
-  return { marketingAirlineName: airlineName };
+  return { marketingAirlineName: textNode.textContent };
 };

@@ -7,9 +7,7 @@ const defaultEntry = {
   background: "./src/background.js",
   cheapoair: "./src/cheapoair/contentScript.ts",
   index: "./src/index.js",
-  southwest: "./src/southwest/contentScript.ts",
-  southwestEmpty: "./src/southwest/emptyResultsContentScript.ts",
-  expedia: "./src/expedia/contentScript.js",
+  momondo: "./src/momondo/contentScript.ts",
   kiwi: "./src/kiwi/contentScript.ts",
   trip: "./src/trip/contentScript.ts",
   generic: "./src/generic/contentScript.ts",
@@ -45,7 +43,7 @@ const basePlugins = [
   new ProgressPlugin({}),
   new DefinePlugin({
     "process.env.BUMBAG_ENV": JSON.stringify("not test"),
-    "process.env.VERSION": JSON.stringify("1.15.9"),
+    "process.env.VERSION": JSON.stringify("1.16.0"),
   }),
   new EnvkeyWebpackPlugin({
     permitted: [

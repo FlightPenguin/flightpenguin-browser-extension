@@ -1,9 +1,9 @@
-import { sendFailedScraper, sendFlightNotFound, sendFlightsEvent, sendScraperComplete } from "../shared/events";
+import { sendFailedScraper, sendItinerariesEvent, sendItineraryNotFound, sendScraperComplete } from "../shared/events";
 import { sendFailed, sendProcessing } from "../shared/events/analytics/scrapers";
 import { FlightSearchFormData } from "../shared/types/FlightSearchFormData";
-import { getFlightPenguinTripId } from "../shared/utilities/getFlightPenguinTripId";
+import { Itinerary } from "../shared/types/Itinerary";
 import { suppressOfferFlightPenguinPopup } from "../shared/utilities/suppressOfferFlightPenguinPopup";
-import { getFlightsOnPage } from "./parser/getFlightsOnPage";
+import { getItinerariesOnPage } from "./parser/getItinerariesOnPage";
 import { CheapoairModalObserver } from "./parser/modalObserver";
 import { waitForPageLoad } from "./parser/waitForPageLoad";
 import { clickNextPage } from "./ui/clickNextPage";
@@ -13,7 +13,7 @@ import { openBookingLink } from "./ui/openBookingLink";
 
 export const initMessageListener = (observer: CheapoairModalObserver): void => {
   let formData;
-  const idMap = {} as { [keyof: string]: string };
+  const knownItineraries = [] as Itinerary[];
 
   chrome.runtime.onMessage.addListener(async function (message, sender, sendResponse) {
     sendResponse({ received: true, responderName: "cheapoair" });
@@ -25,26 +25,24 @@ export const initMessageListener = (observer: CheapoairModalObserver): void => {
           sendProcessing("cheapoair");
           formData = message.formData;
           observer.beginObservation();
-          await getAllFlights(formData, idMap);
+          await getAllItineraries(formData, knownItineraries);
         } catch (error) {
           // eslint-disable-next-line @typescript-eslint/ban-ts-comment
           // @ts-ignore
           window.Sentry.captureException(error);
-          sendFailedScraper("cheapoair", error, "ALL");
+          sendFailedScraper("cheapoair", error);
           sendFailed("cheapoair");
         }
         break;
       case "HIGHLIGHT_FLIGHT":
-        // eslint-disable-next-line no-case-declarations
-        const flightId = getFlightPenguinTripId(message.selectedDepartureId, message.selectedReturnId);
         try {
-          await openBookingLink(flightId, idMap);
+          await openBookingLink(message.itineraryId, knownItineraries);
           observer.endObservation();
         } catch (error) {
           // eslint-disable-next-line @typescript-eslint/ban-ts-comment
           // @ts-ignore
           window.Sentry.captureException(error);
-          sendFlightNotFound(flightId);
+          sendItineraryNotFound(message.itineraryId);
         }
         break;
       case "CLEAR_SELECTION":
@@ -55,29 +53,29 @@ export const initMessageListener = (observer: CheapoairModalObserver): void => {
     }
   });
 
-  const getAllFlights = async (formData: FlightSearchFormData, idMap: { [keyof: string]: string }) => {
+  const getAllItineraries = async (formData: FlightSearchFormData, knownItineraries: Itinerary[]) => {
     await waitForPageLoad();
 
     const maxPageNumber = getPageCount();
     let complete = isLastPage(maxPageNumber);
 
-    const flights = await getFlightsOnPage(formData);
-    if (flights.length) {
-      flights.forEach((flight) => {
-        idMap[flight.id] = flight.cheapoAirId;
+    const itineraries = await getItinerariesOnPage(formData);
+    if (itineraries.length) {
+      itineraries.forEach((itinerary) => {
+        knownItineraries.push(itinerary);
       });
-      sendFlightsEvent("cheapoair", flights);
+      sendItinerariesEvent("cheapoair", itineraries);
     } else {
       complete = true;
     }
 
     if (complete) {
-      sendScraperComplete("cheapoair", "BOTH");
+      sendScraperComplete("cheapoair");
     } else {
       clickNextPage();
       await waitForPageLoad();
 
-      await getAllFlights(formData, idMap);
+      await getAllItineraries(formData, knownItineraries);
     }
   };
 };

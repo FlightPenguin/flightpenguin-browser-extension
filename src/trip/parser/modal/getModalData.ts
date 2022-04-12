@@ -1,19 +1,22 @@
 import { getParsedDate } from "../../../components/utilities/forms";
+import { getFlightDateFromTimeString } from "../../../shared/parser/getFlightDateFromTimeString";
 import { getParsedModalHtml } from "../../../shared/parser/modal/getParsedModalHtml";
-import { FlightLeg } from "../../../shared/types/FlightLeg";
+import { FlightInput } from "../../../shared/types/Flight";
+import { getTimezoneOffset } from "../../../shared/types/utilities/getTimezoneOffset";
+import { getDurationInMinutes } from "../../../shared/utilities/getDurationInMinutes";
 import { getAirlineNames } from "./getAirlineNames";
 import { getAirportCodes } from "./getAirportCodes";
 import { getFlightDuration } from "./getFlightDuration";
 import { getFlightTimes } from "./getFlightTimes";
 import { setModalHtml } from "./setModalHtml";
 
-interface LayoversData {
-  departure: FlightLeg[];
-  return?: FlightLeg[];
+interface FlightsData {
+  departure: FlightInput[];
+  return?: FlightInput[];
 }
 
 const DETAILS_CONTAINER_SELECTOR = "div.f-flight-detail__content";
-const LEG_SELECTOR = "div.f-flight-detail__table";
+const FLIGHT_SELECTOR = "div.f-flight-detail__table";
 const LAYOVER_SKIP_SELECTOR = "flight_transfer";
 
 export const getModalData = async (
@@ -22,7 +25,7 @@ export const getModalData = async (
   departureDate: string,
   returnDate: string,
   flightId: string,
-): Promise<LayoversData> => {
+): Promise<FlightsData> => {
   // minimize time modal is open
   await setModalHtml(flightCard, flightId);
   const modal = getParsedModalHtml(flightId, "BOTH");
@@ -39,41 +42,49 @@ export const getModalData = async (
 
   return roundtrip
     ? {
-        departure: getLayoverDetails(departureContainer as HTMLDivElement, departureDate),
-        return: getLayoverDetails(returnContainer as HTMLDivElement, returnDate),
+        departure: getFlights(departureContainer as HTMLDivElement, departureDate),
+        return: getFlights(returnContainer as HTMLDivElement, returnDate),
       }
-    : { departure: getLayoverDetails(departureContainer as HTMLDivElement, departureDate) };
+    : { departure: getFlights(departureContainer as HTMLDivElement, departureDate) };
 };
 
-const getLayoverDetails = (container: HTMLDivElement, rawDepartureDate: string): FlightLeg[] => {
-  const layoverContainers = Array.from(container.querySelectorAll(LEG_SELECTOR) as NodeListOf<HTMLDivElement>);
-  const flightLegs: FlightLeg[] = [];
+const getFlights = (container: HTMLDivElement, rawDepartureDate: string): FlightInput[] => {
+  const flightContainers = Array.from(container.querySelectorAll(FLIGHT_SELECTOR) as NodeListOf<HTMLDivElement>);
+  const flights: FlightInput[] = [];
   const departureDate = getParsedDate(rawDepartureDate);
 
   let elapsedTimezoneOffset = 0;
-  layoverContainers
-    .filter((layoverContainer) => {
-      const testId = layoverContainer.dataset.testid;
+  flightContainers
+    .filter((flightContainer) => {
+      const testId = flightContainer.dataset.testid;
       return !!testId && !testId.toLowerCase().startsWith(LAYOVER_SKIP_SELECTOR);
     })
-    .forEach((layoverContainer) => {
-      const { arrivalTime, departureTime } = getFlightTimes(layoverContainer, departureDate);
-      const { arrivalAirportCode, departureAirportCode } = getAirportCodes(layoverContainer);
-      const { duration } = getFlightDuration(layoverContainer);
-      const { marketingAirlineName } = getAirlineNames(layoverContainer);
+    .forEach((flightContainer) => {
+      const { arrivalTime: arrivalLocalDateTime, departureTime: departureLocalDateTime } = getFlightTimes(
+        flightContainer,
+        departureDate,
+      );
+      const { arrivalAirportCode, departureAirportCode } = getAirportCodes(flightContainer);
+      const { duration } = getFlightDuration(flightContainer);
+      const { marketingAirlineName } = getAirlineNames(flightContainer);
 
-      const flightLeg = new FlightLeg({
-        duration,
-        from: departureAirportCode,
-        fromTime: departureTime,
-        operatingAirline: marketingAirlineName,
-        to: arrivalAirportCode,
-        toTime: arrivalTime,
+      const flight = {
+        arrivalLocalDateTime,
+        arrivalLocation: { code: arrivalAirportCode },
+        departureLocalDateTime,
+        departureLocation: { code: departureAirportCode },
+        durationMinutes: getDurationInMinutes(duration),
+        marketingAirline: { name: marketingAirlineName },
         elapsedTimezoneOffset,
-      });
-      elapsedTimezoneOffset += flightLeg.timezoneOffset;
+      } as FlightInput;
 
-      flightLegs.push(flightLeg);
+      elapsedTimezoneOffset += getTimezoneOffset(
+        flight.arrivalLocalDateTime as Date,
+        flight.departureLocalDateTime as Date,
+        flight.durationMinutes as number,
+      );
+
+      flights.push(flight);
     });
-  return flightLegs;
+  return flights;
 };

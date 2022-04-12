@@ -1,4 +1,4 @@
-export function pause(timeout = 10_000, jitterMin = 0, jitterMax = 0) {
+export const pause = (timeout = 10_000, jitterMin = 0, jitterMax = 0) => {
   let jitter = 0;
   if (jitterMin && jitterMax) {
     jitter += getRandomInt(jitterMin, jitterMax);
@@ -7,7 +7,7 @@ export function pause(timeout = 10_000, jitterMin = 0, jitterMax = 0) {
   return new Promise((resolve) => {
     setTimeout(resolve, timeout + jitter);
   });
-}
+};
 
 function getRandomInt(min: number, max: number) {
   min = Math.ceil(min);

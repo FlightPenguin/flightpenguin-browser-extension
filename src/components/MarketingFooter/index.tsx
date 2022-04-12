@@ -1,4 +1,4 @@
-import { Box, Stack, Text } from "bumbag";
+import { Box, Text } from "bumbag";
 import React from "react";
 
 import { ContentTile } from "./ContentTile";

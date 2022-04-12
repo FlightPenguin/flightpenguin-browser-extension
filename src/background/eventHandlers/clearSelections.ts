@@ -1,16 +1,17 @@
-import { DEFAULT_ON_READY_FUNCTION, PROVIDERS_NEEDING_RETURNS } from "../constants";
+import { DisplayableTrip, DisplayableTripInput } from "../../shared/types/DisplayableTrip";
 import { ProviderManager } from "../ProviderManager";
+import { sendTripResultsToClient } from "./utilities/sendTripResultsToClient";
 
-export const handleClearSelections = (providerManager: ProviderManager) => {
-  providerManager.setReturns([]);
-  for (const providerName of PROVIDERS_NEEDING_RETURNS) {
-    providerManager.setReady(providerName, false);
-    providerManager.setOnReady(providerName, DEFAULT_ON_READY_FUNCTION);
-    const tabId = providerManager.getTabId(providerName);
-    if (tabId !== null && tabId !== undefined) {
-      chrome.tabs.sendMessage(tabId, {
-        event: "CLEAR_SELECTION",
-      });
-    }
-  }
+export const handleClearSelections = (
+  providerManager: ProviderManager,
+  currentSelections: DisplayableTripInput[],
+): void => {
+  providerManager.setSelectedTrips(
+    currentSelections.map((trip) => {
+      return new DisplayableTrip(trip);
+    }),
+  );
+  sendTripResultsToClient(providerManager);
+
+  // TODO: Handle providers needing trip per page
 };

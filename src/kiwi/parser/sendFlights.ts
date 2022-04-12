@@ -1,10 +1,10 @@
-import { sendFlightsEvent } from "../../shared/events";
+import { sendItinerariesEvent } from "../../shared/events";
 import { getNextVisibleSibling } from "../../shared/parser/getNextVisibleSibling";
 import { pause } from "../../shared/pause";
 import { FlightSearchFormData } from "../../shared/types/FlightSearchFormData";
-import { UnprocessedFlightSearchResult } from "../../shared/types/UnprocessedFlightSearchResult";
+import { Itinerary } from "../../shared/types/Itinerary";
 import { stopScrollingCheck, stopScrollingNow } from "../../shared/ui/stopScrolling";
-import { getFlight } from "./getFlight";
+import { getItinerary } from "./getItinerary";
 import { isComplete } from "./isParsingComplete";
 
 interface SendFlightsProps {
@@ -17,7 +17,7 @@ interface SendFlightsResults {
 }
 
 export const sendFlights = async ({ flightCards, formData }: SendFlightsProps): Promise<SendFlightsResults> => {
-  const flights: UnprocessedFlightSearchResult[] = [];
+  const itineraries: Itinerary[] = [];
 
   let lastFlightCard;
   for (const node of flightCards) {
@@ -30,14 +30,14 @@ export const sendFlights = async ({ flightCards, formData }: SendFlightsProps): 
       continue;
     }
 
-    const flight = await getFlight({ flightCard, formData });
-    flights.push(flight);
+    const itin = await getItinerary({ flightCard, formData });
+    itineraries.push(itin);
 
     lastFlightCard = flightCard;
   }
 
-  if (flights.length) {
-    sendFlightsEvent("kiwi", flights);
+  if (itineraries.length) {
+    sendItinerariesEvent("kiwi", itineraries);
   }
 
   if (lastFlightCard) {

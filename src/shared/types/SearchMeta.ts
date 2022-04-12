@@ -1,10 +1,11 @@
-export interface SearchLegMeta {
+export interface SearchTripMeta {
   airports: string[];
   airlines: string[];
   layoverCounts: number[];
 }
 
-export interface SearchMeta {
-  departures: SearchLegMeta;
-  returns: SearchLegMeta;
-}
+export const SearchTripMetaDefault = {
+  layoverCounts: [] as number[],
+  airlines: [] as string[],
+  airports: [] as string[],
+} as SearchTripMeta;

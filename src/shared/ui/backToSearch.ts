@@ -1,4 +1,4 @@
-export const addBackToSearchButton = (backToSearchSelector = "#back-to-search") => {
+export const addBackToSearchButton = (backToSearchSelector = "#back-to-search"): void => {
   if (document.querySelector(backToSearchSelector)) {
     return;
   }

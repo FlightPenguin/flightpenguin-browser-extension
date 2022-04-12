@@ -12,7 +12,7 @@ interface TrackProps {
   touched: boolean;
   minimumValue: number;
   maximumValue: number;
-  flightTimeContainerWidth: number;
+  tripContainerWidth: number;
 }
 
 const Track = ({
@@ -23,11 +23,11 @@ const Track = ({
   touched,
   minimumValue,
   maximumValue,
-  flightTimeContainerWidth,
+  tripContainerWidth,
 }: TrackProps): React.ReactElement => {
   const value = touched ? state.value : [minimumValue, maximumValue];
 
-  const { left, right } = getTrackPosition({ value: value, index: state.index, flightTimeContainerWidth, intervals });
+  const { left, right } = getTrackPosition({ value: value, index: state.index, tripContainerWidth, intervals });
 
   return (
     <Box
@@ -54,7 +54,7 @@ const getValuesForMemoCheck = ({
   intervals,
   minimumValue,
   maximumValue,
-  flightTimeContainerWidth,
+  tripContainerWidth,
 }: TrackProps) => {
   return {
     index: state.index,
@@ -63,6 +63,6 @@ const getValuesForMemoCheck = ({
     intervals,
     minimumValue,
     maximumValue,
-    flightTimeContainerWidth,
+    tripContainerWidth,
   };
 };

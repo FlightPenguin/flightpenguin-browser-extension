@@ -8,21 +8,21 @@ interface GetPositionByTickProps {
   value: number;
   intervals: number[];
   applyAdjustment?: boolean;
-  flightTimeContainerWidth: number;
+  tripContainerWidth: number;
 }
 
 export const getPositionByTick = ({
   value,
   intervals,
-  flightTimeContainerWidth,
+  tripContainerWidth,
   applyAdjustment = true,
 }: GetPositionByTickProps): number => {
-  validateInput({ value, intervals, flightTimeContainerWidth });
+  validateInput({ value, intervals, tripContainerWidth });
 
   const ticks = getSliderTicks({ intervals });
   const adjustmentValue = applyAdjustment ? thumbWidthWrapperValue / 2 : 0;
 
-  return new Decimal(flightTimeContainerWidth)
+  return new Decimal(tripContainerWidth)
     .dividedBy(ticks)
     .times(value)
     .minus(adjustmentValue)
@@ -30,15 +30,15 @@ export const getPositionByTick = ({
     .toNumber();
 };
 
-const validateInput = ({ value, intervals, flightTimeContainerWidth }: GetPositionByTickProps): void => {
+const validateInput = ({ value, intervals, tripContainerWidth }: GetPositionByTickProps): void => {
   const invalidArgs = [] as InvalidArgument[];
 
   if (Number.isNaN(value)) {
     invalidArgs.push({ argumentName: "value", value: value });
   }
 
-  if (Number.isNaN(flightTimeContainerWidth)) {
-    invalidArgs.push({ argumentName: "flightTimeContainerWidth", value: flightTimeContainerWidth });
+  if (Number.isNaN(tripContainerWidth)) {
+    invalidArgs.push({ argumentName: "tripContainerWidth", value: tripContainerWidth });
   }
 
   if (

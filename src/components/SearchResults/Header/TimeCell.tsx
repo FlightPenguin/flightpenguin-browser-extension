@@ -1,11 +1,11 @@
 import { Box, Text, Tooltip } from "bumbag";
-import { addDays, addMinutes, format } from "date-fns";
+import { addDays, addHours, addMinutes, format } from "date-fns";
 import React from "react";
 
-import { FlightType } from "../../../background/constants";
 import { getWeekdayName } from "../../../shared/utilities/getWeekdayName";
 
 interface TimeCellProps {
+  index: number;
   interval: number;
   intervalWidth: number;
   tzOffset: number;
@@ -14,10 +14,10 @@ interface TimeCellProps {
   departureAirportCode: string;
   arrivalAirportCode: string;
   timeFontSize: string;
-  flightType: FlightType;
 }
 
 export const TimeCell = ({
+  index,
   interval,
   intervalWidth,
   tzOffset,
@@ -26,15 +26,11 @@ export const TimeCell = ({
   departureAirportCode,
   arrivalAirportCode,
   timeFontSize,
-  flightType,
-}: TimeCellProps) => {
-  const multiplier = flightType === "DEPARTURE" ? -1 : 1;
-
+}: TimeCellProps): React.ReactElement => {
   const date = addDays(startDate, daysCounter);
-  const minutes = interval * 60;
-  const time = addMinutes(date, minutes);
+  const time = addHours(date, interval);
   const displayTime = format(time, "h aaa");
-  const offsetTime = addMinutes(time, tzOffset * multiplier);
+  const offsetTime = addMinutes(time, tzOffset);
   const displayOffsetTime = format(offsetTime, "h aaa");
 
   const isMidnight = displayTime.toUpperCase() === "12 AM";
@@ -53,7 +49,7 @@ export const TimeCell = ({
       left={"0px"}
       data-name="interval"
     >
-      {isMidnight ? (
+      {isMidnight || index === 0 ? (
         <Box position="relative" border="default" padding="major-1" borderRadius="4">
           <Tooltip content={date.toLocaleDateString("en-US")} hasArrow placement="right">
             <Text fontWeight="700" tabIndex={-1}>
@@ -77,7 +73,7 @@ export const TimeCell = ({
           tabIndex={-1}
           textAlign="right"
         >
-          {tzOffset && interval === 0 ? departureAirportCode : ""}
+          {tzOffset && index === 0 ? departureAirportCode : ""}
         </Text>
         <Text
           fontSize={timeFontSize}
@@ -110,7 +106,7 @@ export const TimeCell = ({
             tabIndex={-1}
             textAlign="right"
           >
-            {tzOffset && interval === 0 ? arrivalAirportCode : ""}
+            {tzOffset && index === 0 ? arrivalAirportCode : ""}
           </Text>
           <Text fontSize={timeFontSize} fontWeight={isMidnight ? "700" : "400"} tabIndex={-1} color="warning">
             {displayOffsetTime.toLowerCase()}

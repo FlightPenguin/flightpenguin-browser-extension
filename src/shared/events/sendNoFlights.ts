@@ -1,7 +1,6 @@
-export const sendNoFlightsEvent = (providerName: string, searchType: "DEPARTURE" | "RETURN" | "BOTH"): void => {
+export const sendNoFlightsEvent = (providerName: string): void => {
   chrome.runtime.sendMessage({
     event: "NO_FLIGHTS_FOUND",
     provider: providerName,
-    searchType: searchType,
   });
 };

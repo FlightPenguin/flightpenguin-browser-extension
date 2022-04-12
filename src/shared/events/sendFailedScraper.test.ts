@@ -22,11 +22,10 @@ describe("sendFailedScraper happy path", () => {
   });
 
   it("calls chrome.runtime.sendMessage with the correct results", () => {
-    sendFailedScraper("donkey", new Error("donkey fail"), "ALL");
+    sendFailedScraper("donkey", new Error("donkey fail"));
 
     expect(chrome.runtime.sendMessage).toBeCalledWith({
       event: "FAILED_SCRAPER",
-      searchType: "ALL",
       providerName: "donkey",
       description: "Error donkey fail",
       windowConfig: {

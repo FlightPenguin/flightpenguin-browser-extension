@@ -2,7 +2,6 @@ import { Box, Icon, Text } from "bumbag";
 import isEqual from "lodash.isequal";
 import React, { HTMLProps, useState } from "react";
 
-import { FlightType } from "../../../../background/constants";
 import { getValueInRange } from "../../../../shared/utilities/getValueInRange";
 import { rowHeight } from "../../../constants";
 import { thumbWidthValue, thumbWidthWrapperValue } from "../constants";
@@ -18,10 +17,9 @@ interface ThumbProps {
   intervals: number[];
   heightValue: number;
   touched: boolean;
-  flightCount: number;
+  tripCount: number;
   timezoneOffset: number;
-  flightTimeContainerWidth: number;
-  flightType: FlightType;
+  tripContainerWidth: number;
 }
 
 const widthValue = thumbWidthValue;
@@ -36,10 +34,9 @@ const Thumb = ({
   intervals,
   heightValue,
   touched,
-  flightCount,
+  tripCount,
   timezoneOffset,
-  flightTimeContainerWidth,
-  flightType,
+  tripContainerWidth,
 }: ThumbProps): React.ReactElement => {
   const [inUse, setInUse] = useState(false);
 
@@ -54,9 +51,8 @@ const Thumb = ({
     startDate,
     value,
     timezoneOffset: state.index === 1 ? timezoneOffset : 0,
-    flightType,
   });
-  const position = getPositionByTick({ intervals, value, flightTimeContainerWidth });
+  const position = getPositionByTick({ intervals, value, tripContainerWidth });
   const color = timezoneOffset ? (state.index === 0 ? "info" : "warning") : "black";
 
   return (
@@ -114,7 +110,11 @@ const Thumb = ({
       >
         <Icon icon={state.index === 0 ? "solid-plane-departure" : "solid-plane-arrival"} color="white" fontSize="300" />
       </Box>
-      <Box marginTop="minor-1" tabIndex={0}>
+      <Box
+        marginTop="minor-1"
+        tabIndex={0}
+        aria-label={state.index === 0 ? "Filter flights to departures after" : "Filter flights to arrivals before"}
+      >
         <Text fontWeight="700" color={color}>
           {formattedTime}
         </Text>
@@ -122,7 +122,7 @@ const Thumb = ({
       <Box
         width="100%"
         marginTop="6px"
-        height={`${rowHeight * flightCount}px`}
+        height={`${rowHeight * tripCount}px`}
         display={inUse && ![minimumValue, maximumValue].includes(value) ? "flex" : "none"}
         flexDirection="row"
       >
@@ -158,9 +158,8 @@ const getValuesForMemoCheck = ({
   intervals,
   minimumValue,
   maximumValue,
-  flightCount,
-  flightTimeContainerWidth,
-  flightType,
+  tripCount,
+  tripContainerWidth,
 }: ThumbProps) => {
   return {
     index: state.index,
@@ -170,8 +169,7 @@ const getValuesForMemoCheck = ({
     intervals: intervals,
     minimumValue,
     maximumValue,
-    flightCount,
-    flightTimeContainerWidth,
-    flightType,
+    tripCount,
+    tripContainerWidth,
   };
 };

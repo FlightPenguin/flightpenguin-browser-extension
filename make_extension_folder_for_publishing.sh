@@ -159,7 +159,6 @@ make_directory "${TARGET_DIR}"
 make_directory "${TARGET_DIR}/src"
 make_directory "${TARGET_DIR}/src/css"
 make_directory "${TARGET_DIR}/src/shared"
-make_directory "${TARGET_DIR}/src/southwest"
 
 copy_file "./manifest.json" "${TARGET_DIR}"
 copy_file "./index.html" "${TARGET_DIR}"

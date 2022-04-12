@@ -1,11 +1,10 @@
-import { Box, Button, Hide, Icon } from "bumbag";
+import { Box, Button, Icon } from "bumbag";
 import isEqual from "lodash.isequal";
 import React, { useState } from "react";
 
 import { CabinMap } from "../../background/constants";
 import { FlightSearchFormData } from "../../shared/types/FlightSearchFormData";
 import { Cabin } from "../icons";
-import { getPrettyRewardsCardName } from "../utilities/forms/getPrettyRewardsCardName";
 import { GenericCell } from "./GenericCell";
 import { TimeCell } from "./TimeCell";
 

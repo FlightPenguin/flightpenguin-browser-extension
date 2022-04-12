@@ -1,4 +1,3 @@
 export const getExtensionUrl = () => {
-  const extensionId = chrome.runtime.id;
-  return `chrome-extension://${extensionId}/index.html`;
+  return `chrome-extension://${chrome.runtime.id}/index.html`;
 };

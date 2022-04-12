@@ -1,67 +1,69 @@
-import { Box, Text } from "bumbag";
+import { Box } from "bumbag";
+import { startOfDay } from "date-fns";
 import isEqual from "lodash.isequal";
 import React from "react";
 
-import { FlightSearchFormData } from "../../../shared/types/FlightSearchFormData";
+import { Airport } from "../../SearchForm/api/airports/Airport";
 import TimelineSlider from "../Slider";
 import { TimeCell } from "./TimeCell";
-import { getFlightInfo } from "./utilities/getFlightInfo";
 import { getFontSize } from "./utilities/getFontSize";
 
 interface TimelineHeaderProps {
-  formData: FlightSearchFormData;
-  flightType: "DEPARTURE" | "RETURN";
+  arrivalLocation: Airport;
+  departureLocation: Airport;
   intervals: number[];
   tzOffset: number;
   onSliderChange: (minDate: Date, maxDate: Date) => void;
   sliderDisabled: boolean;
-  flightCount: number;
-  flightTimeContainerWidth: number;
+  tripCount: number;
+  tripContainerWidth: number;
+  intervalWidth: number;
+  startDate: Date;
 }
 
 const TimelineHeader = ({
-  formData,
-  flightType,
+  arrivalLocation,
+  departureLocation,
   intervals,
   tzOffset,
   onSliderChange,
   sliderDisabled,
-  flightCount,
-  flightTimeContainerWidth,
+  tripCount,
+  tripContainerWidth,
+  startDate,
+  intervalWidth,
 }: TimelineHeaderProps): React.ReactElement => {
   let daysCounter = 0;
-  const intervalWidth = flightTimeContainerWidth / (intervals.length - 1);
-  const { startDate, departureAirportCode, arrivalAirportCode } = getFlightInfo(formData, flightType);
   const timeFontSize = getFontSize(intervals.length);
 
   return (
     <Box
-      className={`${flightType.toLowerCase()}-header`}
+      className={`${departureLocation.label}-${arrivalLocation.label}-header`}
       display="flex"
       flexDirection="row"
       flexWrap="wrap"
-      width={`${flightTimeContainerWidth + intervalWidth}px`}
+      width={`${tripContainerWidth + intervalWidth}px`}
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
       marginLeft={`-${intervalWidth / 2}px`}
     >
       <Box flexBasis="100%" display="flex" flexDirection="row">
-        {intervals.map((interval) => {
-          if (interval % 24 === 0 && interval !== 0) {
+        {intervals.map((interval, index) => {
+          if ([0, 1].includes(interval % 24) && ![0, 1].includes(interval)) {
             daysCounter += 1;
           }
 
           return (
             <TimeCell
+              index={index}
               interval={interval}
               intervalWidth={intervalWidth}
               tzOffset={tzOffset}
-              startDate={startDate}
+              startDate={startOfDay(startDate)}
               daysCounter={daysCounter}
               timeFontSize={timeFontSize}
-              departureAirportCode={departureAirportCode}
-              arrivalAirportCode={arrivalAirportCode}
-              flightType={flightType}
+              departureAirportCode={departureLocation.label}
+              arrivalAirportCode={arrivalLocation.label}
               key={`interval-header-${interval}`}
             />
           );
@@ -72,16 +74,39 @@ const TimelineHeader = ({
         intervalWidth={intervalWidth}
         startDate={startDate}
         onRangeChange={onSliderChange}
-        flightCount={flightCount}
+        tripCount={tripCount}
         disabled={sliderDisabled}
         timezoneOffset={tzOffset}
-        flightTimeContainerWidth={flightTimeContainerWidth}
-        flightType={flightType}
+        tripContainerWidth={tripContainerWidth}
       />
     </Box>
   );
 };
 
 export default React.memo(TimelineHeader, (previous, next) => {
-  return isEqual(previous, next);
+  return isEqual(getValuesForMemoCheck(previous), getValuesForMemoCheck(next));
 });
+
+const getValuesForMemoCheck = ({
+  arrivalLocation,
+  departureLocation,
+  intervals,
+  tzOffset,
+  sliderDisabled,
+  tripCount,
+  tripContainerWidth,
+  startDate,
+  intervalWidth,
+}: TimelineHeaderProps) => {
+  return {
+    arrivalAirportCode: arrivalLocation.label,
+    departureAirportCode: departureLocation.label,
+    intervals,
+    tzOffset,
+    sliderDisabled,
+    tripCount,
+    tripContainerWidth,
+    startDate,
+    intervalWidth,
+  };
+};

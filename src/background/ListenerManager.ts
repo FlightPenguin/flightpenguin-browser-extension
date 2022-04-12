@@ -1,14 +1,11 @@
 import { AnalyticsManager } from "./AnalyticsManager";
 import {
   handleClearSelections,
-  handleDepartureSelected,
-  handleFlightNotFound,
-  handleFlightResultsReceived,
-  handleFlightReturnResultsReceived,
   handleFocusWebpage,
   handleFormDataReceived,
-  handleHighlightTab,
   handleIndexUnloaded,
+  handleItineraryNotFound,
+  handleItineraryResultsReceived,
   handleLogAnalyticsEvent,
   handleLogAnalyticsPageView,
   handleLogAnalyticsUserIdentified,
@@ -17,6 +14,7 @@ import {
   handleProviderReady,
   handleScraperFailed,
   handleScraperSuccess,
+  handleTripSelected,
   handleUpdateRequest,
 } from "./eventHandlers";
 import { ProviderManager } from "./ProviderManager";
@@ -40,35 +38,22 @@ export const ListenerManager = (providerManager: ProviderManager, analyticsManag
         handleFormDataReceived(providerManager, message.formData, message.windowConfig);
         break;
       case "NO_FLIGHTS_FOUND":
-        handleNoFlightsFound(providerManager, message.provider, message.searchType);
+        handleNoFlightsFound(providerManager, message.provider);
         break;
       case "SUCCESSFUL_SCRAPER":
-        handleScraperSuccess(providerManager, message.providerName, message.searchType);
+        handleScraperSuccess(providerManager, message.providerName);
         break;
       case "FAILED_SCRAPER":
-        handleScraperFailed(
-          providerManager,
-          message.providerName,
-          message.description,
-          message.searchType,
-          message.windowConfig,
-          sender,
-        );
+        handleScraperFailed(providerManager, message.providerName, message.description, message.windowConfig, sender);
         break;
-      case "FLIGHT_RESULTS_RECEIVED":
-        handleFlightResultsReceived(providerManager, message.flights, message.provider);
+      case "ITINERARY_RESULTS":
+        handleItineraryResultsReceived(providerManager, message.itineraries, message.provider);
         break;
-      case "RETURN_FLIGHTS_RECEIVED":
-        handleFlightReturnResultsReceived(providerManager, message.flights, message.provider);
+      case "TRIP_SELECTED":
+        handleTripSelected(providerManager, message.selectedTrips);
         break;
-      case "DEPARTURE_SELECTED":
-        handleDepartureSelected(providerManager, message.departureId);
-        break;
-      case "HIGHLIGHT_TAB":
-        handleHighlightTab(providerManager, message.selectedDepartureId, message.selectedReturnId);
-        break;
-      case "FLIGHT_NOT_FOUND":
-        handleFlightNotFound(providerManager, message.id);
+      case "ITINERARY_NOT_FOUND":
+        handleItineraryNotFound(providerManager, message.id);
         break;
       case "PROVIDER_READY":
         handleProviderReady(providerManager, message.provider);
@@ -77,7 +62,7 @@ export const ListenerManager = (providerManager: ProviderManager, analyticsManag
         handleFocusWebpage(providerManager);
         break;
       case "CLEAR_SELECTIONS":
-        handleClearSelections(providerManager);
+        handleClearSelections(providerManager, message.currentSelections);
         break;
       case "INDEX_UNLOAD":
         handleIndexUnloaded(providerManager);

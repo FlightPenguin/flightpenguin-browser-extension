@@ -247,6 +247,7 @@ export const SearchForm = ({
                   >
                     <FormikField
                       after={<Input.Icon icon="solid-plane-departure" fontSize="300" color="black" />}
+                      aria-label="Drop down menu to search for departure airport or city"
                       buttonProps={{ elementRef: fromAirportRef }}
                       cacheKey="fromAirport"
                       component={SelectMenu.Formik}
@@ -270,7 +271,7 @@ export const SearchForm = ({
                             }
                           }}
                         >
-                          Starting airport
+                          Departure location
                         </Box>
                       }
                       loadOptions={searchAirports}
@@ -308,6 +309,7 @@ export const SearchForm = ({
                   >
                     <FormikField
                       after={<Input.Icon icon="solid-plane-arrival" fontSize="300" color="black" />}
+                      aria-label="Drop down menu to search for destination airport or city"
                       buttonProps={{ elementRef: toAirportRef }}
                       cacheKey="toAirport"
                       component={SelectMenu.Formik}
@@ -331,7 +333,7 @@ export const SearchForm = ({
                             }
                           }}
                         >
-                          Destination airport
+                          Destination location
                         </Box>
                       }
                       loadOptions={searchAirports}
@@ -675,7 +677,7 @@ export const SearchForm = ({
                     alignX="center"
                     paddingLeft="major-4"
                     paddingRight="major-4"
-                    disabled={formik.isSubmitting}
+                    disabled={!activeUser || formik.isSubmitting}
                     isLoading={formik.isSubmitting}
                     style={{ whiteSpace: "nowrap" }}
                   >

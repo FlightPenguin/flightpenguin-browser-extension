@@ -1,7 +1,7 @@
 import { FlightSearchFormData } from "../../shared/types/FlightSearchFormData";
 import { waitForAppearance } from "../../shared/utilities/waitFor";
 import { scrollToFlightCard } from "../ui/scrollToFlightCard";
-import { getFlight } from "./getFlight";
+import { getItinerary } from "./getItinerary";
 import { shouldScrollToPlaceholder } from "./shouldScrollToPlaceholder";
 import { shouldSkipCard } from "./shouldSkipCard";
 
@@ -46,8 +46,8 @@ export const setFlightIds = async (formData: FlightSearchFormData): Promise<void
 
       const flightCardIndex = Number(flightCard.dataset.index);
       if (flightCardIndex && flightCardIndex <= maxIndex) {
-        const flight = await getFlight({ flightCard, formData });
-        console.log(`retagged flight ${flight.id}`);
+        const flight = await getItinerary({ flightCard, formData });
+        console.log(`retagged flight ${flight.getId()}`);
       }
     }
   }

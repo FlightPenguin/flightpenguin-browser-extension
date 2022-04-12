@@ -1,7 +1,7 @@
 {
   "name": "FlightPenguin",
   "short_name": "FlightPenguin",
-  "version": "1.15.9",
+  "version": "1.16.0",
   "description": "From some of the builders of Hipmunk, Flight Penguin takes the pain out of flight search.",
   "background": {
     "page": "src/background.html",
@@ -40,19 +40,19 @@
       ]
     },
     {
-      "matches": ["https://www.expedia.com/Flights-Search?*"],
-      "css": ["src/shared/contentScript.css"],
-      "js": [
-        "src/shared/sentry.js",
-        "dist/expedia.bundle.js"
-      ]
-    },
-    {
       "matches": ["https://www.kiwi.com/us/search/results/*"],
       "css": ["src/shared/contentScript.css"],
       "js": [
         "src/shared/sentry.js",
         "dist/kiwi.bundle.js"
+      ]
+    },
+    {
+      "matches": ["https://www.momondo.com/flight-search/*", "https://www.momondo.com/book/*"],
+      "css": ["src/shared/contentScript.css"],
+      "js": [
+        "src/shared/sentry.js",
+        "dist/momondo.bundle.js"
       ]
     },
     {
@@ -118,7 +118,8 @@
         "https://www.trip.com/flights/*",
         "https://www.southwest.com/air/booking/select.html?*",
         "https://www.southwest.com/air/booking/index.html?*",
-        "https://www.expedia.com/Flights-Search?*",
+        "https://www.momondo.com/flight-search/*",
+        "https://www.momondo.com/book/*",
         "https://www.kiwi.com/us/search/results/*",
         "https://www.cheapoair.com/air/*"
       ],
