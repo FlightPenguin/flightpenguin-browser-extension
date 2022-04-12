@@ -38,4 +38,8 @@ export class Location {
   getType(): string {
     return this.type;
   }
+
+  isEqual(otherLocation: Location): boolean {
+    return this.type === otherLocation.type && this.code === otherLocation.code;
+  }
 }

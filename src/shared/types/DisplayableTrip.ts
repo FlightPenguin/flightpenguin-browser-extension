@@ -12,9 +12,11 @@ export class DisplayableTrip {
   private lowestFare: number;
   private pain: number;
   private trip: Trip;
+  private dominatedTrips: DisplayableTrip[];
 
   constructor({ cabin, lowestFare, trip }: DisplayableTripInput) {
     this.cabin = cabin;
+    this.dominatedTrips = [];
     this.lowestFare = lowestFare;
     this.trip = trip.constructor.name === "Trip" ? (trip as Trip) : new Trip(trip as TripInput);
 
@@ -62,5 +64,35 @@ export class DisplayableTrip {
     }
 
     return tripText;
+  }
+
+  isDominatableTrip(otherTrip: DisplayableTrip): boolean {
+    return [
+      // basics are equal
+      this.getTrip().getCarriers().length === 1,
+      otherTrip.getTrip().getCarriers().length === 1, // this is implicit, but we want fast failures...
+      this.getTrip().getCarriers().length === otherTrip.getTrip().getCarriers().length,
+      this.getTrip().getCarriers()[0] === otherTrip.getTrip().getCarriers()[0],
+      this.getTrip().getDepartureAirport().isEqual(otherTrip.getTrip().getDepartureAirport()),
+      this.getTrip().getArrivalAirport().isEqual(otherTrip.getTrip().getArrivalAirport()),
+      // other trip costs more
+      otherTrip.getLowestFare() >= this.getLowestFare(),
+      // other trip leaves earlier
+      otherTrip.getTrip().getDepartureDateTime() <= this.getTrip().getDepartureDateTime(),
+      // other trip arrives later
+      otherTrip.getTrip().getArrivalDateTime() >= this.getTrip().getArrivalDateTime(),
+    ].every((value) => value);
+  }
+
+  addDominatedTrip(badTrip: DisplayableTrip): void {
+    this.dominatedTrips.push(badTrip);
+  }
+
+  getDominatedTrips(): DisplayableTrip[] {
+    return this.dominatedTrips;
+  }
+
+  resetDominatedTrips(): void {
+    this.dominatedTrips = [];
   }
 }

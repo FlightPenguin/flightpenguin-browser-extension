@@ -43,6 +43,23 @@ const input = {
 };
 
 describe("Trip happy path", () => {
+  it("getArrivalAirport", () => {
+    const trip = TripFactory.build(
+      {},
+      {
+        transient: {
+          ...input,
+          arrivalLocation: { name: "Fake", code: "FAKE", type: "CITY" } as LocationInput,
+        },
+      },
+    );
+    expect(JSON.parse(JSON.stringify(trip.getArrivalAirport()))).toEqual({
+      code: "DEN",
+      name: "Denver International Airport",
+      type: "AIRPORT",
+    });
+  });
+
   it("getArrivalDateTime works", () => {
     const trip = TripFactory.build({}, { transient: input });
     expect(trip.getArrivalDateTime()).toEqual(getParsedISODate("2022-04-07T05:58:00.000Z"));
@@ -60,6 +77,23 @@ describe("Trip happy path", () => {
   it("getCarriers works", () => {
     const trip = TripFactory.build({}, { transient: input });
     expect(trip.getCarriers()).toEqual(["United", "Frontier"]);
+  });
+
+  it("getDepartureAirport works", () => {
+    const trip = TripFactory.build(
+      {},
+      {
+        transient: {
+          ...input,
+          departureLocation: { name: "Fake", code: "FAKE", type: "CITY" } as LocationInput,
+        },
+      },
+    );
+    expect(JSON.parse(JSON.stringify(trip.getDepartureAirport()))).toEqual({
+      name: "Port Columbus International Airport",
+      code: "CMH",
+      type: "AIRPORT",
+    });
   });
 
   it("getDisplayCarriers works", () => {
