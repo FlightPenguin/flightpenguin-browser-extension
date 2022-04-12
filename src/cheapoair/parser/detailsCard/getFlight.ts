@@ -1,4 +1,3 @@
-import { getFlightDateFromTimeString } from "../../../shared/parser/getFlightDateFromTimeString";
 import { FlightInput } from "../../../shared/types/Flight";
 import { getDurationInMinutes } from "../../../shared/utilities/getDurationInMinutes";
 import { getAirline } from "../shared/getAirline";
@@ -11,19 +10,16 @@ export const getFlight = (
   flightLegContainer: HTMLDivElement,
   elapsedTimezoneOffset: number,
   totalFlightLegCount: number,
-  previousFlightLegDepartureDate: Date,
+  previousFlightLegDate: Date,
 ): FlightInput => {
   const airline = getAirline(flightLegContainer);
   const { departureAirport, arrivalAirport } = getAirportNames(flightLegContainer);
-  const { departureTime, arrivalTime, departureDate } = getFlightTimes(
+  const { departureDateTime: departureLocalDateTime, arrivalDateTime: arrivalLocalDateTime } = getFlightTimes(
     flightLegContainer,
-    previousFlightLegDepartureDate,
+    previousFlightLegDate,
   );
   const rawDuration =
     totalFlightLegCount !== 1 ? getDuration(flightLegContainer) : getDurationTotal(flightLegContainer);
-
-  const departureLocalDateTime = getFlightDateFromTimeString(departureTime, departureDate);
-  const arrivalLocalDateTime = getFlightDateFromTimeString(arrivalTime, departureLocalDateTime);
 
   return {
     arrivalLocalDateTime,

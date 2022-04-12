@@ -8,20 +8,15 @@ export const getTripFlights = (tripContainer: HTMLElement, departureDate: Date):
   let elapsedTimezoneOffset = 0;
 
   const flightContainers = getFlightsContainer(tripContainer);
-  let previousFlightDepartureDate = departureDate;
+  let previousFlightDate = departureDate;
   flightContainers.forEach((flightContainer) => {
-    const input = getFlight(
-      flightContainer,
-      elapsedTimezoneOffset,
-      flightContainers.length,
-      previousFlightDepartureDate,
-    );
+    const input = getFlight(flightContainer, elapsedTimezoneOffset, flightContainers.length, previousFlightDate);
     elapsedTimezoneOffset += getTimezoneOffset(
       input.arrivalLocalDateTime as Date,
       input.departureLocalDateTime as Date,
       input.durationMinutes as number,
     );
-    previousFlightDepartureDate = input.departureLocalDateTime as Date;
+    previousFlightDate = input.arrivalLocalDateTime as Date;
     flights.push(input);
   });
 

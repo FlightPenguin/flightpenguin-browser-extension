@@ -1,4 +1,4 @@
-import { addYears, differenceInCalendarDays, parse, startOfDay } from "date-fns";
+import { addHours, addMinutes, addYears, parse, startOfDay } from "date-fns";
 
 import { MissingElementLookupError, MissingFieldParserError } from "../../../shared/errors";
 
@@ -8,7 +8,7 @@ const FLIGHT_DAY_SELECTOR = "span[class*='is--flight-month']";
 export const getFlightTimes = (
   flightContainer: HTMLDivElement,
   previousLegDepartureDate: Date,
-): { departureTime: string; arrivalTime: string; departureDate: Date } => {
+): { departureDateTime: Date; arrivalDateTime: Date } => {
   const timeElements = flightContainer.querySelectorAll(FLIGHT_TIME_SELECTOR);
   if (!timeElements || timeElements.length !== 2) {
     throw new MissingElementLookupError("Unable to retrieve flight details times");
@@ -22,51 +22,46 @@ export const getFlightTimes = (
     throw new MissingFieldParserError("Unable to extract departure time text");
   }
 
-  const departureDate = getDepartureDate(flightContainer, previousLegDepartureDate);
-  const departureTimeDifference = getDateDifference(previousLegDepartureDate, departureDate);
+  const dateElements = flightContainer.querySelectorAll(FLIGHT_DAY_SELECTOR);
+  if (!dateElements || dateElements.length !== 2) {
+    throw new MissingElementLookupError("Unable to retrieve flight details dates");
+  }
 
-  const departureTime = getCorrectedDay(dTimeElement.textContent.toLowerCase(), departureTimeDifference);
-  const arrivalTime = getCorrectedDay(aTimeElement.textContent.toLowerCase(), null);
+  const [dDateElement, aDateElement] = dateElements;
+  if (!dDateElement.textContent) {
+    throw new MissingFieldParserError("Unable to extract departure time text");
+  }
+  if (!aDateElement.textContent) {
+    throw new MissingFieldParserError("Unable to extract departure time text");
+  }
+
+  const departureDateTime = getFlightDateTime(
+    dDateElement.textContent,
+    dTimeElement.textContent,
+    previousLegDepartureDate,
+  );
+  const arrivalDateTime = getFlightDateTime(aDateElement.textContent, aTimeElement.textContent, departureDateTime);
 
   return {
-    arrivalTime,
-    departureDate,
-    departureTime,
+    arrivalDateTime,
+    departureDateTime,
   };
 };
 
-const getCorrectedDay = (rawText: string, dateDifference: number | null): string => {
-  let correctedText = rawText;
-  if (dateDifference) {
-    const indicator = dateDifference < 0 ? "-" : "+";
-    correctedText = `${correctedText}${indicator}${Math.abs(dateDifference)}`;
-  } else {
-    if (rawText.includes("+") || rawText.includes("next")) {
-      correctedText = rawText.includes("next") ? rawText.replace("next day", "+1") : rawText.replace(/\s+days/, "");
-    }
+const getFlightDateTime = (flightDateText: string, flightTimeText: string, previousFlightDate: Date): Date => {
+  let flightDate = parse(flightDateText, "MMM dd", new Date());
+  if (flightDate < startOfDay(previousFlightDate)) {
+    flightDate = addYears(previousFlightDate, 1);
   }
 
-  return correctedText.replace(/^0/, "");
-};
-
-const getDepartureDate = (flightContainer: HTMLDivElement, previousDepartureDate: Date): Date => {
-  // NOTE: Returns date with midnight as time always!
-  const departureDateElement = flightContainer.querySelector(FLIGHT_DAY_SELECTOR) as HTMLSpanElement;
-  if (!departureDateElement) {
-    throw new MissingElementLookupError("Unable to find flight leg departure date");
+  const [hoursText, restOfText] = flightTimeText.split(":");
+  const [minutesText, garbage] = restOfText.split(/[a|p]m/i);
+  let hours = Number(hoursText);
+  if (restOfText.toLowerCase().includes("pm") && hours !== 12) {
+    hours += 12;
+  } else if (restOfText.toLowerCase().includes("am") && hours === 12) {
+    hours = 0;
   }
 
-  if (!departureDateElement.textContent) {
-    throw new MissingFieldParserError("Unable to extract text fromf light leg departure date element");
-  }
-
-  let departureDate = parse(departureDateElement.textContent, "MMM dd", new Date());
-  if (startOfDay(departureDate) < startOfDay(previousDepartureDate)) {
-    departureDate = addYears(departureDate, 1);
-  }
-  return departureDate;
-};
-
-const getDateDifference = (previousDepartureDate: Date, departureDate: Date): number => {
-  return differenceInCalendarDays(departureDate, previousDepartureDate);
+  return addMinutes(addHours(flightDate, Number(hours)), Number(minutesText));
 };
