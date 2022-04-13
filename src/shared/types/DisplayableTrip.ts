@@ -5,18 +5,23 @@ export interface DisplayableTripInput {
   cabin: CabinType;
   lowestFare: number;
   trip: Trip | TripInput;
+  dominatedTrips: DisplayableTripInput[];
 }
 
 export class DisplayableTrip {
   private cabin: CabinType;
+  private dominatedTrips: DisplayableTrip[];
   private lowestFare: number;
   private pain: number;
   private trip: Trip;
-  private dominatedTrips: DisplayableTrip[];
 
-  constructor({ cabin, lowestFare, trip }: DisplayableTripInput) {
+  constructor({ cabin, dominatedTrips, lowestFare, trip }: DisplayableTripInput) {
     this.cabin = cabin;
-    this.dominatedTrips = [];
+    this.dominatedTrips = dominatedTrips
+      ? dominatedTrips.map((trip) => {
+          return new DisplayableTrip(trip);
+        })
+      : [];
     this.lowestFare = lowestFare;
     this.trip = trip.constructor.name === "Trip" ? (trip as Trip) : new Trip(trip as TripInput);
 

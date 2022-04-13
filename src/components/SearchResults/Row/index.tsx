@@ -5,6 +5,7 @@ import React, { useEffect, useState } from "react";
 import { DisplayableTrip } from "../../../shared/types/DisplayableTrip";
 import { TripComponent } from "../../../shared/types/TripComponent";
 import { PaymentType } from "../../constants";
+import DominatedTripsButton from "./DominatedTripsButton";
 import TripComponentContainer from "./TripComponent";
 import tripComponent from "./TripComponent";
 import { TripLegend } from "./TripLegend";
@@ -89,6 +90,8 @@ const TimelineRow = ({
   const left = componentsWithPositions[0].layout.startX;
   const finalComponentLayout = componentsWithPositions.slice(-1)[0].layout;
   const right = finalComponentLayout.startX + finalComponentLayout.width;
+
+  const dominationCount = displayableTrip.getDominatedTrips().length;
 
   return (
     <List.Item
@@ -210,6 +213,9 @@ const TimelineRow = ({
           )}
         </Tag>
       </Box>
+      {!!dominationCount && !selected && (
+        <DominatedTripsButton tripCount={dominationCount} tripId={displayableTrip.getTrip().getId()} />
+      )}
     </List.Item>
   );
 };

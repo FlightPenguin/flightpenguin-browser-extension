@@ -188,7 +188,7 @@ const TimelineContainer = ({
         />
       </Box>
       <Box data-name={`trip-grid-wrapper-${containerIndex}`} display="flex">
-        <Box className="border-flex-box" display="flex" borderLeft="default" width="100%">
+        <Box className="border-flex-box" display="flex" borderLeft="default" borderRight="default" width="100%">
           {eligibleTrips && eligibleTrips.length ? (
             !eligibleTrips.length &&
             (filterDateRange.lowerBound ||
