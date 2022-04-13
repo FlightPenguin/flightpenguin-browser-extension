@@ -28,5 +28,5 @@ export const handleItineraryResultsReceived = (
     return; // TODO: Better handle
   }
 
-  sendTripResultsToClient(providerManager);
+  providerManager.sendTripResultsToIndexPage();
 };

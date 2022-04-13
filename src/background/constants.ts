@@ -2,7 +2,7 @@ export const EXTENSION_URL = "chrome-extension://nofndgfpjopdpbcejgdpikmpdehleka
 
 export const PROVIDERS_NEEDING_RETURNS = [
   // force expansion
-];
+] as string[];
 export const PROVIDERS_SUPPORTING_POINTS_SEARCH = ["expedia"];
 export const SUPPORTED_PROVIDERS = [
   // force expansion
