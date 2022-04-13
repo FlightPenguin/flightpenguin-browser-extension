@@ -66,8 +66,10 @@ export class DisplayableTrip {
     return tripText;
   }
 
-  isDominatableTrip(otherTrip: DisplayableTrip): boolean {
+  isDominatableByTrip(otherTrip: DisplayableTrip): boolean {
     return [
+      // not the same trip
+      this.getTrip().getId() !== otherTrip.getTrip().getId(),
       // basics are equal
       this.getTrip().getCarriers().length === 1,
       otherTrip.getTrip().getCarriers().length === 1, // this is implicit, but we want fast failures...
@@ -85,7 +87,10 @@ export class DisplayableTrip {
   }
 
   addDominatedTrip(badTrip: DisplayableTrip): void {
-    this.dominatedTrips.push(badTrip);
+    const existingBadTrip = this.dominatedTrips.find((existingTrip) => existingTrip.isEqual(badTrip));
+    if (!existingBadTrip) {
+      this.dominatedTrips.push(badTrip);
+    }
   }
 
   getDominatedTrips(): DisplayableTrip[] {
@@ -94,5 +99,9 @@ export class DisplayableTrip {
 
   resetDominatedTrips(): void {
     this.dominatedTrips = [];
+  }
+
+  isEqual(otherTrip: DisplayableTrip): boolean {
+    return this.getLowestFare() === otherTrip.getLowestFare() && this.getTrip().isEqual(otherTrip.getTrip());
   }
 }

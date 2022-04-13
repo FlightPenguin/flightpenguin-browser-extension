@@ -198,11 +198,25 @@ describe("DisplayableTrip happy path", () => {
     });
   });
 
-  it("addDominatedTrip works", () => {
-    const trip = DisplayableTripFactory.build({}, { transient: tripInput });
-    const secondTrip = DisplayableTripFactory.build({}, { transient: tripInput });
-    trip.addDominatedTrip(secondTrip);
-    expect(trip.getDominatedTrips().length).toEqual(1);
+  describe("addDominatedTrip", () => {
+    it("adds a new trip", () => {
+      const trip = DisplayableTripFactory.build({}, { transient: tripInput });
+      const secondTrip = DisplayableTripFactory.build({}, { transient: tripInput });
+      trip.addDominatedTrip(secondTrip);
+      expect(trip.getDominatedTrips().length).toEqual(1);
+    });
+
+    it("will not add the same trip", () => {
+      const trip = DisplayableTripFactory.build({}, { transient: tripInput });
+      const secondTrip = DisplayableTripFactory.build({}, { transient: tripInput });
+      trip.addDominatedTrip(secondTrip);
+      trip.addDominatedTrip(secondTrip);
+      trip.addDominatedTrip(secondTrip);
+      trip.addDominatedTrip(secondTrip);
+      trip.addDominatedTrip(secondTrip);
+      trip.addDominatedTrip(secondTrip);
+      expect(trip.getDominatedTrips().length).toEqual(1);
+    });
   });
 
   it("resetDominatedTrip works", () => {
@@ -211,6 +225,32 @@ describe("DisplayableTrip happy path", () => {
     trip.addDominatedTrip(secondTrip);
     trip.resetDominatedTrips();
     expect(trip.getDominatedTrips().length).toEqual(0);
+  });
+
+  describe("isEqual", () => {
+    it("equal", () => {
+      const trip = DisplayableTripFactory.build({}, { transient: tripInput });
+      const otherTrip = DisplayableTripFactory.build({}, { transient: { ...tripInput, trip: trip.getTrip() } });
+      expect(trip.isEqual(otherTrip)).toEqual(true);
+      expect(otherTrip.isEqual(trip)).toEqual(true);
+    });
+
+    it("fares different", () => {
+      const trip = DisplayableTripFactory.build({}, { transient: tripInput });
+      const otherTrip = DisplayableTripFactory.build(
+        {},
+        { transient: { ...tripInput, trip: trip.getTrip(), lowestFare: tripInput.lowestFare + 1 } },
+      );
+      expect(trip.isEqual(otherTrip)).toEqual(false);
+      expect(otherTrip.isEqual(trip)).toEqual(false);
+    });
+
+    it("trips different", () => {
+      const trip = DisplayableTripFactory.build({}, { transient: tripInput });
+      const otherTrip = DisplayableTripFactory.build({}, { transient: tripInput });
+      expect(trip.isEqual(otherTrip)).toEqual(false);
+      expect(otherTrip.isEqual(trip)).toEqual(false);
+    });
   });
 });
 
@@ -305,7 +345,7 @@ describe("Domination tests", () => {
   it("works when all conditions match", () => {
     const trip = DisplayableTripFactory.build({}, { transient: baseDominationTripInput });
     const secondTrip = DisplayableTripFactory.build({}, { transient: worseDominationTripInput });
-    const value = trip.isDominatableTrip(secondTrip);
+    const value = trip.isDominatableByTrip(secondTrip);
     expect(value).toEqual(true);
   });
 
@@ -317,7 +357,7 @@ describe("Domination tests", () => {
 
     const trip = DisplayableTripFactory.build({}, { transient: baseDominationTripInput });
     const secondTrip = DisplayableTripFactory.build({}, { transient: brokenInput });
-    const value = trip.isDominatableTrip(secondTrip);
+    const value = trip.isDominatableByTrip(secondTrip);
     expect(value).toEqual(false);
   });
 
@@ -329,7 +369,7 @@ describe("Domination tests", () => {
 
     const trip = DisplayableTripFactory.build({}, { transient: brokenInput });
     const secondTrip = DisplayableTripFactory.build({}, { transient: worseDominationTripInput });
-    const value = trip.isDominatableTrip(secondTrip);
+    const value = trip.isDominatableByTrip(secondTrip);
     expect(value).toEqual(false);
   });
 
@@ -341,7 +381,7 @@ describe("Domination tests", () => {
 
     const trip = DisplayableTripFactory.build({}, { transient: brokenInput });
     const secondTrip = DisplayableTripFactory.build({}, { transient: worseDominationTripInput });
-    const value = trip.isDominatableTrip(secondTrip);
+    const value = trip.isDominatableByTrip(secondTrip);
     expect(value).toEqual(false);
   });
 
@@ -353,7 +393,7 @@ describe("Domination tests", () => {
 
     const trip = DisplayableTripFactory.build({}, { transient: baseDominationTripInput });
     const secondTrip = DisplayableTripFactory.build({}, { transient: brokenInput });
-    const value = trip.isDominatableTrip(secondTrip);
+    const value = trip.isDominatableByTrip(secondTrip);
     expect(value).toEqual(false);
   });
 
@@ -363,7 +403,7 @@ describe("Domination tests", () => {
 
     const trip = DisplayableTripFactory.build({}, { transient: brokenInput });
     const secondTrip = DisplayableTripFactory.build({}, { transient: worseDominationTripInput });
-    const value = trip.isDominatableTrip(secondTrip);
+    const value = trip.isDominatableByTrip(secondTrip);
     expect(value).toEqual(false);
   });
 
@@ -375,7 +415,7 @@ describe("Domination tests", () => {
 
     const trip = DisplayableTripFactory.build({}, { transient: baseDominationTripInput });
     const secondTrip = DisplayableTripFactory.build({}, { transient: brokenInput });
-    const value = trip.isDominatableTrip(secondTrip);
+    const value = trip.isDominatableByTrip(secondTrip);
     expect(value).toEqual(false);
   });
 
@@ -387,7 +427,7 @@ describe("Domination tests", () => {
 
     const trip = DisplayableTripFactory.build({}, { transient: baseDominationTripInput });
     const secondTrip = DisplayableTripFactory.build({}, { transient: brokenInput });
-    const value = trip.isDominatableTrip(secondTrip);
+    const value = trip.isDominatableByTrip(secondTrip);
     expect(value).toEqual(false);
   });
 });

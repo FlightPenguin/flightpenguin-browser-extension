@@ -1,3 +1,5 @@
+import debounce from "lodash.debounce";
+
 import { getUrl as getCheapoairUrl } from "../cheapoair/mappings/getUrl";
 import { getUrl as getKiwiUrl } from "../kiwi/mappings/getUrl";
 import { getUrl as getMomondoUrl } from "../momondo/mapping/getUrl";
@@ -15,6 +17,7 @@ import {
   PROVIDERS_SUPPORTING_POINTS_SEARCH,
   SUPPORTED_PROVIDERS,
 } from "./constants";
+import { getTripGroupsAndMeta } from "./eventHandlers/utilities/getTripGroupsAndMetadata";
 import { isExtensionOpen } from "./state";
 
 type StatusType = "PENDING" | "PARSING" | "FAILED" | "SUCCESS";
@@ -58,6 +61,8 @@ export class ProviderManager {
   private formData: FlightSearchFormData | null;
   private selectedProviders: string[];
 
+  public sendTripResultsToIndexPage: () => void;
+
   constructor() {
     this.knownProviders = [];
     this.state = {};
@@ -71,6 +76,11 @@ export class ProviderManager {
     this.primaryTab = null;
     this.setPrimaryTab();
     this.setupClosePrimaryTabListener();
+
+    this.sendTripResultsToIndexPage = debounce(this._sendTripResultsToIndexPage.bind(this), 500, {
+      leading: true,
+      maxWait: 3000,
+    });
   }
 
   setupClosePrimaryTabListener(): void {
@@ -437,5 +447,23 @@ export class ProviderManager {
       return 2;
     }
     return this.formData.roundtrip ? 2 : 1;
+  }
+
+  _sendTripResultsToIndexPage(): void {
+    const itineraries = this.getItineraries();
+    const { tripGroups, meta } = getTripGroupsAndMeta(
+      itineraries,
+      this.getSelectedTrips(),
+      this.getMaxSelectionsCount(),
+    );
+
+    const nextMessage = {
+      event: "TRIP_RESULTS_FOR_CLIENT",
+      trips: tripGroups,
+      meta,
+      formData: this.getFormData(),
+    };
+    this.sendMessageToIndexPage(nextMessage);
+    console.error(`SENDING ${new Date().valueOf()}`);
   }
 }

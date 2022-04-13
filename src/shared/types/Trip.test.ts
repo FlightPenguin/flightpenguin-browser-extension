@@ -201,94 +201,124 @@ describe("Trip happy path", () => {
     expect(trip.getCalculatedPain("econ")).toBeGreaterThan(0);
   });
 
-  it("isArrivingBeforeTime null input", () => {
-    const trip = TripFactory.build({}, { transient: input });
-    expect(trip.isArrivingBeforeTime(null)).toEqual(true);
+  describe("isArrivingBeforeTime", () => {
+    it("null input", () => {
+      const trip = TripFactory.build({}, { transient: input });
+      expect(trip.isArrivingBeforeTime(null)).toEqual(true);
+    });
+
+    it("input before", () => {
+      const trip = TripFactory.build({}, { transient: input });
+      expect(trip.isArrivingBeforeTime(getParsedISODate("2022-04-07T00:00:00.000Z"))).toEqual(false);
+    });
+
+    it("input after", () => {
+      const trip = TripFactory.build({}, { transient: input });
+      expect(trip.isArrivingBeforeTime(getParsedISODate("2022-04-08T00:00:00.000Z"))).toEqual(true);
+    });
   });
 
-  it("isArrivingBeforeTime input before", () => {
-    const trip = TripFactory.build({}, { transient: input });
-    expect(trip.isArrivingBeforeTime(getParsedISODate("2022-04-07T00:00:00.000Z"))).toEqual(false);
+  describe("isDepartingAfterTime", () => {
+    it("null input", () => {
+      const trip = TripFactory.build({}, { transient: input });
+      expect(trip.isDepartingAfterTime(null)).toEqual(true);
+    });
+
+    it("input before", () => {
+      const trip = TripFactory.build({}, { transient: input });
+      expect(trip.isDepartingAfterTime(getParsedISODate("2022-04-07T00:00:00.000Z"))).toEqual(true);
+    });
+
+    it("input after", () => {
+      const trip = TripFactory.build({}, { transient: input });
+      expect(trip.isDepartingAfterTime(getParsedISODate("2022-04-08T00:00:00.000Z"))).toEqual(false);
+    });
   });
 
-  it("isArrivingBeforeTime input after", () => {
-    const trip = TripFactory.build({}, { transient: input });
-    expect(trip.isArrivingBeforeTime(getParsedISODate("2022-04-08T00:00:00.000Z"))).toEqual(true);
+  describe("isLayoverCountInRange", () => {
+    it("input undefined", () => {
+      const trip = TripFactory.build({}, { transient: input });
+      expect(trip.isLayoverCountInRange(undefined)).toEqual(true);
+    });
+
+    it("input equal", () => {
+      const trip = TripFactory.build({}, { transient: input });
+      expect(trip.isLayoverCountInRange([1])).toEqual(true);
+    });
+
+    it("input includes", () => {
+      const trip = TripFactory.build({}, { transient: input });
+      expect(trip.isLayoverCountInRange([0, 1])).toEqual(true);
+    });
+
+    it("input does not include", () => {
+      const trip = TripFactory.build({}, { transient: input });
+      expect(trip.isLayoverCountInRange([2])).toEqual(false);
+    });
   });
 
-  it("isDepartingAfterTime null input", () => {
-    const trip = TripFactory.build({}, { transient: input });
-    expect(trip.isDepartingAfterTime(null)).toEqual(true);
+  describe("isLayoverInCity", () => {
+    it("input undefined", () => {
+      const trip = TripFactory.build({}, { transient: input });
+      expect(trip.isLayoverInCity(undefined)).toEqual(true);
+    });
+
+    it("input equal", () => {
+      const trip = TripFactory.build({}, { transient: input });
+      expect(trip.isLayoverInCity(["MIA"])).toEqual(true);
+    });
+
+    it("input includes some", () => {
+      const trip = TripFactory.build({}, { transient: input });
+      expect(trip.isLayoverInCity(["ORD", "MIA"])).toEqual(false);
+    });
+
+    it("input does not include", () => {
+      const trip = TripFactory.build({}, { transient: input });
+      expect(trip.isLayoverInCity(["MEOW"])).toEqual(false);
+    });
   });
 
-  it("isDepartingAfterTime input before", () => {
-    const trip = TripFactory.build({}, { transient: input });
-    expect(trip.isDepartingAfterTime(getParsedISODate("2022-04-07T00:00:00.000Z"))).toEqual(true);
+  describe("isFlownByCarriers", () => {
+    it("input undefined", () => {
+      const trip = TripFactory.build({}, { transient: input });
+      expect(trip.isFlownByCarriers(undefined)).toEqual(true);
+    });
+
+    it("input equal", () => {
+      const trip = TripFactory.build({}, { transient: input });
+      expect(trip.isFlownByCarriers(["Frontier", "United"])).toEqual(true);
+    });
+
+    it("input includes some", () => {
+      const trip = TripFactory.build({}, { transient: input });
+      expect(trip.isFlownByCarriers(["Frontier"])).toEqual(false);
+    });
+
+    it("input does not include", () => {
+      const trip = TripFactory.build({}, { transient: input });
+      expect(trip.isFlownByCarriers(["MEOW"])).toEqual(false);
+    });
   });
 
-  it("isDepartingAfterTime input after", () => {
-    const trip = TripFactory.build({}, { transient: input });
-    expect(trip.isDepartingAfterTime(getParsedISODate("2022-04-08T00:00:00.000Z"))).toEqual(false);
-  });
+  describe("isEqual", () => {
+    it("works when equal", () => {
+      const trip = TripFactory.build({}, { transient: input });
+      const otherTrip = TripFactory.build({}, { transient: input });
+      expect(trip.isEqual(otherTrip)).toEqual(true);
+      expect(otherTrip.isEqual(trip)).toEqual(true);
+    });
 
-  it("isLayoverCountInRange input undefined", () => {
-    const trip = TripFactory.build({}, { transient: input });
-    expect(trip.isLayoverCountInRange(undefined)).toEqual(true);
-  });
+    it("fails when not equal", () => {
+      const trip = TripFactory.build({}, { transient: input });
 
-  it("isLayoverCountInRange input equal", () => {
-    const trip = TripFactory.build({}, { transient: input });
-    expect(trip.isLayoverCountInRange([1])).toEqual(true);
-  });
-
-  it("isLayoverCountInRange input includes", () => {
-    const trip = TripFactory.build({}, { transient: input });
-    expect(trip.isLayoverCountInRange([0, 1])).toEqual(true);
-  });
-
-  it("isLayoverCountInRange input does not include", () => {
-    const trip = TripFactory.build({}, { transient: input });
-    expect(trip.isLayoverCountInRange([2])).toEqual(false);
-  });
-
-  it("isLayoverInCity input undefined", () => {
-    const trip = TripFactory.build({}, { transient: input });
-    expect(trip.isLayoverInCity(undefined)).toEqual(true);
-  });
-
-  it("isLayoverInCity input equal", () => {
-    const trip = TripFactory.build({}, { transient: input });
-    expect(trip.isLayoverInCity(["MIA"])).toEqual(true);
-  });
-
-  it("isLayoverInCity input includes some", () => {
-    const trip = TripFactory.build({}, { transient: input });
-    expect(trip.isLayoverInCity(["ORD", "MIA"])).toEqual(false);
-  });
-
-  it("isLayoverInCity input does not include", () => {
-    const trip = TripFactory.build({}, { transient: input });
-    expect(trip.isLayoverInCity(["MEOW"])).toEqual(false);
-  });
-
-  it("isFlownByCarriers input undefined", () => {
-    const trip = TripFactory.build({}, { transient: input });
-    expect(trip.isFlownByCarriers(undefined)).toEqual(true);
-  });
-
-  it("isFlownByCarriers input equal", () => {
-    const trip = TripFactory.build({}, { transient: input });
-    expect(trip.isFlownByCarriers(["Frontier", "United"])).toEqual(true);
-  });
-
-  it("isFlownByCarriers input includes some", () => {
-    const trip = TripFactory.build({}, { transient: input });
-    expect(trip.isFlownByCarriers(["Frontier"])).toEqual(false);
-  });
-
-  it("isFlownByCarriers input does not include", () => {
-    const trip = TripFactory.build({}, { transient: input });
-    expect(trip.isFlownByCarriers(["MEOW"])).toEqual(false);
+      const otherTripInput = { ...input };
+      otherTripInput["tripComponents"][0]["object"]["departureLocalDateTime"] =
+        getParsedISODate("2022-04-07T03:44:59.000Z");
+      const otherTrip = TripFactory.build({}, { transient: otherTripInput });
+      expect(trip.isEqual(otherTrip)).toEqual(false);
+      expect(otherTrip.isEqual(trip)).toEqual(false);
+    });
   });
 
   // TODO: ENsure add layovers, etc. called in constructor

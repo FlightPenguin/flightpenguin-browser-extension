@@ -267,4 +267,8 @@ export class Trip {
     });
     this.tripComponents = tripComponents;
   }
+
+  isEqual(otherTrip: Trip): boolean {
+    return this.getId() === otherTrip.getId();
+  }
 }

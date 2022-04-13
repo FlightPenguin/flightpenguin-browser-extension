@@ -1,6 +1,5 @@
 import { Itinerary, ItineraryInput } from "../../shared/types/Itinerary";
 import { ProviderManager } from "../ProviderManager";
-import { sendTripResultsToClient } from "./utilities/sendTripResultsToClient";
 
 export const handleItineraryResultsReceived = (
   providerManager: ProviderManager,
@@ -28,5 +27,5 @@ export const handleItineraryResultsReceived = (
     return; // TODO: Better handle
   }
 
-  sendTripResultsToClient(providerManager);
+  providerManager.sendTripResultsToIndexPage();
 };
