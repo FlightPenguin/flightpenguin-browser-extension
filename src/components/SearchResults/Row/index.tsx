@@ -112,6 +112,8 @@ const TimelineRow = ({
       marginBottom="0px"
       backgroundColor={backgroundColor}
       borderBottom={bottomBorder}
+      borderLeft="default"
+      borderRight="default"
       minHeight="90px"
       filter={skeletonBlur}
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment

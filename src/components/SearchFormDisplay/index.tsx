@@ -9,12 +9,11 @@ import { GenericCell } from "./GenericCell";
 import { TimeCell } from "./TimeCell";
 
 interface SearchFormDisplayProps {
-  containerWidth: number;
   formData: FlightSearchFormData;
   onUpdateClick: () => void;
 }
 
-const SearchFormDisplay = ({ containerWidth, formData, onUpdateClick }: SearchFormDisplayProps): React.ReactElement => {
+const SearchFormDisplay = ({ formData, onUpdateClick }: SearchFormDisplayProps): React.ReactElement => {
   const [disabled, setDisabled] = useState(false);
 
   return (
@@ -77,9 +76,8 @@ export default React.memo(SearchFormDisplay, (previous, next) => {
   return isEqual(getValuesForMemoCheck(previous), getValuesForMemoCheck(next));
 });
 
-const getValuesForMemoCheck = ({ formData, containerWidth }: SearchFormDisplayProps) => {
+const getValuesForMemoCheck = ({ formData }: SearchFormDisplayProps) => {
   return {
     formData,
-    containerWidth,
   };
 };
