@@ -24,28 +24,31 @@ const DominatedTripsButton = ({ tripId, tripCount }: DominatedTripsButtonProps):
     >
       {show && (
         <Box display="flex" justifyContent="center" width="100%">
-          {/*<Tooltip*/}
-          {/*  content={`There ${verb} ${tripCount} ${pluralize(*/}
-          {/*    "flight",*/}
-          {/*    tripCount,*/}
-          {/*  )} from this airline that ${verb} clearly worse.  Click this button to show these results.`}*/}
-          {/*>*/}
-          <Button
-            aria-label={`Show ${tripCount} worse flights in container`}
-            iconAfter="solid-expand-alt"
-            onClick={(event) => {
-              event.stopPropagation();
-              setShow(false);
-              console.debug(tripId);
-            }}
-            palette="primary"
-            size="small"
-            variant="outlined"
-            width="80%"
-          >
-            {tripCount}
-          </Button>
-          {/*</Tooltip>*/}
+          <Box width="80%">
+            {" "}
+            <Tooltip
+              content={`There ${verb} ${tripCount} ${pluralize(
+                "flight",
+                tripCount,
+              )} from this airline that ${verb} clearly worse.  Click this button to show these results.`}
+            >
+              <Button
+                aria-label={`Show ${tripCount} worse flights from this airline.`}
+                iconAfter="solid-expand-alt"
+                onClick={(event) => {
+                  event.stopPropagation();
+                  setShow(false);
+                  console.debug(tripId);
+                }}
+                palette="primary"
+                size="small"
+                variant="outlined"
+                width="100%"
+              >
+                {tripCount}
+              </Button>
+            </Tooltip>
+          </Box>
         </Box>
       )}
     </Box>
