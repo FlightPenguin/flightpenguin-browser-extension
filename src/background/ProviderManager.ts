@@ -464,6 +464,5 @@ export class ProviderManager {
       formData: this.getFormData(),
     };
     this.sendMessageToIndexPage(nextMessage);
-    console.error(`SENDING ${new Date().valueOf()}`);
   }
 }
