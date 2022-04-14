@@ -7,7 +7,6 @@ import { TripComponent } from "../../../shared/types/TripComponent";
 import { PaymentType } from "../../constants";
 import DominatedTripsButton from "./DominatedTripsButton";
 import TripComponentContainer from "./TripComponent";
-import tripComponent from "./TripComponent";
 import { TripLegend } from "./TripLegend";
 
 interface TimelineRowProps {
