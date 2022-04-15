@@ -1,4 +1,5 @@
 import { differenceInCalendarDays } from "date-fns";
+import isEqual from "lodash.isequal";
 
 import { CabinType } from "../../background/constants";
 import { Flight } from "./Flight";
@@ -27,9 +28,11 @@ export interface TripInput extends TripInputMetadata {
 export class Trip {
   // effectively a group of flights+layovers that take you from location A to location B.
   private arrivalDateTime: Date;
+  private arrivalAirport: Location;
   private arrivalLocation: Location;
   private departureDateTime: Date;
   private departureLocation: Location;
+  private departureAirport: Location;
   private durationMinutes: number;
   private tripComponents: TripComponent[];
 
@@ -57,7 +60,9 @@ export class Trip {
     });
     this.addLayovers();
 
+    this.arrivalAirport = this.getCalculatedArrivalAirport();
     this.carriers = this.getCalculatedCarriers();
+    this.departureAirport = this.getCalculatedDepartureAirport();
     this.id = this.getCalculatedId();
     this.layoverAirportCodes = this.getCalculatedLayoverAirportCodes();
     this.layoverCount = this.getCalculatedLayoverCount();
@@ -65,6 +70,14 @@ export class Trip {
 
   getArrivalDateTime(): Date {
     return this.arrivalDateTime;
+  }
+
+  getArrivalAirport(): Location {
+    return this.arrivalAirport;
+  }
+
+  getDepartureAirport(): Location {
+    return this.departureAirport;
   }
 
   getArrivalLocation(): Location {
@@ -144,10 +157,20 @@ export class Trip {
       });
   }
 
+  getCalculatedArrivalAirport(): Location {
+    const lastFlight = this.getFlights().slice(-1)[0];
+    return lastFlight.getArrivalLocation();
+  }
+
   getCalculatedCarriers(): string[] {
     const flights = this.getFlights();
     const airlineNames = flights.map((flight) => flight.getAirline().getName());
     return Array.from(new Set(airlineNames));
+  }
+
+  getCalculatedDepartureAirport(): Location {
+    const firstFlight = this.getFlights()[0];
+    return firstFlight.getDepartureLocation();
   }
 
   getCalculatedId(): string {
@@ -243,5 +266,9 @@ export class Trip {
       previousFlight = flight;
     });
     this.tripComponents = tripComponents;
+  }
+
+  isEqual(otherTrip: Trip): boolean {
+    return this.getId() === otherTrip.getId();
   }
 }

@@ -125,14 +125,12 @@ const defaultInitialValues: FormState = {
 
 interface SearchFormProps {
   activeUser: User | null;
-  containerWidth: number;
   onSubmit: (values: FlightSearchFormData) => void;
   initialValues?: FormState;
 }
 
 export const SearchForm = ({
   activeUser,
-  containerWidth,
   onSubmit,
   initialValues = defaultInitialValues,
 }: SearchFormProps): React.ReactElement => {
@@ -206,7 +204,7 @@ export const SearchForm = ({
       paddingTop="major-6"
       justifyContent="center"
     >
-      <Card minWidth="360px" maxWidth={`${containerWidth}px`} width="100%">
+      <Card minWidth="360px" maxWidth="768px" width="100%">
         <Formik
           initialValues={initialValues}
           validateOnBlur={true}

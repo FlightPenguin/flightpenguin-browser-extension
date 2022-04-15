@@ -5,8 +5,8 @@ import React, { useEffect, useState } from "react";
 import { DisplayableTrip } from "../../../shared/types/DisplayableTrip";
 import { TripComponent } from "../../../shared/types/TripComponent";
 import { PaymentType } from "../../constants";
+import DominatedTripsButton from "./DominatedTripsButton";
 import TripComponentContainer from "./TripComponent";
-import tripComponent from "./TripComponent";
 import { TripLegend } from "./TripLegend";
 
 interface TimelineRowProps {
@@ -90,6 +90,8 @@ const TimelineRow = ({
   const finalComponentLayout = componentsWithPositions.slice(-1)[0].layout;
   const right = finalComponentLayout.startX + finalComponentLayout.width;
 
+  const dominationCount = displayableTrip.getDominatedTripIds().length;
+
   return (
     <List.Item
       aria-label={displayableTrip.getAriaLabelText()}
@@ -110,6 +112,8 @@ const TimelineRow = ({
       marginBottom="0px"
       backgroundColor={backgroundColor}
       borderBottom={bottomBorder}
+      borderLeft="default"
+      borderRight="default"
       minHeight="90px"
       filter={skeletonBlur}
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -210,6 +214,9 @@ const TimelineRow = ({
           )}
         </Tag>
       </Box>
+      {!!dominationCount && !selected && (
+        <DominatedTripsButton tripCount={dominationCount} tripId={displayableTrip.getTrip().getId()} />
+      )}
     </List.Item>
   );
 };
@@ -221,6 +228,7 @@ export default React.memo(TimelineRow, (previous, next) => {
 const getComparableProperties = (row: TimelineRowProps) => {
   return {
     tripId: row.displayableTrip.getTrip().getId(),
+    dominatedTripCount: row.displayableTrip.getDominatedTripIds().length,
     containerStartTime: row.containerStartTime,
     containerEndTime: row.containerEndTime,
     intervalWidth: row.intervalWidth,

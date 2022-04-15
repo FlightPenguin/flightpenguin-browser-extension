@@ -5,16 +5,19 @@ export interface DisplayableTripInput {
   cabin: CabinType;
   lowestFare: number;
   trip: Trip | TripInput;
+  dominatedTripIds?: string[];
 }
 
 export class DisplayableTrip {
   private cabin: CabinType;
+  private dominatedTripIds: string[];
   private lowestFare: number;
   private pain: number;
   private trip: Trip;
 
-  constructor({ cabin, lowestFare, trip }: DisplayableTripInput) {
+  constructor({ cabin, dominatedTripIds, lowestFare, trip }: DisplayableTripInput) {
     this.cabin = cabin;
+    this.dominatedTripIds = dominatedTripIds && dominatedTripIds.length ? dominatedTripIds : [];
     this.lowestFare = lowestFare;
     this.trip = trip.constructor.name === "Trip" ? (trip as Trip) : new Trip(trip as TripInput);
 
@@ -62,5 +65,43 @@ export class DisplayableTrip {
     }
 
     return tripText;
+  }
+
+  isDominatableByTrip(otherTrip: DisplayableTrip): boolean {
+    return [
+      // not the same trip
+      this.getTrip().getId() !== otherTrip.getTrip().getId(),
+      // basics are equal
+      this.getTrip().getCarriers().length === 1,
+      otherTrip.getTrip().getCarriers().length === 1, // this is implicit, but we want fast failures...
+      this.getTrip().getCarriers().length === otherTrip.getTrip().getCarriers().length,
+      this.getTrip().getCarriers()[0] === otherTrip.getTrip().getCarriers()[0],
+      this.getTrip().getDepartureAirport().isEqual(otherTrip.getTrip().getDepartureAirport()),
+      this.getTrip().getArrivalAirport().isEqual(otherTrip.getTrip().getArrivalAirport()),
+      // other trip costs more
+      otherTrip.getLowestFare() >= this.getLowestFare(),
+      // other trip leaves earlier
+      otherTrip.getTrip().getDepartureDateTime() <= this.getTrip().getDepartureDateTime(),
+      // other trip arrives later
+      otherTrip.getTrip().getArrivalDateTime() >= this.getTrip().getArrivalDateTime(),
+    ].every((value) => value);
+  }
+
+  addDominatedTripId(badTripId: string): void {
+    if (!this.dominatedTripIds.includes(badTripId)) {
+      this.dominatedTripIds.push(badTripId);
+    }
+  }
+
+  getDominatedTripIds(): string[] {
+    return this.dominatedTripIds;
+  }
+
+  resetDominatedTripIds(): void {
+    this.dominatedTripIds = [];
+  }
+
+  isEqual(otherTrip: DisplayableTrip): boolean {
+    return this.getLowestFare() === otherTrip.getLowestFare() && this.getTrip().isEqual(otherTrip.getTrip());
   }
 }

@@ -3,18 +3,16 @@ import uniqBy from "lodash.uniqby";
 
 import { DisplayableTrip } from "../../../shared/types/DisplayableTrip";
 import { Itinerary } from "../../../shared/types/Itinerary";
-import { SearchTripMeta, SearchTripMetaDefault } from "../../../shared/types/SearchMeta";
+import { SearchTripMeta } from "../../../shared/types/SearchMeta";
 
 export const getTripGroupsAndMeta = (
   itineraries: Itinerary[],
   tripsSelections: DisplayableTrip[],
   expectedArrayLength: number,
+  dominationDenyList: string[],
 ): { tripGroups: DisplayableTrip[][]; meta: SearchTripMeta[] } => {
   const tripGroups = range(1, expectedArrayLength + 1).map((num) => {
     return [] as DisplayableTrip[];
-  });
-  const metas = range(1, expectedArrayLength + 1).map((num) => {
-    return SearchTripMetaDefault;
   });
 
   itineraries.forEach((itinerary) => {
@@ -24,49 +22,25 @@ export const getTripGroupsAndMeta = (
       const trips = itinerary.getTrips().slice(0, highestMatchedIndex + 1);
       trips.forEach((trip, index) => {
         const tripGroup = tripGroups[index];
-        const meta = metas[index];
 
         const displayableTrip = new DisplayableTrip({ trip, lowestFare, cabin: itinerary.getCabin() });
         if (displayableTrip.getPain()) {
+          const betterTrip = tripGroup.find((existingTrip) => existingTrip.isDominatableByTrip(displayableTrip));
+          if (betterTrip) {
+            if (!dominationDenyList.includes(betterTrip.getTrip().getId())) {
+              betterTrip.getDominatedTripIds().forEach((dominatedTrip) => {
+                betterTrip.addDominatedTripId(dominatedTrip);
+              });
+              displayableTrip.resetDominatedTripIds();
+              betterTrip.addDominatedTripId(displayableTrip.getTrip().getId());
+              return;
+            }
+          }
+
           tripGroup.push(displayableTrip);
         } else {
-          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-          // @ts-ignore
-          window.Sentry.addBreadcrumb({
-            category: "backend",
-            message: `Zero pain for flight from ${displayableTrip
-              .getTrip()
-              .getDepartureLocation()
-              .getCode()} on ${displayableTrip.getTrip().getDepartureDateTime()} to ${displayableTrip
-              .getTrip()
-              .getArrivalLocation()
-              .getCode()}  on ${displayableTrip.getTrip().getArrivalDateTime()} with source ${itinerary
-              .getTopSource()
-              .getName()}`,
-            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-            // @ts-ignore
-            level: window.Sentry.Severity.Info,
-          });
-          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-          // @ts-ignore
-          window.Sentry.captureMessage("Trip without pain");
+          sendZeroPainMessageToSentry(displayableTrip, itinerary);
           return;
-        }
-
-        trip.getCarriers().forEach((carrier) => {
-          if (!meta.airlines.includes(carrier)) {
-            meta.airlines.push(carrier);
-          }
-        });
-
-        trip.getLayoverAirportCodes().forEach((code) => {
-          if (!meta.airports.includes(code)) {
-            meta.airports.push(code);
-          }
-        });
-
-        if (!meta.layoverCounts.includes(trip.getLayoverCount())) {
-          meta.layoverCounts.push(trip.getLayoverCount());
         }
       });
     }
@@ -83,14 +57,47 @@ export const getTripGroupsAndMeta = (
         return trip.getTrip().getId();
       });
     }),
-    meta: metas.map((meta) => {
-      return {
-        airlines: meta.airlines.sort(),
-        airports: meta.airports.sort(),
-        layoverCounts: meta.layoverCounts.sort((a, b) => {
-          return a - b;
-        }),
-      };
+    meta: tripGroups.map((tripGroup) => {
+      return getTripGroupMetadata(tripGroup);
+    }),
+  };
+};
+
+const sendZeroPainMessageToSentry = (trip: DisplayableTrip, itinerary: Itinerary): void => {
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
+  window.Sentry.addBreadcrumb({
+    category: "backend",
+    message: `Zero pain for flight from ${trip.getTrip().getDepartureLocation().getCode()} on ${trip
+      .getTrip()
+      .getDepartureDateTime()} to ${trip.getTrip().getArrivalLocation().getCode()}  on ${trip
+      .getTrip()
+      .getArrivalDateTime()} with source ${itinerary.getTopSource().getName()}`,
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    level: window.Sentry.Severity.Info,
+  });
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
+  window.Sentry.captureMessage("Trip without pain");
+};
+
+const getTripGroupMetadata = (tripGroup: DisplayableTrip[]): SearchTripMeta => {
+  const [airlines, airports, layoverCounts] = tripGroup.reduce(
+    ([airlines, airports, layoverCounts], trip) => {
+      airlines.push(trip.getTrip().getCarriers());
+      airports.push(trip.getTrip().getLayoverAirportCodes());
+      layoverCounts.push(trip.getTrip().getLayoverCount());
+      return [airlines, airports, layoverCounts];
+    },
+    [[] as string[][], [] as string[][], [] as number[]],
+  );
+
+  return {
+    airlines: Array.from(new Set(airlines.flat())).sort(),
+    airports: Array.from(new Set(airports.flat())).sort(),
+    layoverCounts: Array.from(new Set(layoverCounts.flat())).sort((a, b) => {
+      return a - b;
     }),
   };
 };

@@ -1,7 +1,6 @@
 import { DisplayableTrip, DisplayableTripInput } from "../../shared/types/DisplayableTrip";
 import { ProviderManager } from "../ProviderManager";
 import { highlightTab } from "./utilities/highlightTab";
-import { sendTripResultsToClient } from "./utilities/sendTripResultsToClient";
 
 export const handleTripSelected = (providerManager: ProviderManager, tripInputs: DisplayableTripInput[]): void => {
   const trips = tripInputs.map((tripInput) => {
@@ -11,7 +10,7 @@ export const handleTripSelected = (providerManager: ProviderManager, tripInputs:
   if (providerManager.isAtMaxSelections()) {
     highlightTab(providerManager);
   } else {
-    sendTripResultsToClient(providerManager);
+    providerManager.sendTripResultsToIndexPage();
     if (providerManager.isExpectingMoreSearching()) {
       providerManager.sendMessageToIndexPage({ event: "SCRAPING_STATUS", complete: false });
       // TODO: Handle expedia

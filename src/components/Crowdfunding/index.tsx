@@ -14,7 +14,9 @@ export const Crowdfunding = (): React.ReactElement => {
       <Callout
         iconProps={{ icon: "solid-business-time" }}
         title="Want to own part of Flight Penguin?"
+        minWidth="360px"
         maxWidth="768px"
+        width="100%"
         footer={
           <Button
             aria-label="Learn more about Flight Penguin's crowdfunding campaign"

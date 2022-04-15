@@ -53,8 +53,10 @@ const providerURLBaseMap: { [key: string]: (formData: FlightSearchFormData) => s
 export class ProviderManager {
   private knownProviders: string[];
   private state: { [key: string]: ProviderState };
-  private selectedTrips: DisplayableTrip[];
   private primaryTab: chrome.tabs.Tab | null;
+
+  private selectedTrips: DisplayableTrip[];
+  private dominationDenyList: string[];
 
   private itineraries: Itinerary[];
   private deletedItineraryIds: string[];
@@ -66,7 +68,9 @@ export class ProviderManager {
   constructor() {
     this.knownProviders = [];
     this.state = {};
+
     this.selectedTrips = [];
+    this.dominationDenyList = [];
 
     this.itineraries = [];
     this.deletedItineraryIds = [];
@@ -227,6 +231,7 @@ export class ProviderManager {
       this.state[providerName] = { ...defaultProviderState };
     });
     this.itineraries = [];
+    this.dominationDenyList = [];
   }
 
   setTimer(providerName: string, timeout: number, callback: () => void): void {
@@ -455,6 +460,7 @@ export class ProviderManager {
       itineraries,
       this.getSelectedTrips(),
       this.getMaxSelectionsCount(),
+      this.dominationDenyList,
     );
 
     const nextMessage = {
@@ -464,6 +470,9 @@ export class ProviderManager {
       formData: this.getFormData(),
     };
     this.sendMessageToIndexPage(nextMessage);
-    console.error(`SENDING ${new Date().valueOf()}`);
+  }
+
+  addIdToDominationDenyList(tripId: string): void {
+    this.dominationDenyList.push(tripId);
   }
 }

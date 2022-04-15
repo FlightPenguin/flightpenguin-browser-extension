@@ -30,6 +30,7 @@ const AirlineMap = {
     "JetBlue Airways": { display: "jetBlue", color: "#5F90C8", code: "B6" },
     "Jetblue Airways": { display: "jetBlue", color: "#5F90C8", code: "B6" },
     Jetblue: { display: "jetBlue", color: "#5F90C8", code: "B6" },
+    JetBlue: { display: "jetBlue", color: "#5F90C8", code: "B6" },
     Spirit: { display: "Spirit", color: "#BBB140", code: "NK" },
     "Spirit Airlines": { display: "Spirit", color: "#BBB140", code: "NK" },
     WestJet: { display: "WestJet", color: "#4BA89C", code: "WS" },

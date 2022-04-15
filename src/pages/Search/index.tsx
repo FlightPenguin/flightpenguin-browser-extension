@@ -1,6 +1,6 @@
 import { Box, PageContent, PageWithHeader } from "bumbag";
 import { onAuthStateChanged, User } from "firebase/auth";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 
 import { AnalyticsManager } from "../../background/AnalyticsManager";
 import { Crowdfunding } from "../../components/Crowdfunding";
@@ -18,23 +18,19 @@ import { getStandardizedFormatDate } from "../../components/utilities/forms/getS
 import { sendIndexUnload } from "../../shared/events/sendIndexUnload";
 import { FlightSearchFormData } from "../../shared/types/FlightSearchFormData";
 import { isRecentlyInstalled, setRecentlyInstalled } from "../../shared/utilities/recentlyInstalledManager";
-import { getFormContainerWidth } from "./utils/getFormContainerWidth";
 import { getResultsContainerWidth } from "./utils/getResultsContainerWidth";
 
 export const SearchPage = (): React.ReactElement => {
   const { auth } = initFirebase();
   const googleProvider = initGoogleProvider();
 
-  const resultsWrapperRef = useRef<HTMLDivElement>(null);
-
   const [formData, setFormData] = useState<FlightSearchFormData | undefined>(undefined);
   const [showForm, setShowForm] = useState(true);
 
   const [pageWidth, setPageWidth] = useState(window.innerWidth);
-  const [formContainerWidth, setFormContainerWidth] = useState<number | undefined>();
   const [resultsContainerWidth, setResultsContainerWidth] = useState<number | undefined>();
 
-  const [showUpdate, setShowUpdate] = useState(true);
+  const [showUpdate, setShowUpdate] = useState(false);
   const [showWelcomeModal, setShowWelcomeModal] = useState(isRecentlyInstalled());
   const [activeUser, setActiveUser] = useState<User | null>(null);
   const [firebaseLoaded, setFirebaseLoaded] = useState(false);
@@ -66,29 +62,22 @@ export const SearchPage = (): React.ReactElement => {
   }, [setShowUpdate]);
 
   useEffect(() => {
-    if (resultsWrapperRef.current) {
-      const containerWidth = resultsWrapperRef.current.clientWidth || window.innerWidth;
-      setResultsContainerWidth(getResultsContainerWidth(containerWidth));
-      setFormContainerWidth(getFormContainerWidth(containerWidth));
+    analytics.pageview({});
+  }, []);
+
+  const handleSetContainerWidths = useCallback((element) => {
+    if (element) {
+      setResultsContainerWidth(getResultsContainerWidth(element.clientWidth));
     }
-  }, [resultsWrapperRef]);
+  }, []);
 
   useEffect(() => {
     const handleResize = () => {
-      if (resultsWrapperRef.current) {
-        const containerWidth = resultsWrapperRef.current.clientWidth || window.innerWidth;
-        setResultsContainerWidth(getResultsContainerWidth(containerWidth));
-        setFormContainerWidth(getFormContainerWidth(containerWidth));
-      }
       setPageWidth(window.innerWidth);
     };
 
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
-  }, [setResultsContainerWidth]);
-
-  useEffect(() => {
-    analytics.pageview({});
   }, []);
 
   const updateSearch = () => {
@@ -129,13 +118,8 @@ export const SearchPage = (): React.ReactElement => {
             }}
           />
         )}
-        {!showUpdate && ((showForm && formContainerWidth) || resultsContainerWidth) && (
-          <UpdateNotificationAlert
-            width={`${showForm ? formContainerWidth : resultsContainerWidth}px`}
-            marginBottom="50px"
-          />
-        )}
-        {firebaseLoaded && showForm && formContainerWidth && (
+        {showUpdate && showForm && <UpdateNotificationAlert />}
+        {firebaseLoaded && showForm && (
           <React.Fragment>
             <SearchForm
               initialValues={
@@ -156,7 +140,6 @@ export const SearchPage = (): React.ReactElement => {
                   label: window.location.host,
                 });
               }}
-              containerWidth={formContainerWidth}
               activeUser={activeUser}
             />
             <Crowdfunding />
@@ -168,18 +151,14 @@ export const SearchPage = (): React.ReactElement => {
           display="flex"
           flexDirection="column"
           width="100%"
-          id="results-wrapper"
-          ref={resultsWrapperRef}
+          id="search-wrapper"
+          ref={handleSetContainerWidths}
           paddingLeft="2rem"
           paddingRight="2rem"
         >
           {!showForm && !!formData && resultsContainerWidth && (
             <>
-              <SearchFormDisplay
-                containerWidth={resultsContainerWidth}
-                formData={formData}
-                onUpdateClick={updateSearch}
-              />
+              <SearchFormDisplay formData={formData} onUpdateClick={updateSearch} />
 
               <SearchResults
                 formData={formData}
