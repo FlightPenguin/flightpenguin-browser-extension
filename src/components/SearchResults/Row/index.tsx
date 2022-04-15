@@ -228,6 +228,7 @@ export default React.memo(TimelineRow, (previous, next) => {
 const getComparableProperties = (row: TimelineRowProps) => {
   return {
     tripId: row.displayableTrip.getTrip().getId(),
+    dominatedTripCount: row.displayableTrip.getDominatedTrips().length,
     containerStartTime: row.containerStartTime,
     containerEndTime: row.containerEndTime,
     intervalWidth: row.intervalWidth,
