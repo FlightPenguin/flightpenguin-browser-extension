@@ -28,11 +28,11 @@ export const getTripGroupsAndMeta = (
           const betterTrip = tripGroup.find((existingTrip) => existingTrip.isDominatableByTrip(displayableTrip));
           if (betterTrip) {
             if (!dominationDenyList.includes(betterTrip.getTrip().getId())) {
-              betterTrip.getDominatedTrips().forEach((dominatedTrip) => {
-                betterTrip.addDominatedTrip(dominatedTrip);
+              betterTrip.getDominatedTripIds().forEach((dominatedTrip) => {
+                betterTrip.addDominatedTripId(dominatedTrip);
               });
-              displayableTrip.resetDominatedTrips();
-              betterTrip.addDominatedTrip(displayableTrip);
+              displayableTrip.resetDominatedTripIds();
+              betterTrip.addDominatedTripId(displayableTrip.getTrip().getId());
               return;
             }
           }

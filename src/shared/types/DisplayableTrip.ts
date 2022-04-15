@@ -5,23 +5,19 @@ export interface DisplayableTripInput {
   cabin: CabinType;
   lowestFare: number;
   trip: Trip | TripInput;
-  dominatedTrips?: DisplayableTripInput[];
+  dominatedTripIds?: string[];
 }
 
 export class DisplayableTrip {
   private cabin: CabinType;
-  private dominatedTrips: DisplayableTrip[];
+  private dominatedTripIds: string[];
   private lowestFare: number;
   private pain: number;
   private trip: Trip;
 
-  constructor({ cabin, dominatedTrips, lowestFare, trip }: DisplayableTripInput) {
+  constructor({ cabin, dominatedTripIds, lowestFare, trip }: DisplayableTripInput) {
     this.cabin = cabin;
-    this.dominatedTrips = dominatedTrips
-      ? dominatedTrips.map((trip) => {
-          return new DisplayableTrip(trip);
-        })
-      : [];
+    this.dominatedTripIds = dominatedTripIds && dominatedTripIds.length ? dominatedTripIds : [];
     this.lowestFare = lowestFare;
     this.trip = trip.constructor.name === "Trip" ? (trip as Trip) : new Trip(trip as TripInput);
 
@@ -91,19 +87,18 @@ export class DisplayableTrip {
     ].every((value) => value);
   }
 
-  addDominatedTrip(badTrip: DisplayableTrip): void {
-    const existingBadTrip = this.dominatedTrips.find((existingTrip) => existingTrip.isEqual(badTrip));
-    if (!existingBadTrip) {
-      this.dominatedTrips.push(badTrip);
+  addDominatedTripId(badTripId: string): void {
+    if (!this.dominatedTripIds.includes(badTripId)) {
+      this.dominatedTripIds.push(badTripId);
     }
   }
 
-  getDominatedTrips(): DisplayableTrip[] {
-    return this.dominatedTrips;
+  getDominatedTripIds(): string[] {
+    return this.dominatedTripIds;
   }
 
-  resetDominatedTrips(): void {
-    this.dominatedTrips = [];
+  resetDominatedTripIds(): void {
+    this.dominatedTripIds = [];
   }
 
   isEqual(otherTrip: DisplayableTrip): boolean {

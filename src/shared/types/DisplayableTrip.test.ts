@@ -202,29 +202,29 @@ describe("DisplayableTrip happy path", () => {
     it("adds a new trip", () => {
       const trip = DisplayableTripFactory.build({}, { transient: tripInput });
       const secondTrip = DisplayableTripFactory.build({}, { transient: tripInput });
-      trip.addDominatedTrip(secondTrip);
-      expect(trip.getDominatedTrips().length).toEqual(1);
+      trip.addDominatedTripId(secondTrip.getTrip().getId());
+      expect(trip.getDominatedTripIds().length).toEqual(1);
     });
 
     it("will not add the same trip", () => {
       const trip = DisplayableTripFactory.build({}, { transient: tripInput });
       const secondTrip = DisplayableTripFactory.build({}, { transient: tripInput });
-      trip.addDominatedTrip(secondTrip);
-      trip.addDominatedTrip(secondTrip);
-      trip.addDominatedTrip(secondTrip);
-      trip.addDominatedTrip(secondTrip);
-      trip.addDominatedTrip(secondTrip);
-      trip.addDominatedTrip(secondTrip);
-      expect(trip.getDominatedTrips().length).toEqual(1);
+      trip.addDominatedTripId(secondTrip.getTrip().getId());
+      trip.addDominatedTripId(secondTrip.getTrip().getId());
+      trip.addDominatedTripId(secondTrip.getTrip().getId());
+      trip.addDominatedTripId(secondTrip.getTrip().getId());
+      trip.addDominatedTripId(secondTrip.getTrip().getId());
+      trip.addDominatedTripId(secondTrip.getTrip().getId());
+      expect(trip.getDominatedTripIds().length).toEqual(1);
     });
   });
 
   it("resetDominatedTrip works", () => {
     const trip = DisplayableTripFactory.build({}, { transient: tripInput });
     const secondTrip = DisplayableTripFactory.build({}, { transient: tripInput });
-    trip.addDominatedTrip(secondTrip);
-    trip.resetDominatedTrips();
-    expect(trip.getDominatedTrips().length).toEqual(0);
+    trip.addDominatedTripId(secondTrip.getTrip().getId());
+    trip.resetDominatedTripIds();
+    expect(trip.getDominatedTripIds().length).toEqual(0);
   });
 
   describe("isEqual", () => {
