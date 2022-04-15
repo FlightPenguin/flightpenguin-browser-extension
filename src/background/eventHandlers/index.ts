@@ -13,4 +13,5 @@ export * from "./providerReady";
 export * from "./scraperFailed";
 export * from "./scraperSuccess";
 export * from "./tripSelected";
+export * from "./undominateTrip";
 export * from "./updateRequest";

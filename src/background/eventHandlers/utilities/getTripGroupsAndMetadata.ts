@@ -3,12 +3,13 @@ import uniqBy from "lodash.uniqby";
 
 import { DisplayableTrip } from "../../../shared/types/DisplayableTrip";
 import { Itinerary } from "../../../shared/types/Itinerary";
-import { SearchTripMeta, SearchTripMetaDefault } from "../../../shared/types/SearchMeta";
+import { SearchTripMeta } from "../../../shared/types/SearchMeta";
 
 export const getTripGroupsAndMeta = (
   itineraries: Itinerary[],
   tripsSelections: DisplayableTrip[],
   expectedArrayLength: number,
+  dominationDenyList: string[],
 ): { tripGroups: DisplayableTrip[][]; meta: SearchTripMeta[] } => {
   const tripGroups = range(1, expectedArrayLength + 1).map((num) => {
     return [] as DisplayableTrip[];
@@ -26,12 +27,14 @@ export const getTripGroupsAndMeta = (
         if (displayableTrip.getPain()) {
           const betterTrip = tripGroup.find((existingTrip) => existingTrip.isDominatableByTrip(displayableTrip));
           if (betterTrip) {
-            betterTrip.getDominatedTrips().forEach((dominatedTrip) => {
-              betterTrip.addDominatedTrip(dominatedTrip);
-            });
-            displayableTrip.resetDominatedTrips();
-            betterTrip.addDominatedTrip(displayableTrip);
-            return;
+            if (!dominationDenyList.includes(betterTrip.getTrip().getId())) {
+              betterTrip.getDominatedTrips().forEach((dominatedTrip) => {
+                betterTrip.addDominatedTrip(dominatedTrip);
+              });
+              displayableTrip.resetDominatedTrips();
+              betterTrip.addDominatedTrip(displayableTrip);
+              return;
+            }
           }
 
           tripGroup.push(displayableTrip);

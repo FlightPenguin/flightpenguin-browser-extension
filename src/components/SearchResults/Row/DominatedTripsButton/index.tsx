@@ -3,6 +3,7 @@ import isEqual from "lodash.isequal";
 import pluralize from "pluralize";
 import React, { useState } from "react";
 
+import { sendUndominateTrip } from "../../../../shared/events";
 import { sidePaddingWidth } from "../../../constants";
 
 interface DominatedTripsButtonProps {
@@ -25,7 +26,6 @@ const DominatedTripsButton = ({ tripId, tripCount }: DominatedTripsButtonProps):
       {show && (
         <Box display="flex" justifyContent="center" width="100%">
           <Box width="80%">
-            {" "}
             <Tooltip
               content={`There ${verb} ${tripCount} ${pluralize(
                 "flight",
@@ -38,7 +38,7 @@ const DominatedTripsButton = ({ tripId, tripCount }: DominatedTripsButtonProps):
                 onClick={(event) => {
                   event.stopPropagation();
                   setShow(false);
-                  console.debug(tripId);
+                  sendUndominateTrip(tripId);
                 }}
                 palette="primary"
                 size="small"

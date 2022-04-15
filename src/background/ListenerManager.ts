@@ -15,6 +15,7 @@ import {
   handleScraperFailed,
   handleScraperSuccess,
   handleTripSelected,
+  handleUndominateTrip,
   handleUpdateRequest,
 } from "./eventHandlers";
 import { ProviderManager } from "./ProviderManager";
@@ -81,6 +82,9 @@ export const ListenerManager = (providerManager: ProviderManager, analyticsManag
         break;
       case "OPEN_EXTENSION":
         await handleOpenExtensionRequest(sender);
+        break;
+      case "UNDOMINATE_TRIP":
+        handleUndominateTrip(providerManager, message.tripId);
         break;
       default:
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment

@@ -5,7 +5,7 @@ export interface DisplayableTripInput {
   cabin: CabinType;
   lowestFare: number;
   trip: Trip | TripInput;
-  dominatedTrips: DisplayableTripInput[];
+  dominatedTrips?: DisplayableTripInput[];
 }
 
 export class DisplayableTrip {
