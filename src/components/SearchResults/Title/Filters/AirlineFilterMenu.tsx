@@ -13,12 +13,12 @@ export const AirlineFilterMenu = ({ airlineCount, groupedAirlines, onChange }: F
   const [valueChanged, setValueChanged] = useState(false);
   const [values, setValues] = useState(Object.values(groupedAirlines).flat() as string[]);
 
+  const defaultAirlines = Array.from(new Set(Object.values(groupedAirlines).flat()));
   const airlineText = getAirlinesText(values, airlineCount);
 
   useEffect(() => {
     if (!valueChanged) {
-      const airlines = Array.from(new Set(Object.values(groupedAirlines).flat()));
-      setValues(airlines);
+      setValues(defaultAirlines);
     }
   }, [groupedAirlines, valueChanged, setValues]);
 
@@ -31,13 +31,56 @@ export const AirlineFilterMenu = ({ airlineCount, groupedAirlines, onChange }: F
         <React.Fragment>
           {Object.keys(groupedAirlines)
             .sort()
-            .map((alliance, index) => {
+            .map((alliance) => {
               // eslint-disable-next-line security/detect-object-injection
               const airlines = groupedAirlines[alliance];
               return (
                 <DropdownMenu.OptionGroup
                   // leading z is a hack to force this to end of the sort
-                  title={alliance.replace(/^Z/, "")}
+                  // title={alliance.replace(/^Z/, "")}
+                  title={
+                    <Box
+                      display="flex"
+                      flexDirection="row"
+                      flexWrap="nowrap"
+                      justifyContent="space-between"
+                      width="100%"
+                    >
+                      <Box
+                        display="flex"
+                        onClick={(event: React.MouseEvent) => {
+                          event.preventDefault();
+                          event.stopPropagation();
+
+                          const selectedAirlines = Array.from(new Set([...values, ...airlines]));
+
+                          setValueChanged(true);
+                          setValues(selectedAirlines);
+                          onChange(selectedAirlines);
+                        }}
+                      >
+                        {alliance.replace(/^Z/, "")}
+                      </Box>
+                      <Box
+                        color="gray"
+                        display="flex"
+                        paddingLeft="minor-1"
+                        paddingRight="minor-1"
+                        textDecoration="underline"
+                        textTransform="capitalize"
+                        onClick={(event: React.MouseEvent) => {
+                          event.preventDefault();
+                          event.stopPropagation();
+
+                          setValueChanged(true);
+                          setValues(airlines);
+                          onChange(airlines);
+                        }}
+                      >
+                        Only
+                      </Box>
+                    </Box>
+                  }
                   type="checkbox"
                   value={values}
                   onChange={(values) => {
