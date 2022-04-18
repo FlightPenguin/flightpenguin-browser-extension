@@ -38,8 +38,6 @@ export const AirlineFilterMenu = ({ airlineCount, groupedAirlines, onChange }: F
     }
   }, [groupedAirlines, valueChanged, setValues]);
 
-  console.log(values);
-
   return (
     <DropdownMenu
       aria-label="Drop down menu for filtering results by airlines"
@@ -56,6 +54,7 @@ export const AirlineFilterMenu = ({ airlineCount, groupedAirlines, onChange }: F
               const allianceName = alliance.replace(/^Z/, "");
               return (
                 <DropdownMenu.OptionGroup
+                  key={`${allianceName}-option-group`}
                   // TODO: Update bumbag to allow optiongroup title to be an element...
                   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
                   // @ts-ignore
@@ -121,7 +120,7 @@ export const AirlineFilterMenu = ({ airlineCount, groupedAirlines, onChange }: F
                 >
                   {airlines.map((value) => {
                     return (
-                      <DropdownMenu.OptionItem value={value} key={`option-${value}`}>
+                      <DropdownMenu.OptionItem value={value} key={`option-item-${value}`}>
                         <Box
                           display="flex"
                           flexDirection="row"
