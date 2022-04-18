@@ -36,8 +36,9 @@ export const AirlineFilterMenu = ({ airlineCount, groupedAirlines, onChange }: F
               const airlines = groupedAirlines[alliance];
               return (
                 <DropdownMenu.OptionGroup
-                  // leading z is a hack to force this to end of the sort
-                  // title={alliance.replace(/^Z/, "")}
+                  // TODO: Update bumbag to allow optiongroup title to be an element...
+                  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                  // @ts-ignore
                   title={
                     <Box
                       display="flex"
@@ -59,6 +60,7 @@ export const AirlineFilterMenu = ({ airlineCount, groupedAirlines, onChange }: F
                           onChange(selectedAirlines);
                         }}
                       >
+                        {/* leading z is a hack to force this to end of the sort */}
                         {alliance.replace(/^Z/, "")}
                       </Box>
                       <Box

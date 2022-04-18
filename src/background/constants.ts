@@ -4,10 +4,10 @@ export const PROVIDERS_NEEDING_RETURNS = [
 export const PROVIDERS_SUPPORTING_POINTS_SEARCH = ["expedia"];
 export const SUPPORTED_PROVIDERS = [
   // force expansion
-  "cheapoair",
+  // "cheapoair",
   "momondo",
-  "kiwi",
-  "trip",
+  // "kiwi",
+  // "trip",
 ];
 
 // eslint-disable-next-line @typescript-eslint/no-empty-function
@@ -35,3 +35,5 @@ export const FIREBASE_CONFIG = {
   projectId: `${process.env.FIREBASE_PROJECT_ID}`,
   storageBucket: `${process.env.FIREBASE_PROJECT_ID}.appspot.com`,
 };
+
+export const NO_ALLIANCE = "ZNo Alliance"; // leading z is a hack to force this to end of the sort
