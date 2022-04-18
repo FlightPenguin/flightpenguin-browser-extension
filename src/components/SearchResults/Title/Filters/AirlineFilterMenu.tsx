@@ -3,6 +3,8 @@ import isEqual from "lodash.isequal";
 import pluralize from "pluralize";
 import React, { useEffect, useState } from "react";
 
+import { NO_ALLIANCE } from "../../../../background/constants";
+
 interface FilterMenuProps {
   airlineCount: number;
   groupedAirlines: { [keyof: string]: string[] };
@@ -13,6 +15,9 @@ export const AirlineFilterMenu = ({ airlineCount, groupedAirlines, onChange }: F
   const [valueChanged, setValueChanged] = useState(false);
   const [values, setValues] = useState(Object.values(groupedAirlines).flat() as string[]);
 
+  // we want to ensure if an alliance is selected that all subsequent airlines for that alliance are selected.
+  const [selectedAlliances, setSelectedAlliances] = useState<string[]>([]);
+
   const defaultAirlines = Array.from(new Set(Object.values(groupedAirlines).flat()));
   const airlineText = getAirlinesText(values, airlineCount);
 
@@ -21,6 +26,19 @@ export const AirlineFilterMenu = ({ airlineCount, groupedAirlines, onChange }: F
       setValues(defaultAirlines);
     }
   }, [groupedAirlines, valueChanged, setValues]);
+
+  useEffect(() => {
+    if (selectedAlliances.length) {
+      const allianceAirlines = selectedAlliances.map((alliance) => {
+        // eslint-disable-next-line security/detect-object-injection
+        return groupedAirlines[alliance];
+      });
+      setValues(Array.from(new Set([...values, ...allianceAirlines.flat()])));
+      onChange(values);
+    }
+  }, [groupedAirlines, valueChanged, setValues]);
+
+  console.log(values);
 
   return (
     <DropdownMenu
@@ -34,54 +52,62 @@ export const AirlineFilterMenu = ({ airlineCount, groupedAirlines, onChange }: F
             .map((alliance) => {
               // eslint-disable-next-line security/detect-object-injection
               const airlines = groupedAirlines[alliance];
+              // leading z is a hack to force this to end of the sort
+              const allianceName = alliance.replace(/^Z/, "");
               return (
                 <DropdownMenu.OptionGroup
                   // TODO: Update bumbag to allow optiongroup title to be an element...
                   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
                   // @ts-ignore
                   title={
-                    <Box
-                      display="flex"
-                      flexDirection="row"
-                      flexWrap="nowrap"
-                      justifyContent="space-between"
-                      width="100%"
-                    >
+                    alliance === NO_ALLIANCE ? (
+                      allianceName
+                    ) : (
                       <Box
                         display="flex"
-                        onClick={(event: React.MouseEvent) => {
-                          event.preventDefault();
-                          event.stopPropagation();
-
-                          const selectedAirlines = Array.from(new Set([...values, ...airlines]));
-
-                          setValueChanged(true);
-                          setValues(selectedAirlines);
-                          onChange(selectedAirlines);
-                        }}
+                        flexDirection="row"
+                        flexWrap="nowrap"
+                        justifyContent="space-between"
+                        width="100%"
                       >
-                        {/* leading z is a hack to force this to end of the sort */}
-                        {alliance.replace(/^Z/, "")}
-                      </Box>
-                      <Box
-                        color="gray"
-                        display="flex"
-                        paddingLeft="minor-1"
-                        paddingRight="minor-1"
-                        textDecoration="underline"
-                        textTransform="capitalize"
-                        onClick={(event: React.MouseEvent) => {
-                          event.preventDefault();
-                          event.stopPropagation();
+                        <Box
+                          display="flex"
+                          onClick={(event: React.MouseEvent) => {
+                            event.preventDefault();
+                            event.stopPropagation();
 
-                          setValueChanged(true);
-                          setValues(airlines);
-                          onChange(airlines);
-                        }}
-                      >
-                        Only
+                            const selectedAirlines = Array.from(new Set([...values, ...airlines]));
+
+                            setSelectedAlliances(Array.from(new Set([...selectedAlliances, allianceName])));
+                            setValueChanged(true);
+                            setValues(selectedAirlines);
+                            onChange(selectedAirlines);
+                          }}
+                        >
+                          {allianceName}
+                          {selectedAlliances.includes(allianceName) && "*"}
+                        </Box>
+                        <Box
+                          color="gray"
+                          display="flex"
+                          paddingLeft="minor-1"
+                          paddingRight="minor-1"
+                          textDecoration="underline"
+                          textTransform="capitalize"
+                          onClick={(event: React.MouseEvent) => {
+                            event.preventDefault();
+                            event.stopPropagation();
+
+                            setSelectedAlliances([allianceName]);
+                            setValueChanged(true);
+                            setValues(airlines);
+                            onChange(airlines);
+                          }}
+                        >
+                          Only
+                        </Box>
                       </Box>
-                    </Box>
+                    )
                   }
                   type="checkbox"
                   value={values}
@@ -118,6 +144,7 @@ export const AirlineFilterMenu = ({ airlineCount, groupedAirlines, onChange }: F
                               const value = (event.target as HTMLDivElement).dataset.value as string;
                               setValueChanged(true);
                               setValues([value]);
+                              setSelectedAlliances([]);
                               onChange([value]);
                             }}
                           >
