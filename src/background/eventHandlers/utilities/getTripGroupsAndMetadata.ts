@@ -114,6 +114,11 @@ const getTripGroupMetadata = (tripGroup: DisplayableTrip[]): SearchTripMeta => {
     [{} as { [keyof: string]: string[] }, [] as string[][], [] as number[]],
   );
 
+  Object.keys(airlines).forEach((alliance) => {
+    // eslint-disable-next-line security/detect-object-injection
+    airlines[alliance] = airlines[alliance].sort();
+  });
+
   return {
     airlineCount: airlineCount,
     airlines: airlines,
