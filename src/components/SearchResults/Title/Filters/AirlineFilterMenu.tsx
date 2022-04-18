@@ -4,21 +4,23 @@ import pluralize from "pluralize";
 import React, { useEffect, useState } from "react";
 
 interface FilterMenuProps {
-  airlines: string[];
+  airlineCount: number;
+  groupedAirlines: { [keyof: string]: string[] };
   onChange: (values: string[]) => void;
 }
 
-export const AirlineFilterMenu = ({ airlines, onChange }: FilterMenuProps): React.ReactElement => {
+export const AirlineFilterMenu = ({ airlineCount, groupedAirlines, onChange }: FilterMenuProps): React.ReactElement => {
   const [valueChanged, setValueChanged] = useState(false);
-  const [values, setValues] = useState([] as string[]);
+  const [values, setValues] = useState(Object.values(groupedAirlines).flat() as string[]);
 
-  const airlineText = getAirlinesText(values, airlines);
+  const airlineText = getAirlinesText(values, airlineCount);
 
   useEffect(() => {
     if (!valueChanged) {
+      const airlines = Array.from(new Set(Object.values(groupedAirlines).flat()));
       setValues(airlines);
     }
-  }, [airlines, valueChanged, setValues]);
+  }, [groupedAirlines, valueChanged, setValues]);
 
   return (
     <DropdownMenu
@@ -27,47 +29,62 @@ export const AirlineFilterMenu = ({ airlines, onChange }: FilterMenuProps): Reac
       fontSize="clamp(.375rem, .6vw, .75rem)"
       menu={
         <React.Fragment>
-          <DropdownMenu.OptionGroup
-            title="Airlines"
-            type="checkbox"
-            value={values}
-            onChange={(values) => {
-              const cleanValues = (typeof values === "string" ? [values] : values).sort();
-
-              setValueChanged(!isEqual(cleanValues, airlines));
-              setValues(cleanValues);
-              onChange(cleanValues);
-            }}
-          >
-            {airlines.map((value) => {
+          {Object.keys(groupedAirlines)
+            .sort()
+            .map((alliance, index) => {
+              // eslint-disable-next-line security/detect-object-injection
+              const airlines = groupedAirlines[alliance];
               return (
-                <DropdownMenu.OptionItem value={value} key={`option-${value}`}>
-                  <Box display="flex" flexDirection="row" flexWrap="nowrap" justifyContent="space-between" width="100%">
-                    <Box display="flex">{value}</Box>
-                    <Box
-                      color="gray"
-                      display="flex"
-                      paddingLeft="minor-1"
-                      paddingRight="minor-1"
-                      textDecoration="underline"
-                      data-value={value}
-                      onClick={(event: React.MouseEvent) => {
-                        event.preventDefault();
-                        event.stopPropagation();
+                <DropdownMenu.OptionGroup
+                  // leading z is a hack to force this to end of the sort
+                  title={alliance.replace(/^Z/, "")}
+                  type="checkbox"
+                  value={values}
+                  onChange={(values) => {
+                    const cleanValues = (typeof values === "string" ? [values] : values).sort();
 
-                        const value = (event.target as HTMLDivElement).dataset.value as string;
-                        setValueChanged(true);
-                        setValues([value]);
-                        onChange([value]);
-                      }}
-                    >
-                      Only
-                    </Box>
-                  </Box>
-                </DropdownMenu.OptionItem>
+                    setValueChanged(cleanValues.length !== airlineCount);
+                    setValues(cleanValues);
+                    onChange(cleanValues);
+                  }}
+                >
+                  {airlines.map((value) => {
+                    return (
+                      <DropdownMenu.OptionItem value={value} key={`option-${value}`}>
+                        <Box
+                          display="flex"
+                          flexDirection="row"
+                          flexWrap="nowrap"
+                          justifyContent="space-between"
+                          width="100%"
+                        >
+                          <Box display="flex">{value}</Box>
+                          <Box
+                            color="gray"
+                            display="flex"
+                            paddingLeft="minor-1"
+                            paddingRight="minor-1"
+                            textDecoration="underline"
+                            data-value={value}
+                            onClick={(event: React.MouseEvent) => {
+                              event.preventDefault();
+                              event.stopPropagation();
+
+                              const value = (event.target as HTMLDivElement).dataset.value as string;
+                              setValueChanged(true);
+                              setValues([value]);
+                              onChange([value]);
+                            }}
+                          >
+                            Only
+                          </Box>
+                        </Box>
+                      </DropdownMenu.OptionItem>
+                    );
+                  })}
+                </DropdownMenu.OptionGroup>
               );
             })}
-          </DropdownMenu.OptionGroup>
         </React.Fragment>
       }
       paddingTop="minor-1"
@@ -85,12 +102,12 @@ export const AirlineFilterMenu = ({ airlines, onChange }: FilterMenuProps): Reac
   );
 };
 
-const getAirlinesText = (selectedValues: string[], defaultValues: string[]): string => {
+const getAirlinesText = (selectedValues: string[], airlineCount: number): string => {
   if (selectedValues.length === 0) {
     return "Airlines";
-  } else if (isEqual(selectedValues, defaultValues)) {
+  } else if (isEqual(selectedValues.length, airlineCount)) {
     return `${selectedValues.length} ${pluralize("airline", selectedValues.length)}`;
   } else {
-    return `${selectedValues.length} of ${defaultValues.length} ${pluralize("airline", selectedValues.length)}`;
+    return `${selectedValues.length} of ${airlineCount} ${pluralize("airline", selectedValues.length)}`;
   }
 };
