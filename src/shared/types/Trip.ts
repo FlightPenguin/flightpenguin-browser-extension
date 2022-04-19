@@ -20,6 +20,13 @@ export interface TripInputMetadata {
   departureDateTime: Date;
   departureLocation: LocationInput;
   durationMinutes: number | string;
+
+  arrivalAirport?: LocationInput;
+  carriers?: string[];
+  departureAirport?: LocationInput;
+  id?: string;
+  layoverAirportCodes?: string[];
+  layoverCount?: number;
 }
 
 export interface TripInput extends TripInputMetadata {
@@ -28,26 +35,31 @@ export interface TripInput extends TripInputMetadata {
 
 export class Trip {
   // effectively a group of flights+layovers that take you from location A to location B.
-  private arrivalDateTime: Date;
   private arrivalAirport: Location;
+  private arrivalDateTime: Date;
   private arrivalLocation: Location;
+  private carriers: string[];
+  private departureAirport: Location;
   private departureDateTime: Date;
   private departureLocation: Location;
-  private departureAirport: Location;
   private durationMinutes: number;
-  private tripComponents: TripComponent[];
-
-  private carriers: string[];
   private id: string;
   private layoverCount: number;
   private layoverAirportCodes: string[];
+  private tripComponents: TripComponent[];
 
   constructor({
+    arrivalAirport,
     arrivalDateTime,
     arrivalLocation,
+    carriers,
+    departureAirport,
     departureDateTime,
     departureLocation,
     durationMinutes,
+    id,
+    layoverCount,
+    layoverAirportCodes,
     tripComponents,
   }: TripInput) {
     this.arrivalDateTime = getParsedISODate(arrivalDateTime);
@@ -61,12 +73,13 @@ export class Trip {
     });
     this.addLayovers();
 
-    this.arrivalAirport = this.getCalculatedArrivalAirport();
-    this.carriers = this.getCalculatedCarriers();
-    this.departureAirport = this.getCalculatedDepartureAirport();
-    this.id = this.getCalculatedId();
-    this.layoverAirportCodes = this.getCalculatedLayoverAirportCodes();
-    this.layoverCount = this.getCalculatedLayoverCount();
+    this.arrivalAirport = arrivalAirport ? new Location(arrivalAirport) : this.getCalculatedArrivalAirport();
+    this.carriers = carriers === undefined ? this.getCalculatedCarriers() : carriers;
+    this.departureAirport = departureAirport ? new Location(departureAirport) : this.getCalculatedDepartureAirport();
+    this.id = id || this.getCalculatedId();
+    this.layoverAirportCodes =
+      layoverAirportCodes === undefined ? this.getCalculatedLayoverAirportCodes() : layoverAirportCodes;
+    this.layoverCount = layoverCount === undefined ? this.getCalculatedLayoverCount() : layoverCount;
   }
 
   getArrivalDateTime(): Date {

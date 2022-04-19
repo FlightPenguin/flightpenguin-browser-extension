@@ -1,6 +1,7 @@
 import { AirlineInput } from "./Airline";
 import { TripFactory } from "./factories/Trip";
 import { LocationInput } from "./Location";
+import { Trip } from "./Trip";
 import { TripComponentInput } from "./TripComponent";
 import { getParsedISODate } from "./utilities/getParsedISODate";
 
@@ -320,6 +321,146 @@ describe("Trip happy path", () => {
       expect(otherTrip.isEqual(trip)).toEqual(false);
     });
   });
+});
 
-  // TODO: ENsure add layovers, etc. called in constructor
+describe("constructor tests", () => {
+  afterEach(() => {
+    jest.resetAllMocks();
+  });
+
+  it("calls addLayovers", () => {
+    const addLayovers = jest.spyOn(Trip.prototype, "addLayovers");
+
+    new Trip({ ...input });
+    expect(addLayovers).toHaveBeenCalledTimes(1);
+  });
+
+  it("has arrivalAirport defined as an argument", () => {
+    const getCalcMock = jest.spyOn(Trip.prototype, "getCalculatedArrivalAirport");
+
+    new Trip({
+      ...input,
+      arrivalAirport: { name: "Miami International Airport", code: "MIA", type: "AIRPORT" } as LocationInput,
+    });
+    expect(getCalcMock).toHaveBeenCalledTimes(0);
+  });
+
+  it("has arrivalAirport not defined as an argument", () => {
+    const getCalcMock = jest.spyOn(Trip.prototype, "getCalculatedArrivalAirport");
+
+    new Trip({ ...input });
+    expect(getCalcMock).toHaveBeenCalledTimes(1);
+  });
+
+  it("has carriers defined as an argument with values", () => {
+    const getCalcMock = jest.spyOn(Trip.prototype, "getCalculatedCarriers");
+
+    new Trip({
+      ...input,
+      carriers: ["United", "Frontier"],
+    });
+    expect(getCalcMock).toHaveBeenCalledTimes(0);
+  });
+
+  it("has carriers defined as an argument with no values", () => {
+    const getCalcMock = jest.spyOn(Trip.prototype, "getCalculatedCarriers");
+
+    new Trip({
+      ...input,
+      carriers: [],
+    });
+    expect(getCalcMock).toHaveBeenCalledTimes(0);
+  });
+
+  it("has carriers not defined as an argument", () => {
+    const getCalcMock = jest.spyOn(Trip.prototype, "getCalculatedCarriers");
+
+    new Trip({ ...input });
+    expect(getCalcMock).toHaveBeenCalledTimes(1);
+  });
+
+  it("has departureAirport defined as an argument", () => {
+    const getCalcMock = jest.spyOn(Trip.prototype, "getCalculatedDepartureAirport");
+
+    new Trip({
+      ...input,
+      departureAirport: { name: "Miami International Airport", code: "MIA", type: "AIRPORT" } as LocationInput,
+    });
+    expect(getCalcMock).toHaveBeenCalledTimes(0);
+  });
+
+  it("has departureAirport not defined as an argument", () => {
+    const getCalcMock = jest.spyOn(Trip.prototype, "getCalculatedDepartureAirport");
+
+    new Trip({ ...input });
+    expect(getCalcMock).toHaveBeenCalledTimes(1);
+  });
+
+  it("has id defined as an argument", () => {
+    const getCalcMock = jest.spyOn(Trip.prototype, "getCalculatedId");
+
+    new Trip({ ...input, id: "abcd1234" });
+    expect(getCalcMock).toHaveBeenCalledTimes(0);
+  });
+
+  it("has id not defined as an argument", () => {
+    const getCalcMock = jest.spyOn(Trip.prototype, "getCalculatedId");
+
+    new Trip({ ...input });
+    expect(getCalcMock).toHaveBeenCalledTimes(1);
+  });
+
+  it("has layoverAirportCodes defined as an argument with values", () => {
+    const getCalcMock = jest.spyOn(Trip.prototype, "getCalculatedLayoverAirportCodes");
+
+    new Trip({
+      ...input,
+      layoverAirportCodes: ["MSP", "MIA"],
+    });
+    expect(getCalcMock).toHaveBeenCalledTimes(0);
+  });
+
+  it("has layoverAirportCodes defined as an argument with no values", () => {
+    const getCalcMock = jest.spyOn(Trip.prototype, "getCalculatedLayoverAirportCodes");
+
+    new Trip({
+      ...input,
+      layoverAirportCodes: [],
+    });
+    expect(getCalcMock).toHaveBeenCalledTimes(0);
+  });
+
+  it("has layoverAirportCodes not defined as an argument", () => {
+    const getCalcMock = jest.spyOn(Trip.prototype, "getCalculatedLayoverAirportCodes");
+
+    new Trip({ ...input });
+    expect(getCalcMock).toHaveBeenCalledTimes(1);
+  });
+
+  it("has layoverCount defined as an argument with truthy value", () => {
+    const getCalcMock = jest.spyOn(Trip.prototype, "getCalculatedLayoverCount");
+
+    new Trip({
+      ...input,
+      layoverCount: 1,
+    });
+    expect(getCalcMock).toHaveBeenCalledTimes(0);
+  });
+
+  it("has layoverCount defined as an argument with falsy value", () => {
+    const getCalcMock = jest.spyOn(Trip.prototype, "getCalculatedLayoverCount");
+
+    new Trip({
+      ...input,
+      layoverCount: 0,
+    });
+    expect(getCalcMock).toHaveBeenCalledTimes(0);
+  });
+
+  it("has layoverCount not defined as an argument", () => {
+    const getCalcMock = jest.spyOn(Trip.prototype, "getCalculatedLayoverCount");
+
+    new Trip({ ...input });
+    expect(getCalcMock).toHaveBeenCalledTimes(1);
+  });
 });
