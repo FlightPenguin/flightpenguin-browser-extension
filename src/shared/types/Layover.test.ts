@@ -128,14 +128,23 @@ describe("Layover constructor tests", () => {
   it("has id defined as an argument", () => {
     const getCalcMock = jest.spyOn(Layover.prototype, "getCalculatedId");
 
-    new Layover({ ...layoverInput, id: "abcd1234" });
+    new Layover({
+      ...layoverInput,
+      arrivalTripStartDateTime: layoverInput.arrivalLocalDateTime,
+      departureTripStartDateTime: layoverInput.departureLocalDateTime,
+      id: "abcd1234",
+    });
     expect(getCalcMock).toHaveBeenCalledTimes(0);
   });
 
   it("has id not defined as an argument", () => {
     const getCalcMock = jest.spyOn(Layover.prototype, "getCalculatedId");
 
-    new Layover({ ...layoverInput });
+    new Layover({
+      ...layoverInput,
+      arrivalTripStartDateTime: layoverInput.arrivalLocalDateTime,
+      departureTripStartDateTime: layoverInput.departureLocalDateTime,
+    });
     expect(getCalcMock).toHaveBeenCalledTimes(1);
   });
 });
