@@ -6,6 +6,8 @@ export interface DisplayableTripInput {
   lowestFare: number;
   trip: Trip | TripInput;
   dominatedTripIds?: string[];
+
+  pain?: number;
 }
 
 export class DisplayableTrip {
@@ -15,13 +17,13 @@ export class DisplayableTrip {
   private pain: number;
   private trip: Trip;
 
-  constructor({ cabin, dominatedTripIds, lowestFare, trip }: DisplayableTripInput) {
+  constructor({ cabin, dominatedTripIds, lowestFare, trip, pain }: DisplayableTripInput) {
     this.cabin = cabin;
     this.dominatedTripIds = dominatedTripIds && dominatedTripIds.length ? dominatedTripIds : [];
     this.lowestFare = lowestFare;
     this.trip = trip.constructor.name === "Trip" ? (trip as Trip) : new Trip(trip as TripInput);
 
-    this.pain = this.getCalculatedPain();
+    this.pain = pain === undefined ? this.getCalculatedPain() : pain;
   }
 
   getTrip(): Trip {
