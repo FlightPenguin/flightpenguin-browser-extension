@@ -17,7 +17,7 @@ const flightInput: FlightInput = {
 describe("Flight happy path", () => {
   it("returns marketing airline with no operating airline", () => {
     const flight = FlightFactory.build({}, { transient: flightInput });
-    expect(flight.getAirline()).toEqual({ name: "United", code: "UA", color: "#235EA6" });
+    expect(flight.getAirline()).toEqual({ name: "United", code: "UA", color: "#235EA6", alliance: "Star Alliance" });
   });
 
   it("returns operating airline with an operating airline", () => {
@@ -25,7 +25,7 @@ describe("Flight happy path", () => {
       {},
       { transient: { ...flightInput, operatingAirline: { name: "jetBlue" } as AirlineInput } },
     );
-    expect(flight.getAirline()).toEqual({ name: "jetBlue", code: "B6", color: "#5F90C8" });
+    expect(flight.getAirline()).toEqual({ name: "jetBlue", code: "B6", color: "#5F90C8", alliance: undefined });
   });
 
   it("getArrivalLocalDateTime works", () => {
