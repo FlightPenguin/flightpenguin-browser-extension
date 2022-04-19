@@ -20,9 +20,13 @@ export interface FlightInput {
   departureLocalDateTime: Date | string;
   departureLocation: LocationInput;
   durationMinutes: number | string;
+  elapsedTimezoneOffset: number;
   marketingAirline: AirlineInput;
   operatingAirline?: AirlineInput;
-  elapsedTimezoneOffset: number;
+
+  arrivalTripStartDateTime?: Date | string;
+  departureTripStartDateTime?: Date | string;
+  id?: string;
 }
 
 export class Flight {
@@ -41,14 +45,17 @@ export class Flight {
   private type: string;
 
   constructor({
+    arrivalTripStartDateTime,
     arrivalLocalDateTime,
     arrivalLocation,
+    departureTripStartDateTime,
     departureLocalDateTime,
     departureLocation,
     durationMinutes,
+    elapsedTimezoneOffset,
+    id,
     marketingAirline,
     operatingAirline,
-    elapsedTimezoneOffset,
   }: FlightInput) {
     this.arrivalLocalDateTime = getParsedISODate(arrivalLocalDateTime);
     this.arrivalLocation = new Location(arrivalLocation);
@@ -60,15 +67,15 @@ export class Flight {
     this.operatingAirline = operatingAirline ? new Airline(operatingAirline) : undefined;
     this.type = "FLIGHT";
 
-    this.departureTripStartDateTime = this.getCalculatedDepartureTripStartDateTime(
-      this.departureLocalDateTime,
-      this.elapsedTimezoneOffset,
-    );
-    this.arrivalTripStartDateTime = this.getCalculatedArrivalTripStartDateTime(
-      this.departureTripStartDateTime,
-      this.durationMinutes,
-    );
-    this.id = this.getCalculatedId(this.getAirline(), this.getDepartureLocalDateTime(), this.getArrivalLocalDateTime());
+    this.departureTripStartDateTime = departureTripStartDateTime
+      ? getParsedISODate(departureTripStartDateTime)
+      : this.getCalculatedDepartureTripStartDateTime(this.departureLocalDateTime, this.elapsedTimezoneOffset);
+    this.arrivalTripStartDateTime = arrivalTripStartDateTime
+      ? getParsedISODate(arrivalTripStartDateTime)
+      : this.getCalculatedArrivalTripStartDateTime(this.departureTripStartDateTime, this.durationMinutes);
+    this.id = id
+      ? id
+      : this.getCalculatedId(this.getAirline(), this.getDepartureLocalDateTime(), this.getArrivalLocalDateTime());
   }
 
   getAirline(): Airline {

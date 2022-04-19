@@ -1,6 +1,6 @@
 import { AirlineInput } from "./Airline";
 import { FlightFactory } from "./factories/Flight";
-import { FlightInput } from "./Flight";
+import { Flight, FlightInput } from "./Flight";
 import { LocationInput } from "./Location";
 import { getParsedISODate } from "./utilities/getParsedISODate";
 
@@ -140,5 +140,53 @@ describe("Flight happy path", () => {
     const flight = FlightFactory.build({}, { transient: flightInput });
     const value = flight.getAriaLabelText();
     expect(value).toEqual("United flight leaving CMH at 3:45am and arriving in DEN at 4:58am.");
+  });
+});
+
+describe("Flight constructor tests", () => {
+  afterEach(() => {
+    jest.resetAllMocks();
+  });
+
+  it("has departureTripStartDateTime defined as an argument", () => {
+    const getCalcMock = jest.spyOn(Flight.prototype, "getCalculatedDepartureTripStartDateTime");
+
+    new Flight({ ...flightInput, departureTripStartDateTime: "2022-04-07T00:00:00.000Z" });
+    expect(getCalcMock).toHaveBeenCalledTimes(0);
+  });
+
+  it("has departureTripStartDateTime not defined as an argument", () => {
+    const getCalcMock = jest.spyOn(Flight.prototype, "getCalculatedDepartureTripStartDateTime");
+
+    new Flight({ ...flightInput });
+    expect(getCalcMock).toHaveBeenCalledTimes(1);
+  });
+
+  it("has arrivalTripStartDateTime defined as an argument", () => {
+    const getCalcMock = jest.spyOn(Flight.prototype, "getCalculatedArrivalTripStartDateTime");
+
+    new Flight({ ...flightInput, arrivalTripStartDateTime: "2022-04-07T00:00:00.000Z" });
+    expect(getCalcMock).toHaveBeenCalledTimes(0);
+  });
+
+  it("has arrivalTripStartDateTime not defined as an argument", () => {
+    const getCalcMock = jest.spyOn(Flight.prototype, "getCalculatedArrivalTripStartDateTime");
+
+    new Flight({ ...flightInput });
+    expect(getCalcMock).toHaveBeenCalledTimes(1);
+  });
+
+  it("has id defined as an argument", () => {
+    const getCalcMock = jest.spyOn(Flight.prototype, "getCalculatedId");
+
+    new Flight({ ...flightInput, id: "abcd1234" });
+    expect(getCalcMock).toHaveBeenCalledTimes(0);
+  });
+
+  it("has id not defined as an argument", () => {
+    const getCalcMock = jest.spyOn(Flight.prototype, "getCalculatedId");
+
+    new Flight({ ...flightInput });
+    expect(getCalcMock).toHaveBeenCalledTimes(1);
   });
 });

@@ -22,6 +22,8 @@ export interface LayoverInput {
   departureLocation: Location | LocationInput;
   departureTripStartDateTime: Date | string;
   durationMinutes: number;
+
+  id?: string;
 }
 
 export class Layover {
@@ -44,6 +46,7 @@ export class Layover {
     departureLocation,
     departureTripStartDateTime,
     durationMinutes,
+    id,
   }: LayoverInput) {
     this.arrivalLocalDateTime = getParsedISODate(arrivalLocalDateTime);
     this.arrivalLocation =
@@ -60,7 +63,7 @@ export class Layover {
     this.durationMinutes = getParsedNumber(durationMinutes);
     this.type = "LAYOVER";
 
-    this.id = this.getCalculatedId();
+    this.id = id ? id : this.getCalculatedId();
   }
 
   getAirline(): Airline {

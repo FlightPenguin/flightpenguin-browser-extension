@@ -1,4 +1,5 @@
 import { LayoverFactory, LayoverFactoryInput } from "./factories/Layover";
+import { Layover } from "./Layover";
 import { LocationInput } from "./Location";
 import { getParsedISODate } from "./utilities/getParsedISODate";
 
@@ -116,5 +117,25 @@ describe("Layover happy path", () => {
     const layover = LayoverFactory.build({}, { transient: layoverInput });
     const value = layover.getAriaLabelText();
     expect(value).toEqual("A layover in MIA lasting for 3h 13m.");
+  });
+});
+
+describe("Layover constructor tests", () => {
+  afterEach(() => {
+    jest.resetAllMocks();
+  });
+
+  it("has id defined as an argument", () => {
+    const getCalcMock = jest.spyOn(Layover.prototype, "getCalculatedId");
+
+    new Layover({ ...layoverInput, id: "abcd1234" });
+    expect(getCalcMock).toHaveBeenCalledTimes(0);
+  });
+
+  it("has id not defined as an argument", () => {
+    const getCalcMock = jest.spyOn(Layover.prototype, "getCalculatedId");
+
+    new Layover({ ...layoverInput });
+    expect(getCalcMock).toHaveBeenCalledTimes(1);
   });
 });
