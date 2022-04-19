@@ -2,6 +2,7 @@ import { differenceInCalendarDays } from "date-fns";
 import isEqual from "lodash.isequal";
 
 import { CabinType } from "../../background/constants";
+import { Airline } from "./Airline";
 import { Flight } from "./Flight";
 import { Layover } from "./Layover";
 import { Location, LocationInput } from "./Location";
@@ -137,6 +138,10 @@ export class Trip {
     return this.tripComponents;
   }
 
+  getAirlines(): Airline[] {
+    return this.getFlights().map((flight) => flight.getAirline());
+  }
+
   getFlights(): Flight[] {
     return this.tripComponents
       .filter((tripComponent) => {
@@ -163,8 +168,7 @@ export class Trip {
   }
 
   getCalculatedCarriers(): string[] {
-    const flights = this.getFlights();
-    const airlineNames = flights.map((flight) => flight.getAirline().getName());
+    const airlineNames = this.getAirlines().map((airline) => airline.getName());
     return Array.from(new Set(airlineNames));
   }
 

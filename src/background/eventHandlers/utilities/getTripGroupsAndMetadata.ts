@@ -4,6 +4,7 @@ import uniqBy from "lodash.uniqby";
 import { DisplayableTrip } from "../../../shared/types/DisplayableTrip";
 import { Itinerary } from "../../../shared/types/Itinerary";
 import { SearchTripMeta } from "../../../shared/types/SearchMeta";
+import { NO_ALLIANCE } from "../../constants";
 
 export const getTripGroupsAndMeta = (
   itineraries: Itinerary[],
@@ -83,18 +84,44 @@ const sendZeroPainMessageToSentry = (trip: DisplayableTrip, itinerary: Itinerary
 };
 
 const getTripGroupMetadata = (tripGroup: DisplayableTrip[]): SearchTripMeta => {
+  let airlineCount = 0;
+
   const [airlines, airports, layoverCounts] = tripGroup.reduce(
     ([airlines, airports, layoverCounts], trip) => {
-      airlines.push(trip.getTrip().getCarriers());
+      const carriers = trip.getTrip().getAirlines();
+      carriers.forEach((carrier) => {
+        const alliance = carrier.getAlliance() || NO_ALLIANCE;
+        const airline = carrier.getName();
+        if (Object.keys(airlines).includes(alliance)) {
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
+          // eslint-disable-next-line security/detect-object-injection
+          const allianceData = airlines[alliance];
+          if (!allianceData.includes(airline)) {
+            allianceData.push(airline);
+            airlineCount += 1;
+          }
+        } else {
+          airlines[alliance] = [airline];
+          airlineCount += 1;
+        }
+      });
+
       airports.push(trip.getTrip().getLayoverAirportCodes());
       layoverCounts.push(trip.getTrip().getLayoverCount());
       return [airlines, airports, layoverCounts];
     },
-    [[] as string[][], [] as string[][], [] as number[]],
+    [{} as { [keyof: string]: string[] }, [] as string[][], [] as number[]],
   );
 
+  Object.keys(airlines).forEach((alliance) => {
+    // eslint-disable-next-line security/detect-object-injection
+    airlines[alliance] = airlines[alliance].sort();
+  });
+
   return {
-    airlines: Array.from(new Set(airlines.flat())).sort(),
+    airlineCount: airlineCount,
+    airlines: airlines,
     airports: Array.from(new Set(airports.flat())).sort(),
     layoverCounts: Array.from(new Set(layoverCounts.flat())).sort((a, b) => {
       return a - b;

@@ -64,9 +64,13 @@ const TimelineTitle = ({
                 <LayoverCountFilterMenu layoverCounts={meta.layoverCounts} onChange={onLayoverCountFilterChange} />
               </Box>
             )}
-            {!!meta?.airlines.length && meta.airlines.length > 1 && (
+            {!!meta?.airlines && !!meta?.airlineCount && meta.airlineCount > 1 && (
               <Box display="flex">
-                <AirlineFilterMenu airlines={meta.airlines} onChange={onAirlinesFilterChange} />
+                <AirlineFilterMenu
+                  airlineCount={meta.airlineCount}
+                  groupedAirlines={meta.airlines}
+                  onChange={onAirlinesFilterChange}
+                />
               </Box>
             )}
           </React.Fragment>

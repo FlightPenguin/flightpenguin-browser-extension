@@ -33,6 +33,7 @@ export const LayoverCountFilterMenu = ({ layoverCounts, onChange }: FilterMenuPr
             title="Stops"
             type="checkbox"
             value={values.map(String)}
+            key="stops-option-group"
             onChange={(values: string | string[]) => {
               let numbers;
               if (typeof values === "string") {
@@ -53,7 +54,7 @@ export const LayoverCountFilterMenu = ({ layoverCounts, onChange }: FilterMenuPr
             {layoverCounts.map((value) => {
               const textValue = value === 0 ? "No" : capitalize(numberToWords.toWords(value));
               return (
-                <DropdownMenu.OptionItem value={value.toString()}>
+                <DropdownMenu.OptionItem value={value.toString()} key={`${textValue}-option-item`}>
                   <Box display="flex" flexDirection="row" flexWrap="nowrap" justifyContent="space-between" width="100%">
                     <Box display="flex">
                       {textValue} {pluralize("stop", value)}

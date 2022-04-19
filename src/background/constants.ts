@@ -35,3 +35,5 @@ export const FIREBASE_CONFIG = {
   projectId: `${process.env.FIREBASE_PROJECT_ID}`,
   storageBucket: `${process.env.FIREBASE_PROJECT_ID}.appspot.com`,
 };
+
+export const NO_ALLIANCE = "ZNo Alliance"; // leading z is a hack to force this to end of the sort
