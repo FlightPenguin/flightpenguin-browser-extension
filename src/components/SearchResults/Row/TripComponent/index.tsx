@@ -3,7 +3,6 @@ import isEqual from "lodash.isequal";
 import React from "react";
 
 import { TripComponent } from "../../../../shared/types/TripComponent";
-import { getTripComponentTooltipText } from "./utilities/getTripComponentTooltipText";
 
 interface TripComponentContainerInput {
   tripComponent: TripComponent;
@@ -37,7 +36,7 @@ const TripComponentContainer = ({ tripComponent, layout, left }: TripComponentCo
         <Tooltip
           // eslint-disable-next-line @typescript-eslint/ban-ts-comment
           // @ts-ignore
-          content={getTripComponentTooltipText(tripComponent)}
+          content={tripComponent.getObject().getDisplayDescriptionText()}
           hasArrow
           placement="bottom"
           tabIndex={-1}

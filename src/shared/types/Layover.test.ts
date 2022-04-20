@@ -16,6 +16,10 @@ const layoverObjInput: LayoverInput = {
   arrivalTripStartDateTime: layoverInput.arrivalLocalDateTime,
   departureTripStartDateTime: layoverInput.departureLocalDateTime,
 };
+const expectedDescriptionText = `Layover in MIA
+Begins at 3:45am local time
+Ends at 6:58am local time
+Layover duration of 3h 13m`;
 
 describe("Layover happy path", () => {
   it("getAirline works", () => {
@@ -123,6 +127,18 @@ describe("Layover happy path", () => {
     const value = layover.getAriaLabelText();
     expect(value).toEqual("A layover in MIA lasting for 3h 13m.");
   });
+
+  it("getCalculatedDisplayDescriptionText works", () => {
+    const layover = LayoverFactory.build({}, { transient: layoverInput });
+    const value = layover.getCalculatedDisplayDescriptionText();
+    expect(value).toEqual(expectedDescriptionText);
+  });
+
+  it("getDisplayDescriptionText works", () => {
+    const layover = LayoverFactory.build({}, { transient: layoverInput });
+    const value = layover.getDisplayDescriptionText();
+    expect(value).toEqual(expectedDescriptionText);
+  });
 });
 
 describe("Layover constructor tests", () => {
@@ -223,6 +239,20 @@ describe("Layover constructor tests", () => {
 
   it("has id not defined as an argument", () => {
     const getCalcMock = jest.spyOn(Layover.prototype, "getCalculatedId");
+
+    new Layover({ ...layoverObjInput });
+    expect(getCalcMock).toHaveBeenCalledTimes(1);
+  });
+
+  it("has descriptionDisplayText defined as an argument", () => {
+    const getCalcMock = jest.spyOn(Layover.prototype, "getCalculatedDisplayDescriptionText");
+
+    new Layover({ ...layoverObjInput, descriptionDisplayText: "abcd1234" });
+    expect(getCalcMock).toHaveBeenCalledTimes(0);
+  });
+
+  it("has descriptionDisplayText not defined as an argument", () => {
+    const getCalcMock = jest.spyOn(Layover.prototype, "getCalculatedDisplayDescriptionText");
 
     new Layover({ ...layoverObjInput });
     expect(getCalcMock).toHaveBeenCalledTimes(1);

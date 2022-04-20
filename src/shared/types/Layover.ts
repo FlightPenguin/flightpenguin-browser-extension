@@ -28,6 +28,7 @@ export interface LayoverInput {
   arrivalTripStartDisplayTime?: string;
   departureLocalDisplayTime?: string;
   departureTripStartDisplayTime?: string;
+  descriptionDisplayText?: string;
   durationDisplay?: string;
   id?: string;
 }
@@ -46,6 +47,7 @@ export class Layover {
   private arrivalTripStartDisplayTime: string;
   private departureLocalDisplayTime: string;
   private departureTripStartDisplayTime: string;
+  private descriptionDisplayText: string;
   private durationDisplay: string;
   private id: string;
   private type: string;
@@ -62,6 +64,7 @@ export class Layover {
     departureLocation,
     departureTripStartDateTime,
     departureTripStartDisplayTime,
+    descriptionDisplayText,
     durationDisplay,
     durationMinutes,
     id,
@@ -90,6 +93,7 @@ export class Layover {
 
     this.id = id ? id : this.getCalculatedId();
     this.ariaLabelText = ariaLabelText || this.getCalculatedAriaLabelText();
+    this.descriptionDisplayText = descriptionDisplayText || this.getCalculatedDisplayDescriptionText();
   }
 
   getAirline(): Airline {
@@ -137,6 +141,10 @@ export class Layover {
     return this.departureTripStartDisplayTime;
   }
 
+  getDisplayDescriptionText(): string {
+    return this.descriptionDisplayText;
+  }
+
   getDisplayDuration(): string {
     return this.durationDisplay;
   }
@@ -179,6 +187,21 @@ export class Layover {
     const excessDays = differenceInCalendarDays(this.departureTripStartDateTime, this.arrivalTripStartDateTime);
 
     return getFormattedTime(this.departureTripStartDateTime, excessDays);
+  }
+
+  getCalculatedDisplayDescriptionText(): string {
+    let text = `Layover in ${this.getArrivalLocation().getCode()}`;
+    text += "\n";
+    if (this.isTransfer()) {
+      text += `With transfer to ${this.getDepartureLocation().getCode()}`;
+      text += "\n";
+    }
+    text += `Begins at ${this.getDisplayArrivalLocalTime()} local time`;
+    text += "\n";
+    text += `Ends at ${this.getDisplayDepartureLocalTime()} local time`;
+    text += "\n";
+    text += `Layover duration of ${this.getDisplayDuration()}`;
+    return text;
   }
 
   getCalculatedDisplayDuration(): string {

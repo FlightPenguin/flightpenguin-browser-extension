@@ -13,6 +13,10 @@ const flightInput: FlightInput = {
   elapsedTimezoneOffset: 0,
   marketingAirline: { name: "United" } as AirlineInput,
 };
+const expectedDescriptionText = `United
+Departs from CMH at 3:45am local time
+Arrives at DEN at 4:58am local time
+Flight duration of 3h 13m`;
 
 describe("Flight happy path", () => {
   it("returns marketing airline with no operating airline", () => {
@@ -139,6 +143,18 @@ describe("Flight happy path", () => {
     const flight = FlightFactory.build({}, { transient: flightInput });
     const value = flight.getAriaLabelText();
     expect(value).toEqual("United flight leaving CMH at 3:45am and arriving in DEN at 4:58am.");
+  });
+
+  it("getCalculatedDisplayDescriptionText works", () => {
+    const flight = FlightFactory.build({}, { transient: flightInput });
+    const value = flight.getCalculatedDisplayDescriptionText();
+    expect(value).toEqual(expectedDescriptionText);
+  });
+
+  it("getDisplayDescriptionText works", () => {
+    const flight = FlightFactory.build({}, { transient: flightInput });
+    const value = flight.getDisplayDescriptionText();
+    expect(value).toEqual(expectedDescriptionText);
   });
 });
 
@@ -268,6 +284,20 @@ describe("Flight constructor tests", () => {
 
   it("has id not defined as an argument", () => {
     const getCalcMock = jest.spyOn(Flight.prototype, "getCalculatedId");
+
+    new Flight({ ...flightInput });
+    expect(getCalcMock).toHaveBeenCalledTimes(1);
+  });
+
+  it("has descriptionDisplayText defined as an argument", () => {
+    const getCalcMock = jest.spyOn(Flight.prototype, "getCalculatedDisplayDescriptionText");
+
+    new Flight({ ...flightInput, descriptionDisplayText: "abcd1234" });
+    expect(getCalcMock).toHaveBeenCalledTimes(0);
+  });
+
+  it("has descriptionDisplayText not defined as an argument", () => {
+    const getCalcMock = jest.spyOn(Flight.prototype, "getCalculatedDisplayDescriptionText");
 
     new Flight({ ...flightInput });
     expect(getCalcMock).toHaveBeenCalledTimes(1);

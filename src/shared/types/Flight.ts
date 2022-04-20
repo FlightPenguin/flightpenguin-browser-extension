@@ -31,6 +31,7 @@ export interface FlightInput {
   departureLocalDisplayTime?: string;
   departureTripStartDateTime?: Date | string;
   departureTripStartDisplayTime?: string;
+  descriptionDisplayText?: string;
   durationDisplay?: string;
   id?: string;
 }
@@ -52,6 +53,7 @@ export class Flight {
   private arrivalTripStartDisplayTime: string;
   private departureLocalDisplayTime: string;
   private departureTripStartDisplayTime: string;
+  private descriptionDisplayText: string;
   private durationDisplay: string;
   private id: string;
   private type: string;
@@ -68,6 +70,7 @@ export class Flight {
     departureLocation,
     departureTripStartDateTime,
     departureTripStartDisplayTime,
+    descriptionDisplayText,
     durationDisplay,
     durationMinutes,
     elapsedTimezoneOffset,
@@ -103,6 +106,7 @@ export class Flight {
       ? id
       : this.getCalculatedId(this.getAirline(), this.getDepartureLocalDateTime(), this.getArrivalLocalDateTime());
     this.ariaLabelText = ariaLabelText || this.getCalculatedAriaLabelText();
+    this.descriptionDisplayText = descriptionDisplayText || this.getCalculatedDisplayDescriptionText();
   }
 
   getAirline(): Airline {
@@ -147,6 +151,10 @@ export class Flight {
 
   getDisplayDepartureTripStartTime(): string {
     return this.departureTripStartDisplayTime;
+  }
+
+  getDisplayDescriptionText(): string {
+    return this.descriptionDisplayText;
   }
 
   getDisplayDuration(): string {
@@ -199,6 +207,17 @@ export class Flight {
 
   getCalculatedDisplayDepartureTripStartTime(): string {
     return getFormattedTime(this.departureTripStartDateTime);
+  }
+
+  getCalculatedDisplayDescriptionText(): string {
+    let text = `${this.getAirline().getName()}`;
+    text += "\n";
+    text += `Departs from ${this.getDepartureLocation().getCode()} at ${this.getDisplayDepartureLocalTime()} local time`;
+    text += "\n";
+    text += `Arrives at ${this.getArrivalLocation().getCode()} at ${this.getDisplayArrivalLocalTime()} local time`;
+    text += "\n";
+    text += `Flight duration of ${this.getDisplayDuration()}`;
+    return text;
   }
 
   getCalculatedDisplayDuration(): string {
