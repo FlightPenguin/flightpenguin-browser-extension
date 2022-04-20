@@ -69,7 +69,6 @@ describe("Flight happy path", () => {
   // TODO: Display times - date-fns doesn't like timezones and this only matters in testing...
 
   it("getDisplayDuration works", () => {
-    // TODO: Mock and count call
     const flight = FlightFactory.build({}, { transient: flightInput });
     expect(flight.getDisplayDuration()).toEqual("3h 13m");
   });
@@ -145,7 +144,91 @@ describe("Flight happy path", () => {
 
 describe("Flight constructor tests", () => {
   afterEach(() => {
-    jest.resetAllMocks();
+    jest.clearAllMocks();
+  });
+
+  it("has ariaLabelText defined as an argument", () => {
+    const getCalcMock = jest.spyOn(Flight.prototype, "getCalculatedAriaLabelText");
+
+    new Flight({ ...flightInput, ariaLabelText: "10:31pm" });
+    expect(getCalcMock).toHaveBeenCalledTimes(0);
+  });
+
+  it("has ariaLabelText not defined as an argument", () => {
+    const getCalcMock = jest.spyOn(Flight.prototype, "getCalculatedAriaLabelText");
+
+    new Flight({ ...flightInput });
+    expect(getCalcMock).toHaveBeenCalledTimes(1);
+  });
+
+  it("has arrivalLocalDisplayTime defined as an argument", () => {
+    const getCalcMock = jest.spyOn(Flight.prototype, "getCalculatedDisplayArrivalLocalTime");
+
+    new Flight({ ...flightInput, arrivalLocalDisplayTime: "10:31pm" });
+    expect(getCalcMock).toHaveBeenCalledTimes(0);
+  });
+
+  it("has arrivalLocalDisplayTime not defined as an argument", () => {
+    const getCalcMock = jest.spyOn(Flight.prototype, "getCalculatedDisplayArrivalLocalTime");
+
+    new Flight({ ...flightInput });
+    expect(getCalcMock).toHaveBeenCalledTimes(1);
+  });
+
+  it("has arrivalTripStartDisplayTime defined as an argument", () => {
+    const getCalcMock = jest.spyOn(Flight.prototype, "getCalculatedDisplayArrivalTripStartTime");
+
+    new Flight({ ...flightInput, arrivalTripStartDisplayTime: "10:31pm" });
+    expect(getCalcMock).toHaveBeenCalledTimes(0);
+  });
+
+  it("has arrivalTripStartDisplayTime not defined as an argument", () => {
+    const getCalcMock = jest.spyOn(Flight.prototype, "getCalculatedDisplayArrivalTripStartTime");
+
+    new Flight({ ...flightInput });
+    expect(getCalcMock).toHaveBeenCalledTimes(1);
+  });
+
+  it("has departureLocalDisplayTime defined as an argument", () => {
+    const getCalcMock = jest.spyOn(Flight.prototype, "getCalculatedDisplayDepartureLocalTime");
+
+    new Flight({ ...flightInput, departureLocalDisplayTime: "10:31pm" });
+    expect(getCalcMock).toHaveBeenCalledTimes(0);
+  });
+
+  it("has departureLocalDisplayTime not defined as an argument", () => {
+    const getCalcMock = jest.spyOn(Flight.prototype, "getCalculatedDisplayDepartureLocalTime");
+
+    new Flight({ ...flightInput });
+    expect(getCalcMock).toHaveBeenCalledTimes(1);
+  });
+
+  it("has departureTripStartDisplayTime defined as an argument", () => {
+    const getCalcMock = jest.spyOn(Flight.prototype, "getCalculatedDisplayDepartureTripStartTime");
+
+    new Flight({ ...flightInput, departureTripStartDisplayTime: "10:31pm" });
+    expect(getCalcMock).toHaveBeenCalledTimes(0);
+  });
+
+  it("has departureTripStartDisplayTime not defined as an argument", () => {
+    const getCalcMock = jest.spyOn(Flight.prototype, "getCalculatedDisplayDepartureTripStartTime");
+
+    new Flight({ ...flightInput });
+    expect(getCalcMock).toHaveBeenCalledTimes(1);
+  });
+
+  it("has durationDisplay defined as an argument", () => {
+    const getCalcMock = jest.spyOn(Flight.prototype, "getCalculatedDisplayDuration");
+
+    new Flight({ ...flightInput, durationDisplay: "1h 31m" });
+    expect(getCalcMock).toHaveBeenCalledTimes(0);
+  });
+
+  it("has durationDisplay not defined as an argument", () => {
+    const getCalcMock = jest.spyOn(Flight.prototype, "getCalculatedDisplayDuration");
+
+    new Flight({ ...flightInput });
+    expect(getCalcMock).toHaveBeenCalledTimes(1);
   });
 
   it("has departureTripStartDateTime defined as an argument", () => {

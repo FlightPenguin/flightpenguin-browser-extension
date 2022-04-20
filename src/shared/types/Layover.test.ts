@@ -1,5 +1,5 @@
 import { LayoverFactory, LayoverFactoryInput } from "./factories/Layover";
-import { Layover } from "./Layover";
+import { Layover, LayoverInput } from "./Layover";
 import { LocationInput } from "./Location";
 import { getParsedISODate } from "./utilities/getParsedISODate";
 
@@ -10,6 +10,11 @@ const layoverInput: LayoverFactoryInput = {
   departureLocation: { name: "Miami International Airport", code: "MIA", type: "AIRPORT" } as LocationInput,
   durationMinutes: 193,
   elapsedTimezoneOffset: 60,
+};
+const layoverObjInput: LayoverInput = {
+  ...layoverInput,
+  arrivalTripStartDateTime: layoverInput.arrivalLocalDateTime,
+  departureTripStartDateTime: layoverInput.departureLocalDateTime,
 };
 
 describe("Layover happy path", () => {
@@ -122,29 +127,104 @@ describe("Layover happy path", () => {
 
 describe("Layover constructor tests", () => {
   afterEach(() => {
-    jest.resetAllMocks();
+    jest.clearAllMocks();
+  });
+
+  it("has ariaLabelText defined as an argument", () => {
+    const getCalcMock = jest.spyOn(Layover.prototype, "getCalculatedAriaLabelText");
+
+    new Layover({ ...layoverObjInput, ariaLabelText: "10:31pm" });
+    expect(getCalcMock).toHaveBeenCalledTimes(0);
+  });
+
+  it("has ariaLabelText not defined as an argument", () => {
+    const getCalcMock = jest.spyOn(Layover.prototype, "getCalculatedAriaLabelText");
+
+    new Layover({ ...layoverObjInput });
+    expect(getCalcMock).toHaveBeenCalledTimes(1);
+  });
+
+  it("has arrivalLocalDisplayTime defined as an argument", () => {
+    const getCalcMock = jest.spyOn(Layover.prototype, "getCalculatedDisplayArrivalLocalTime");
+
+    new Layover({ ...layoverObjInput, arrivalLocalDisplayTime: "10:31pm" });
+    expect(getCalcMock).toHaveBeenCalledTimes(0);
+  });
+
+  it("has arrivalLocalDisplayTime not defined as an argument", () => {
+    const getCalcMock = jest.spyOn(Layover.prototype, "getCalculatedDisplayArrivalLocalTime");
+
+    new Layover({ ...layoverObjInput });
+    expect(getCalcMock).toHaveBeenCalledTimes(1);
+  });
+
+  it("has arrivalTripStartDisplayTime defined as an argument", () => {
+    const getCalcMock = jest.spyOn(Layover.prototype, "getCalculatedDisplayArrivalTripStartTime");
+
+    new Layover({ ...layoverObjInput, arrivalTripStartDisplayTime: "10:31pm" });
+    expect(getCalcMock).toHaveBeenCalledTimes(0);
+  });
+
+  it("has arrivalTripStartDisplayTime not defined as an argument", () => {
+    const getCalcMock = jest.spyOn(Layover.prototype, "getCalculatedDisplayArrivalTripStartTime");
+
+    new Layover({ ...layoverObjInput });
+    expect(getCalcMock).toHaveBeenCalledTimes(1);
+  });
+
+  it("has departureLocalDisplayTime defined as an argument", () => {
+    const getCalcMock = jest.spyOn(Layover.prototype, "getCalculatedDisplayDepartureLocalTime");
+
+    new Layover({ ...layoverObjInput, departureLocalDisplayTime: "10:31pm" });
+    expect(getCalcMock).toHaveBeenCalledTimes(0);
+  });
+
+  it("has departureLocalDisplayTime not defined as an argument", () => {
+    const getCalcMock = jest.spyOn(Layover.prototype, "getCalculatedDisplayDepartureLocalTime");
+
+    new Layover({ ...layoverObjInput });
+    expect(getCalcMock).toHaveBeenCalledTimes(1);
+  });
+
+  it("has departureTripStartDisplayTime defined as an argument", () => {
+    const getCalcMock = jest.spyOn(Layover.prototype, "getCalculatedDisplayDepartureTripStartTime");
+
+    new Layover({ ...layoverObjInput, departureTripStartDisplayTime: "10:31pm" });
+    expect(getCalcMock).toHaveBeenCalledTimes(0);
+  });
+
+  it("has departureTripStartDisplayTime not defined as an argument", () => {
+    const getCalcMock = jest.spyOn(Layover.prototype, "getCalculatedDisplayDepartureTripStartTime");
+
+    new Layover({ ...layoverObjInput });
+    expect(getCalcMock).toHaveBeenCalledTimes(1);
+  });
+
+  it("has durationDisplay defined as an argument", () => {
+    const getCalcMock = jest.spyOn(Layover.prototype, "getCalculatedDisplayDuration");
+
+    new Layover({ ...layoverObjInput, durationDisplay: "1h 31m" });
+    expect(getCalcMock).toHaveBeenCalledTimes(0);
+  });
+
+  it("has durationDisplay not defined as an argument", () => {
+    const getCalcMock = jest.spyOn(Layover.prototype, "getCalculatedDisplayDuration");
+
+    new Layover({ ...layoverObjInput });
+    expect(getCalcMock).toHaveBeenCalledTimes(1);
   });
 
   it("has id defined as an argument", () => {
     const getCalcMock = jest.spyOn(Layover.prototype, "getCalculatedId");
 
-    new Layover({
-      ...layoverInput,
-      arrivalTripStartDateTime: layoverInput.arrivalLocalDateTime,
-      departureTripStartDateTime: layoverInput.departureLocalDateTime,
-      id: "abcd1234",
-    });
+    new Layover({ ...layoverObjInput, id: "abcd1234" });
     expect(getCalcMock).toHaveBeenCalledTimes(0);
   });
 
   it("has id not defined as an argument", () => {
     const getCalcMock = jest.spyOn(Layover.prototype, "getCalculatedId");
 
-    new Layover({
-      ...layoverInput,
-      arrivalTripStartDateTime: layoverInput.arrivalLocalDateTime,
-      departureTripStartDateTime: layoverInput.departureLocalDateTime,
-    });
+    new Layover({ ...layoverObjInput });
     expect(getCalcMock).toHaveBeenCalledTimes(1);
   });
 });

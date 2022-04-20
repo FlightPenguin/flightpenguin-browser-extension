@@ -24,8 +24,14 @@ export interface FlightInput {
   marketingAirline: AirlineInput;
   operatingAirline?: AirlineInput;
 
+  ariaLabelText?: string;
+  arrivalLocalDisplayTime?: string;
   arrivalTripStartDateTime?: Date | string;
+  arrivalTripStartDisplayTime?: string;
+  departureLocalDisplayTime?: string;
   departureTripStartDateTime?: Date | string;
+  departureTripStartDisplayTime?: string;
+  durationDisplay?: string;
   id?: string;
 }
 
@@ -41,16 +47,28 @@ export class Flight {
   private marketingAirline: Airline;
   private operatingAirline?: Airline;
 
+  private ariaLabelText: string;
+  private arrivalLocalDisplayTime: string;
+  private arrivalTripStartDisplayTime: string;
+  private departureLocalDisplayTime: string;
+  private departureTripStartDisplayTime: string;
+  private durationDisplay: string;
   private id: string;
   private type: string;
 
   constructor({
-    arrivalTripStartDateTime,
+    ariaLabelText,
     arrivalLocalDateTime,
+    arrivalLocalDisplayTime,
     arrivalLocation,
-    departureTripStartDateTime,
+    arrivalTripStartDateTime,
+    arrivalTripStartDisplayTime,
     departureLocalDateTime,
+    departureLocalDisplayTime,
     departureLocation,
+    departureTripStartDateTime,
+    departureTripStartDisplayTime,
+    durationDisplay,
     durationMinutes,
     elapsedTimezoneOffset,
     id,
@@ -73,9 +91,18 @@ export class Flight {
     this.arrivalTripStartDateTime = arrivalTripStartDateTime
       ? getParsedISODate(arrivalTripStartDateTime)
       : this.getCalculatedArrivalTripStartDateTime(this.departureTripStartDateTime, this.durationMinutes);
+
+    this.arrivalLocalDisplayTime = arrivalLocalDisplayTime || this.getCalculatedDisplayArrivalLocalTime();
+    this.arrivalTripStartDisplayTime = arrivalTripStartDisplayTime || this.getCalculatedDisplayArrivalTripStartTime();
+    this.departureLocalDisplayTime = departureLocalDisplayTime || this.getCalculatedDisplayDepartureLocalTime();
+    this.departureTripStartDisplayTime =
+      departureTripStartDisplayTime || this.getCalculatedDisplayDepartureTripStartTime();
+    this.durationDisplay = durationDisplay || this.getCalculatedDisplayDuration();
+
     this.id = id
       ? id
       : this.getCalculatedId(this.getAirline(), this.getDepartureLocalDateTime(), this.getArrivalLocalDateTime());
+    this.ariaLabelText = ariaLabelText || this.getCalculatedAriaLabelText();
   }
 
   getAirline(): Airline {
@@ -107,27 +134,23 @@ export class Flight {
   }
 
   getDisplayArrivalLocalTime(): string {
-    const excessDays = differenceInCalendarDays(this.arrivalLocalDateTime, this.departureLocalDateTime);
-
-    return getFormattedTime(this.arrivalLocalDateTime, excessDays);
+    return this.arrivalLocalDisplayTime;
   }
 
   getDisplayArrivalTripStartTime(): string {
-    const excessDays = differenceInCalendarDays(this.arrivalTripStartDateTime, this.departureTripStartDateTime);
-
-    return getFormattedTime(this.arrivalTripStartDateTime, excessDays);
+    return this.arrivalTripStartDisplayTime;
   }
 
   getDisplayDepartureLocalTime(): string {
-    return getFormattedTime(this.departureLocalDateTime);
+    return this.departureLocalDisplayTime;
   }
 
   getDisplayDepartureTripStartTime(): string {
-    return getFormattedTime(this.departureTripStartDateTime);
+    return this.departureTripStartDisplayTime;
   }
 
   getDisplayDuration(): string {
-    return getFormattedDuration(this.durationMinutes);
+    return this.durationDisplay;
   }
 
   getDurationMinutes(): number {
@@ -146,12 +169,40 @@ export class Flight {
     return this.type;
   }
 
+  getCalculatedAriaLabelText(): string {
+    return `${this.getAirline().getName()} flight leaving ${this.getDepartureLocation().getCode()} at ${this.getDisplayDepartureLocalTime()} and arriving in ${this.getArrivalLocation().getCode()} at ${this.getDisplayArrivalLocalTime()}.`;
+  }
+
   getCalculatedArrivalTripStartDateTime(departureTime: Date, durationMinutes: number): Date {
     return addMinutes(departureTime, durationMinutes);
   }
 
   getCalculatedDepartureTripStartDateTime(departureLocalTime: Date, elapsedTimezoneOffset: number): Date {
     return addMinutes(departureLocalTime, elapsedTimezoneOffset * -1);
+  }
+
+  getCalculatedDisplayArrivalLocalTime(): string {
+    const excessDays = differenceInCalendarDays(this.arrivalLocalDateTime, this.departureLocalDateTime);
+
+    return getFormattedTime(this.arrivalLocalDateTime, excessDays);
+  }
+
+  getCalculatedDisplayArrivalTripStartTime(): string {
+    const excessDays = differenceInCalendarDays(this.arrivalTripStartDateTime, this.departureTripStartDateTime);
+
+    return getFormattedTime(this.arrivalTripStartDateTime, excessDays);
+  }
+
+  getCalculatedDisplayDepartureLocalTime(): string {
+    return getFormattedTime(this.departureLocalDateTime);
+  }
+
+  getCalculatedDisplayDepartureTripStartTime(): string {
+    return getFormattedTime(this.departureTripStartDateTime);
+  }
+
+  getCalculatedDisplayDuration(): string {
+    return getFormattedDuration(this.durationMinutes);
   }
 
   getCalculatedId(airline: Airline, departureTime: Date, arrivalTime: Date): string {
@@ -190,6 +241,6 @@ export class Flight {
   }
 
   getAriaLabelText(): string {
-    return `${this.getAirline().getName()} flight leaving ${this.getDepartureLocation().getCode()} at ${this.getDisplayDepartureLocalTime()} and arriving in ${this.getArrivalLocation().getCode()} at ${this.getDisplayArrivalLocalTime()}.`;
+    return this.ariaLabelText;
   }
 }

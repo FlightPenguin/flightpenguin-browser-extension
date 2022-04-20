@@ -325,7 +325,7 @@ describe("Trip happy path", () => {
 
 describe("constructor tests", () => {
   afterEach(() => {
-    jest.resetAllMocks();
+    jest.clearAllMocks();
   });
 
   it("calls addLayovers", () => {
@@ -459,6 +459,34 @@ describe("constructor tests", () => {
 
   it("has layoverCount not defined as an argument", () => {
     const getCalcMock = jest.spyOn(Trip.prototype, "getCalculatedLayoverCount");
+
+    new Trip({ ...input });
+    expect(getCalcMock).toHaveBeenCalledTimes(1);
+  });
+
+  it("has arrivalDisplayTime defined as an argument", () => {
+    const getCalcMock = jest.spyOn(Trip.prototype, "getCalculatedDisplayArrivalTime");
+
+    new Trip({ ...input, arrivalDisplayTime: "8:39pm" });
+    expect(getCalcMock).toHaveBeenCalledTimes(0);
+  });
+
+  it("has arrivalDisplayTime not defined as an argument", () => {
+    const getCalcMock = jest.spyOn(Trip.prototype, "getCalculatedDisplayArrivalTime");
+
+    new Trip({ ...input });
+    expect(getCalcMock).toHaveBeenCalledTimes(1);
+  });
+
+  it("has departureDisplayTime defined as an argument", () => {
+    const getCalcMock = jest.spyOn(Trip.prototype, "getCalculatedDisplayDepartureTime");
+
+    new Trip({ ...input, departureDisplayTime: "9:15pm+1" });
+    expect(getCalcMock).toHaveBeenCalledTimes(0);
+  });
+
+  it("has departureDisplayTime not defined as an argument", () => {
+    const getCalcMock = jest.spyOn(Trip.prototype, "getCalculatedDisplayDepartureTime");
 
     new Trip({ ...input });
     expect(getCalcMock).toHaveBeenCalledTimes(1);

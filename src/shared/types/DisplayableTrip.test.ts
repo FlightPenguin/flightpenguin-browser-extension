@@ -435,7 +435,21 @@ describe("Domination tests", () => {
 
 describe("DisplayableTrip constructor tests", () => {
   afterEach(() => {
-    jest.resetAllMocks();
+    jest.clearAllMocks();
+  });
+
+  it("has ariaLabelText defined as an argument", () => {
+    const getCalcMock = jest.spyOn(DisplayableTrip.prototype, "getCalculatedAriaLabelText");
+
+    new DisplayableTrip({ ...baseDominationTripInput, ariaLabelText: "10:31pm" });
+    expect(getCalcMock).toHaveBeenCalledTimes(0);
+  });
+
+  it("has ariaLabelText not defined as an argument", () => {
+    const getCalcMock = jest.spyOn(DisplayableTrip.prototype, "getCalculatedAriaLabelText");
+
+    new DisplayableTrip({ ...baseDominationTripInput });
+    expect(getCalcMock).toHaveBeenCalledTimes(1);
   });
 
   it("has pain defined as an argument with truthy value", () => {
