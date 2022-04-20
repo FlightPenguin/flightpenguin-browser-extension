@@ -37,7 +37,7 @@ describe("Airline name lookup fails", () => {
 
 describe("constructor", () => {
   afterEach(() => {
-    jest.resetAllMocks();
+    jest.clearAllMocks();
   });
 
   it("calls AirlineMap.getAirlineDetails when missing required field", () => {

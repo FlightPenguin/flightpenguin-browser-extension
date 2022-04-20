@@ -168,7 +168,7 @@ describe("Itinerary happy path", () => {
 
 describe("Itinerary constructor tests", () => {
   afterEach(() => {
-    jest.resetAllMocks();
+    jest.clearAllMocks();
   });
 
   it("has id defined as an argument", () => {
