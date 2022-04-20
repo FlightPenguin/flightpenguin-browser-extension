@@ -1,7 +1,8 @@
 import { CabinType } from "../../background/constants";
 import { AirlineInput } from "./Airline";
-import { DisplayableTripInput } from "./DisplayableTrip";
+import { DisplayableTrip, DisplayableTripInput } from "./DisplayableTrip";
 import { DisplayableTripFactory } from "./factories/DisplayableTrip";
+import { Layover } from "./Layover";
 import { LocationInput } from "./Location";
 import { TripComponentInput } from "./TripComponent";
 import { getParsedISODate } from "./utilities/getParsedISODate";
@@ -429,5 +430,54 @@ describe("Domination tests", () => {
     const secondTrip = DisplayableTripFactory.build({}, { transient: brokenInput });
     const value = trip.isDominatableByTrip(secondTrip);
     expect(value).toEqual(false);
+  });
+});
+
+describe("DisplayableTrip constructor tests", () => {
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it("has ariaLabelText defined as an argument", () => {
+    const getCalcMock = jest.spyOn(DisplayableTrip.prototype, "getCalculatedAriaLabelText");
+
+    new DisplayableTrip({ ...baseDominationTripInput, ariaLabelText: "10:31pm" });
+    expect(getCalcMock).toHaveBeenCalledTimes(0);
+  });
+
+  it("has ariaLabelText not defined as an argument", () => {
+    const getCalcMock = jest.spyOn(DisplayableTrip.prototype, "getCalculatedAriaLabelText");
+
+    new DisplayableTrip({ ...baseDominationTripInput });
+    expect(getCalcMock).toHaveBeenCalledTimes(1);
+  });
+
+  it("has pain defined as an argument with truthy value", () => {
+    const getCalcMock = jest.spyOn(DisplayableTrip.prototype, "getCalculatedPain");
+
+    new DisplayableTrip({
+      ...baseDominationTripInput,
+      pain: 4,
+    });
+    expect(getCalcMock).toHaveBeenCalledTimes(0);
+  });
+
+  it("has pain defined as an argument with truthy value", () => {
+    const getCalcMock = jest.spyOn(DisplayableTrip.prototype, "getCalculatedPain");
+
+    new DisplayableTrip({
+      ...baseDominationTripInput,
+      pain: 0,
+    });
+    expect(getCalcMock).toHaveBeenCalledTimes(0);
+  });
+
+  it("has pain defined as an argument with undefined value", () => {
+    const getCalcMock = jest.spyOn(DisplayableTrip.prototype, "getCalculatedPain");
+
+    new DisplayableTrip({
+      ...baseDominationTripInput,
+    });
+    expect(getCalcMock).toHaveBeenCalledTimes(1);
   });
 });

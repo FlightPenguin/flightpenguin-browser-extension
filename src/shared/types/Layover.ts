@@ -22,6 +22,15 @@ export interface LayoverInput {
   departureLocation: Location | LocationInput;
   departureTripStartDateTime: Date | string;
   durationMinutes: number;
+
+  ariaLabelText?: string;
+  arrivalLocalDisplayTime?: string;
+  arrivalTripStartDisplayTime?: string;
+  departureLocalDisplayTime?: string;
+  departureTripStartDisplayTime?: string;
+  descriptionDisplayText?: string;
+  durationDisplay?: string;
+  id?: string;
 }
 
 export class Layover {
@@ -33,17 +42,32 @@ export class Layover {
   private departureTripStartDateTime: Date;
   private durationMinutes: number;
 
+  private ariaLabelText: string;
+  private arrivalLocalDisplayTime: string;
+  private arrivalTripStartDisplayTime: string;
+  private departureLocalDisplayTime: string;
+  private departureTripStartDisplayTime: string;
+  private descriptionDisplayText: string;
+  private durationDisplay: string;
   private id: string;
   private type: string;
 
   constructor({
+    ariaLabelText,
     arrivalLocalDateTime,
+    arrivalLocalDisplayTime,
     arrivalLocation,
     arrivalTripStartDateTime,
+    arrivalTripStartDisplayTime,
     departureLocalDateTime,
+    departureLocalDisplayTime,
     departureLocation,
     departureTripStartDateTime,
+    departureTripStartDisplayTime,
+    descriptionDisplayText,
+    durationDisplay,
     durationMinutes,
+    id,
   }: LayoverInput) {
     this.arrivalLocalDateTime = getParsedISODate(arrivalLocalDateTime);
     this.arrivalLocation =
@@ -60,7 +84,16 @@ export class Layover {
     this.durationMinutes = getParsedNumber(durationMinutes);
     this.type = "LAYOVER";
 
-    this.id = this.getCalculatedId();
+    this.arrivalLocalDisplayTime = arrivalLocalDisplayTime || this.getCalculatedDisplayArrivalLocalTime();
+    this.arrivalTripStartDisplayTime = arrivalTripStartDisplayTime || this.getCalculatedDisplayArrivalTripStartTime();
+    this.departureLocalDisplayTime = departureLocalDisplayTime || this.getCalculatedDisplayDepartureLocalTime();
+    this.departureTripStartDisplayTime =
+      departureTripStartDisplayTime || this.getCalculatedDisplayDepartureTripStartTime();
+    this.durationDisplay = durationDisplay || this.getCalculatedDisplayDuration();
+
+    this.id = id ? id : this.getCalculatedId();
+    this.ariaLabelText = ariaLabelText || this.getCalculatedAriaLabelText();
+    this.descriptionDisplayText = descriptionDisplayText || this.getCalculatedDisplayDescriptionText();
   }
 
   getAirline(): Airline {
@@ -93,27 +126,27 @@ export class Layover {
   }
 
   getDisplayArrivalLocalTime(): string {
-    return getFormattedTime(this.arrivalLocalDateTime);
+    return this.arrivalLocalDisplayTime;
   }
 
   getDisplayArrivalTripStartTime(): string {
-    return getFormattedTime(this.arrivalTripStartDateTime);
+    return this.arrivalTripStartDisplayTime;
   }
 
   getDisplayDepartureLocalTime(): string {
-    const excessDays = differenceInCalendarDays(this.departureLocalDateTime, this.arrivalLocalDateTime);
-
-    return getFormattedTime(this.departureLocalDateTime, excessDays);
+    return this.departureLocalDisplayTime;
   }
 
   getDisplayDepartureTripStartTime(): string {
-    const excessDays = differenceInCalendarDays(this.departureTripStartDateTime, this.arrivalTripStartDateTime);
+    return this.departureTripStartDisplayTime;
+  }
 
-    return getFormattedTime(this.departureTripStartDateTime, excessDays);
+  getDisplayDescriptionText(): string {
+    return this.descriptionDisplayText;
   }
 
   getDisplayDuration(): string {
-    return getFormattedDuration(this.durationMinutes);
+    return this.durationDisplay;
   }
 
   getDurationMinutes(): number {
@@ -130,6 +163,49 @@ export class Layover {
 
   getTimezoneOffset(): number {
     return getTimezoneOffset(this.departureLocalDateTime, this.arrivalLocalDateTime, this.durationMinutes);
+  }
+
+  getCalculatedAriaLabelText(): string {
+    return `A layover in ${this.getDepartureLocation().getCode()} lasting for ${this.getDisplayDuration()}.`;
+  }
+
+  getCalculatedDisplayArrivalLocalTime(): string {
+    return getFormattedTime(this.arrivalLocalDateTime);
+  }
+
+  getCalculatedDisplayArrivalTripStartTime(): string {
+    return getFormattedTime(this.arrivalTripStartDateTime);
+  }
+
+  getCalculatedDisplayDepartureLocalTime(): string {
+    const excessDays = differenceInCalendarDays(this.departureLocalDateTime, this.arrivalLocalDateTime);
+
+    return getFormattedTime(this.departureLocalDateTime, excessDays);
+  }
+
+  getCalculatedDisplayDepartureTripStartTime(): string {
+    const excessDays = differenceInCalendarDays(this.departureTripStartDateTime, this.arrivalTripStartDateTime);
+
+    return getFormattedTime(this.departureTripStartDateTime, excessDays);
+  }
+
+  getCalculatedDisplayDescriptionText(): string {
+    let text = `Layover in ${this.getArrivalLocation().getCode()}`;
+    text += "\n";
+    if (this.isTransfer()) {
+      text += `With transfer to ${this.getDepartureLocation().getCode()}`;
+      text += "\n";
+    }
+    text += `Begins at ${this.getDisplayArrivalLocalTime()} local time`;
+    text += "\n";
+    text += `Ends at ${this.getDisplayDepartureLocalTime()} local time`;
+    text += "\n";
+    text += `Layover duration of ${this.getDisplayDuration()}`;
+    return text;
+  }
+
+  getCalculatedDisplayDuration(): string {
+    return getFormattedDuration(this.durationMinutes);
   }
 
   getCalculatedId(): string {
@@ -177,6 +253,6 @@ export class Layover {
   }
 
   getAriaLabelText(): string {
-    return `A layover in ${this.getDepartureLocation().getCode()} lasting for ${this.getDisplayDuration()}.`;
+    return this.ariaLabelText;
   }
 }

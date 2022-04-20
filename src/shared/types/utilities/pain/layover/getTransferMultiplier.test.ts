@@ -3,7 +3,7 @@ import { getTransferMultiplier } from "./getTransferMultiplier";
 
 describe("getTransferMultiplier happy path", () => {
   afterEach(() => {
-    jest.resetAllMocks();
+    jest.clearAllMocks();
   });
 
   it("returns correct value for no transfer", () => {

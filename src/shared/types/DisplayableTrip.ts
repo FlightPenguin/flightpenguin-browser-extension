@@ -6,22 +6,31 @@ export interface DisplayableTripInput {
   lowestFare: number;
   trip: Trip | TripInput;
   dominatedTripIds?: string[];
+
+  ariaLabelText?: string;
+  pain?: number;
 }
 
 export class DisplayableTrip {
+  private ariaLabelText;
   private cabin: CabinType;
   private dominatedTripIds: string[];
   private lowestFare: number;
   private pain: number;
   private trip: Trip;
 
-  constructor({ cabin, dominatedTripIds, lowestFare, trip }: DisplayableTripInput) {
+  constructor({ ariaLabelText, cabin, dominatedTripIds, lowestFare, pain, trip }: DisplayableTripInput) {
     this.cabin = cabin;
     this.dominatedTripIds = dominatedTripIds && dominatedTripIds.length ? dominatedTripIds : [];
     this.lowestFare = lowestFare;
     this.trip = trip.constructor.name === "Trip" ? (trip as Trip) : new Trip(trip as TripInput);
 
-    this.pain = this.getCalculatedPain();
+    this.pain = pain === undefined ? this.getCalculatedPain() : pain;
+    this.ariaLabelText = ariaLabelText || this.getCalculatedAriaLabelText();
+  }
+
+  getAriaLabelText(): string {
+    return this.ariaLabelText;
   }
 
   getTrip(): Trip {
@@ -41,7 +50,7 @@ export class DisplayableTrip {
     return Math.pow(this.lowestFare, 1.05) + tripCost;
   }
 
-  getAriaLabelText(): string {
+  getCalculatedAriaLabelText(): string {
     const airlines = this.getTrip().getCarriers();
     const airlineText = airlines.length === 1 ? this.getTrip().getDisplayCarriers() : "multiple airlines";
 
