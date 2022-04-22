@@ -1,7 +1,7 @@
 {
   "name": "FlightPenguin",
   "short_name": "FlightPenguin",
-  "version": "1.18.0",
+  "version": "1.18.1",
   "description": "From some of the builders of Hipmunk, Flight Penguin takes the pain out of flight search.",
   "background": {
     "page": "src/background.html",
@@ -57,6 +57,9 @@
     },
     {
       "matches": ["https://flightpenguin.com/*"],
+      "exclude_matches": [
+        "https://flightpenguin.com/talking_travel*"
+      ],
       "js": [
         "src/shared/sentry.js",
         "dist/flightpenguin.bundle.js"
