@@ -127,18 +127,6 @@ describe("Flight happy path", () => {
     expect(flight.getCalculatedPain("econ")).toEqual(81.25);
   });
 
-  it("getTimebarPositions works", () => {
-    // TODO: Mock and count call
-    const flight = FlightFactory.build({}, { transient: flightInput });
-    expect(
-      flight.getTimebarPositions({
-        containerStartTime: getParsedISODate("2022-04-07T00:00:00.000Z"),
-        containerEndTime: getParsedISODate("2022-04-08T00:00:00.000Z"),
-        containerWidth: 1024,
-      }),
-    ).toEqual({ startX: 159.75, width: 137.03 });
-  });
-
   it("getAriaLabelText works", () => {
     const flight = FlightFactory.build({}, { transient: flightInput });
     const value = flight.getAriaLabelText();

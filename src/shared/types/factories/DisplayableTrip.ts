@@ -1,4 +1,5 @@
 import { faker } from "@faker-js/faker";
+import { addHours, addMinutes } from "date-fns";
 import { DeepPartial, Factory } from "fishery";
 
 import { DisplayableTrip, DisplayableTripInput } from "../DisplayableTrip";
@@ -13,7 +14,14 @@ export const DisplayableTripInputFactory = Factory.define<DisplayableTripInput>(
   } = params;
   const tripInput = TripInputFactory.build(params.trip as DeepPartial<TripInput>);
 
-  return { cabin, lowestFare: getParsedNumber(lowestFare), trip: tripInput } as DisplayableTripInput;
+  const {
+    containerInfo = {
+      earliestTime: addHours(tripInput.departureDateTime, -8),
+      latestTime: addHours(addMinutes(tripInput.departureDateTime, Number(tripInput.durationMinutes)), 8),
+    },
+  } = params;
+
+  return { cabin, containerInfo, lowestFare: getParsedNumber(lowestFare), trip: tripInput } as DisplayableTripInput;
 });
 
 export const DisplayableTripFactory = Factory.define<DisplayableTrip, DisplayableTripInput>(({ transientParams }) => {

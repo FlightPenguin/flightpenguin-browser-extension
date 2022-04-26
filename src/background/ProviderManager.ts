@@ -17,7 +17,7 @@ import {
   PROVIDERS_SUPPORTING_POINTS_SEARCH,
   SUPPORTED_PROVIDERS,
 } from "./constants";
-import { getTripGroupsAndMeta } from "./eventHandlers/utilities/getTripGroupsAndMetadata";
+import { getTripGroupsAndMetadata } from "./eventHandlers/utilities/getTripGroupsAndMetadata";
 import { isExtensionOpen } from "./state";
 
 type StatusType = "PENDING" | "PARSING" | "FAILED" | "SUCCESS";
@@ -456,11 +456,12 @@ export class ProviderManager {
 
   _sendTripResultsToIndexPage(): void {
     const itineraries = this.getItineraries();
-    const { tripGroups, meta } = getTripGroupsAndMeta(
+    const { tripGroups, meta } = getTripGroupsAndMetadata(
       itineraries,
       this.getSelectedTrips(),
       this.getMaxSelectionsCount(),
       this.dominationDenyList,
+      this.formData as FlightSearchFormData,
     );
 
     const nextMessage = {

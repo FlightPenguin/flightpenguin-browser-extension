@@ -7,7 +7,6 @@ import { getFormattedDuration } from "./utilities/getFormattedDuration";
 import { getFormattedTime } from "./utilities/getFormattedTime";
 import { getParsedISODate } from "./utilities/getParsedISODate";
 import { getParsedNumber } from "./utilities/getParsedNumber";
-import { getTimebarPositions } from "./utilities/getTimebarPositions";
 import { getTimezoneOffset } from "./utilities/getTimezoneOffset";
 import { getLayoverMultiplier } from "./utilities/pain/layover/getLayoverMultiplier";
 import { getCabinMultiplier } from "./utilities/pain/shared/getCabinMultiplier";
@@ -229,27 +228,6 @@ export class Layover {
 
   isTransfer(): boolean {
     return this.departureLocation.getCode() !== this.arrivalLocation.getCode();
-  }
-
-  getTimebarPositions({
-    containerStartTime,
-    containerEndTime,
-    containerWidth,
-  }: {
-    containerStartTime: Date;
-    containerEndTime: Date;
-    containerWidth: number;
-  }): {
-    startX: number;
-    width: number;
-  } {
-    return getTimebarPositions({
-      containerStartTime,
-      containerEndTime,
-      containerWidth,
-      timebarStartTime: this.arrivalTripStartDateTime,
-      timebarEndTime: this.departureTripStartDateTime,
-    });
   }
 
   getAriaLabelText(): string {

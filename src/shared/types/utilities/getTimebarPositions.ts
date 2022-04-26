@@ -1,53 +1,52 @@
 import { differenceInMinutes } from "date-fns";
 import Decimal from "decimal.js-light";
 
-interface GetPixelsPerMinuteInput {
+import { TimebarPosition } from "../fragments/TimebarPosition";
+
+interface GetPercentPerMinuteInput {
   startTime: Date;
   endTime: Date;
-  width: number;
+  elapsedTime?: number;
 }
 
 interface GetTimebarPositionsInput {
   containerStartTime: Date;
   containerEndTime: Date;
-  containerWidth: number;
+  containerElapsedTime?: number;
   timebarStartTime: Date;
   timebarEndTime: Date;
-}
-
-interface GetTimebarPositionsOutput {
-  startX: number;
-  width: number;
 }
 
 export const getTimebarPositions = ({
   containerStartTime,
   containerEndTime,
-  containerWidth,
+  containerElapsedTime,
   timebarStartTime,
   timebarEndTime,
-}: GetTimebarPositionsInput): GetTimebarPositionsOutput => {
+}: GetTimebarPositionsInput): TimebarPosition => {
   // we have a container that is actually a bit larger.  we need to get the 'right' calculations...
   // are our intervalWidth calculations right?
   // should we just 'add' the increment to the end time?
 
-  const pxPerMinute = getPixelsPerMinute({
+  const pctPerMinute = getPercentagePerMinute({
     startTime: containerStartTime,
     endTime: containerEndTime,
-    width: containerWidth,
+    elapsedTime: containerElapsedTime,
   });
   const startX = new Decimal(differenceInMinutes(timebarStartTime, containerStartTime))
-    .times(pxPerMinute)
+    .times(pctPerMinute)
     .toDecimalPlaces(2)
     .toNumber();
   const width = new Decimal(differenceInMinutes(timebarEndTime, timebarStartTime))
-    .times(pxPerMinute)
+    .times(pctPerMinute)
     .toDecimalPlaces(2)
     .toNumber();
   return { startX, width };
 };
 
-export const getPixelsPerMinute = ({ startTime, endTime, width }: GetPixelsPerMinuteInput): Decimal => {
-  const diff = differenceInMinutes(endTime, startTime);
-  return new Decimal(width).dividedBy(new Decimal(diff)).toDecimalPlaces(2);
+export const getPercentagePerMinute = ({ startTime, endTime, elapsedTime }: GetPercentPerMinuteInput): Decimal => {
+  if (!elapsedTime) {
+    elapsedTime = differenceInMinutes(endTime, startTime);
+  }
+  return new Decimal(100).dividedBy(new Decimal(elapsedTime));
 };

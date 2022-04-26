@@ -10,7 +10,7 @@ import { sendClearSelections } from "../../shared/events/sendClearSelections";
 import { sendIndexUnload } from "../../shared/events/sendIndexUnload";
 import { DisplayableTrip, DisplayableTripInput } from "../../shared/types/DisplayableTrip";
 import { FlightSearchFormData } from "../../shared/types/FlightSearchFormData";
-import { SearchTripMeta, SearchTripMetaDefault } from "../../shared/types/SearchMeta";
+import { getSearchTripMetaDefault, SearchTripMeta } from "../../shared/types/SearchMeta";
 import { sendFormDataToBackground } from "../SearchForm/utilities/sendFormDataToBackground";
 import TimelineContainer from "./Container";
 
@@ -38,8 +38,8 @@ export const SearchResults = ({
     true,
   );
   const [searchMeta, setSearchMeta] = useDebounce<SearchTripMeta[]>(
-    containerRange.map((num) => {
-      return SearchTripMetaDefault;
+    containerRange.map((num, index) => {
+      return getSearchTripMetaDefault(formData, index);
     }),
     250,
     true,
@@ -111,8 +111,8 @@ export const SearchResults = ({
       }),
     );
     setSearchMeta(
-      containerRange.map((num) => {
-        return SearchTripMetaDefault;
+      containerRange.map((num, index) => {
+        return getSearchTripMetaDefault(formData, index);
       }),
     );
     setActiveContainerIndex(minContainerIndex);

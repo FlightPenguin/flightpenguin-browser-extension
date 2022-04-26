@@ -110,18 +110,6 @@ describe("Layover happy path", () => {
     expect(layover.isTransfer()).toEqual(false);
   });
 
-  it("getTimebarPositions works", () => {
-    // TODO: Mock and count call
-    const layover = LayoverFactory.build({}, { transient: layoverInput });
-    expect(
-      layover.getTimebarPositions({
-        containerStartTime: getParsedISODate("2022-04-07T00:00:00.000Z"),
-        containerEndTime: getParsedISODate("2022-04-08T00:00:00.000Z"),
-        containerWidth: 1024,
-      }),
-    ).toEqual({ startX: 202.35, width: 137.03 });
-  });
-
   it("getAriaLabelText works", () => {
     const layover = LayoverFactory.build({}, { transient: layoverInput });
     const value = layover.getAriaLabelText();

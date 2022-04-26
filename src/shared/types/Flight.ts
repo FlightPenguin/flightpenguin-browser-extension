@@ -7,7 +7,6 @@ import { getFormattedDuration } from "./utilities/getFormattedDuration";
 import { getFormattedTime } from "./utilities/getFormattedTime";
 import { getParsedISODate } from "./utilities/getParsedISODate";
 import { getParsedNumber } from "./utilities/getParsedNumber";
-import { getTimebarPositions } from "./utilities/getTimebarPositions";
 import { getTimezoneOffset } from "./utilities/getTimezoneOffset";
 import { getFlightMultiplier } from "./utilities/pain/flight/getFlightMultiplier";
 import { getCabinMultiplier } from "./utilities/pain/shared/getCabinMultiplier";
@@ -236,27 +235,6 @@ export class Flight {
     const costPerMinute = getCostPerMinute(cabinMultiplier);
 
     return smoothedDuration * durationMultiplier * cabinMultiplier * costPerMinute;
-  }
-
-  getTimebarPositions({
-    containerStartTime,
-    containerEndTime,
-    containerWidth,
-  }: {
-    containerStartTime: Date;
-    containerEndTime: Date;
-    containerWidth: number;
-  }): {
-    startX: number;
-    width: number;
-  } {
-    return getTimebarPositions({
-      containerStartTime,
-      containerEndTime,
-      containerWidth,
-      timebarStartTime: this.departureTripStartDateTime,
-      timebarEndTime: this.arrivalTripStartDateTime,
-    });
   }
 
   getAriaLabelText(): string {
