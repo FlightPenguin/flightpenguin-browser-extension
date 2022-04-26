@@ -1,14 +1,23 @@
+import { addMinutes } from "date-fns";
+
 import { CabinType } from "../../background/constants";
+import { ContainerTimeRangeInput } from "./fragments/ContainerTimeRange";
+import { TimebarPosition } from "./fragments/TimebarPosition";
 import { Trip, TripInput } from "./Trip";
+import { TripComponent } from "./TripComponent";
+import { getTimebarPositions } from "./utilities/getTimebarPositions";
 
 export interface DisplayableTripInput {
   cabin: CabinType;
   lowestFare: number;
   trip: Trip | TripInput;
   dominatedTripIds?: string[];
+  containerInfo: ContainerTimeRangeInput;
 
   ariaLabelText?: string;
   pain?: number;
+  timebarPosition?: TimebarPosition;
+  componentTimebarPositions?: TimebarPosition[];
 }
 
 export class DisplayableTrip {
@@ -19,7 +28,21 @@ export class DisplayableTrip {
   private pain: number;
   private trip: Trip;
 
-  constructor({ ariaLabelText, cabin, dominatedTripIds, lowestFare, pain, trip }: DisplayableTripInput) {
+  private containerInfo: ContainerTimeRangeInput;
+  private timebarPosition: TimebarPosition;
+  private componentTimebarPositions: TimebarPosition[];
+
+  constructor({
+    ariaLabelText,
+    cabin,
+    componentTimebarPositions,
+    containerInfo,
+    dominatedTripIds,
+    lowestFare,
+    pain,
+    timebarPosition,
+    trip,
+  }: DisplayableTripInput) {
     this.cabin = cabin;
     this.dominatedTripIds = dominatedTripIds && dominatedTripIds.length ? dominatedTripIds : [];
     this.lowestFare = lowestFare;
@@ -27,6 +50,10 @@ export class DisplayableTrip {
 
     this.pain = pain === undefined ? this.getCalculatedPain() : pain;
     this.ariaLabelText = ariaLabelText || this.getCalculatedAriaLabelText();
+
+    this.containerInfo = containerInfo;
+    this.timebarPosition = timebarPosition || this.getCalculatedTimebarPositions();
+    this.componentTimebarPositions = componentTimebarPositions || this.getCalculatedTripComponentTimebarPositions();
   }
 
   getAriaLabelText(): string {
@@ -43,6 +70,18 @@ export class DisplayableTrip {
 
   getPain(): number {
     return this.pain;
+  }
+
+  getTimebarPosition(): TimebarPosition {
+    return this.timebarPosition;
+  }
+
+  getTripComponentsWithPositions(): { tripComponent: TripComponent; layout: TimebarPosition }[] {
+    return this.getTrip()
+      .getTripComponents()
+      .map((tripComponent, index) => {
+        return { tripComponent, layout: this.componentTimebarPositions[index as number] };
+      });
   }
 
   getCalculatedPain(): number {
@@ -74,6 +113,45 @@ export class DisplayableTrip {
     }
 
     return tripText;
+  }
+
+  getCalculatedTimebarPositions(): TimebarPosition {
+    const departureTimeInTripStartTz = this.getTrip().getDepartureDateTime();
+    const arrivalTimeInTripStartTz = addMinutes(departureTimeInTripStartTz, this.getTrip().getDurationMinutes());
+
+    return getTimebarPositions({
+      containerStartTime: this.containerInfo.earliestTime,
+      containerEndTime: this.containerInfo.latestTime,
+      timebarStartTime: departureTimeInTripStartTz,
+      timebarEndTime: arrivalTimeInTripStartTz,
+    });
+  }
+
+  getCalculatedTripComponentTimebarPositions(): TimebarPosition[] {
+    const earliestTime = this.getTrip().getDepartureDateTime();
+    const latestTime = addMinutes(earliestTime, this.getTrip().getDurationMinutes());
+
+    return this.getTrip()
+      .getTripComponents()
+      .map((tripComponent) => {
+        const isLayover = tripComponent.getType() === "LAYOVER";
+        const { startTime, endTime } = isLayover
+          ? {
+              startTime: tripComponent.getObject().getArrivalTripStartDateTime(),
+              endTime: tripComponent.getObject().getDepartureTripStartDateTime(),
+            }
+          : {
+              startTime: tripComponent.getObject().getDepartureTripStartDateTime(),
+              endTime: tripComponent.getObject().getArrivalTripStartDateTime(),
+            };
+
+        return getTimebarPositions({
+          containerStartTime: earliestTime,
+          containerEndTime: latestTime,
+          timebarStartTime: startTime,
+          timebarEndTime: endTime,
+        });
+      });
   }
 
   isDominatableByTrip(otherTrip: DisplayableTrip): boolean {

@@ -3,7 +3,6 @@ import isEqual from "lodash.isequal";
 import React, { useEffect, useState } from "react";
 
 import { DisplayableTrip } from "../../../shared/types/DisplayableTrip";
-import { TripComponent } from "../../../shared/types/TripComponent";
 import { PaymentType } from "../../constants";
 import DominatedTripsButton from "./DominatedTripsButton";
 import TripComponentContainer from "./TripComponent";
@@ -11,30 +10,24 @@ import { TripLegend } from "./TripLegend";
 
 interface TimelineRowProps {
   displayableTrip: DisplayableTrip;
-  containerStartTime: Date;
-  containerEndTime: Date;
   intervalWidth: number;
   paymentType: PaymentType;
   index: number;
   skeleton: boolean;
   selected: boolean;
   legendContainerWidth: number;
-  tripContainerWidth: number;
   resultsContainerWidth: number;
   onSelection: (trip: DisplayableTrip) => void;
 }
 
 const TimelineRow = ({
   displayableTrip,
-  containerEndTime,
-  containerStartTime,
   intervalWidth,
   paymentType,
   index,
   selected,
   skeleton,
   legendContainerWidth,
-  tripContainerWidth,
   resultsContainerWidth,
   onSelection,
 }: TimelineRowProps): React.ReactElement => {
@@ -74,21 +67,12 @@ const TimelineRow = ({
   const arrivalTextColor = timezoneOffset ? "warning" : "black";
   const departureTextColor = timezoneOffset ? "info" : "black";
 
-  const componentsWithPositions = displayableTrip
-    .getTrip()
-    .getTripComponents()
-    .map((tripComponent: TripComponent) => {
-      return {
-        tripComponent: tripComponent,
-        layout: tripComponent
-          .getObject()
-          .getTimebarPositions({ containerStartTime, containerEndTime, containerWidth: tripContainerWidth }),
-      };
-    });
+  const timebarPosition = displayableTrip.getTimebarPosition();
+  const componentsWithPositions = displayableTrip.getTripComponentsWithPositions();
 
-  const left = componentsWithPositions[0].layout.startX;
-  const finalComponentLayout = componentsWithPositions.slice(-1)[0].layout;
-  const right = finalComponentLayout.startX + finalComponentLayout.width;
+  const left = timebarPosition.startX;
+  const width = timebarPosition.width;
+  const right = timebarPosition.startX + timebarPosition.width;
 
   const dominationCount = displayableTrip.getDominatedTripIds().length;
 
@@ -137,15 +121,15 @@ const TimelineRow = ({
         <Box
           data-name="trip-flights"
           data-content={displayableTrip.getTrip().getDisplayDuration()}
-          left={`${left}px`}
+          left={`${left}%`}
           display="flex"
           alignX="center"
           flexDirection={"column"}
           position="absolute"
-          width={`${right - left}px`}
+          width={`${width}%`}
           marginTop="8px"
         >
-          <Box height={`60px`} marginBottom="16px">
+          <Box height={`60px`} marginBottom="16px" width="100%">
             <Text
               alignX="center"
               alignY="top"
@@ -154,7 +138,7 @@ const TimelineRow = ({
               marginBottom="5px"
               border="1px solid #404040"
               borderWidth="0px 0px 1px 0px"
-              width={`${right - left}px`}
+              width="100%"
               _groupFocus={{ visibility: "visible" }}
               _groupHover={{ visibility: "visible" }}
             >
@@ -165,7 +149,6 @@ const TimelineRow = ({
                 <TripComponentContainer
                   tripComponent={wrapper.tripComponent}
                   layout={wrapper.layout}
-                  left={left}
                   key={wrapper.tripComponent.getObject().getId()}
                 />
               );
@@ -177,7 +160,9 @@ const TimelineRow = ({
           palette="text"
           variant="outlined"
           size="medium"
-          left={`${left - 107}px`}
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
+          left={`calc(${left}% - 107px)`}
           position="absolute"
           textAlign="right"
           visibility={showWhenSelected}
@@ -198,7 +183,9 @@ const TimelineRow = ({
           variant="outlined"
           size="medium"
           data-name="arrival-time"
-          left={`${right + 27}px`}
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
+          left={`calc(${right}% + 27px)`}
           position="absolute"
           visibility={showWhenSelected}
           _groupHover={selected ? {} : { visibility: "visible" }}
@@ -229,11 +216,8 @@ const getComparableProperties = (row: TimelineRowProps) => {
   return {
     tripId: row.displayableTrip.getTrip().getId(),
     dominatedTripCount: row.displayableTrip.getDominatedTripIds().length,
-    containerStartTime: row.containerStartTime,
-    containerEndTime: row.containerEndTime,
     intervalWidth: row.intervalWidth,
     index: row.index,
     selected: row.selected,
-    tripContainerWidth: row.tripContainerWidth,
   };
 };

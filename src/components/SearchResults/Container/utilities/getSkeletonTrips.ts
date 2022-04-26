@@ -1,20 +1,28 @@
-import { addHours, addMinutes } from "date-fns";
+import { addHours, addMinutes, differenceInMinutes } from "date-fns";
 
 import { DisplayableTrip } from "../../../../shared/types/DisplayableTrip";
 import { FlightSearchFormData } from "../../../../shared/types/FlightSearchFormData";
 import { Trip } from "../../../../shared/types/Trip";
 import { getParsedDate } from "../../../utilities/forms";
 
-export const getSkeletonTrips = (formData: FlightSearchFormData, containerIndex: number): DisplayableTrip[] => {
+export const getSkeletonTrips = (
+  formData: FlightSearchFormData,
+  containerIndex: number,
+  earliestTime: Date,
+  latestTime: Date,
+): DisplayableTrip[] => {
   const [departureLocation, arrivalLocation, departureDate] =
     formData.roundtrip && containerIndex === 2
       ? [formData.to, formData.from, getParsedDate(formData.toDate)]
       : [formData.from, formData.to, getParsedDate(formData.fromDate)];
 
+  const containerMinutes = differenceInMinutes(latestTime, earliestTime);
+
   return [
     new DisplayableTrip({
       cabin: formData.cabin || "econ",
-      dominatedTrips: [],
+      containerInfo: { earliestTime, latestTime, differenceInMinutes: containerMinutes },
+      dominatedTripIds: [],
       lowestFare: 293,
       trip: new Trip({
         arrivalDateTime: addMinutes(addHours(departureDate, 9), 30),
@@ -44,7 +52,8 @@ export const getSkeletonTrips = (formData: FlightSearchFormData, containerIndex:
 
     new DisplayableTrip({
       cabin: formData.cabin || "econ",
-      dominatedTrips: [],
+      containerInfo: { earliestTime, latestTime, differenceInMinutes: containerMinutes },
+      dominatedTripIds: [],
       lowestFare: 273,
       trip: new Trip({
         arrivalDateTime: addHours(departureDate, 7),
@@ -74,7 +83,8 @@ export const getSkeletonTrips = (formData: FlightSearchFormData, containerIndex:
 
     new DisplayableTrip({
       cabin: formData.cabin || "econ",
-      dominatedTrips: [],
+      containerInfo: { earliestTime, latestTime, differenceInMinutes: containerMinutes },
+      dominatedTripIds: [],
       lowestFare: 331,
       trip: new Trip({
         arrivalDateTime: addMinutes(addHours(departureDate, 20), 45),
@@ -131,7 +141,8 @@ export const getSkeletonTrips = (formData: FlightSearchFormData, containerIndex:
 
     new DisplayableTrip({
       cabin: formData.cabin || "econ",
-      dominatedTrips: [],
+      containerInfo: { earliestTime, latestTime, differenceInMinutes: containerMinutes },
+      dominatedTripIds: [],
       lowestFare: 338,
       trip: new Trip({
         arrivalDateTime: addMinutes(addHours(departureDate, 16), 45),

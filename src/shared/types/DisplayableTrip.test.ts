@@ -2,7 +2,6 @@ import { CabinType } from "../../background/constants";
 import { AirlineInput } from "./Airline";
 import { DisplayableTrip, DisplayableTripInput } from "./DisplayableTrip";
 import { DisplayableTripFactory } from "./factories/DisplayableTrip";
-import { Layover } from "./Layover";
 import { LocationInput } from "./Location";
 import { TripComponentInput } from "./TripComponent";
 import { getParsedISODate } from "./utilities/getParsedISODate";
@@ -253,10 +252,284 @@ describe("DisplayableTrip happy path", () => {
       expect(otherTrip.isEqual(trip)).toEqual(false);
     });
   });
+
+  it("getTimebarPosition works", () => {
+    const localTripInput = {
+      cabin: "econ" as CabinType,
+      containerInfo: {
+        earliestTime: getParsedISODate("2022-04-07T01:00:00.000Z"),
+        latestTime: getParsedISODate("2022-04-07T12:00:00.000Z"),
+      },
+      lowestFare: 100,
+      trip: {
+        arrivalDateTime: getParsedISODate("2022-04-07T05:58:00.000Z"),
+        arrivalLocation: { name: "Denver International Airport", code: "DEN", type: "AIRPORT" } as LocationInput,
+        departureDateTime: getParsedISODate("2022-04-07T03:45:00.000Z"),
+        departureLocation: {
+          name: "Port Columbus International Airport",
+          code: "CMH",
+          type: "AIRPORT",
+        } as LocationInput,
+        durationMinutes: 253,
+        tripComponents: [
+          {
+            type: "FLIGHT",
+            object: {
+              arrivalLocalDateTime: getParsedISODate("2022-04-07T04:15:00.000Z"),
+              arrivalLocation: { name: "Miami International Airport", code: "MIA", type: "AIRPORT" } as LocationInput,
+              departureLocalDateTime: getParsedISODate("2022-04-07T03:45:00.000Z"),
+              departureLocation: {
+                name: "Port Columbus International Airport",
+                code: "CMH",
+                type: "AIRPORT",
+              } as LocationInput,
+              durationMinutes: 30,
+              elapsedTimezoneOffset: 0,
+              marketingAirline: { name: "United" } as AirlineInput,
+            },
+          } as TripComponentInput,
+          {
+            type: "FLIGHT",
+            object: {
+              arrivalLocalDateTime: getParsedISODate("2022-04-07T05:58:00.000Z"),
+              arrivalLocation: {
+                name: "Denver International Airport",
+                code: "DEN",
+                type: "AIRPORT",
+              } as LocationInput,
+              departureLocalDateTime: getParsedISODate("2022-04-07T04:45:00.000Z"),
+              departureLocation: {
+                name: "Miami International Airport",
+                code: "MIA",
+                type: "AIRPORT",
+              } as LocationInput,
+              durationMinutes: 193,
+              elapsedTimezoneOffset: 0,
+              marketingAirline: { name: "Frontier" } as AirlineInput,
+            },
+          } as TripComponentInput,
+        ],
+      },
+    };
+
+    const trip = DisplayableTripFactory.build({}, { transient: localTripInput });
+    const value = trip.getTimebarPosition();
+    expect(value).toEqual({
+      startX: 25,
+      width: 38.33,
+    });
+  });
+
+  it("getTimebarPosition works", () => {
+    const localTripInput = {
+      cabin: "econ" as CabinType,
+      containerInfo: {
+        earliestTime: getParsedISODate("2022-04-07T01:00:00.000Z"),
+        latestTime: getParsedISODate("2022-04-07T12:00:00.000Z"),
+      },
+      lowestFare: 100,
+      trip: {
+        arrivalDateTime: getParsedISODate("2022-04-07T05:58:00.000Z"),
+        arrivalLocation: { name: "Denver International Airport", code: "DEN", type: "AIRPORT" } as LocationInput,
+        departureDateTime: getParsedISODate("2022-04-07T03:45:00.000Z"),
+        departureLocation: {
+          name: "Port Columbus International Airport",
+          code: "CMH",
+          type: "AIRPORT",
+        } as LocationInput,
+        durationMinutes: 253,
+        tripComponents: [
+          {
+            type: "FLIGHT",
+            object: {
+              arrivalLocalDateTime: getParsedISODate("2022-04-07T04:15:00.000Z"),
+              arrivalLocation: { name: "Miami International Airport", code: "MIA", type: "AIRPORT" } as LocationInput,
+              departureLocalDateTime: getParsedISODate("2022-04-07T03:45:00.000Z"),
+              departureLocation: {
+                name: "Port Columbus International Airport",
+                code: "CMH",
+                type: "AIRPORT",
+              } as LocationInput,
+              durationMinutes: 30,
+              elapsedTimezoneOffset: 0,
+              marketingAirline: { name: "United" } as AirlineInput,
+            },
+          } as TripComponentInput,
+          {
+            type: "FLIGHT",
+            object: {
+              arrivalLocalDateTime: getParsedISODate("2022-04-07T05:58:00.000Z"),
+              arrivalLocation: {
+                name: "Denver International Airport",
+                code: "DEN",
+                type: "AIRPORT",
+              } as LocationInput,
+              departureLocalDateTime: getParsedISODate("2022-04-07T04:45:00.000Z"),
+              departureLocation: {
+                name: "Miami International Airport",
+                code: "MIA",
+                type: "AIRPORT",
+              } as LocationInput,
+              durationMinutes: 193,
+              elapsedTimezoneOffset: 0,
+              marketingAirline: { name: "Frontier" } as AirlineInput,
+            },
+          } as TripComponentInput,
+        ],
+      },
+    };
+
+    const trip = DisplayableTripFactory.build({}, { transient: localTripInput });
+    const value = trip.getTripComponentsWithPositions();
+    expect(value[0].tripComponent).toBeDefined();
+    expect(value[0].layout).toEqual({ startX: 0, width: 11.86 });
+    expect(value[1].tripComponent).toBeDefined();
+    expect(value[1].layout).toEqual({ startX: 11.86, width: 11.86 });
+    expect(value[2].tripComponent).toBeDefined();
+    expect(value[2].layout).toEqual({ startX: 23.72, width: 76.28 });
+  });
+
+  it("getTimebarPosition works", () => {
+    const localTripInput = {
+      cabin: "econ" as CabinType,
+      containerInfo: {
+        earliestTime: getParsedISODate("2022-04-07T01:00:00.000Z"),
+        latestTime: getParsedISODate("2022-04-07T12:00:00.000Z"),
+      },
+      lowestFare: 100,
+      trip: {
+        arrivalDateTime: getParsedISODate("2022-04-07T05:58:00.000Z"),
+        arrivalLocation: { name: "Denver International Airport", code: "DEN", type: "AIRPORT" } as LocationInput,
+        departureDateTime: getParsedISODate("2022-04-07T03:45:00.000Z"),
+        departureLocation: {
+          name: "Port Columbus International Airport",
+          code: "CMH",
+          type: "AIRPORT",
+        } as LocationInput,
+        durationMinutes: 253,
+        tripComponents: [
+          {
+            type: "FLIGHT",
+            object: {
+              arrivalLocalDateTime: getParsedISODate("2022-04-07T04:15:00.000Z"),
+              arrivalLocation: { name: "Miami International Airport", code: "MIA", type: "AIRPORT" } as LocationInput,
+              departureLocalDateTime: getParsedISODate("2022-04-07T03:45:00.000Z"),
+              departureLocation: {
+                name: "Port Columbus International Airport",
+                code: "CMH",
+                type: "AIRPORT",
+              } as LocationInput,
+              durationMinutes: 30,
+              elapsedTimezoneOffset: 0,
+              marketingAirline: { name: "United" } as AirlineInput,
+            },
+          } as TripComponentInput,
+          {
+            type: "FLIGHT",
+            object: {
+              arrivalLocalDateTime: getParsedISODate("2022-04-07T05:58:00.000Z"),
+              arrivalLocation: {
+                name: "Denver International Airport",
+                code: "DEN",
+                type: "AIRPORT",
+              } as LocationInput,
+              departureLocalDateTime: getParsedISODate("2022-04-07T04:45:00.000Z"),
+              departureLocation: {
+                name: "Miami International Airport",
+                code: "MIA",
+                type: "AIRPORT",
+              } as LocationInput,
+              durationMinutes: 193,
+              elapsedTimezoneOffset: 0,
+              marketingAirline: { name: "Frontier" } as AirlineInput,
+            },
+          } as TripComponentInput,
+        ],
+      },
+    };
+
+    const trip = DisplayableTripFactory.build({}, { transient: localTripInput });
+    const value = trip.getCalculatedTimebarPositions();
+    expect(value).toEqual({
+      startX: 25,
+      width: 38.33,
+    });
+  });
+
+  it("getTimebarPosition works", () => {
+    const localTripInput = {
+      cabin: "econ" as CabinType,
+      containerInfo: {
+        earliestTime: getParsedISODate("2022-04-07T01:00:00.000Z"),
+        latestTime: getParsedISODate("2022-04-07T12:00:00.000Z"),
+      },
+      lowestFare: 100,
+      trip: {
+        arrivalDateTime: getParsedISODate("2022-04-07T05:58:00.000Z"),
+        arrivalLocation: { name: "Denver International Airport", code: "DEN", type: "AIRPORT" } as LocationInput,
+        departureDateTime: getParsedISODate("2022-04-07T03:45:00.000Z"),
+        departureLocation: {
+          name: "Port Columbus International Airport",
+          code: "CMH",
+          type: "AIRPORT",
+        } as LocationInput,
+        durationMinutes: 253,
+        tripComponents: [
+          {
+            type: "FLIGHT",
+            object: {
+              arrivalLocalDateTime: getParsedISODate("2022-04-07T04:15:00.000Z"),
+              arrivalLocation: { name: "Miami International Airport", code: "MIA", type: "AIRPORT" } as LocationInput,
+              departureLocalDateTime: getParsedISODate("2022-04-07T03:45:00.000Z"),
+              departureLocation: {
+                name: "Port Columbus International Airport",
+                code: "CMH",
+                type: "AIRPORT",
+              } as LocationInput,
+              durationMinutes: 30,
+              elapsedTimezoneOffset: 0,
+              marketingAirline: { name: "United" } as AirlineInput,
+            },
+          } as TripComponentInput,
+          {
+            type: "FLIGHT",
+            object: {
+              arrivalLocalDateTime: getParsedISODate("2022-04-07T05:58:00.000Z"),
+              arrivalLocation: {
+                name: "Denver International Airport",
+                code: "DEN",
+                type: "AIRPORT",
+              } as LocationInput,
+              departureLocalDateTime: getParsedISODate("2022-04-07T04:45:00.000Z"),
+              departureLocation: {
+                name: "Miami International Airport",
+                code: "MIA",
+                type: "AIRPORT",
+              } as LocationInput,
+              durationMinutes: 193,
+              elapsedTimezoneOffset: 0,
+              marketingAirline: { name: "Frontier" } as AirlineInput,
+            },
+          } as TripComponentInput,
+        ],
+      },
+    };
+
+    const trip = DisplayableTripFactory.build({}, { transient: localTripInput });
+    const value = trip.getCalculatedTripComponentTimebarPositions();
+    expect(value[0]).toEqual({ startX: 0, width: 11.86 });
+    expect(value[1]).toEqual({ startX: 11.86, width: 11.86 });
+    expect(value[2]).toEqual({ startX: 23.72, width: 76.28 });
+  });
 });
 
+const baseContainerInfo = {
+  earliestTime: getParsedISODate("2022-04-07T01:00:00.000Z"),
+  latestTime: getParsedISODate("2022-04-07T12:00:00.000Z"),
+};
 const baseDominationTripInput = {
   cabin: "econ" as CabinType,
+  containerInfo: baseContainerInfo,
   lowestFare: 80,
   trip: {
     arrivalDateTime: getParsedISODate("2022-04-07T05:43:00.000Z"),
@@ -290,6 +563,7 @@ const baseDominationTripInput = {
 } as DisplayableTripInput;
 const worseDominationTripInput = {
   cabin: "econ" as CabinType,
+  containerInfo: baseContainerInfo,
   lowestFare: 100,
   trip: {
     arrivalDateTime: getParsedISODate("2022-04-07T05:58:00.000Z"),
@@ -474,6 +748,44 @@ describe("DisplayableTrip constructor tests", () => {
 
   it("has pain defined as an argument with undefined value", () => {
     const getCalcMock = jest.spyOn(DisplayableTrip.prototype, "getCalculatedPain");
+
+    new DisplayableTrip({
+      ...baseDominationTripInput,
+    });
+    expect(getCalcMock).toHaveBeenCalledTimes(1);
+  });
+
+  it("has timebarPosition defined as an argument", () => {
+    const getCalcMock = jest.spyOn(DisplayableTrip.prototype, "getCalculatedTimebarPositions");
+
+    new DisplayableTrip({
+      ...baseDominationTripInput,
+      timebarPosition: { startX: 0, width: 50 },
+    });
+    expect(getCalcMock).toHaveBeenCalledTimes(0);
+  });
+
+  it("has timebarPosition defined as an argument with undefined value", () => {
+    const getCalcMock = jest.spyOn(DisplayableTrip.prototype, "getCalculatedTimebarPositions");
+
+    new DisplayableTrip({
+      ...baseDominationTripInput,
+    });
+    expect(getCalcMock).toHaveBeenCalledTimes(1);
+  });
+
+  it("has componentTimebarPositions defined as an argument", () => {
+    const getCalcMock = jest.spyOn(DisplayableTrip.prototype, "getCalculatedTripComponentTimebarPositions");
+
+    new DisplayableTrip({
+      ...baseDominationTripInput,
+      componentTimebarPositions: [{ startX: 0, width: 50 }],
+    });
+    expect(getCalcMock).toHaveBeenCalledTimes(0);
+  });
+
+  it("has componentTimebarPositions defined as an argument with undefined value", () => {
+    const getCalcMock = jest.spyOn(DisplayableTrip.prototype, "getCalculatedTripComponentTimebarPositions");
 
     new DisplayableTrip({
       ...baseDominationTripInput,
