@@ -6,18 +6,17 @@ import { TripComponent } from "../../../../shared/types/TripComponent";
 
 interface TripComponentContainerInput {
   tripComponent: TripComponent;
-  left: number;
   layout: { startX: number; width: number };
 }
 
-const TripComponentContainer = ({ tripComponent, layout, left }: TripComponentContainerInput): React.ReactElement => {
+const TripComponentContainer = ({ tripComponent, layout }: TripComponentContainerInput): React.ReactElement => {
   const isLayover = tripComponent.getObject().getType() === "LAYOVER";
 
   return (
     <Box
       display="flex"
-      width={`${layout.width}px`}
-      left={`${layout.startX - left}px`}
+      width={`${layout.width}%`}
+      left={`${layout.startX}%`}
       key={`trip-component-wrapper-${tripComponent.getObject().getId()}`}
       height="30px"
       position="absolute"
@@ -66,7 +65,6 @@ export default React.memo(TripComponentContainer, (previous, next) => {
 const getComparableProperties = (input: TripComponentContainerInput) => {
   return {
     tripComponent: input.tripComponent,
-    left: input.left,
     layout: input.layout,
   };
 };
