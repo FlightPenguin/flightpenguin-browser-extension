@@ -105,6 +105,7 @@ const TimelineSlider = ({
           );
         }}
         onChange={(value) => {
+          console.log("meow");
           setValues(value);
           const { datetime: lowerBoundary } = getDatetimeByTick({ startDate, value: value[0] });
           const { datetime: upperBoundary } = getDatetimeByTick({
