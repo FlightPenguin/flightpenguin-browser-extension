@@ -153,7 +153,7 @@ const TimelineContainer = ({
             setFilterDateRange({ lowerBound: minDate, upperBound: maxDate });
           }}
           sliderDisabled={!!selectedTrip}
-          tripCount={eligibleTrips.length}
+          tripCount={displayTrips.length}
           tripContainerWidth={tripContainerWidth}
           startDate={intervalInfo.earliestTime}
         />

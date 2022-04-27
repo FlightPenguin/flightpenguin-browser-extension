@@ -3,10 +3,11 @@ import isEqual from "lodash.isequal";
 import React, { HTMLProps, useState } from "react";
 
 import { getValueInRange } from "../../../../shared/utilities/getValueInRange";
-import { rowHeight } from "../../../constants";
 import { thumbWidthValue, thumbWidthWrapperValue } from "../constants";
 import { getDatetimeByTick } from "../utilities/getDatetimeByTick";
 import { getPositionByTick } from "../utilities/getPositionByTick";
+import { LeftFlag } from "./LeftFlag";
+import { RightFlag } from "./RightFlag";
 
 interface ThumbProps {
   minimumValue: number;
@@ -53,6 +54,7 @@ const Thumb = ({
     timezoneOffset: state.index === 1 ? timezoneOffset : 0,
   });
   const position = getPositionByTick({ intervals, value, tripContainerWidth });
+  const shadowPosition = getPositionByTick({ intervals, value, tripContainerWidth, applyAdjustment: false });
   const color = timezoneOffset ? (state.index === 0 ? "info" : "warning") : "black";
 
   return (
@@ -96,7 +98,7 @@ const Thumb = ({
       width={`${wrapperWidthValue}px`}
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
-      zIndex={`${inUse ? 100 : 0}`}
+      zIndex={100}
     >
       <Box
         display="flex"
@@ -119,30 +121,17 @@ const Thumb = ({
           {formattedTime}
         </Text>
       </Box>
-      <Box
-        width="100%"
-        marginTop="6px"
-        height={`${rowHeight * tripCount}px`}
-        display={inUse && ![minimumValue, maximumValue].includes(value) ? "flex" : "none"}
-        flexDirection="row"
-      >
-        <Box
-          borderRightWidth="3px"
-          borderRightColor={color}
-          borderRightStyle="solid"
-          flexGrow={0}
-          flexShrink={0}
-          flexBasis="50%"
+      {state.index === 0 ? (
+        <LeftFlag color={color} inUse={inUse} position={shadowPosition} tripCount={tripCount} />
+      ) : (
+        <RightFlag
+          color={color}
+          inUse={inUse}
+          position={shadowPosition}
+          tripContainerWidth={tripContainerWidth}
+          tripCount={tripCount}
         />
-        <Box
-          borderLeftWidth="3px"
-          borderLeftColor={color}
-          borderLeftStyle="solid"
-          flexGrow={0}
-          flexShrink={0}
-          flexBasis="50%"
-        />
-      </Box>
+      )}
     </Box>
   );
 };
