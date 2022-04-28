@@ -25,7 +25,7 @@ export const LeftFlag = ({ color, inUse, position, tripCount }: LeftFlagProps): 
       position="relative"
       backgroundColor={inUse ? "grey" : "transparent"}
       opacity={inUse ? 0.7 : 0}
-      zIndex={inUse ? 99 : -1}
+      zIndex={inUse ? 20 : -1}
     />
   );
 };

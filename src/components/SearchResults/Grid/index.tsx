@@ -68,6 +68,7 @@ const TimelineGrid = ({
               rowHeight={rowHeight}
               rowRenderer={rowRender}
               scrollTop={scrollTop}
+              style={{ willChange: "auto" }}
               tabIndex={-1}
               width={resultsContainerWidth + 256} // +n allows time boxes to flow over
             />

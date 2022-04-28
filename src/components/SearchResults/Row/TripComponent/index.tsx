@@ -7,10 +7,19 @@ import { TripComponent } from "../../../../shared/types/TripComponent";
 interface TripComponentContainerInput {
   tripComponent: TripComponent;
   layout: { startX: number; width: number };
+  index: number;
+  maxIndex: number;
 }
 
-const TripComponentContainer = ({ tripComponent, layout }: TripComponentContainerInput): React.ReactElement => {
+const TripComponentContainer = ({
+  tripComponent,
+  layout,
+  index,
+  maxIndex,
+}: TripComponentContainerInput): React.ReactElement => {
   const isLayover = tripComponent.getObject().getType() === "LAYOVER";
+  const isFirst = index === 0;
+  const isLast = index === maxIndex;
 
   return (
     <Box
@@ -46,10 +55,66 @@ const TripComponentContainer = ({ tripComponent, layout }: TripComponentContaine
           </Box>
         </Tooltip>
       </Box>
+      <Box display="flex">
+        {isFirst && isLast && (
+          <React.Fragment>
+            <Box width="50%">
+              <Text
+                alignX="left"
+                width="100%"
+                fontSize="clamp(.4375rem, 1vw, .875rem)"
+                left="-16px"
+                paddingTop="minor-1"
+                position="absolute"
+              >
+                {tripComponent.getObject().getDepartureLocation().getCode()}
+              </Text>
+            </Box>
+            <Box width="50%">
+              <Text
+                alignX="right"
+                width="100%"
+                fontSize="clamp(.4375rem, 1vw, .875rem)"
+                left="16px"
+                paddingTop="minor-1"
+                position="absolute"
+              >
+                {tripComponent.getObject().getArrivalLocation().getCode()}
+              </Text>
+            </Box>
+          </React.Fragment>
+        )}
+      </Box>
+      {isFirst && !isLast && (
+        <Box width="100%">
+          <Text
+            alignX="left"
+            width="100%"
+            fontSize="clamp(.4375rem, 1vw, .875rem)"
+            left="-16px"
+            paddingTop="minor-1"
+            position="absolute"
+          >
+            {tripComponent.getObject().getDepartureLocation().getCode()}
+          </Text>
+        </Box>
+      )}
       {isLayover && (
-        <Box>
-          <Text alignX="center" fontSize="clamp(.4375rem, 1vw, .875rem)">
-            {/* TODO: Display layover transfer */}
+        <Text alignX="center" width="100%" fontSize="clamp(.4375rem, 1vw, .875rem)" paddingTop="minor-1">
+          {/* TODO: Display layover transfer */}
+          {tripComponent.getObject().getArrivalLocation().getCode()}
+        </Text>
+      )}
+      {isLast && !isFirst && (
+        <Box width="100%">
+          <Text
+            alignX="right"
+            width="100%"
+            fontSize="clamp(.4375rem, 1vw, .875rem)"
+            left="16px"
+            paddingTop="minor-1"
+            position="absolute"
+          >
             {tripComponent.getObject().getArrivalLocation().getCode()}
           </Text>
         </Box>

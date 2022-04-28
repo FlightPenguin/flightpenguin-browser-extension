@@ -98,7 +98,6 @@ const TimelineRow = ({
       borderBottom={bottomBorder}
       borderLeft="default"
       borderRight="default"
-      minHeight="90px"
       filter={skeletonBlur}
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
@@ -107,102 +106,101 @@ const TimelineRow = ({
       // @ts-ignore
       _focus={rowHighlightStyle}
     >
-      <TripLegend legendWidth={legendContainerWidth} displayableTrip={displayableTrip} paymentType={paymentType} />
-      <Box
-        data-name={"trip-container"}
-        position="relative"
-        display="flex"
-        alignX="center"
-        width="100%"
-        alignSelf="normal"
-        flex={1}
-        background={`repeating-linear-gradient(to right, #e6e6eb, #e6e6eb 3px, transparent 1px, transparent ${intervalWidth}px)`}
-      >
+      <Box data-name="trip-wrapper" tabIndex={-1} display="flex" width={`${rowWidth}px`} minHeight="90px">
+        <TripLegend legendWidth={legendContainerWidth} displayableTrip={displayableTrip} paymentType={paymentType} />
         <Box
-          data-name="trip-flights"
-          data-content={displayableTrip.getTrip().getDisplayDuration()}
-          left={`${left}%`}
+          data-name={"trip-container"}
+          position="relative"
           display="flex"
           alignX="center"
-          flexDirection={"column"}
-          position="absolute"
-          width={`${width}%`}
-          marginTop="8px"
+          width={`${rowWidth - legendContainerWidth}px`}
+          alignSelf="normal"
+          flex={1}
+          background={`repeating-linear-gradient(to right, #e6e6eb, #e6e6eb 3px, transparent 1px, transparent ${intervalWidth}px)`}
         >
-          <Box height={`60px`} marginBottom="16px" width="100%">
-            <Text
-              alignX="center"
-              alignY="top"
-              fontSize="100"
-              visibility={showWhenSelected}
-              marginBottom="5px"
-              border="1px solid #404040"
-              borderWidth="0px 0px 1px 0px"
-              width="100%"
-              _groupFocus={{ visibility: "visible" }}
-              _groupHover={{ visibility: "visible" }}
-            >
-              {displayableTrip.getTrip().getDisplayDuration()}
-            </Text>
-            {componentsWithPositions.map((wrapper) => {
-              return (
-                <TripComponentContainer
-                  tripComponent={wrapper.tripComponent}
-                  layout={wrapper.layout}
-                  key={wrapper.tripComponent.getObject().getId()}
-                />
-              );
-            })}
+          <Box
+            data-name="trip-flights"
+            data-content={displayableTrip.getTrip().getDisplayDuration()}
+            left={`${left}%`}
+            display="flex"
+            alignX="center"
+            flexDirection={"column"}
+            position="absolute"
+            width={`${width}%`}
+            marginTop="8px"
+          >
+            <Box height={`60px`} marginBottom="16px" width="100%">
+              <Text
+                alignX="center"
+                alignY="top"
+                fontSize="100"
+                visibility={showWhenSelected}
+                marginBottom="5px"
+                border="1px solid #404040"
+                borderWidth="0px 0px 1px 0px"
+                width="100%"
+                _groupFocus={{ visibility: "visible" }}
+                _groupHover={{ visibility: "visible" }}
+              >
+                {displayableTrip.getTrip().getDisplayDuration()}
+              </Text>
+              {componentsWithPositions.map((wrapper, index) => {
+                return (
+                  <TripComponentContainer
+                    tripComponent={wrapper.tripComponent}
+                    layout={wrapper.layout}
+                    key={wrapper.tripComponent.getObject().getId()}
+                    index={index}
+                    maxIndex={componentsWithPositions.length - 1}
+                  />
+                );
+              })}
+            </Box>
           </Box>
+          <Tag
+            data-name="departure-time"
+            palette="text"
+            variant="outlined"
+            size="medium"
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-ignore
+            left={`calc(${left}% - 107px)`}
+            position="absolute"
+            textAlign="right"
+            visibility={showWhenSelected}
+            _groupHover={selected ? {} : { visibility: "visible" }}
+            _groupFocus={selected ? {} : { visibility: "visible" }}
+            backgroundColor="white"
+            color={departureTextColor}
+            zIndex={25}
+          >
+            {displayableTrip.getTrip().getDisplayDepartureTime()}
+          </Tag>
+          <Tag
+            palette="text"
+            variant="outlined"
+            size="medium"
+            data-name="arrival-time"
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-ignore
+            left={`calc(${right}% + 27px)`}
+            position="absolute"
+            visibility={showWhenSelected}
+            _groupHover={selected ? {} : { visibility: "visible" }}
+            _groupFocus={selected ? {} : { visibility: "visible" }}
+            backgroundColor="white"
+            color={arrivalTextColor}
+            zIndex={25}
+          >
+            {displayableTrip.getTrip().getDisplayArrivalTime()}
+          </Tag>
         </Box>
-        <Tag
-          data-name="departure-time"
-          palette="text"
-          variant="outlined"
-          size="medium"
-          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-          // @ts-ignore
-          left={`calc(${left}% - 107px)`}
-          position="absolute"
-          textAlign="right"
-          visibility={showWhenSelected}
-          _groupHover={selected ? {} : { visibility: "visible" }}
-          _groupFocus={selected ? {} : { visibility: "visible" }}
-          backgroundColor="white"
-          color={departureTextColor}
-        >
-          {displayableTrip.getTrip().getDisplayDepartureTime()}
-          {!!timezoneOffset && (
-            <Badge isAttached palette="info">
-              {displayableTrip.getTrip().getDepartureLocation().getCode()}
-            </Badge>
-          )}
-        </Tag>
-        <Tag
-          palette="text"
-          variant="outlined"
-          size="medium"
-          data-name="arrival-time"
-          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-          // @ts-ignore
-          left={`calc(${right}% + 27px)`}
-          position="absolute"
-          visibility={showWhenSelected}
-          _groupHover={selected ? {} : { visibility: "visible" }}
-          _groupFocus={selected ? {} : { visibility: "visible" }}
-          backgroundColor="white"
-          color={arrivalTextColor}
-        >
-          {displayableTrip.getTrip().getDisplayArrivalTime()}
-          {!!timezoneOffset && (
-            <Badge isAttached palette="warning">
-              {displayableTrip.getTrip().getArrivalLocation().getCode()}
-            </Badge>
-          )}
-        </Tag>
       </Box>
+
       {!!dominationCount && !selected && (
-        <DominatedTripsButton tripCount={dominationCount} tripId={displayableTrip.getTrip().getId()} />
+        <Box width="0px">
+          <DominatedTripsButton tripCount={dominationCount} tripId={displayableTrip.getTrip().getId()} />
+        </Box>
       )}
     </List.Item>
   );

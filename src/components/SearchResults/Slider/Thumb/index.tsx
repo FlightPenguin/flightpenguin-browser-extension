@@ -98,7 +98,7 @@ const Thumb = ({
       width={`${wrapperWidthValue}px`}
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
-      zIndex={100}
+      zIndex={20}
     >
       <Box
         display="flex"

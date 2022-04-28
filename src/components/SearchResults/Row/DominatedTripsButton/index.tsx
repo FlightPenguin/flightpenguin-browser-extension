@@ -17,12 +17,7 @@ const DominatedTripsButton = ({ tripId, tripCount }: DominatedTripsButtonProps):
   const verb = tripCount === 1 ? "is" : "are";
 
   return (
-    <Box
-      data-name="dominated-trips-container"
-      left={`${sidePaddingWidth}px`}
-      position="relative"
-      width={`${sidePaddingWidth}px`}
-    >
+    <Box data-name="dominated-trips-container" position="relative" width={`${sidePaddingWidth}px`}>
       {show && (
         <Box display="flex" justifyContent="center" width="100%">
           <Box width="80%">
