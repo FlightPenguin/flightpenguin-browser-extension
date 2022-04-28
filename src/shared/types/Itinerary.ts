@@ -7,6 +7,9 @@ export interface ItineraryInput {
   sources: TripSourceInput[];
   trips: TripInput[];
   cabin: CabinType;
+
+  id?: string;
+  pain?: number;
 }
 
 export class Itinerary {
@@ -17,13 +20,13 @@ export class Itinerary {
   private id: string;
   private pain: number;
 
-  constructor({ sources, trips, cabin }: ItineraryInput) {
+  constructor({ sources, trips, cabin, id, pain }: ItineraryInput) {
     this.sources = sources.map((source) => new TripSource(source));
     this.trips = trips.map((trip) => new Trip(trip));
     this.cabin = cabin;
 
-    this.id = this.getCalculatedFlightPenguinId();
-    this.pain = this.getCalculatedPain();
+    this.id = id || this.getCalculatedFlightPenguinId();
+    this.pain = pain === undefined ? this.getCalculatedPain() : pain;
   }
 
   getCabin(): CabinType {

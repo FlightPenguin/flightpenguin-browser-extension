@@ -3,7 +3,7 @@ import { getLongDurationMultiplier } from "./getLongDurationMultiplier";
 
 describe("getLongDurationMultiplier happy path", () => {
   afterEach(() => {
-    jest.resetAllMocks();
+    jest.clearAllMocks();
   });
 
   it("returns correct value for overnight and short", () => {

@@ -8,21 +8,23 @@ export interface AirlineInput {
 }
 
 export class Airline {
-  private code: string;
+  private code: string | undefined;
   private color: string;
   private name: string;
-  private alliance: string;
+  private alliance: string | undefined;
 
-  constructor({ name: inputName }: AirlineInput) {
-    const { alliance, code, color, display } = AirlineMap.getAirlineDetails(inputName);
+  constructor(airlineInfo: AirlineInput) {
+    if (!airlineInfo.color) {
+      airlineInfo = this.getAirlineInfo(airlineInfo.name);
+    }
 
-    this.code = code;
-    this.color = color;
-    this.name = display;
-    this.alliance = alliance;
+    this.code = airlineInfo.code;
+    this.color = airlineInfo.color as string;
+    this.name = airlineInfo.name;
+    this.alliance = airlineInfo.alliance;
   }
 
-  getCode(): string {
+  getCode(): string | undefined {
     return this.code;
   }
 
@@ -34,7 +36,16 @@ export class Airline {
     return this.name;
   }
 
-  getAlliance(): string {
+  getAlliance(): string | undefined {
     return this.alliance;
+  }
+
+  getAirlineInfo(input: string): {
+    name: string;
+    code?: string;
+    color: string;
+    alliance?: string;
+  } {
+    return AirlineMap.getAirlineDetails(input);
   }
 }

@@ -32,12 +32,12 @@
 
 ### How to enable react-devtools
 
-1. npm install --save-dev react-devtools
-2. Add "react-devtools": "react-devtools" to package.json
-3. Add http://localhost:8097 to CSP in manifest.json (script-src)
-4. Add to index.html: <script src="http://localhost:8097"></script>
+1. Run `npm install --save-dev react-devtools`
+2. Add `"react-devtools": "react-devtools"` to package.json scripts
+3. Add `http://localhost:8097/` to CSP in manifest.json (script-src)
+4. Add to index.html: `<script src="http://localhost:8097"></script>`
 5. Switch ReactDom import in index.js to use ReactDom/profiling
-6. Execute npm run react-devtools
+6. Run `npm run react-devtools`
 7. Load page
 8. Turn on profiling in react-devtools popup
 9. Profile away!

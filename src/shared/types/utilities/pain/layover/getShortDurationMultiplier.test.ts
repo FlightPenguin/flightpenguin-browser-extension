@@ -3,7 +3,7 @@ import { getShortDurationMultiplier } from "./getShortDurationMultiplier";
 
 describe("getShortDurationMultiplier happy path", () => {
   afterEach(() => {
-    jest.resetAllMocks();
+    jest.clearAllMocks();
   });
 
   it("returns correct value for not short duration", () => {

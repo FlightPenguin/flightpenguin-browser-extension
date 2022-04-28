@@ -1,3 +1,5 @@
+import debounce from "lodash.debounce";
+
 import { sendFailedScraper, sendScraperComplete } from "../../shared/events";
 import { sendFailed, sendSuccess } from "../../shared/events/analytics/scrapers";
 import { FlightSearchFormData } from "../../shared/types/FlightSearchFormData";
@@ -11,10 +13,15 @@ const FLIGHT_CARD_SELECTOR = 'div[data-test="ResultCardWrapper"]';
 
 export class FlightObserver {
   private observer: MutationObserver;
+  private flightCards: HTMLDivElement[];
+  private formData: FlightSearchFormData;
   private flightCount;
 
   constructor({ formData }: FlightObserverProps) {
     this.flightCount = 0;
+    this.flightCards = [];
+    this.formData = formData;
+
     // eslint-disable-next-line @typescript-eslint/no-this-alias
     const that = this;
     this.observer = new MutationObserver(async function (mutations) {
@@ -31,26 +38,8 @@ export class FlightObserver {
           }
         });
       }
-      if (flightCards.length) {
-        that.flightCount += flightCards.length;
-        try {
-          const { complete } = await sendFlights({ flightCards, formData: formData });
-
-          if (complete) {
-            sendScraperComplete("kiwi");
-            sendSuccess("kiwi", that.flightCount);
-            that.endObservation();
-          }
-        } catch (error) {
-          that.endObservation();
-          console.error(error);
-          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-          // @ts-ignore
-          window.Sentry.captureException(error);
-          sendFailedScraper("kiwi", error);
-          sendFailed("kiwi");
-        }
-      }
+      const debouncedSendFlights = debounce(that.sendItineraries.bind(that), 300, { maxWait: 1000 });
+      debouncedSendFlights();
     });
   }
 
@@ -60,5 +49,37 @@ export class FlightObserver {
 
   endObservation(): void {
     this.observer.disconnect();
+  }
+
+  async sendItineraries(): Promise<void> {
+    const flightCards = [] as HTMLDivElement[];
+    let hasMoreFlightCards = this.flightCards.length;
+    while (hasMoreFlightCards) {
+      const flightCard = this.flightCards.pop();
+      flightCards.push(flightCard as HTMLDivElement);
+      hasMoreFlightCards = this.flightCards.length;
+    }
+    console.debug(`Processing ${flightCards.length} cards, ${this.flightCards.length} remaining`);
+    this.flightCount += flightCards.length;
+
+    if (flightCards.length) {
+      try {
+        // eslint-disable-next-line prefer-const
+        const { complete } = await sendFlights({ flightCards, formData: this.formData });
+        if (complete) {
+          sendScraperComplete("kiwi");
+          sendSuccess("kiwi", this.flightCount);
+          this.endObservation();
+        }
+      } catch (error) {
+        this.endObservation();
+        console.error(error);
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
+        window.Sentry.captureException(error);
+        sendFailedScraper("kiwi", error);
+        sendFailed("kiwi");
+      }
+    }
   }
 }

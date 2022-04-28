@@ -20,6 +20,15 @@ export interface TripInputMetadata {
   departureDateTime: Date;
   departureLocation: LocationInput;
   durationMinutes: number | string;
+
+  arrivalAirport?: LocationInput;
+  arrivalDisplayTime?: string;
+  carriers?: string[];
+  departureAirport?: LocationInput;
+  departureDisplayTime?: string;
+  id?: string;
+  layoverAirportCodes?: string[];
+  layoverCount?: number;
 }
 
 export interface TripInput extends TripInputMetadata {
@@ -28,26 +37,35 @@ export interface TripInput extends TripInputMetadata {
 
 export class Trip {
   // effectively a group of flights+layovers that take you from location A to location B.
-  private arrivalDateTime: Date;
   private arrivalAirport: Location;
+  private arrivalDateTime: Date;
+  private arrivalDisplayTime: string;
   private arrivalLocation: Location;
-  private departureDateTime: Date;
-  private departureLocation: Location;
-  private departureAirport: Location;
-  private durationMinutes: number;
-  private tripComponents: TripComponent[];
-
   private carriers: string[];
+  private departureAirport: Location;
+  private departureDateTime: Date;
+  private departureDisplayTime: string;
+  private departureLocation: Location;
+  private durationMinutes: number;
   private id: string;
   private layoverCount: number;
   private layoverAirportCodes: string[];
+  private tripComponents: TripComponent[];
 
   constructor({
+    arrivalAirport,
     arrivalDateTime,
+    arrivalDisplayTime,
     arrivalLocation,
+    carriers,
+    departureAirport,
     departureDateTime,
+    departureDisplayTime,
     departureLocation,
     durationMinutes,
+    id,
+    layoverCount,
+    layoverAirportCodes,
     tripComponents,
   }: TripInput) {
     this.arrivalDateTime = getParsedISODate(arrivalDateTime);
@@ -61,12 +79,15 @@ export class Trip {
     });
     this.addLayovers();
 
-    this.arrivalAirport = this.getCalculatedArrivalAirport();
-    this.carriers = this.getCalculatedCarriers();
-    this.departureAirport = this.getCalculatedDepartureAirport();
-    this.id = this.getCalculatedId();
-    this.layoverAirportCodes = this.getCalculatedLayoverAirportCodes();
-    this.layoverCount = this.getCalculatedLayoverCount();
+    this.arrivalAirport = arrivalAirport ? new Location(arrivalAirport) : this.getCalculatedArrivalAirport();
+    this.arrivalDisplayTime = arrivalDisplayTime || this.getCalculatedDisplayArrivalTime();
+    this.carriers = carriers === undefined ? this.getCalculatedCarriers() : carriers;
+    this.departureAirport = departureAirport ? new Location(departureAirport) : this.getCalculatedDepartureAirport();
+    this.departureDisplayTime = departureDisplayTime || this.getCalculatedDisplayDepartureTime();
+    this.id = id || this.getCalculatedId();
+    this.layoverAirportCodes =
+      layoverAirportCodes === undefined ? this.getCalculatedLayoverAirportCodes() : layoverAirportCodes;
+    this.layoverCount = layoverCount === undefined ? this.getCalculatedLayoverCount() : layoverCount;
   }
 
   getArrivalDateTime(): Date {
@@ -102,12 +123,11 @@ export class Trip {
   }
 
   getDisplayArrivalTime(): string {
-    const excessDays = differenceInCalendarDays(this.arrivalDateTime, this.departureDateTime);
-    return getFormattedTime(this.arrivalDateTime, excessDays);
+    return this.arrivalDisplayTime;
   }
 
   getDisplayDepartureTime(): string {
-    return getFormattedTime(this.departureDateTime);
+    return this.departureDisplayTime;
   }
 
   getDisplayDuration(): string {
@@ -167,6 +187,11 @@ export class Trip {
     return lastFlight.getArrivalLocation();
   }
 
+  getCalculatedDisplayArrivalTime(): string {
+    const excessDays = differenceInCalendarDays(this.arrivalDateTime, this.departureDateTime);
+    return getFormattedTime(this.arrivalDateTime, excessDays);
+  }
+
   getCalculatedCarriers(): string[] {
     const airlineNames = this.getAirlines().map((airline) => airline.getName());
     return Array.from(new Set(airlineNames));
@@ -175,6 +200,10 @@ export class Trip {
   getCalculatedDepartureAirport(): Location {
     const firstFlight = this.getFlights()[0];
     return firstFlight.getDepartureLocation();
+  }
+
+  getCalculatedDisplayDepartureTime(): string {
+    return getFormattedTime(this.departureDateTime);
   }
 
   getCalculatedId(): string {

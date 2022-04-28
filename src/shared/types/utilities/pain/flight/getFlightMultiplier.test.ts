@@ -4,7 +4,7 @@ import { getFlightMultiplier } from "./getFlightMultiplier";
 
 describe("getFlightMultiplier with awful carrier", () => {
   afterEach(() => {
-    jest.resetAllMocks();
+    jest.clearAllMocks();
   });
 
   it("adds the result", () => {

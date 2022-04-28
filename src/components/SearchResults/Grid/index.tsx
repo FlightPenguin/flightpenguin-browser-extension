@@ -10,29 +10,23 @@ import TimelineRow from "../Row";
 
 interface TimelineGridProps {
   trips: DisplayableTrip[];
-  containerStartTime: Date;
-  containerEndTime: Date;
   intervalWidth: number;
   formData: FlightSearchFormData;
   skeleton: boolean;
   selectedTrip: DisplayableTrip | null;
   onSelection: (trip: DisplayableTrip) => void;
   legendContainerWidth: number;
-  tripContainerWidth: number;
   resultsContainerWidth: number;
 }
 
 const TimelineGrid = ({
   trips,
-  containerEndTime,
-  containerStartTime,
   intervalWidth,
   formData,
   skeleton,
   selectedTrip,
   onSelection,
   legendContainerWidth,
-  tripContainerWidth,
   resultsContainerWidth,
 }: TimelineGridProps): React.ReactElement => {
   const rowRender: ListRowRenderer = ({ index, key, style }) => {
@@ -43,14 +37,11 @@ const TimelineGrid = ({
       <Box key={key} style={style} width={`${resultsContainerWidth}px`}>
         <TimelineRow
           displayableTrip={trip}
-          containerStartTime={containerStartTime}
-          containerEndTime={containerEndTime}
           intervalWidth={intervalWidth}
           key={`trip-timeline-row-${trip.getTrip().getId()}`}
           index={index}
           selected={!!selectedTrip && selectedTrip.getTrip().getId() === trip.getTrip().getId()}
           legendContainerWidth={legendContainerWidth}
-          tripContainerWidth={tripContainerWidth}
           resultsContainerWidth={resultsContainerWidth}
           skeleton={skeleton}
           paymentType={paymentMethod}
@@ -77,6 +68,7 @@ const TimelineGrid = ({
               rowHeight={rowHeight}
               rowRenderer={rowRender}
               scrollTop={scrollTop}
+              style={{ willChange: "auto" }}
               tabIndex={-1}
               width={resultsContainerWidth + 256} // +n allows time boxes to flow over
             />

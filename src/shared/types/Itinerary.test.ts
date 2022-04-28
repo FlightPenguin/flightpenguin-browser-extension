@@ -3,12 +3,13 @@ import { AirlineInput } from "./Airline";
 import { DisplayableTrip } from "./DisplayableTrip";
 import { DisplayableTripFactory } from "./factories/DisplayableTrip";
 import { ItineraryFactory } from "./factories/Itinerary";
+import { Itinerary, ItineraryInput } from "./Itinerary";
 import { LocationInput } from "./Location";
 import { TripComponentInput } from "./TripComponent";
 import { TripSource } from "./TripSource";
 import { getParsedISODate } from "./utilities/getParsedISODate";
 
-const itineraryInput = {
+const itineraryInput: ItineraryInput = {
   cabin: "econ" as CabinType,
   sources: [
     { fare: 450, id: "meow", name: "expedia" },
@@ -144,7 +145,12 @@ describe("Itinerary happy path", () => {
     const displayableTrips = itin.getTrips().map((trip) => {
       const cabin = itin.getCabin();
       const lowestFare = itin.getTopSource().getFare();
-      return new DisplayableTrip({ cabin, lowestFare, trip });
+      return new DisplayableTrip({
+        cabin,
+        lowestFare,
+        trip,
+        containerInfo: { earliestTime: trip.getDepartureDateTime(), latestTime: trip.getArrivalDateTime() },
+      });
     });
 
     expect(itin.getMaxIndexMatch(displayableTrips)).toEqual(2);
@@ -162,5 +168,54 @@ describe("Itinerary happy path", () => {
     input["trips"].slice(-1)[0]["tripComponents"].slice(-1)[0]["object"]["marketingAirline"]["name"] = "Southwest";
     const itin = ItineraryFactory.build({}, { transient: itineraryInput });
     expect(itin.isDenyListed()).toEqual(true);
+  });
+});
+
+describe("Itinerary constructor tests", () => {
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it("has id defined as an argument", () => {
+    const getCalcMock = jest.spyOn(Itinerary.prototype, "getCalculatedFlightPenguinId");
+
+    new Itinerary({ ...itineraryInput, id: "abcd1234" });
+    expect(getCalcMock).toHaveBeenCalledTimes(0);
+  });
+
+  it("has id not defined as an argument", () => {
+    const getCalcMock = jest.spyOn(Itinerary.prototype, "getCalculatedFlightPenguinId");
+
+    new Itinerary({ ...itineraryInput });
+    expect(getCalcMock).toHaveBeenCalledTimes(1);
+  });
+
+  it("has pain defined as an argument with truthy value", () => {
+    const getCalcMock = jest.spyOn(Itinerary.prototype, "getCalculatedPain");
+
+    new Itinerary({
+      ...itineraryInput,
+      pain: 4,
+    });
+    expect(getCalcMock).toHaveBeenCalledTimes(0);
+  });
+
+  it("has pain defined as an argument with truthy value", () => {
+    const getCalcMock = jest.spyOn(Itinerary.prototype, "getCalculatedPain");
+
+    new Itinerary({
+      ...itineraryInput,
+      pain: 0,
+    });
+    expect(getCalcMock).toHaveBeenCalledTimes(0);
+  });
+
+  it("has pain defined as an argument with undefined value", () => {
+    const getCalcMock = jest.spyOn(Itinerary.prototype, "getCalculatedPain");
+
+    new Itinerary({
+      ...itineraryInput,
+    });
+    expect(getCalcMock).toHaveBeenCalledTimes(1);
   });
 });

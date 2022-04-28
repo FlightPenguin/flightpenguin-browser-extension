@@ -3,22 +3,29 @@ import isEqual from "lodash.isequal";
 import React from "react";
 
 import { TripComponent } from "../../../../shared/types/TripComponent";
-import { getTripComponentTooltipText } from "./utilities/getTripComponentTooltipText";
 
 interface TripComponentContainerInput {
   tripComponent: TripComponent;
-  left: number;
   layout: { startX: number; width: number };
+  index: number;
+  maxIndex: number;
 }
 
-const TripComponentContainer = ({ tripComponent, layout, left }: TripComponentContainerInput): React.ReactElement => {
+const TripComponentContainer = ({
+  tripComponent,
+  layout,
+  index,
+  maxIndex,
+}: TripComponentContainerInput): React.ReactElement => {
   const isLayover = tripComponent.getObject().getType() === "LAYOVER";
+  const isFirst = index === 0;
+  const isLast = index === maxIndex;
 
   return (
     <Box
       display="flex"
-      width={`${layout.width}px`}
-      left={`${layout.startX - left}px`}
+      width={`${layout.width}%`}
+      left={`${layout.startX}%`}
       key={`trip-component-wrapper-${tripComponent.getObject().getId()}`}
       height="30px"
       position="absolute"
@@ -37,7 +44,7 @@ const TripComponentContainer = ({ tripComponent, layout, left }: TripComponentCo
         <Tooltip
           // eslint-disable-next-line @typescript-eslint/ban-ts-comment
           // @ts-ignore
-          content={getTripComponentTooltipText(tripComponent)}
+          content={tripComponent.getObject().getDisplayDescriptionText()}
           hasArrow
           placement="bottom"
           tabIndex={-1}
@@ -48,10 +55,66 @@ const TripComponentContainer = ({ tripComponent, layout, left }: TripComponentCo
           </Box>
         </Tooltip>
       </Box>
+      <Box display="flex">
+        {isFirst && isLast && (
+          <React.Fragment>
+            <Box width="50%">
+              <Text
+                alignX="left"
+                width="100%"
+                fontSize="clamp(.4375rem, 1vw, .875rem)"
+                left="-16px"
+                paddingTop="minor-1"
+                position="absolute"
+              >
+                {tripComponent.getObject().getDepartureLocation().getCode()}
+              </Text>
+            </Box>
+            <Box width="50%">
+              <Text
+                alignX="right"
+                width="100%"
+                fontSize="clamp(.4375rem, 1vw, .875rem)"
+                left="16px"
+                paddingTop="minor-1"
+                position="absolute"
+              >
+                {tripComponent.getObject().getArrivalLocation().getCode()}
+              </Text>
+            </Box>
+          </React.Fragment>
+        )}
+      </Box>
+      {isFirst && !isLast && (
+        <Box width="100%">
+          <Text
+            alignX="left"
+            width="100%"
+            fontSize="clamp(.4375rem, 1vw, .875rem)"
+            left="-16px"
+            paddingTop="minor-1"
+            position="absolute"
+          >
+            {tripComponent.getObject().getDepartureLocation().getCode()}
+          </Text>
+        </Box>
+      )}
       {isLayover && (
-        <Box>
-          <Text alignX="center" fontSize="clamp(.4375rem, 1vw, .875rem)">
-            {/* TODO: Display layover transfer */}
+        <Text alignX="center" width="100%" fontSize="clamp(.4375rem, 1vw, .875rem)" paddingTop="minor-1">
+          {/* TODO: Display layover transfer */}
+          {tripComponent.getObject().getArrivalLocation().getCode()}
+        </Text>
+      )}
+      {isLast && !isFirst && (
+        <Box width="100%">
+          <Text
+            alignX="right"
+            width="100%"
+            fontSize="clamp(.4375rem, 1vw, .875rem)"
+            left="16px"
+            paddingTop="minor-1"
+            position="absolute"
+          >
             {tripComponent.getObject().getArrivalLocation().getCode()}
           </Text>
         </Box>
@@ -67,7 +130,6 @@ export default React.memo(TripComponentContainer, (previous, next) => {
 const getComparableProperties = (input: TripComponentContainerInput) => {
   return {
     tripComponent: input.tripComponent,
-    left: input.left,
     layout: input.layout,
   };
 };

@@ -1,5 +1,4 @@
 import { Alert, Badge, Box, Button } from "bumbag";
-import { addDays, startOfToday } from "date-fns";
 import isEqual from "lodash.isequal";
 import React, { useEffect, useState } from "react";
 
@@ -12,7 +11,6 @@ import TimelineHeader from "../Header";
 import TimelineTitle from "../Title";
 import { getFilteredTrips } from "./utilities/getFilteredTrips";
 import { getIntervalInfo } from "./utilities/getIntervalInfo";
-import { getSkeletonIntervalInfo } from "./utilities/getSkeletonIntervalInfo";
 import { getSkeletonTrips } from "./utilities/getSkeletonTrips";
 import { getSortedTrips } from "./utilities/getSortedTrips";
 import { getTimelineRowComponentsWidth } from "./utilities/getTimelineRowComponentsWidth";
@@ -59,31 +57,12 @@ const TimelineContainer = ({
 
   const [selectedTrip, setSelectedTrip] = useState<DisplayableTrip | null>(null);
   const [displayTrips, setDisplayTrips] = useState<DisplayableTrip[]>([]);
-  const [intervalInfo, setIntervalInfo] = useState<{
-    intervals: number[];
-    intervalWidth: number;
-    earliestTime: Date;
-    latestTime: Date;
-    timezoneOffset: number;
-  }>({
-    intervals: [0, 4, 8, 12, 16, 20, 24, 28],
-    earliestTime: startOfToday(),
-    latestTime: addDays(startOfToday(), 1),
-    timezoneOffset: 0,
-    intervalWidth: tripContainerWidth / 6, // denominator is intervals.length - 1,
-  });
-
   const [updateSearchButtonDisabled, setUpdateSearchButtonDisabled] = useState(false);
 
-  useEffect(() => {
-    if (!eligibleTrips.length) {
-      const intervalInfo = getSkeletonIntervalInfo({ containerIndex, formData, tripContainerWidth });
-      setIntervalInfo(intervalInfo);
-    }
-  }, [resultsContainerWidth, eligibleTrips]);
+  const intervalInfo = getIntervalInfo(meta, eligibleTrips, tripContainerWidth);
 
   useEffect(() => {
-    const trips = getSkeletonTrips(formData, containerIndex);
+    const trips = getSkeletonTrips(formData, containerIndex, intervalInfo.earliestTime, intervalInfo.latestTime);
     setSkeletonTrips(trips);
   }, [formData, containerIndex]);
 
@@ -109,14 +88,6 @@ const TimelineContainer = ({
       setDisplayTrips(filteredTrips);
     }
   }, [eligibleTrips, selectedTrip, filterDateRange, filterStops, filterCarriers, filterLayoverCities, sortDimension]);
-
-  useEffect(() => {
-    if (Object.keys(eligibleTrips).length) {
-      const { earliestTime, latestTime, intervals, intervalWidth } = getIntervalInfo(eligibleTrips, tripContainerWidth);
-      const timezoneOffset = eligibleTrips[0].getTrip().getTimezoneOffset() || 0;
-      setIntervalInfo({ intervals, earliestTime, latestTime, timezoneOffset, intervalWidth });
-    }
-  }, [eligibleTrips, resultsContainerWidth]);
 
   if (!loading && !eligibleTrips.length) {
     return (
@@ -176,14 +147,14 @@ const TimelineContainer = ({
           arrivalLocation={arrivalLocation}
           departureLocation={departureLocation}
           intervals={intervalInfo.intervals}
+          intervalWidth={intervalInfo.intervalWidth}
           tzOffset={intervalInfo.timezoneOffset}
           onSliderChange={(minDate: Date, maxDate: Date) => {
             setFilterDateRange({ lowerBound: minDate, upperBound: maxDate });
           }}
           sliderDisabled={!!selectedTrip}
-          tripCount={eligibleTrips.length}
+          tripCount={displayTrips.length}
           tripContainerWidth={tripContainerWidth}
-          intervalWidth={intervalInfo.intervalWidth}
           startDate={intervalInfo.earliestTime}
         />
       </Box>
@@ -205,15 +176,12 @@ const TimelineContainer = ({
             ) : (
               <TimelineGrid
                 trips={displayTrips}
-                containerStartTime={intervalInfo.earliestTime}
-                containerEndTime={intervalInfo.latestTime}
                 intervalWidth={intervalInfo.intervalWidth}
                 formData={formData}
                 skeleton={false}
                 selectedTrip={selectedTrip}
                 legendContainerWidth={legendContainerWidth}
                 resultsContainerWidth={resultsContainerWidth}
-                tripContainerWidth={tripContainerWidth}
                 onSelection={(trip: DisplayableTrip) => {
                   setSelectedTrip(trip);
                   setDisplayTrips([trip]);
@@ -224,14 +192,11 @@ const TimelineContainer = ({
           ) : (
             <TimelineGrid
               trips={skeletonTrips}
-              containerStartTime={intervalInfo.earliestTime}
-              containerEndTime={intervalInfo.latestTime}
               intervalWidth={intervalInfo.intervalWidth}
               formData={formData}
               skeleton={true}
               selectedTrip={null}
               legendContainerWidth={legendContainerWidth}
-              tripContainerWidth={tripContainerWidth}
               resultsContainerWidth={resultsContainerWidth}
               onSelection={() => {}} // eslint-disable-line @typescript-eslint/no-empty-function
             />

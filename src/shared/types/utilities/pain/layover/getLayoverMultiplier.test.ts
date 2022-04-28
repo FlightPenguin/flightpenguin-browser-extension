@@ -7,7 +7,7 @@ import * as getTransferMultiplierModule from "./getTransferMultiplier";
 
 describe("getLayoverMultiplier happy path", () => {
   afterEach(() => {
-    jest.resetAllMocks();
+    jest.clearAllMocks();
   });
 
   it("works with no additional hits", () => {

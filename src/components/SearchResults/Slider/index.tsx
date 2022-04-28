@@ -104,8 +104,7 @@ const TimelineSlider = ({
             />
           );
         }}
-        onChange={(value) => {
-          setValues(value);
+        onAfterChange={(value) => {
           const { datetime: lowerBoundary } = getDatetimeByTick({ startDate, value: value[0] });
           const { datetime: upperBoundary } = getDatetimeByTick({
             startDate,
@@ -116,6 +115,9 @@ const TimelineSlider = ({
             getDateValueInRange({ value: lowerBoundary, minimumValue: minimumDate, maximumValue: maximumDate }),
             getDateValueInRange({ value: upperBoundary, minimumValue: minimumDate, maximumValue: maximumDate }),
           );
+        }}
+        onChange={(value) => {
+          setValues(value);
           setTouched(true);
         }}
         step={1}

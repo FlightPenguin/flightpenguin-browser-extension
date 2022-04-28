@@ -13,7 +13,7 @@ jest.mock("date-fns", () => {
 
 describe("getOvernightMultiplier happy path", () => {
   afterEach(() => {
-    jest.resetAllMocks();
+    jest.clearAllMocks();
   });
 
   it("same day", () => {
