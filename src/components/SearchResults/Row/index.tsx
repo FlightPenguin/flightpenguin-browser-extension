@@ -144,12 +144,14 @@ const TimelineRow = ({
             >
               {displayableTrip.getTrip().getDisplayDuration()}
             </Text>
-            {componentsWithPositions.map((wrapper) => {
+            {componentsWithPositions.map((wrapper, index) => {
               return (
                 <TripComponentContainer
                   tripComponent={wrapper.tripComponent}
                   layout={wrapper.layout}
                   key={wrapper.tripComponent.getObject().getId()}
+                  index={index}
+                  maxIndex={componentsWithPositions.length - 1}
                 />
               );
             })}
@@ -170,13 +172,9 @@ const TimelineRow = ({
           _groupFocus={selected ? {} : { visibility: "visible" }}
           backgroundColor="white"
           color={departureTextColor}
+          zIndex={25}
         >
           {displayableTrip.getTrip().getDisplayDepartureTime()}
-          {!!timezoneOffset && (
-            <Badge isAttached palette="info">
-              {displayableTrip.getTrip().getDepartureLocation().getCode()}
-            </Badge>
-          )}
         </Tag>
         <Tag
           palette="text"
@@ -192,13 +190,9 @@ const TimelineRow = ({
           _groupFocus={selected ? {} : { visibility: "visible" }}
           backgroundColor="white"
           color={arrivalTextColor}
+          zIndex={25}
         >
           {displayableTrip.getTrip().getDisplayArrivalTime()}
-          {!!timezoneOffset && (
-            <Badge isAttached palette="warning">
-              {displayableTrip.getTrip().getArrivalLocation().getCode()}
-            </Badge>
-          )}
         </Tag>
       </Box>
       {!!dominationCount && !selected && (
