@@ -1,4 +1,4 @@
-import { Box, DropdownMenu, Group, Tag } from "bumbag";
+import { Box, Divider, DropdownMenu, Group, Tag } from "bumbag";
 import isEqual from "lodash.isequal";
 import pluralize from "pluralize";
 import React, { useEffect, useState } from "react";
@@ -45,6 +45,29 @@ export const AirlineFilterMenu = ({ airlineCount, groupedAirlines, onChange }: F
       fontSize="clamp(.375rem, .6vw, .75rem)"
       menu={
         <React.Fragment>
+          {valueChanged && (
+            <React.Fragment>
+              <DropdownMenu.Item
+                color="danger"
+                onClick={(event: React.MouseEvent) => {
+                  event.preventDefault();
+                  event.stopPropagation();
+
+                  setSelectedAlliances([]);
+                  setValueChanged(false);
+                  setValues(defaultAirlines);
+                  onChange(defaultAirlines);
+                }}
+                textAlign="center"
+                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                // @ts-ignore
+                textTranform="uppercase"
+              >
+                Reset airlines
+              </DropdownMenu.Item>
+              <Divider />
+            </React.Fragment>
+          )}
           {Object.keys(groupedAirlines)
             .sort()
             .map((alliance) => {
