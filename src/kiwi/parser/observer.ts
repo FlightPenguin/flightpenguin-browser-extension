@@ -25,15 +25,14 @@ export class FlightObserver {
     // eslint-disable-next-line @typescript-eslint/no-this-alias
     const that = this;
     this.observer = new MutationObserver(async function (mutations) {
-      const flightCards: HTMLElement[] = [];
       for (const mutation of mutations) {
         Array.from(mutation.addedNodes as NodeListOf<HTMLElement>).forEach((element) => {
           if (element.dataset?.test === "ResultCardWrapper") {
-            flightCards.push(element as HTMLDivElement);
+            that.flightCards.push(element as HTMLDivElement);
           } else {
             const parent = !!element && !!element.closest && (element.closest(FLIGHT_CARD_SELECTOR) as HTMLElement);
             if (parent) {
-              flightCards.push(parent as HTMLDivElement);
+              that.flightCards.push(parent as HTMLDivElement);
             }
           }
         });
@@ -52,6 +51,7 @@ export class FlightObserver {
   }
 
   async sendItineraries(): Promise<void> {
+    console.log("sending");
     const flightCards = [] as HTMLDivElement[];
     let hasMoreFlightCards = this.flightCards.length;
     while (hasMoreFlightCards) {
