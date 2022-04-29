@@ -8,7 +8,7 @@ const PLACEHOLDER_CARD_SELECTOR = 'div[data-test="ResultCardPlaceholder"]';
 const NO_MORE_RESULTS_SELECTOR = 'div[class*="ShowMoreButtonstyled__AllResults"]';
 
 export const isComplete = async (flightCard: HTMLDivElement): Promise<boolean> => {
-  const flightContainer = flightCard.parentElement as HTMLDivElement;
+  const flightContainer = getFlightContainer(flightCard);
   const processedFlightCount = getProcessedFlightTotal(flightContainer);
 
   if (processedFlightCount >= 80) {
@@ -60,4 +60,12 @@ const getShowMoreButton = (flightContainer: HTMLDivElement): HTMLButtonElement |
   }
 
   return buttonText.toLowerCase().includes("load more") ? button : null;
+};
+
+const getFlightContainer = (flightCard: HTMLDivElement): HTMLDivElement => {
+  if (flightCard.parentElement) {
+    return flightCard.parentElement as HTMLDivElement;
+  }
+
+  return (document.querySelector(FLIGHT_CARDS_SELECTOR) as HTMLDivElement).parentElement as HTMLDivElement;
 };
