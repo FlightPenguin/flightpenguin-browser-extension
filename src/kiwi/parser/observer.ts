@@ -51,7 +51,6 @@ export class FlightObserver {
   }
 
   async sendItineraries(): Promise<void> {
-    console.log("sending");
     const flightCards = [] as HTMLDivElement[];
     let hasMoreFlightCards = this.flightCards.length;
     while (hasMoreFlightCards) {
