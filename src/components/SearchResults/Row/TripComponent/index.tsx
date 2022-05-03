@@ -40,6 +40,7 @@ const TripComponentContainer = ({
             : undefined
         }
         backgroundColor={isLayover ? "transparent" : tripComponent.getObject().getAirline().getColor()}
+        width="100%"
       >
         <Tooltip
           // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -50,7 +51,7 @@ const TripComponentContainer = ({
           tabIndex={-1}
           tooltipContentProps={{ whiteSpace: "pre" }}
         >
-          <Box width={`${layout.width}px`}>
+          <Box width="100%">
             <Text>&nbsp;</Text>
           </Box>
         </Tooltip>
