@@ -16,7 +16,8 @@
     "resetMocks": false,
     "setupFiles": [
       "jest-localstorage-mock",
-      "jest-chrome"
+      "jest-chrome",
+      "jest-webextension-mock"
     ],
     "setupFilesAfterEnv": [
       "./setup.jest.js"
@@ -58,6 +59,7 @@
     "@types/react-slider": "^1.3.1",
     "@types/react-virtualized": "^9.21.13",
     "@types/terser-webpack-plugin": "^5.0.4",
+    "@types/webextension-polyfill": "^0.8.3",
     "@typescript-eslint/eslint-plugin": "^4.29.1",
     "@typescript-eslint/parser": "^4.29.1",
     "babel-loader": "^8.2.2",
@@ -75,12 +77,14 @@
     "jest-chrome": "^0.7.2",
     "jest-cli": "^27.2.2",
     "jest-localstorage-mock": "^2.4.18",
+    "jest-webextension-mock": "^3.7.22",
     "lint-staged": "^11.0.1",
     "mockdate": "^3.0.5",
     "prettier": "^2.3.2",
     "style-loader": "^2.0.0",
     "ts-jest": "^27.0.5",
     "typescript": "^4.3.5",
+    "webextension-polyfill": "^0.9.0",
     "webpack": "^5.24.4",
     "webpack-cli": "^4.5.0"
   },
