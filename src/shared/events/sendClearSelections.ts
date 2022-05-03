@@ -1,7 +1,9 @@
+import * as browser from "webextension-polyfill";
+
 import { DisplayableTrip } from "../types/DisplayableTrip";
 
 export const sendClearSelections = (currentSelections: DisplayableTrip[]): void => {
-  chrome.runtime.sendMessage({
+  browser.runtime.sendMessage({
     event: "CLEAR_SELECTIONS",
     currentSelections,
   });

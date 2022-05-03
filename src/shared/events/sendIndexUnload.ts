@@ -1,5 +1,7 @@
+import * as browser from "webextension-polyfill";
+
 export const sendIndexUnload = (): void => {
-  chrome.runtime.sendMessage({
+  browser.runtime.sendMessage({
     event: "INDEX_UNLOAD",
   });
 };

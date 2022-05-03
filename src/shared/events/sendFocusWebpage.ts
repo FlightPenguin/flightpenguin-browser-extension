@@ -1,5 +1,5 @@
 export const sendFocusWebpage = (providerName: string): void => {
-  chrome.runtime.sendMessage({
+  browser.runtime.sendMessage({
     event: "FOCUS_WEBPAGE",
     provider: providerName,
   });

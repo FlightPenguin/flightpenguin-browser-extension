@@ -1,5 +1,7 @@
+import * as browser from "webextension-polyfill";
+
 export const sendAnalyticsPageView = (): void => {
-  chrome.runtime.sendMessage({
+  browser.runtime.sendMessage({
     event: "LOG_ANALYTICS_PAGE_VIEW",
     pageTitle: document.title,
     url: document.location.href,

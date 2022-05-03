@@ -1,10 +1,12 @@
+import * as browser from "webextension-polyfill";
+
 import { sendIndexUnload } from "./sendIndexUnload";
 
 describe("sendIndexUnload happy path", () => {
-  it("calls chrome.runtime.sendMessage with the correct results", () => {
+  it("calls browser.runtime.sendMessage with the correct results", () => {
     sendIndexUnload();
 
-    expect(chrome.runtime.sendMessage).toBeCalledWith({
+    expect(browser.runtime.sendMessage).toBeCalledWith({
       event: "INDEX_UNLOAD",
     });
   });

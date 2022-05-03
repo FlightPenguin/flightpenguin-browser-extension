@@ -1,5 +1,7 @@
+import * as browser from "webextension-polyfill";
+
 export const sendItineraryNotFound = (id: string): void => {
-  chrome.runtime.sendMessage({
+  browser.runtime.sendMessage({
     event: "ITINERARY_NOT_FOUND",
     id,
   });
