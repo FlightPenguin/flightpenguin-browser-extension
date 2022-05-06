@@ -6,9 +6,13 @@ import { getFirebaseToken } from "./getFirebaseToken";
 
 interface GetSubscriptionValidityProps {
   accessToken?: string;
+  emailConsent?: boolean | undefined;
 }
 
-export const getSubscriptionValidity = async ({ accessToken }: GetSubscriptionValidityProps): Promise<APIResponse> => {
+export const getSubscriptionValidity = async ({
+  accessToken,
+  emailConsent,
+}: GetSubscriptionValidityProps): Promise<APIResponse> => {
   const headers: { [keyof: string]: string } = {
     "Content-Type": "application/json",
   };
@@ -19,9 +23,11 @@ export const getSubscriptionValidity = async ({ accessToken }: GetSubscriptionVa
   }
   headers["Authorization"] = `Bearer ${accessToken}`;
 
+  const url = getUrl(emailConsent);
+
   let response;
   try {
-    response = await axios.get(`${API_HOST}/api/subscription/status`, {
+    response = await axios.get(url, {
       headers,
       timeout: 5000,
       withCredentials: true,
@@ -42,4 +48,12 @@ export const getSubscriptionValidity = async ({ accessToken }: GetSubscriptionVa
         ? (response.data as { [keyof: string]: unknown })
         : { code: response.status, reason: response.statusText },
   };
+};
+
+const getUrl = (emailConsent: boolean | undefined): string => {
+  const url = new URL(`${API_HOST}/api/subscription/status`);
+  if (emailConsent) {
+    url.searchParams.append("emailConsent", (!!emailConsent).toString());
+  }
+  return url.toString();
 };

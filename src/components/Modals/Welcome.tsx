@@ -1,4 +1,4 @@
-import { Alert, Box, Button, Card, Image, Link, Modal } from "bumbag";
+import { Alert, Box, Button, Card, Checkbox, Image, Link, Modal } from "bumbag";
 import { Auth, GoogleAuthProvider } from "firebase/auth";
 import React, { useEffect, useState } from "react";
 
@@ -15,6 +15,8 @@ export const WelcomeModal = ({ firebaseAuth, googleProvider, onSuccess }: Welcom
   const analytics = new AnalyticsManager(`${process.env.GOOGLE_ANALYTICS_TRACKING_ID}`, false);
   const [authError, setAuthError] = useState(false);
   const [disabled, setDisabled] = useState(false);
+  const [emailConsent, setEmailConsent] = useState(false);
+  console.log(emailConsent);
 
   const modal = Modal.useState();
   useEffect(() => {
@@ -53,6 +55,12 @@ export const WelcomeModal = ({ firebaseAuth, googleProvider, onSuccess }: Welcom
             <Box alignX="center" marginTop="major-1">
               <Image src="/images/welcome.svg" alt="Welcome" maxWidth="360px" border="default" />
             </Box>
+            <Checkbox
+              paddingTop="major-2"
+              label="Flight Penguin can send me news and updates about the company and product via email."
+              checked={emailConsent}
+              onChange={(e) => setEmailConsent((e.target as HTMLInputElement).checked)}
+            />
           </Card.Content>
           <Card.Footer>
             <Button
@@ -73,6 +81,7 @@ export const WelcomeModal = ({ firebaseAuth, googleProvider, onSuccess }: Welcom
                       setDisabled(false);
                       setAuthError(true);
                     },
+                    emailConsent,
                   );
                 } catch (error) {
                   setDisabled(false);
