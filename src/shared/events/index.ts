@@ -8,4 +8,5 @@ export * from "./sendNoFlights";
 export * from "./sendOpenExtension";
 export * from "./sendTripSelected";
 export * from "./sendScraperComplete";
+export * from "./sendScraperStarting";
 export * from "./sendUndominateTrip";
