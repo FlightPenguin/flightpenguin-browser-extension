@@ -55,6 +55,7 @@ export const SearchResults = ({
   const [tabInteractionFailed, setTabInteractionFailed] = useState(false);
   const [searchAgainDisabled, setSearchAgainDisabled] = useState(false);
   const [windowClosed, setWindowClosed] = useState(false);
+  const [unableToScrape, setUnableToScrape] = useState(false);
   const [itineraryNotFound, setItineraryNotFound] = useState(false);
 
   useEffect(() => {
@@ -83,6 +84,9 @@ export const SearchResults = ({
           break;
         case "HIGHLIGHT_TAB_FAILED":
           setTabInteractionFailed(true);
+          break;
+        case "SCRAPERS_FAILED_TO_START":
+          setUnableToScrape(true);
           break;
         default:
           break;
@@ -124,6 +128,25 @@ export const SearchResults = ({
     sendFormDataToBackground(formData);
     setSearchAgainDisabled(false);
   };
+
+  if (unableToScrape) {
+    return (
+      <Box alignX="center" marginTop="major-6">
+        <Alert title="Search failed" type="danger">
+          <Box width="100%">
+            Flight Penguin opens windows in the background to search flight booking sites, but was unable to open these
+            windows. Please disable any settings or extensions that may blocking Flight Penguin from opening windows
+            from opening on this page, such as your ad blocker or extensions like noscript.
+          </Box>
+          <Box width="100%" marginTop="major-1">
+            <Button disabled={searchAgainDisabled} palette="primary" onClick={searchAgain}>
+              Try again
+            </Button>
+          </Box>
+        </Alert>
+      </Box>
+    );
+  }
 
   if (tabInteractionFailed || windowClosed) {
     return (
