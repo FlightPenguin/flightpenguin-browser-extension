@@ -13,6 +13,7 @@ import {
   handleOpenExtensionRequest,
   handleProviderReady,
   handleScraperFailed,
+  handleScraperStarting,
   handleScraperSuccess,
   handleTripSelected,
   handleUndominateTrip,
@@ -43,6 +44,9 @@ export const ListenerManager = (providerManager: ProviderManager, analyticsManag
         break;
       case "SUCCESSFUL_SCRAPER":
         handleScraperSuccess(providerManager, message.providerName);
+        break;
+      case "STARTING_SCRAPER":
+        handleScraperStarting(providerManager, message.providerName);
         break;
       case "FAILED_SCRAPER":
         handleScraperFailed(providerManager, message.providerName, message.description, message.windowConfig, sender);

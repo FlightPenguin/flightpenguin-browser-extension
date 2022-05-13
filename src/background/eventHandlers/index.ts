@@ -11,6 +11,7 @@ export * from "./noFlightsFound";
 export * from "./openExtension";
 export * from "./providerReady";
 export * from "./scraperFailed";
+export * from "./scraperStarting";
 export * from "./scraperSuccess";
 export * from "./tripSelected";
 export * from "./undominateTrip";
