@@ -10,7 +10,7 @@ window.Sentry.init({
   tracesSampleRate: 1.0,
 });
 
-import { sendFailedScraper, sendItineraryNotFound } from "../shared/events";
+import { sendFailedScraper, sendItineraryNotFound, sendScraperStarting } from "../shared/events";
 import { sendFailed, sendProcessing } from "../shared/events/analytics/scrapers";
 import { pollForNoResults } from "../shared/parser/pollForNoResults";
 import { FlightSearchFormData } from "../shared/types/FlightSearchFormData";
@@ -35,6 +35,7 @@ chrome.runtime.onMessage.addListener(async function (message, sender, sendRespon
         document.cookie = "IBU_FLIGHT_LIST_STYLE=Merged";
         suppressOfferFlightPenguinPopup();
         sendProcessing("trip");
+        sendScraperStarting("trip");
         formData = message.formData as FlightSearchFormData;
         if (formData.roundtrip) {
           await ensureBookTogetherSelected();

@@ -1,4 +1,10 @@
-import { sendFailedScraper, sendItinerariesEvent, sendItineraryNotFound, sendScraperComplete } from "../shared/events";
+import {
+  sendFailedScraper,
+  sendItinerariesEvent,
+  sendItineraryNotFound,
+  sendScraperComplete,
+  sendScraperStarting,
+} from "../shared/events";
 import { sendFailed, sendProcessing } from "../shared/events/analytics/scrapers";
 import { FlightSearchFormData } from "../shared/types/FlightSearchFormData";
 import { Itinerary } from "../shared/types/Itinerary";
@@ -23,6 +29,7 @@ export const initMessageListener = (observer: CheapoairModalObserver): void => {
         try {
           suppressOfferFlightPenguinPopup();
           sendProcessing("cheapoair");
+          sendScraperStarting("cheapoair");
           formData = message.formData;
           observer.beginObservation();
           await getAllItineraries(formData, knownItineraries);
