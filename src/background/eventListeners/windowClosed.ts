@@ -1,7 +1,9 @@
+import * as browser from "webextension-polyfill";
+
 import { ProviderManager } from "../ProviderManager";
 
 export const initWindowClosedListener = (providerManager: ProviderManager): void => {
-  chrome.windows.onRemoved.addListener((windowId: number) => {
+  browser.windows.onRemoved.addListener((windowId: number) => {
     console.debug(`Window ${windowId} closed`);
     const results = providerManager.getProviderByWindowId(windowId);
     if (results?.providerName && providerManager.getAlertOnWindowClose(results.providerName)) {

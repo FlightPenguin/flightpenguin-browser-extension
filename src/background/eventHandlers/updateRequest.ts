@@ -1,3 +1,5 @@
+import * as browser from "webextension-polyfill";
+
 export const handleUpdateRequest = (): void => {
-  chrome.runtime.reload();
+  browser.runtime.reload();
 };

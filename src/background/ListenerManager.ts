@@ -55,7 +55,7 @@ export const ListenerManager = (providerManager: ProviderManager, analyticsManag
         handleItineraryResultsReceived(providerManager, message.itineraries, message.provider);
         break;
       case "TRIP_SELECTED":
-        handleTripSelected(providerManager, message.selectedTrips);
+        await handleTripSelected(providerManager, message.selectedTrips);
         break;
       case "ITINERARY_NOT_FOUND":
         handleItineraryNotFound(providerManager, message.id);

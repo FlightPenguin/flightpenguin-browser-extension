@@ -1,3 +1,5 @@
+import * as browser from "webextension-polyfill";
+
 import { WindowConfig } from "../../shared/types/WindowConfig";
 import { ProviderManager } from "../ProviderManager";
 
@@ -6,7 +8,7 @@ export const handleScraperFailed = (
   providerName: string,
   errorDescription: string,
   windowConfig: WindowConfig,
-  sender: chrome.runtime.MessageSender,
+  sender: browser.Runtime.MessageSender,
   close = true,
 ): void => {
   providerManager.setFailed(providerName);
