@@ -19,6 +19,7 @@ export const ExtensionInstalledHandler = (analytics: AnalyticsManager): void => 
         analytics.track({ category: "lifecycle", action: "Update", label: "Flight Penguin" });
         break;
       case "chrome_update":
+      case "browser_update":
         analytics.track({ category: "lifecycle", action: "Chrome update", label: "Flight Penguin" });
         break;
       case "shared_module_update":
