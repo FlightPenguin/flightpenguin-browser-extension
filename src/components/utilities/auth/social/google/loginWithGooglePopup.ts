@@ -10,6 +10,7 @@ export const loginWithGooglePopup = async (
   analytics: AnalyticsManager,
   successCallback: () => void,
   failureCallback: () => void,
+  emailConsent: boolean | undefined = undefined,
 ): Promise<void> => {
   const authResult = await signInWithPopup(auth, provider);
   const credential = GoogleAuthProvider.credentialFromResult(authResult);
@@ -17,7 +18,7 @@ export const loginWithGooglePopup = async (
 
   let apiResponse;
   if (accessToken) {
-    apiResponse = await getSubscriptionValidity({ accessToken });
+    apiResponse = await getSubscriptionValidity({ accessToken, emailConsent });
     if (apiResponse.status && apiResponse.data && apiResponse.data.status) {
       const userId = authResult.user.providerData[0]?.uid;
       const email = authResult.user.email;

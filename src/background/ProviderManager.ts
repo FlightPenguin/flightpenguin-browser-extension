@@ -10,6 +10,7 @@ import { FlightSearchFormData } from "../shared/types/FlightSearchFormData";
 import { Itinerary } from "../shared/types/Itinerary";
 import { MessageResponse } from "../shared/types/MessageResponse";
 import { WindowConfig } from "../shared/types/WindowConfig";
+import { getTab } from "../shared/utilities/tabs/getTab";
 import { getUrl as getTripUrl } from "../trip/mappings/getUrl";
 import {
   DEFAULT_ON_READY_FUNCTION,
@@ -63,6 +64,8 @@ export class ProviderManager {
   private formData: FlightSearchFormData | null;
   private selectedProviders: string[];
 
+  private failToStartTracker: any;
+
   public sendTripResultsToIndexPage: () => void;
 
   constructor() {
@@ -80,6 +83,8 @@ export class ProviderManager {
     this.primaryTab = null;
     this.setPrimaryTab();
     this.setupClosePrimaryTabListener();
+
+    this.failToStartTracker = null;
 
     this.sendTripResultsToIndexPage = debounce(this._sendTripResultsToIndexPage.bind(this), 500, {
       leading: true,
@@ -150,9 +155,13 @@ export class ProviderManager {
   }
 
   setStatus(providerName: string, status: StatusType): void {
+    if (this.state[providerName]) {
+      this.clearFailToStartTracker();
+    }
     if (!this.state[providerName]) {
       this.state[providerName] = { ...defaultProviderState };
     }
+
     this.state[providerName]["status"] = status;
   }
 
@@ -351,6 +360,8 @@ export class ProviderManager {
 
   searchForResults(formData: FlightSearchFormData, windowConfig: WindowConfig): void {
     this.setFormData(formData);
+    this.initFailToStartTracker();
+
     const message = { event: "BEGIN_PARSING", formData };
     const promises = this.knownProviders.map((providerName) => {
       const url = providerURLBaseMap[providerName](formData);
@@ -475,5 +486,38 @@ export class ProviderManager {
 
   addIdToDominationDenyList(tripId: string): void {
     this.dominationDenyList.push(tripId);
+  }
+
+  clearFailToStartTracker(): void {
+    if (this.failToStartTracker) {
+      clearTimeout(this.failToStartTracker);
+    }
+    this.failToStartTracker = null;
+  }
+
+  initFailToStartTracker(): void {
+    this.clearFailToStartTracker();
+
+    // eslint-disable-next-line @typescript-eslint/no-this-alias
+    const that = this;
+    this.failToStartTracker = setTimeout(() => {
+      if (!that.isScrapingWindowsOpen()) {
+        that.sendMessageToIndexPage({ event: "SCRAPERS_FAILED_TO_START" });
+      }
+    }, 1000);
+  }
+
+  isScrapingWindowsOpen(): boolean {
+    return Object.values(this.state).some((providerState) => {
+      const tabId = providerState.tab?.id;
+      const windowId = providerState.window?.id;
+
+      if (!tabId || !windowId) {
+        return false;
+      }
+
+      const tab = getTab({ tabId, windowId });
+      return !!tab;
+    });
   }
 }

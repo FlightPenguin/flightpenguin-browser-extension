@@ -10,7 +10,7 @@ window.Sentry.init({
   tracesSampleRate: 1.0,
 });
 
-import { sendFailedScraper, sendItineraryNotFound } from "../shared/events";
+import { sendFailedScraper, sendItineraryNotFound, sendScraperStarting } from "../shared/events";
 import { sendFailed, sendProcessing } from "../shared/events/analytics/scrapers";
 import { pollForNoResults } from "../shared/parser/pollForNoResults";
 import { addBackToSearchButton } from "../shared/ui/backToSearch";
@@ -34,6 +34,7 @@ chrome.runtime.onMessage.addListener(async function (message, sender, sendRespon
       try {
         suppressOfferFlightPenguinPopup();
         sendProcessing("momondo");
+        sendScraperStarting("momondo");
         observer = new ItineraryObserver({ formData: message.formData });
         await attachObserver(observer);
         pollForNoResults({ pollForNoResultsCheck: hasNoResults, providerName: "momondo" });
