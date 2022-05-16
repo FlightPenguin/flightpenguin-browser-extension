@@ -1,6 +1,7 @@
 import { Box, PageContent, PageWithHeader } from "bumbag";
 import { onAuthStateChanged, User } from "firebase/auth";
 import React, { useCallback, useEffect, useRef, useState } from "react";
+import * as browser from "webextension-polyfill";
 
 import { AnalyticsManager } from "../../background/AnalyticsManager";
 import { Crowdfunding } from "../../components/Crowdfunding";
@@ -49,7 +50,7 @@ export const SearchPage = (): React.ReactElement => {
   }, []);
 
   useEffect(() => {
-    chrome.runtime.onMessage.addListener((message) => {
+    browser.runtime.onMessage.addListener((message) => {
       console.debug(message);
       switch (message.event) {
         case "UPDATE_AVAILABLE":

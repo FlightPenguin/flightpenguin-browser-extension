@@ -1,5 +1,6 @@
 import { Box, Button, Card } from "bumbag";
 import React, { useState } from "react";
+import * as browser from "webextension-polyfill";
 
 export const UpdateNotificationAlert = (): React.ReactElement => {
   const [update, setUpdate] = useState(false);
@@ -24,7 +25,7 @@ export const UpdateNotificationAlert = (): React.ReactElement => {
             disabled={update}
             onClick={() => {
               setUpdate(true);
-              chrome.runtime.sendMessage({
+              browser.runtime.sendMessage({
                 event: "UPDATE_NOW",
               });
             }}

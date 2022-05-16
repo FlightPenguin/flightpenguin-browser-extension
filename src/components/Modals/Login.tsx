@@ -23,9 +23,11 @@ export const LoginModal = ({ firebaseAuth, googleProvider, onSuccess }: LoginMod
 
   useEffect(() => {
     if (authError) {
-      chrome.identity.clearAllCachedAuthTokens(() => {
-        console.debug("Cleared auth tokens due to auth error in login modal");
-      });
+      if (chrome && chrome.identity) {
+        chrome.identity.clearAllCachedAuthTokens(() => {
+          console.debug("Cleared auth tokens due to auth error in login modal");
+        });
+      }
     }
   }, [authError]);
 

@@ -3,6 +3,7 @@ import { Alert, Box, Button } from "bumbag";
 import isEqual from "lodash.isequal";
 import range from "lodash.range";
 import React, { useEffect, useState } from "react";
+import * as browser from "webextension-polyfill";
 
 import { AnalyticsManager } from "../../background/AnalyticsManager";
 import { sendTripSelected } from "../../shared/events";
@@ -59,7 +60,9 @@ export const SearchResults = ({
   const [itineraryNotFound, setItineraryNotFound] = useState(false);
 
   useEffect(() => {
-    chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    browser.runtime.onMessage.addListener((message, sender, sendResponse) => {
       sendResponse({ received: true, responderName: "searchResults" });
       console.debug(message);
       switch (message.event) {
