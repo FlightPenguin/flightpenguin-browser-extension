@@ -9,6 +9,7 @@ window.Sentry.init({
   integrations: [new window.Sentry.Integrations.BrowserTracing()],
   tracesSampleRate: 1.0,
 });
+import * as browser from "webextension-polyfill";
 
 import { sendFailedScraper, sendItineraryNotFound, sendScraperStarting } from "../shared/events";
 import { sendFailed, sendProcessing } from "../shared/events/analytics/scrapers";
@@ -26,7 +27,9 @@ let observer: ItineraryObserver | null = null;
 
 suppressRedirectOfferOnBookingPage();
 
-chrome.runtime.onMessage.addListener(async function (message, sender, sendResponse) {
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
+browser.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
   sendResponse({ received: true, responderName: "momondo" });
   console.debug(message);
   switch (message.event) {

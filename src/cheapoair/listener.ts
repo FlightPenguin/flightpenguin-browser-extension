@@ -1,3 +1,5 @@
+import * as browser from "webextension-polyfill";
+
 import {
   sendFailedScraper,
   sendItinerariesEvent,
@@ -21,7 +23,9 @@ export const initMessageListener = (observer: CheapoairModalObserver): void => {
   let formData;
   const knownItineraries = [] as Itinerary[];
 
-  chrome.runtime.onMessage.addListener(async function (message, sender, sendResponse) {
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
+  browser.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
     sendResponse({ received: true, responderName: "cheapoair" });
     console.debug(message);
     switch (message.event) {
@@ -53,7 +57,7 @@ export const initMessageListener = (observer: CheapoairModalObserver): void => {
         }
         break;
       case "CLEAR_SELECTION":
-        chrome.runtime.sendMessage({ event: "PROVIDER_READY", provider: "cheapoair" });
+        browser.runtime.sendMessage({ event: "PROVIDER_READY", provider: "cheapoair" });
         break;
       default:
         break;

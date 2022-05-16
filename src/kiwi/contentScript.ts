@@ -10,6 +10,8 @@ window.Sentry.init({
   tracesSampleRate: 1.0,
 });
 
+import * as browser from "webextension-polyfill";
+
 import { sendFailedScraper, sendItineraryNotFound, sendScraperStarting } from "../shared/events";
 import { sendFailed, sendProcessing } from "../shared/events/analytics/scrapers";
 import { pollForNoResults } from "../shared/parser/pollForNoResults";
@@ -23,7 +25,9 @@ import { highlightFlightCard } from "./ui/highlightFlightCard";
 
 let observer: FlightObserver | null = null;
 
-chrome.runtime.onMessage.addListener(async function (message, sender, sendResponse) {
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
+browser.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
   sendResponse({ received: true, responderName: "kiwi" });
   console.debug(message);
   switch (message.event) {
