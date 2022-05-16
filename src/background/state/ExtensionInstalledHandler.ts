@@ -1,9 +1,11 @@
+import * as browser from "webextension-polyfill";
+
 import { setRecentlyInstalled } from "../../shared/utilities/recentlyInstalledManager";
 import { AnalyticsManager } from "../AnalyticsManager";
 import { openExtension } from "./openExtension";
 
 export const ExtensionInstalledHandler = (analytics: AnalyticsManager): void => {
-  chrome.runtime.onInstalled.addListener(async function (details) {
+  browser.runtime.onInstalled.addListener(async (details) => {
     console.log("It's alive!");
     console.log(details);
 

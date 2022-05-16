@@ -1,7 +1,9 @@
+import * as browser from "webextension-polyfill";
+
 import { openExtension } from "./openExtension";
 
 export const ExtensionOpenedHandler = (): void => {
-  chrome.browserAction.onClicked.addListener(() => {
+  browser.browserAction.onClicked.addListener(() => {
     openExtension();
   });
 };

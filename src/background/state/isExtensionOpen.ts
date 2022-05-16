@@ -1,18 +1,21 @@
+import * as browser from "webextension-polyfill";
+
 import { getExtensionUrl } from "../../shared/utilities/getExtensionUrl";
 
 interface Properties {
-  extensionOpenCallback: (tab: chrome.tabs.Tab) => any;
+  extensionOpenCallback: (tab: browser.Tabs.Tab) => any;
   extensionClosedCallback: () => any;
 }
 
-export const isExtensionOpen = ({ extensionOpenCallback, extensionClosedCallback }: Properties) => {
+export const isExtensionOpen = async ({
+  extensionOpenCallback,
+  extensionClosedCallback,
+}: Properties): Promise<void> => {
   const url = getExtensionUrl();
-  chrome.tabs.query({}, function (tabs) {
-    const tab = tabs.find((tab) => tab.url === url);
-    if (tab) {
-      extensionOpenCallback(tab);
-    } else {
-      extensionClosedCallback();
-    }
-  });
+  const tabs = await browser.tabs.query({ url });
+  if (tabs && tabs.length) {
+    extensionOpenCallback(tabs[0]);
+  } else {
+    extensionClosedCallback();
+  }
 };

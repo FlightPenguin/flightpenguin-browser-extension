@@ -1,27 +1,30 @@
+import * as browser from "webextension-polyfill";
+
 import { isExtensionOpen } from "./isExtensionOpen";
 
 export const openExtension = async (): Promise<void> => {
-  disableExtension();
-  isExtensionOpen({
+  await disableExtension();
+  await isExtensionOpen({
     extensionOpenCallback: handleExtensionOpen,
     extensionClosedCallback: handleExtensionNotOpen,
   });
-  enableExtension();
-  updateExtensionIfRequired();
+  await enableExtension();
+  await updateExtensionIfRequired();
 };
 
-const disableExtension = () => {
-  chrome.browserAction.disable();
+const disableExtension = async (): Promise<void> => {
+  await browser.browserAction.disable();
 };
 
-const enableExtension = () => {
-  chrome.browserAction.enable();
+const enableExtension = async (): Promise<void> => {
+  browser.browserAction.enable();
 };
 
-const handleExtensionOpen = (tab: chrome.tabs.Tab) => {
-  chrome.windows.update(tab.windowId, { focused: true }, () => {
-    if (tab.id != null) {
-      chrome.tabs.update(tab.id, { active: true });
+const handleExtensionOpen = async (tab: browser.Tabs.Tab): Promise<void> => {
+  if (tab.windowId !== null && tab.windowId !== undefined) {
+    await browser.windows.update(tab.windowId, { focused: true });
+    if (tab.id !== null && tab.id !== undefined) {
+      await browser.tabs.update(tab.id, { active: true });
     }
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
@@ -32,33 +35,27 @@ const handleExtensionOpen = (tab: chrome.tabs.Tab) => {
       // @ts-ignore
       level: Sentry.Severity.Debug,
     });
+  }
+};
+
+const handleExtensionNotOpen = async () => {
+  const url = browser.runtime.getURL("./index.html");
+  await browser.tabs.create({ url });
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
+  Sentry.addBreadcrumb({
+    category: "extension",
+    message: "Opened extension",
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    level: Sentry.Severity.Debug,
   });
 };
 
-const handleExtensionNotOpen = () => {
-  chrome.tabs.create({ url: chrome.extension.getURL("./index.html") }, (tab) => {
-    window.setTimeout(() => {
-      // need setTimeout here or else message will be missed by new tab.
-      if (tab.id != null) {
-        chrome.tabs.sendMessage(tab.id, {});
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
-        Sentry.addBreadcrumb({
-          category: "extension",
-          message: "Opened extension",
-          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-          // @ts-ignore
-          level: Sentry.Severity.Debug,
-        });
-      }
-    }, 1000);
-  });
-};
-
-const updateExtensionIfRequired = () => {
-  chrome.runtime.requestUpdateCheck((details) => {
-    if (details === "update_available") {
-      chrome.runtime.reload();
-    }
-  });
+const updateExtensionIfRequired = async () => {
+  const [status, details] = await browser.runtime.requestUpdateCheck();
+  if (status === "update_available") {
+    console.debug(details);
+    browser.runtime.reload();
+  }
 };
