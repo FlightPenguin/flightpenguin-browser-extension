@@ -1,3 +1,5 @@
+import * as browser from "webextension-polyfill";
+
 import { AnalyticsManager } from "./AnalyticsManager";
 import {
   handleClearSelections,
@@ -22,7 +24,10 @@ import {
 import { ProviderManager } from "./ProviderManager";
 
 export const ListenerManager = (providerManager: ProviderManager, analyticsManager: AnalyticsManager): void => {
-  chrome.runtime.onMessage.addListener(async function (message, sender, sendResponse) {
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
+  // seriously, screw this maintainer: https://github.com/Lusito/webextension-polyfill-ts/issues/54
+  browser.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
     sendResponse({ received: true, responderName: "background" });
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
