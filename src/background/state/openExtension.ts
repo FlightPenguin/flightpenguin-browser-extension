@@ -1,5 +1,6 @@
 import * as browser from "webextension-polyfill";
 
+import { focusTab } from "../../shared/utilities/tabs/focusTab";
 import { isExtensionOpen } from "./isExtensionOpen";
 
 export const openExtension = async (): Promise<void> => {
@@ -21,21 +22,16 @@ const enableExtension = async (): Promise<void> => {
 };
 
 const handleExtensionOpen = async (tab: browser.Tabs.Tab): Promise<void> => {
-  if (tab.windowId !== null && tab.windowId !== undefined) {
-    await browser.windows.update(tab.windowId, { focused: true });
-    if (tab.id !== null && tab.id !== undefined) {
-      await browser.tabs.update(tab.id, { active: true });
-    }
+  await focusTab(tab);
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
+  Sentry.addBreadcrumb({
+    category: "extension",
+    message: "Focused extension",
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
-    Sentry.addBreadcrumb({
-      category: "extension",
-      message: "Focused extension",
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
-      level: Sentry.Severity.Debug,
-    });
-  }
+    level: Sentry.Severity.Debug,
+  });
 };
 
 const handleExtensionNotOpen = async () => {
