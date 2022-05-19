@@ -29,6 +29,7 @@ chrome.runtime.onMessage.addListener(async function (message, sender, sendRespon
   switch (message.event) {
     case "BEGIN_PARSING":
       try {
+        document.cookie = "preferred_currency=usd";
         suppressOfferFlightPenguinPopup();
         sendProcessing("kiwi");
         sendScraperStarting("kiwi");
