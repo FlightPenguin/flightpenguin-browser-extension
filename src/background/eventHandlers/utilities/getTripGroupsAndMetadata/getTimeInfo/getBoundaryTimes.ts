@@ -12,7 +12,7 @@ export const getBoundaryTimes = (
   // ensure lower/upper boundary fit exactly into intervals
   const hours = differenceInHours(upperBoundary, lowerBoundary);
   if (hours % increment !== 0) {
-    upperBoundary = addHours(upperBoundary, hours % increment);
+    upperBoundary = addHours(upperBoundary, increment - (hours % increment));
   }
 
   return { lowerBoundary, upperBoundary };
