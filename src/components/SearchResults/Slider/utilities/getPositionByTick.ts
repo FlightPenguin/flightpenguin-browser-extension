@@ -19,7 +19,8 @@ export const getPositionByTick = ({
 }: GetPositionByTickProps): number => {
   validateInput({ value, intervals, tripContainerWidth });
 
-  const ticks = getSliderTicks({ intervals });
+  const [minimumValue, maximumValue] = getSliderTicks({ intervals });
+  const ticks = maximumValue - minimumValue;
   const adjustmentValue = applyAdjustment ? thumbWidthWrapperValue / 2 : 0;
 
   return new Decimal(tripContainerWidth)

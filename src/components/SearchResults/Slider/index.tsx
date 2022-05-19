@@ -39,14 +39,14 @@ const TimelineSlider = ({
     Our UI shenanigans mask this, but do not solve the problem.  So, we have to directly control state.
     Note that 112 = 28 * 4, which is a hardcode from our skeleton intervals...
    */
-  const [ticks, setTicks] = useState(112);
-  const [values, setValues] = useState([0, 112]);
+  const [valuesRange, setValuesRange] = useState(() => getSliderTicks({ intervals }));
+  const [values, setValues] = useState(() => getSliderTicks({ intervals }));
 
   useEffect(() => {
-    const tickCount = getSliderTicks({ intervals });
-    setTicks(tickCount);
+    const [minimumValue, maximumValue] = getSliderTicks({ intervals });
+    setValuesRange([minimumValue, maximumValue]);
     if (!touched) {
-      setValues([0, tickCount]);
+      setValues([minimumValue, maximumValue]);
     }
   }, [intervals, touched]);
 
@@ -67,8 +67,8 @@ const TimelineSlider = ({
         ariaValuetext={(state) => `Thumb value ${state.valueNow}`}
         value={values}
         disabled={disabled}
-        max={ticks}
-        min={0}
+        max={valuesRange[1]}
+        min={valuesRange[0]}
         minDistance={8}
         pearling
         renderThumb={(props, state) => {
@@ -77,8 +77,8 @@ const TimelineSlider = ({
               key={`slider-thumb-${state.index}`}
               state={state}
               props={props}
-              minimumValue={0}
-              maximumValue={ticks}
+              minimumValue={valuesRange[0]}
+              maximumValue={valuesRange[1]}
               startDate={startDate}
               intervals={intervals}
               heightValue={heightValue}
@@ -97,8 +97,8 @@ const TimelineSlider = ({
               props={props}
               heightValue={heightValue}
               intervals={intervals}
-              minimumValue={0}
-              maximumValue={ticks}
+              minimumValue={valuesRange[0]}
+              maximumValue={valuesRange[1]}
               touched={touched}
               tripContainerWidth={tripContainerWidth}
             />
