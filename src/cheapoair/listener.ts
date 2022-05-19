@@ -27,6 +27,7 @@ export const initMessageListener = (observer: CheapoairModalObserver): void => {
     switch (message.event) {
       case "BEGIN_PARSING":
         try {
+          document.cookie = "currency=usd";
           suppressOfferFlightPenguinPopup();
           sendProcessing("cheapoair");
           sendScraperStarting("cheapoair");
