@@ -32,7 +32,7 @@ chrome.runtime.onMessage.addListener(async function (message, sender, sendRespon
   switch (message.event) {
     case "BEGIN_PARSING":
       try {
-        document.cookie = "IBU_FLIGHT_LIST_STYLE=Merged";
+        document.cookie = "IBU_FLIGHT_LIST_STYLE=Merged;cookiePricesDisplayed=USD";
         suppressOfferFlightPenguinPopup();
         sendProcessing("trip");
         sendScraperStarting("trip");

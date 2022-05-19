@@ -11,7 +11,7 @@ export const getUrl = (formData: FlightSearchFormData): string => {
   const destinationCity = getCityValue(from);
   const arrivalCity = getCityValue(to);
 
-  let url = `https://www.trip.com/flights/${from.value.toUpperCase()}-to-${to.value.toUpperCase()}/tickets-${from.value.toUpperCase()}-${to.value.toUpperCase()}?FlightWay=${tripType}&class=${cabinValue}&Quantity=${numPax}&ddate=${fromDate}&dcity=${destinationCity}&acity=${arrivalCity}`;
+  let url = `https://us.trip.com/flights/${from.value.toUpperCase()}-to-${to.value.toUpperCase()}/tickets-${from.value.toUpperCase()}-${to.value.toUpperCase()}?FlightWay=${tripType}&class=${cabinValue}&Quantity=${numPax}&ddate=${fromDate}&dcity=${destinationCity}&acity=${arrivalCity}&curr=USD`;
   if (roundtrip) {
     url += `&rdate=${toDate}`;
   }
