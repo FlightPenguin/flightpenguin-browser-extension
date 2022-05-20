@@ -16,7 +16,7 @@ export const getQueryParams = (formData: FlightSearchFormData): FlightSearchDeta
     infs: 0,
     infl: 0,
     timestamp: new Date().valueOf() / 1000,
-    currency: "USD",
+    curr: "USD",
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
   } as FlightSearchDetails;
