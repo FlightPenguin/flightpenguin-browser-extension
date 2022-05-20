@@ -18,9 +18,9 @@ interface CardData {
   trips: TripFlightData[];
 }
 
-export const getCardData = (itineraryCard: HTMLDivElement, expectedTripCount: number): CardData => {
+export const getCardData = async (itineraryCard: HTMLDivElement, expectedTripCount: number): Promise<CardData> => {
   const bookingLink = getBookingLink(itineraryCard);
-  const fare = getFare(itineraryCard);
+  const fare = await getFare(itineraryCard);
   const trackingId = getTrackingId(itineraryCard);
 
   const tripContainers = getTripContainers(itineraryCard, expectedTripCount);

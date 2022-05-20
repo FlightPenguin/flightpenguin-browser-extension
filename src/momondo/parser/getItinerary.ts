@@ -19,7 +19,7 @@ export const getItinerary = async (
     ? [getParsedDate(formData.fromDate), getParsedDate(formData.toDate)]
     : [getParsedDate(formData.fromDate)];
 
-  const cardData = getCardData(itineraryCard, expectedTripCount);
+  const cardData = await getCardData(itineraryCard, expectedTripCount);
 
   const modal = await getModal(itineraryCard);
   updateBookingLinks(modal);
