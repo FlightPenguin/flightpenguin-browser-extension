@@ -31,6 +31,12 @@ export class MissingElementLookupError extends ParserError {
   }
 }
 
+export class CurrencyMismatchError extends ParserError {
+  constructor(message: string) {
+    super(message);
+  }
+}
+
 export class HttpError extends Error {
   public statusCode: string;
   public statusMessage: string;
