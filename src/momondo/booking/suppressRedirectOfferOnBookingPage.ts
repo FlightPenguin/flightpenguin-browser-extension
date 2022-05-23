@@ -1,4 +1,4 @@
-import { suppressOfferFlightPenguinPopup } from "../../shared/utilities/suppressOfferFlightPenguinPopup";
+import { suppressOfferFlightPenguinPopup } from "../../collectors/generic/activeCollectorSuppression/suppressOfferFlightPenguinPopup";
 import { isBookingPage } from "./isBookingPage";
 
 export const suppressRedirectOfferOnBookingPage = (): void => {
