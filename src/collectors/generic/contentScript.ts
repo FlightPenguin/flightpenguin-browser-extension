@@ -10,7 +10,7 @@ window.Sentry.init({
   tracesSampleRate: 1.0,
 });
 
-import { sendAnalyticsPageView } from "../shared/events";
+import { sendAnalyticsPageView } from "../../shared/events";
 import { showFlightPenguinPopup } from "./showFlightPenguinPopup";
 
 try {

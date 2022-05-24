@@ -10,7 +10,7 @@ const defaultEntry = {
   momondo: "./src/momondo/contentScript.ts",
   kiwi: "./src/kiwi/contentScript.ts",
   trip: "./src/trip/contentScript.ts",
-  generic: "./src/generic/contentScript.ts",
+  generic: "./src/collectors/generic/contentScript.ts",
   flightpenguin: "./src/flightpenguin/contentScript.ts",
 };
 
@@ -43,7 +43,7 @@ const basePlugins = [
   new ProgressPlugin({}),
   new DefinePlugin({
     "process.env.BUMBAG_ENV": JSON.stringify("not test"),
-    "process.env.VERSION": JSON.stringify("1.19.6"),
+    "process.env.VERSION": JSON.stringify("1.19.7"),
   }),
   new EnvkeyWebpackPlugin({
     permitted: [
