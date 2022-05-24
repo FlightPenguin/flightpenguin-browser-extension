@@ -2,6 +2,7 @@ import { Box, Flex, Image, Modal, Text } from "bumbag";
 import React, { useEffect, useState } from "react";
 import * as browser from "webextension-polyfill";
 
+import { setSuppressionFlag } from "../../../collectors/generic/recentDisplaySuppression/setSuppressionFlag";
 import { sendOpenExtension } from "../../../shared/events/";
 import { sendSearchDecision } from "../../../shared/events/analytics/searchDecision";
 import { hasVisitedRecently } from "../utilities/hasVisitedRecently";
@@ -66,6 +67,7 @@ export const OfferFlightSearchModal = (): React.ReactElement => {
                       if (!loadingSelection) {
                         setLoadingSelection(true);
                         sendOpenExtension();
+                        setSuppressionFlag(1);
                         sendSearchDecision("Flight Penguin");
                       }
                     }}
@@ -73,6 +75,7 @@ export const OfferFlightSearchModal = (): React.ReactElement => {
                       if (!loadingSelection && event.charCode === 13) {
                         setLoadingSelection(true);
                         sendOpenExtension();
+                        setSuppressionFlag(1);
                         sendSearchDecision("Flight Penguin");
                       }
                     }}
@@ -99,7 +102,7 @@ export const OfferFlightSearchModal = (): React.ReactElement => {
                       if (!loadingSelection) {
                         setLoadingSelection(true);
                         setHasSeenOffer(true);
-                        sessionStorage.setItem("hasOfferedFlightPenguinSwitch", "true");
+                        setSuppressionFlag(3);
                         modal.setVisible(false);
                         sendSearchDecision(siteName);
                       }
@@ -108,7 +111,7 @@ export const OfferFlightSearchModal = (): React.ReactElement => {
                       if (!loadingSelection && event.charCode === 13) {
                         setLoadingSelection(true);
                         setHasSeenOffer(true);
-                        sessionStorage.setItem("hasOfferedFlightPenguinSwitch", "true");
+                        setSuppressionFlag(3);
                         modal.setVisible(false);
                         sendSearchDecision(siteName);
                       }

@@ -166,8 +166,12 @@ export class ProviderManager {
   }
 
   setParsing(providerName: string): void {
-    this.setStatus(providerName, "PARSING");
-    this.incrementParsingAttempts(providerName);
+    const priorStatus = this.getStatus(providerName);
+
+    if (priorStatus !== "PARSING") {
+      this.setStatus(providerName, "PARSING");
+      this.incrementParsingAttempts(providerName);
+    }
   }
 
   setFailed(providerName: string): void {

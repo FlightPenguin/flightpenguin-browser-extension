@@ -60,6 +60,7 @@ const TimelineContainer = ({
   const [updateSearchButtonDisabled, setUpdateSearchButtonDisabled] = useState(false);
 
   const intervalInfo = getIntervalInfo(meta, eligibleTrips, tripContainerWidth);
+  const tripsAvailable = !!(eligibleTrips && eligibleTrips.length);
 
   useEffect(() => {
     const trips = getSkeletonTrips(formData, containerIndex, intervalInfo.earliestTime, intervalInfo.latestTime);
@@ -127,7 +128,7 @@ const TimelineContainer = ({
       altitude="400"
       width="100%"
     >
-      <Box display="flex" flexDirection="row">
+      <Box display="flex" flexDirection="row" paddingBottom={tripsAvailable ? "0px" : "minor-1"}>
         <TimelineTitle
           key="search-title"
           arrivalLocation={arrivalLocation}
@@ -152,7 +153,7 @@ const TimelineContainer = ({
           onSliderChange={(minDate: Date, maxDate: Date) => {
             setFilterDateRange({ lowerBound: minDate, upperBound: maxDate });
           }}
-          sliderDisabled={!!selectedTrip}
+          sliderDisabled={!tripsAvailable || !!selectedTrip}
           tripCount={displayTrips.length}
           tripContainerWidth={tripContainerWidth}
           startDate={intervalInfo.earliestTime}
@@ -160,7 +161,7 @@ const TimelineContainer = ({
       </Box>
       <Box data-name={`trip-grid-wrapper-${containerIndex}`} display="flex">
         <Box className="border-flex-box" display="flex" width="100%">
-          {eligibleTrips && eligibleTrips.length ? (
+          {tripsAvailable ? (
             !eligibleTrips.length &&
             (filterDateRange.lowerBound ||
               filterDateRange.upperBound ||

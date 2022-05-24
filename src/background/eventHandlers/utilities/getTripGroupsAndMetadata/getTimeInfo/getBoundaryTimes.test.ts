@@ -22,7 +22,7 @@ describe("getBoundaryTimes happy path", () => {
     );
     expect(value).toEqual({
       lowerBoundary: getParsedISODate("2022-04-06T20:00:00.000Z"),
-      upperBoundary: getParsedISODate("2022-04-07T18:00:00.000Z"),
+      upperBoundary: getParsedISODate("2022-04-07T20:00:00.000Z"),
     });
   });
 });

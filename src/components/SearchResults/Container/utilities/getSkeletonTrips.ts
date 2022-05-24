@@ -89,7 +89,7 @@ export const getSkeletonTrips = (
       trip: new Trip({
         arrivalDateTime: addMinutes(addHours(departureDate, 20), 45),
         arrivalLocation: { code: "ABC", type: "AIRPORT" },
-        departureDateTime: addMinutes(addHours(departureDate, 18), 40),
+        departureDateTime: addMinutes(addHours(departureDate, 17), 5),
         departureLocation: { code: departureLocation.label, type: departureLocation?.raw?.city ? "CITY" : "AIRPORT" },
         durationMinutes: 220,
         tripComponents: [

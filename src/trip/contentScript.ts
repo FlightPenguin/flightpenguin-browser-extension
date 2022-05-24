@@ -12,13 +12,13 @@ window.Sentry.init({
 
 import * as browser from "webextension-polyfill";
 
+import { suppressOfferFlightPenguinPopup } from "../collectors/generic/activeCollectorSuppression/suppressOfferFlightPenguinPopup";
 import { sendFailedScraper, sendItineraryNotFound, sendScraperStarting } from "../shared/events";
 import { sendFailed, sendProcessing } from "../shared/events/analytics/scrapers";
 import { pollForNoResults } from "../shared/parser/pollForNoResults";
 import { FlightSearchFormData } from "../shared/types/FlightSearchFormData";
 import { addBackToSearchButton } from "../shared/ui/backToSearch";
 import { stopScrollingNow } from "../shared/ui/stopScrolling";
-import { suppressOfferFlightPenguinPopup } from "../shared/utilities/suppressOfferFlightPenguinPopup";
 import { getFlightContainer } from "./parser/getFlightContainer";
 import { FlightObserver } from "./parser/observer";
 import { ensureBookTogetherSelected } from "./ui/ensureBookTogetherSelected";
@@ -36,7 +36,7 @@ browser.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
   switch (message.event) {
     case "BEGIN_PARSING":
       try {
-        document.cookie = "IBU_FLIGHT_LIST_STYLE=Merged";
+        document.cookie = "IBU_FLIGHT_LIST_STYLE=Merged;cookiePricesDisplayed=USD";
         suppressOfferFlightPenguinPopup();
         sendProcessing("trip");
         sendScraperStarting("trip");

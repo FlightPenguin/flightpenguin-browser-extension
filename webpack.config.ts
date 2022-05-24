@@ -10,7 +10,7 @@ const defaultEntry = {
   momondo: "./src/momondo/contentScript.ts",
   kiwi: "./src/kiwi/contentScript.ts",
   trip: "./src/trip/contentScript.ts",
-  generic: "./src/generic/contentScript.ts",
+  generic: "./src/collectors/generic/contentScript.ts",
   flightpenguin: "./src/flightpenguin/contentScript.ts",
 };
 

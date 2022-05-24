@@ -10,7 +10,7 @@ export const getUrl = (formData: FlightSearchFormData): string => {
   const departureValue = getAirportOrCityValue(from);
   const arrivalValue = getAirportOrCityValue(to);
 
-  return `https://www.kiwi.com/us/search/results/${departureValue}/${arrivalValue}/${fromDate}/${returnDate}?adults=${numPax}&cabinClass=${cabinValue}-false&returnFromDifferentAirport=false&returnToDifferentAirport=false&sortBy=duration`;
+  return `https://www.kiwi.com/us/search/results/${departureValue}/${arrivalValue}/${fromDate}/${returnDate}?adults=${numPax}&cabinClass=${cabinValue}-false&returnFromDifferentAirport=false&returnToDifferentAirport=false&sortBy=duration&currency=usd`;
 };
 
 export const getAirportOrCityValue = (airport: Airport): string => {

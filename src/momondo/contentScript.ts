@@ -11,12 +11,12 @@ window.Sentry.init({
 });
 import * as browser from "webextension-polyfill";
 
+import { suppressOfferFlightPenguinPopup } from "../collectors/generic/activeCollectorSuppression/suppressOfferFlightPenguinPopup";
 import { sendFailedScraper, sendItineraryNotFound, sendScraperStarting } from "../shared/events";
 import { sendFailed, sendProcessing } from "../shared/events/analytics/scrapers";
 import { pollForNoResults } from "../shared/parser/pollForNoResults";
 import { addBackToSearchButton } from "../shared/ui/backToSearch";
 import { stopScrollingNow } from "../shared/ui/stopScrolling";
-import { suppressOfferFlightPenguinPopup } from "../shared/utilities/suppressOfferFlightPenguinPopup";
 import { suppressRedirectOfferOnBookingPage } from "./booking/suppressRedirectOfferOnBookingPage";
 import { getResultsContainer } from "./parser/getResultsContainer";
 import { ItineraryObserver } from "./parser/observer";

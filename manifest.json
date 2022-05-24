@@ -103,6 +103,7 @@
         "*://*.westjet.com/*"
       ],
       "exclude_matches": [
+        "https://us.trip.com/flights/*",
         "https://www.trip.com/flights/*",
         "https://www.southwest.com/air/booking/select.html?*",
         "https://www.southwest.com/air/booking/index.html?*",
