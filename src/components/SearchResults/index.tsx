@@ -60,10 +60,7 @@ export const SearchResults = ({
   const [itineraryNotFound, setItineraryNotFound] = useState(false);
 
   useEffect(() => {
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
-    browser.runtime.onMessage.addListener((message, sender, sendResponse) => {
-      sendResponse({ received: true, responderName: "searchResults" });
+    browser.runtime.onMessage.addListener((message, sender) => {
       console.debug(message);
       switch (message.event) {
         case "TRIP_RESULTS_FOR_CLIENT":

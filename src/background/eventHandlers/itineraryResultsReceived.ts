@@ -1,11 +1,11 @@
 import { Itinerary, ItineraryInput } from "../../shared/types/Itinerary";
 import { ProviderManager } from "../ProviderManager";
 
-export const handleItineraryResultsReceived = (
+export const handleItineraryResultsReceived = async (
   providerManager: ProviderManager,
   itinerariesInputs: ItineraryInput[],
   providerName: string,
-): undefined | void => {
+): Promise<undefined | void> => {
   if (itinerariesInputs.length === 0) {
     console.debug("Received flight results... but the list was empty");
     return; // TODO: Enhance
@@ -27,5 +27,5 @@ export const handleItineraryResultsReceived = (
     return; // TODO: Better handle
   }
 
-  providerManager.sendTripResultsToIndexPage();
+  await providerManager.sendTripResultsToIndexPage();
 };

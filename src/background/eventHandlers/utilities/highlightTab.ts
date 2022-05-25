@@ -18,16 +18,12 @@ export const highlightTab = async (providerManager: ProviderManager): Promise<vo
   ) {
     const window = await browser.windows.update(windowId, { focused: true });
     if (window) {
-      const response = await browser.tabs.sendMessage(tabId, {
+      await browser.tabs.sendMessage(tabId, {
         event: "HIGHLIGHT_FLIGHT",
         itineraryId: itinerary.getId(),
         sourceId: itinerary.getTopSource().getId() || "",
         provider: provider.getName(),
       });
-      if (!response || !response.received) {
-        providerManager.closeWindows();
-        providerManager.sendMessageToIndexPage({ event: "HIGHLIGHT_TAB_FAILED" });
-      }
       await browser.tabs.update(tabId, { active: true, highlighted: true });
     }
   } else {

@@ -27,10 +27,7 @@ let observer: ItineraryObserver | null = null;
 
 suppressRedirectOfferOnBookingPage();
 
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore
-browser.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
-  sendResponse({ received: true, responderName: "momondo" });
+browser.runtime.onMessage.addListener(async (message, sender) => {
   console.debug(message);
   switch (message.event) {
     case "BEGIN_PARSING":

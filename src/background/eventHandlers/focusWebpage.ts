@@ -1,5 +1,5 @@
 import { ProviderManager } from "../ProviderManager";
 
-export const handleFocusWebpage = (providerManager: ProviderManager) => {
-  providerManager.setPrimaryTabAsFocus();
+export const handleFocusWebpage = async (providerManager: ProviderManager): Promise<void> => {
+  await providerManager.setPrimaryTabAsFocus();
 };

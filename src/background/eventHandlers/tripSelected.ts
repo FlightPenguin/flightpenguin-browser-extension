@@ -15,7 +15,7 @@ export const handleTripSelected = async (
   } else {
     providerManager.sendTripResultsToIndexPage();
     if (providerManager.isExpectingMoreSearching()) {
-      providerManager.sendMessageToIndexPage({ event: "SCRAPING_STATUS", complete: false });
+      await providerManager.sendMessageToIndexPage({ event: "SCRAPING_STATUS", complete: false });
       // TODO: Handle expedia
       // Probably want to send a notice to the expedia scraper a flight was selected, and have it send a notice to update status
     }

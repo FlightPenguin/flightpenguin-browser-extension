@@ -1,10 +1,10 @@
 import { ProviderManager } from "../ProviderManager";
 
-export const handleItineraryNotFound = (providerManager: ProviderManager, id: string): void => {
+export const handleItineraryNotFound = async (providerManager: ProviderManager, id: string): Promise<void> => {
   providerManager.removeItinerary(id);
-  providerManager.sendMessageToIndexPage({
+  await providerManager.sendMessageToIndexPage({
     event: "SELECTED_ITINERARY_NOT_FOUND",
     id,
   });
-  providerManager.setPrimaryTabAsFocus();
+  await providerManager.setPrimaryTabAsFocus();
 };
