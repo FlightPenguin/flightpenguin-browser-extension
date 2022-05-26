@@ -16,17 +16,31 @@ export const highlightTab = async (providerManager: ProviderManager): Promise<vo
     tabId !== undefined &&
     !isNaN(tabId)
   ) {
-    const window = await browser.windows.update(windowId, { focused: true });
-    if (window) {
-      await browser.tabs.sendMessage(tabId, {
-        event: "HIGHLIGHT_FLIGHT",
-        itineraryId: itinerary.getId(),
-        sourceId: itinerary.getTopSource().getId() || "",
-        provider: provider.getName(),
-      });
-      await browser.tabs.update(tabId, { active: true, highlighted: true });
+    try {
+      const window = await browser.windows.update(windowId, { focused: true });
+      if (window) {
+        await browser.tabs.sendMessage(tabId, {
+          event: "HIGHLIGHT_FLIGHT",
+          itineraryId: itinerary.getId(),
+          sourceId: itinerary.getTopSource().getId() || "",
+          provider: provider.getName(),
+        });
+        await browser.tabs.update(tabId, { active: true, highlighted: true });
+      } else {
+        console.log("Unable to update window");
+        handleError(providerManager);
+      }
+    } catch {
+      console.log("Unable to update window/tab focus");
+      handleError(providerManager);
     }
   } else {
-    throw Error("Unable to find valid window & tab id");
+    console.log("Unable to find valid window & tab id");
+    handleError(providerManager);
   }
+};
+
+const handleError = (providerManager: ProviderManager): void => {
+  providerManager.closeWindows();
+  providerManager.sendMessageToIndexPage({ event: "HIGHLIGHT_TAB_FAILED" });
 };
