@@ -35,6 +35,7 @@ interface ProviderState {
   onReady: () => void;
   timer: ReturnType<typeof setTimeout> | null;
   attempts: number;
+  failureReason: "CLOSED" | "ERROR" | null;
 }
 
 const terminalStates = ["FAILED", "SUCCESS"];
@@ -45,6 +46,7 @@ const defaultProviderState: ProviderState = {
   onReady: DEFAULT_ON_READY_FUNCTION,
   timer: null,
   attempts: 0,
+  failureReason: null,
 };
 
 const providerURLBaseMap: { [key: string]: (formData: FlightSearchFormData) => string } = {
@@ -85,32 +87,50 @@ export class ProviderManager {
     this.formData = null;
     this.primaryTab = null;
     this.setPrimaryTab();
-    this.setupClosePrimaryTabListener();
+    this.setupCloseTabListener();
 
     this.failToStartTracker = null;
 
-    // this.sendTripResultsToIndexPage = debounce(
-    //   async () => {
-    //     await this._sendTripResultsToIndexPage.bind(this);
-    //   },
-    //   500,
-    //   {
-    //     leading: true,
-    //     maxWait: 3000,
-    //   },
-    // );
-    this.sendTripResultsToIndexPage = debounce(async () => {
-      await this._sendTripResultsToIndexPage();
-    }, 500);
+    this.sendTripResultsToIndexPage = debounce(
+      async () => {
+        await this._sendTripResultsToIndexPage();
+      },
+      500,
+      {
+        leading: true,
+        maxWait: 3000,
+      },
+    );
   }
 
-  setupClosePrimaryTabListener(): void {
+  setupCloseTabListener(): void {
     // eslint-disable-next-line @typescript-eslint/no-this-alias
     const that = this;
 
-    browser.tabs.onRemoved.addListener(async (tabId: number) => {
+    browser.tabs.onRemoved.addListener(async (tabId, removeInfo) => {
       if (tabId === that.getPrimaryTabId()) {
         await that.closeWindows();
+      }
+
+      if (tabId !== that.getPrimaryTabId()) {
+        const details = that.getProviderByTabId(tabId);
+        if (details && details.providerName) {
+          const providerName = details.providerName;
+          const { height, left, top, width } = details.details.window || {
+            height: undefined,
+            left: undefined,
+            top: undefined,
+            width: undefined,
+          };
+
+          that.setFailed(providerName);
+          const isRetrying = await that.retry(providerName, { height, left, top, width });
+          if (!isRetrying) {
+            if (that.isComplete()) {
+              that.sendMessageToIndexPage({ event: "SCRAPING_STATUS", complete: true });
+            }
+          }
+        }
       }
     });
   }
@@ -301,6 +321,16 @@ export class ProviderManager {
     return null;
   }
 
+  getProviderByTabId(tabId: number): { details: ProviderState; providerName: string } | null {
+    const records = Object.entries(this.state).filter(([providerName, providerDetails]) => {
+      return providerName && providerDetails && providerDetails?.tab?.id && providerDetails.tab.id === tabId;
+    });
+    if (records.length) {
+      return { providerName: records[0][0], details: records[0][1] };
+    }
+    return null;
+  }
+
   setPrimaryTab(): void {
     isExtensionOpen({
       extensionOpenCallback: (tab) => {
@@ -322,6 +352,7 @@ export class ProviderManager {
     message: Record<string, unknown>,
   ): Promise<void> {
     this.setParsing(provider); // de facto starting...
+    this.clearFailureReason(provider);
 
     const { height, width, left, top } = windowConfig;
     const window = await browser.windows.create({
@@ -357,10 +388,14 @@ export class ProviderManager {
   async closeWindow(providerName: string): Promise<void> {
     const windowId = this.getWindowId(providerName);
     if (windowId !== null && windowId !== undefined) {
-      const window = await browser.windows.get(windowId);
-      if (window && window.id) {
-        this.setAlertOnWindowClose(providerName, false);
-        await browser.windows.remove(windowId);
+      try {
+        const window = await browser.windows.get(windowId);
+        if (window && window.id) {
+          this.setAlertOnWindowClose(providerName, false);
+          await browser.windows.remove(windowId);
+        }
+      } catch (e) {
+        console.debug(`Unable to close window for ${providerName}`);
       }
     }
   }
@@ -400,7 +435,12 @@ export class ProviderManager {
 
   async retry(providerName: string, windowConfig: WindowConfig): Promise<boolean> {
     await this.closeWindow(providerName);
-    if (this.state[providerName].attempts < 2 && !!this.formData && this.selectedTrips.length === 0) {
+    if (
+      this.state[providerName].failureReason === "ERROR" &&
+      this.state[providerName].attempts < 2 &&
+      !!this.formData &&
+      this.selectedTrips.length === 0
+    ) {
       const url = providerURLBaseMap[providerName](this.formData);
       const message = { event: "BEGIN_PARSING", formData: this.formData };
       await this.createWindow(url, providerName, windowConfig, message);
@@ -496,5 +536,15 @@ export class ProviderManager {
       }
     }
     return false;
+  }
+
+  setFailureReason(providerName: string, reason: "CLOSED" | "ERROR"): void {
+    if (reason && !this.state[providerName].failureReason) {
+      this.state[providerName].failureReason = reason;
+    }
+  }
+
+  clearFailureReason(providerName: string): void {
+    this.state[providerName].failureReason = null;
   }
 }

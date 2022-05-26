@@ -54,13 +54,7 @@ export const ListenerManager = (providerManager: ProviderManager, analyticsManag
         await handleScraperStarting(providerManager, message.providerName);
         break;
       case "FAILED_SCRAPER":
-        await handleScraperFailed(
-          providerManager,
-          message.providerName,
-          message.description,
-          message.windowConfig,
-          sender,
-        );
+        await handleScraperFailed(providerManager, message.providerName);
         break;
       case "ITINERARY_RESULTS":
         await handleItineraryResultsReceived(providerManager, message.itineraries, message.provider);
