@@ -1,3 +1,5 @@
+import * as browser from "webextension-polyfill";
+
 import { sendFocusWebpage } from "./sendFocusWebpage";
 
 describe("sendFocusWebpage happy path", () => {
