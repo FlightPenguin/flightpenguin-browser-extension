@@ -35,7 +35,6 @@ interface ProviderState {
   onReady: () => void;
   timer: ReturnType<typeof setTimeout> | null;
   attempts: number;
-  failureReason: "CLOSED" | "ERROR" | null;
 }
 
 const terminalStates = ["FAILED", "SUCCESS"];
@@ -46,7 +45,6 @@ const defaultProviderState: ProviderState = {
   onReady: DEFAULT_ON_READY_FUNCTION,
   timer: null,
   attempts: 0,
-  failureReason: null,
 };
 
 const providerURLBaseMap: { [key: string]: (formData: FlightSearchFormData) => string } = {
@@ -107,7 +105,7 @@ export class ProviderManager {
     // eslint-disable-next-line @typescript-eslint/no-this-alias
     const that = this;
 
-    browser.tabs.onRemoved.addListener(async (tabId, removeInfo) => {
+    browser.tabs.onRemoved.addListener(async (tabId) => {
       if (tabId === that.getPrimaryTabId()) {
         await that.closeWindows();
       }
@@ -126,8 +124,13 @@ export class ProviderManager {
           that.setFailed(providerName);
           const isRetrying = await that.retry(providerName, { height, left, top, width });
           if (!isRetrying) {
-            if (that.isComplete()) {
-              that.sendMessageToIndexPage({ event: "SCRAPING_STATUS", complete: true });
+            if (that.getAlertOnWindowClose(providerName)) {
+              console.debug(`tab for ${providerName} closed`);
+              await that.sendMessageToIndexPage({
+                event: "WINDOW_CLOSED",
+                providerName: providerName,
+                status: "FAILED",
+              });
             }
           }
         }
@@ -352,7 +355,7 @@ export class ProviderManager {
     message: Record<string, unknown>,
   ): Promise<void> {
     this.setParsing(provider); // de facto starting...
-    this.clearFailureReason(provider);
+    this.setAlertOnWindowClose(provider, true);
 
     const { height, width, left, top } = windowConfig;
     const window = await browser.windows.create({
@@ -388,6 +391,7 @@ export class ProviderManager {
   async closeWindow(providerName: string): Promise<void> {
     const windowId = this.getWindowId(providerName);
     if (windowId !== null && windowId !== undefined) {
+      const closeStatus = this.getAlertOnWindowClose(providerName);
       try {
         const window = await browser.windows.get(windowId);
         if (window && window.id) {
@@ -396,6 +400,8 @@ export class ProviderManager {
         }
       } catch (e) {
         console.debug(`Unable to close window for ${providerName}`);
+      } finally {
+        this.setAlertOnWindowClose(providerName, closeStatus);
       }
     }
   }
@@ -436,7 +442,7 @@ export class ProviderManager {
   async retry(providerName: string, windowConfig: WindowConfig): Promise<boolean> {
     await this.closeWindow(providerName);
     if (
-      this.state[providerName].failureReason === "ERROR" &&
+      !this.state[providerName].alertOnWindowClose &&
       this.state[providerName].attempts < 2 &&
       !!this.formData &&
       this.selectedTrips.length === 0
@@ -536,15 +542,5 @@ export class ProviderManager {
       }
     }
     return false;
-  }
-
-  setFailureReason(providerName: string, reason: "CLOSED" | "ERROR"): void {
-    if (reason && !this.state[providerName].failureReason) {
-      this.state[providerName].failureReason = reason;
-    }
-  }
-
-  clearFailureReason(providerName: string): void {
-    this.state[providerName].failureReason = null;
   }
 }

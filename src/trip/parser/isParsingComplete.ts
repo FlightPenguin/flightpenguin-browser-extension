@@ -10,6 +10,9 @@ export const isComplete = async (flightCard: HTMLDivElement): Promise<boolean> =
 
   const processedFlightCount = getCurrentFlightNumber(flightCard);
   const totalExpectedFlights = getFlightTotal();
+  if (processedFlightCount > 10) {
+    throw new Error("MEOW");
+  }
 
   return processedFlightCount >= totalExpectedFlights;
 };
