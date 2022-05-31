@@ -25,18 +25,10 @@ import {
 import { ProviderManager } from "./ProviderManager";
 
 export const ListenerManager = (providerManager: ProviderManager, analyticsManager: AnalyticsManager): void => {
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  // @ts-ignore
-  // seriously, screw this maintainer: https://github.com/Lusito/webextension-polyfill-ts/issues/54
-  browser.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
-    sendResponse({ received: true, responderName: "background" });
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
+  browser.runtime.onMessage.addListener(async (message, sender) => {
     Sentry.addBreadcrumb({
       category: "extension",
       message: "Received message",
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
       level: Sentry.Severity.Debug,
       data: message,
     });
