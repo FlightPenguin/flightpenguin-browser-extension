@@ -1,3 +1,4 @@
+import * as Sentry from "@sentry/browser";
 import * as browser from "webextension-polyfill";
 
 import { AnalyticsManager } from "./AnalyticsManager";
@@ -96,9 +97,7 @@ export const ListenerManager = (providerManager: ProviderManager, analyticsManag
         handleUndominateTrip(providerManager, message.tripId);
         break;
       default:
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
-        window.Sentry.captureException(new Error(message));
+        Sentry.captureException(new Error(message));
         console.error(message);
         break;
     }

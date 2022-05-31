@@ -1,3 +1,4 @@
+import * as Sentry from "@sentry/browser";
 import * as browser from "webextension-polyfill";
 
 import { suppressOfferFlightPenguinPopup } from "../collectors/generic/activeCollectorSuppression/suppressOfferFlightPenguinPopup";
@@ -36,9 +37,7 @@ export const initMessageListener = (observer: CheapoairModalObserver): void => {
           observer.beginObservation();
           await getAllItineraries(formData, knownItineraries);
         } catch (error) {
-          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-          // @ts-ignore
-          window.Sentry.captureException(error);
+          Sentry.captureException(error);
           sendFailedScraper("cheapoair", error);
           sendFailed("cheapoair");
         }
@@ -48,9 +47,7 @@ export const initMessageListener = (observer: CheapoairModalObserver): void => {
           await openBookingLink(message.itineraryId, knownItineraries);
           observer.endObservation();
         } catch (error) {
-          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-          // @ts-ignore
-          window.Sentry.captureException(error);
+          Sentry.captureException(error);
           sendItineraryNotFound(message.itineraryId);
         }
         break;

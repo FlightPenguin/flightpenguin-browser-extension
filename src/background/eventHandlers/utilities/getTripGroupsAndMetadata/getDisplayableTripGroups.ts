@@ -1,3 +1,4 @@
+import * as Sentry from "@sentry/browser";
 import { differenceInMinutes } from "date-fns";
 import range from "lodash.range";
 
@@ -55,20 +56,14 @@ export const getDisplayableTripGroups = (
 };
 
 const sendZeroPainMessageToSentry = (trip: DisplayableTrip): void => {
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  // @ts-ignore
-  window.Sentry.addBreadcrumb({
+  Sentry.addBreadcrumb({
     category: "backend",
     message: `Zero pain for flight from ${trip.getTrip().getDepartureLocation().getCode()} on ${trip
       .getTrip()
       .getDepartureDateTime()} to ${trip.getTrip().getArrivalLocation().getCode()}  on ${trip
       .getTrip()
       .getArrivalDateTime()}`,
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
-    level: window.Sentry.Severity.Info,
+    level: Sentry.Severity.Info,
   });
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  // @ts-ignore
-  window.Sentry.captureMessage("Trip without pain");
+  Sentry.captureMessage("Trip without pain");
 };

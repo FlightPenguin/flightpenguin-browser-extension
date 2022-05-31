@@ -1,3 +1,5 @@
+import * as Sentry from "@sentry/browser";
+
 import { sendFailedScraper, sendScraperComplete } from "../../shared/events";
 import { sendFailed, sendSuccess } from "../../shared/events/analytics/scrapers";
 import { FlightSearchFormData } from "../../shared/types/FlightSearchFormData";
@@ -41,9 +43,7 @@ export class ItineraryObserver {
       } catch (error) {
         that.endObservation();
         console.error(error);
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
-        window.Sentry.captureException(error);
+        Sentry.captureException(error);
         sendFailedScraper("momondo", error);
         sendFailed("momondo");
       }
@@ -61,9 +61,7 @@ export class ItineraryObserver {
         } catch (error) {
           that.endObservation();
           console.error(error);
-          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-          // @ts-ignore
-          window.Sentry.captureException(error);
+          Sentry.captureException(error);
           sendFailedScraper("momondo", error);
           sendFailed("momondo");
         }

@@ -1,15 +1,8 @@
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore
-window.Sentry.init({
-  dsn: process.env.SENTRY_DSN,
-  environment: `${process.env.EXTENSION_ENV}`,
-  release: `${process.env.SENTRY_PROJECT}@${process.env.VERSION}`,
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  // @ts-ignore
-  integrations: [new window.Sentry.Integrations.BrowserTracing()],
-  tracesSampleRate: 1.0,
-});
+import { initializeSentry } from "../shared/initializeSentry";
 
+initializeSentry();
+
+import * as Sentry from "@sentry/browser";
 import * as browser from "webextension-polyfill";
 
 import { suppressOfferFlightPenguinPopup } from "../collectors/generic/activeCollectorSuppression/suppressOfferFlightPenguinPopup";
@@ -46,9 +39,7 @@ browser.runtime.onMessage.addListener(async (message, sender) => {
         pollForNoResults({ pollForNoResultsCheck: hasNoResults, providerName: "trip" });
       } catch (error) {
         console.error(error);
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
-        window.Sentry.captureException(error);
+        Sentry.captureException(error);
         sendFailedScraper("trip", error);
         sendFailed("trip");
       }
@@ -59,9 +50,7 @@ browser.runtime.onMessage.addListener(async (message, sender) => {
         await highlightFlight(message.itineraryId, formData);
       } catch (error) {
         console.error(error);
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
-        window.Sentry.captureException(error);
+        Sentry.captureException(error);
         sendItineraryNotFound(message.itineraryId);
       }
       break;
