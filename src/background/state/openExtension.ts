@@ -1,3 +1,4 @@
+import * as Sentry from "@sentry/browser";
 import * as browser from "webextension-polyfill";
 
 import { focusTab } from "../../shared/utilities/tabs/focusTab";
@@ -23,13 +24,9 @@ const enableExtension = async (): Promise<void> => {
 
 const handleExtensionOpen = async (tab: browser.Tabs.Tab): Promise<void> => {
   await focusTab(tab);
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  // @ts-ignore
   Sentry.addBreadcrumb({
     category: "extension",
     message: "Focused extension",
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
     level: Sentry.Severity.Debug,
   });
 };
@@ -37,13 +34,9 @@ const handleExtensionOpen = async (tab: browser.Tabs.Tab): Promise<void> => {
 const handleExtensionNotOpen = async () => {
   const url = browser.runtime.getURL("./index.html");
   await browser.tabs.create({ url });
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  // @ts-ignore
   Sentry.addBreadcrumb({
     category: "extension",
     message: "Opened extension",
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
     level: Sentry.Severity.Debug,
   });
 };
