@@ -4,6 +4,6 @@ export const handleNoFlightsFound = async (providerManager: ProviderManager, pro
   providerManager.setSuccessful(providerName);
   providerManager.closeWindow(providerName);
   if (providerManager.isComplete()) {
-    await providerManager.sendMessageToIndexPage({ event: "SCRAPING_STATUS", completed: true }, 3000);
+    await providerManager.sendMessageToIndexPage({ event: "SCRAPING_STATUS", complete: true }, 3000);
   }
 };

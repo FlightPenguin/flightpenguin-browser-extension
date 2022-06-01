@@ -7,7 +7,7 @@ export const handleOpenExtensionRequest = async (sender: browser.Runtime.Message
   await openExtension();
 
   const tab = sender.tab;
-  if (tab && tab.id) {
+  if (tab && tab.id !== undefined) {
     await browser.tabs.remove(tab.id);
   }
 };
