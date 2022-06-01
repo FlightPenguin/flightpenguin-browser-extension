@@ -8,7 +8,8 @@
     "build:dev": "npx webpack -c webpack.development.config.js --watch",
     "prepare": "husky install",
     "test": "export TZ=UTC && jest --silent",
-    "test:debug": "export TZ=UTC && jest"
+    "test:debug": "export TZ=UTC && jest",
+    "browser:dev:firefox": "node_modules/web-ext/bin/web-ext run"
   },
   "jest": {
     "globals": {
@@ -120,6 +121,7 @@
     "react-slider": "^1.3.1",
     "react-virtualized": "^9.22.3",
     "wait-for-the-element": "^4.0.0",
+    "web-ext": "^6.8.0",
     "yup": "^0.32.9"
   },
   "lint-staged": {
