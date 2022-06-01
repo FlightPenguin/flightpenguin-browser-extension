@@ -1,6 +1,6 @@
 import { ProviderManager } from "../ProviderManager";
 
-export const handleUndominateTrip = (providerManager: ProviderManager, tripId: string): void => {
+export const handleUndominateTrip = async (providerManager: ProviderManager, tripId: string): Promise<void> => {
   providerManager.addIdToDominationDenyList(tripId);
   providerManager.sendTripResultsToIndexPage();
 };

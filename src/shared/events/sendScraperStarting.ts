@@ -1,5 +1,7 @@
+import * as browser from "webextension-polyfill";
+
 export const sendScraperStarting = (providerName: string): void => {
-  chrome.runtime.sendMessage({
+  browser.runtime.sendMessage({
     event: "STARTING_SCRAPER",
     providerName: providerName,
   });

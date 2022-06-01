@@ -1,7 +1,7 @@
 {
   "name": "FlightPenguin",
   "short_name": "FlightPenguin",
-  "version": "1.19.7",
+  "version": "1.20.0",
   "description": "From some of the builders of Hipmunk, Flight Penguin takes the pain out of flight search.",
   "background": {
     "page": "src/background.html",
@@ -12,7 +12,6 @@
       "matches": ["https://www.trip.com/flights/*"],
       "css": ["src/shared/contentScript.css"],
       "js": [
-        "src/shared/sentry.js",
         "dist/trip.bundle.js"
       ]
     },
@@ -20,7 +19,6 @@
       "matches": ["https://www.cheapoair.com/air*"],
       "css": ["src/shared/contentScript.css"],
       "js": [
-        "src/shared/sentry.js",
         "dist/cheapoair.bundle.js"
       ]
     },
@@ -28,7 +26,6 @@
       "matches": ["https://www.kiwi.com/us/search/results/*"],
       "css": ["src/shared/contentScript.css"],
       "js": [
-        "src/shared/sentry.js",
         "dist/kiwi.bundle.js"
       ]
     },
@@ -36,7 +33,6 @@
       "matches": ["https://www.momondo.com/flight-search/*", "https://www.momondo.com/book/*"],
       "css": ["src/shared/contentScript.css"],
       "js": [
-        "src/shared/sentry.js",
         "dist/momondo.bundle.js"
       ]
     },
@@ -46,7 +42,6 @@
         "https://flightpenguin.com/talking_travel*"
       ],
       "js": [
-        "src/shared/sentry.js",
         "dist/flightpenguin.bundle.js"
       ],
       "run_at": "document_start"
@@ -113,7 +108,6 @@
         "https://www.cheapoair.com/air/*"
       ],
       "js": [
-        "src/shared/sentry.js",
         "dist/generic.bundle.js"
       ],
       "run_at": "document_end"
@@ -141,6 +135,6 @@
    "128": "src/icons/icon128.png"
   },
   "manifest_version": 2,
-  "content_security_policy": "script-src 'self' https://www.google-analytics.com https://browser.sentry-cdn.com https://www.gstatic.com https://apis.google.com; object-src 'self'",
+  "content_security_policy": "script-src 'self' https://www.google-analytics.com https://apis.google.com; object-src 'self'",
   "web_accessible_resources": ["index.html", "test.html", "images/*.svg", "src/icons/*.png", "src/icons/*.svg"]
 }

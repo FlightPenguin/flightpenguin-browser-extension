@@ -1,6 +1,7 @@
 import { Alert, Box, Button, Card, Checkbox, Image, Link, Modal } from "bumbag";
 import { Auth, GoogleAuthProvider } from "firebase/auth";
 import React, { useEffect, useState } from "react";
+import * as browser from "webextension-polyfill";
 
 import { AnalyticsManager } from "../../background/AnalyticsManager";
 import { loginWithGooglePopup } from "../utilities/auth/social/google/loginWithGooglePopup";
@@ -25,9 +26,11 @@ export const WelcomeModal = ({ firebaseAuth, googleProvider, onSuccess }: Welcom
 
   useEffect(() => {
     if (authError) {
-      chrome.identity.clearAllCachedAuthTokens(() => {
-        console.debug("Cleared auth tokens due to auth error in welcome modal");
-      });
+      if (chrome && chrome.identity) {
+        chrome.identity.clearAllCachedAuthTokens(() => {
+          console.debug("Cleared auth tokens due to auth error in welcome modal");
+        });
+      }
     }
   }, [authError]);
 

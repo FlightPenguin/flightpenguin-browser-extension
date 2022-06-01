@@ -1,3 +1,5 @@
+import * as browser from "webextension-polyfill";
+
 import { WindowConfig } from "../types/WindowConfig";
 
 export const sendFailedScraper = (providerName: string, error: Error): void => {
@@ -7,7 +9,7 @@ export const sendFailedScraper = (providerName: string, error: Error): void => {
     left: window.screenX,
     top: window.screenY,
   };
-  chrome.runtime.sendMessage({
+  browser.runtime.sendMessage({
     event: "FAILED_SCRAPER",
     providerName: providerName,
     description: `${error.name} ${error.message}`,

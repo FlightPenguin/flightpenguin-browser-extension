@@ -1,3 +1,6 @@
+import * as Sentry from "@sentry/browser";
+import * as browser from "webextension-polyfill";
+
 import { AnalyticsManager } from "./AnalyticsManager";
 import {
   handleClearSelections,
@@ -22,55 +25,50 @@ import {
 import { ProviderManager } from "./ProviderManager";
 
 export const ListenerManager = (providerManager: ProviderManager, analyticsManager: AnalyticsManager): void => {
-  chrome.runtime.onMessage.addListener(async function (message, sender, sendResponse) {
-    sendResponse({ received: true, responderName: "background" });
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
+  browser.runtime.onMessage.addListener(async (message, sender) => {
     Sentry.addBreadcrumb({
       category: "extension",
       message: "Received message",
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
       level: Sentry.Severity.Debug,
       data: message,
     });
     console.debug(message);
     switch (message.event) {
       case "FORM_DATA_RECEIVED":
-        handleFormDataReceived(providerManager, message.formData, message.windowConfig);
+        await handleFormDataReceived(providerManager, message.formData, message.windowConfig);
         break;
       case "NO_FLIGHTS_FOUND":
-        handleNoFlightsFound(providerManager, message.provider);
+        await handleNoFlightsFound(providerManager, message.provider);
         break;
       case "SUCCESSFUL_SCRAPER":
-        handleScraperSuccess(providerManager, message.providerName);
+        await handleScraperSuccess(providerManager, message.providerName);
         break;
       case "STARTING_SCRAPER":
-        handleScraperStarting(providerManager, message.providerName);
+        await handleScraperStarting(providerManager, message.providerName);
         break;
       case "FAILED_SCRAPER":
-        handleScraperFailed(providerManager, message.providerName, message.description, message.windowConfig, sender);
+        await handleScraperFailed(providerManager, message.providerName);
         break;
       case "ITINERARY_RESULTS":
-        handleItineraryResultsReceived(providerManager, message.itineraries, message.provider);
+        await handleItineraryResultsReceived(providerManager, message.itineraries, message.provider);
         break;
       case "TRIP_SELECTED":
-        handleTripSelected(providerManager, message.selectedTrips);
+        await handleTripSelected(providerManager, message.selectedTrips);
         break;
       case "ITINERARY_NOT_FOUND":
-        handleItineraryNotFound(providerManager, message.id);
+        await handleItineraryNotFound(providerManager, message.id);
         break;
       case "PROVIDER_READY":
-        handleProviderReady(providerManager, message.provider);
+        await handleProviderReady(providerManager, message.provider);
         break;
       case "FOCUS_WEBPAGE":
-        handleFocusWebpage(providerManager);
+        await handleFocusWebpage(providerManager);
         break;
       case "CLEAR_SELECTIONS":
-        handleClearSelections(providerManager, message.currentSelections);
+        await handleClearSelections(providerManager, message.currentSelections);
         break;
       case "INDEX_UNLOAD":
-        handleIndexUnloaded(providerManager);
+        await handleIndexUnloaded(providerManager);
         break;
       case "UPDATE_NOW":
         handleUpdateRequest();
@@ -91,9 +89,7 @@ export const ListenerManager = (providerManager: ProviderManager, analyticsManag
         handleUndominateTrip(providerManager, message.tripId);
         break;
       default:
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
-        window.Sentry.captureException(new Error(message));
+        Sentry.captureException(new Error(message));
         console.error(message);
         break;
     }

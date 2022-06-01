@@ -3,6 +3,7 @@ import { Alert, Box, Button } from "bumbag";
 import isEqual from "lodash.isequal";
 import range from "lodash.range";
 import React, { useEffect, useState } from "react";
+import * as browser from "webextension-polyfill";
 
 import { AnalyticsManager } from "../../background/AnalyticsManager";
 import { sendTripSelected } from "../../shared/events";
@@ -59,8 +60,7 @@ export const SearchResults = ({
   const [itineraryNotFound, setItineraryNotFound] = useState(false);
 
   useEffect(() => {
-    chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-      sendResponse({ received: true, responderName: "searchResults" });
+    browser.runtime.onMessage.addListener((message, sender) => {
       console.debug(message);
       switch (message.event) {
         case "TRIP_RESULTS_FOR_CLIENT":

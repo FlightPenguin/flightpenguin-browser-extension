@@ -1,10 +1,10 @@
 import { DisplayableTrip, DisplayableTripInput } from "../../shared/types/DisplayableTrip";
 import { ProviderManager } from "../ProviderManager";
 
-export const handleClearSelections = (
+export const handleClearSelections = async (
   providerManager: ProviderManager,
   currentSelections: DisplayableTripInput[],
-): void => {
+): Promise<void> => {
   providerManager.setSelectedTrips(
     currentSelections.map((trip) => {
       return new DisplayableTrip(trip);

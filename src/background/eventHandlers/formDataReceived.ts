@@ -2,11 +2,11 @@ import { FlightSearchFormData } from "../../shared/types/FlightSearchFormData";
 import { WindowConfig } from "../../shared/types/WindowConfig";
 import { ProviderManager } from "../ProviderManager";
 
-export const handleFormDataReceived = (
+export const handleFormDataReceived = async (
   providerManager: ProviderManager,
   formData: FlightSearchFormData,
   windowConfig: WindowConfig,
-) => {
-  providerManager.closeWindows();
-  providerManager.searchForResults(formData, windowConfig);
+): Promise<void> => {
+  await providerManager.closeWindows();
+  await providerManager.searchForResults(formData, windowConfig);
 };

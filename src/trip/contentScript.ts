@@ -1,14 +1,9 @@
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore
-window.Sentry.init({
-  dsn: process.env.SENTRY_DSN,
-  environment: `${process.env.EXTENSION_ENV}`,
-  release: `${process.env.SENTRY_PROJECT}@${process.env.VERSION}`,
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  // @ts-ignore
-  integrations: [new window.Sentry.Integrations.BrowserTracing()],
-  tracesSampleRate: 1.0,
-});
+import { initializeSentry } from "../shared/initializeSentry";
+
+initializeSentry();
+
+import * as Sentry from "@sentry/browser";
+import * as browser from "webextension-polyfill";
 
 import { suppressOfferFlightPenguinPopup } from "../collectors/generic/activeCollectorSuppression/suppressOfferFlightPenguinPopup";
 import { sendFailedScraper, sendItineraryNotFound, sendScraperStarting } from "../shared/events";
@@ -26,8 +21,7 @@ import { highlightFlightCard } from "./ui/highlightFlightCard";
 let observer: FlightObserver | null = null;
 let formData: FlightSearchFormData;
 
-chrome.runtime.onMessage.addListener(async function (message, sender, sendResponse) {
-  sendResponse({ received: true, responderName: "trip" });
+browser.runtime.onMessage.addListener(async (message, sender) => {
   console.debug(message);
   switch (message.event) {
     case "BEGIN_PARSING":
@@ -45,9 +39,7 @@ chrome.runtime.onMessage.addListener(async function (message, sender, sendRespon
         pollForNoResults({ pollForNoResultsCheck: hasNoResults, providerName: "trip" });
       } catch (error) {
         console.error(error);
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
-        window.Sentry.captureException(error);
+        Sentry.captureException(error);
         sendFailedScraper("trip", error);
         sendFailed("trip");
       }
@@ -58,9 +50,7 @@ chrome.runtime.onMessage.addListener(async function (message, sender, sendRespon
         await highlightFlight(message.itineraryId, formData);
       } catch (error) {
         console.error(error);
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
-        window.Sentry.captureException(error);
+        Sentry.captureException(error);
         sendItineraryNotFound(message.itineraryId);
       }
       break;

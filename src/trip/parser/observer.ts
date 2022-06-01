@@ -1,3 +1,4 @@
+import * as Sentry from "@sentry/browser";
 import debounce from "lodash.debounce";
 
 import { sendFailedScraper, sendScraperComplete } from "../../shared/events";
@@ -72,9 +73,7 @@ export class FlightObserver {
       } catch (error) {
         this.endObservation();
         console.error(error);
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
-        window.Sentry.captureException(error);
+        Sentry.captureException(error);
         sendFailedScraper("trip", error);
         sendFailed("trip");
       }

@@ -1,3 +1,5 @@
+import * as browser from "webextension-polyfill";
+
 export const addBackToSearchButton = (backToSearchSelector = "#back-to-search"): void => {
   if (document.querySelector(backToSearchSelector)) {
     return;
@@ -11,7 +13,7 @@ export const addBackToSearchButton = (backToSearchSelector = "#back-to-search"):
 };
 
 function handleBackToSearchButtonClick() {
-  chrome.runtime.sendMessage({
+  browser.runtime.sendMessage({
     event: "FOCUS_WEBPAGE",
   });
 }

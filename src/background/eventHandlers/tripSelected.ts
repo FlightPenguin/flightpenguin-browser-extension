@@ -2,17 +2,20 @@ import { DisplayableTrip, DisplayableTripInput } from "../../shared/types/Displa
 import { ProviderManager } from "../ProviderManager";
 import { highlightTab } from "./utilities/highlightTab";
 
-export const handleTripSelected = (providerManager: ProviderManager, tripInputs: DisplayableTripInput[]): void => {
+export const handleTripSelected = async (
+  providerManager: ProviderManager,
+  tripInputs: DisplayableTripInput[],
+): Promise<void> => {
   const trips = tripInputs.map((tripInput) => {
     return new DisplayableTrip(tripInput);
   });
   providerManager.setSelectedTrips(trips);
   if (providerManager.isAtMaxSelections()) {
-    highlightTab(providerManager);
+    await highlightTab(providerManager);
   } else {
     providerManager.sendTripResultsToIndexPage();
     if (providerManager.isExpectingMoreSearching()) {
-      providerManager.sendMessageToIndexPage({ event: "SCRAPING_STATUS", complete: false });
+      await providerManager.sendMessageToIndexPage({ event: "SCRAPING_STATUS", complete: false });
       // TODO: Handle expedia
       // Probably want to send a notice to the expedia scraper a flight was selected, and have it send a notice to update status
     }

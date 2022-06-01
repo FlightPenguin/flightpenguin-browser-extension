@@ -1,3 +1,5 @@
+import * as browser from "webextension-polyfill";
+
 import { sendAnalyticsPageView } from "./sendAnalyticsPageView";
 
 describe("sendAnalyticsPageView happy path", () => {
@@ -15,10 +17,10 @@ describe("sendAnalyticsPageView happy path", () => {
     });
   });
 
-  it("calls chrome.runtime.sendMessage with the correct results", () => {
+  it("calls browser.runtime.sendMessage with the correct results", () => {
     sendAnalyticsPageView();
 
-    expect(chrome.runtime.sendMessage).toBeCalledWith({
+    expect(browser.runtime.sendMessage).toBeCalledWith({
       event: "LOG_ANALYTICS_PAGE_VIEW",
       pageTitle: "A page title",
       path: "/meow.html",

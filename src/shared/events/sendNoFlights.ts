@@ -1,5 +1,7 @@
+import * as browser from "webextension-polyfill";
+
 export const sendNoFlightsEvent = (providerName: string): void => {
-  chrome.runtime.sendMessage({
+  browser.runtime.sendMessage({
     event: "NO_FLIGHTS_FOUND",
     provider: providerName,
   });

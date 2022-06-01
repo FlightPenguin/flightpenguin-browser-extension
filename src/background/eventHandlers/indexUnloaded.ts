@@ -1,7 +1,7 @@
 import { ProviderManager } from "../ProviderManager";
 
-export const handleIndexUnloaded = (providerManager: ProviderManager): void => {
+export const handleIndexUnloaded = async (providerManager: ProviderManager): Promise<void> => {
   if (providerManager.getFormData()) {
-    providerManager.closeWindows();
+    await providerManager.closeWindows();
   }
 };

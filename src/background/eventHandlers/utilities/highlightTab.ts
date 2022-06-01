@@ -1,7 +1,8 @@
-import { MessageResponse } from "../../../shared/types/MessageResponse";
+import * as browser from "webextension-polyfill";
+
 import { ProviderManager } from "../../ProviderManager";
 
-export const highlightTab = (providerManager: ProviderManager): void => {
+export const highlightTab = async (providerManager: ProviderManager): Promise<void> => {
   const itinerary = providerManager.getSelectedItinerary();
   const provider = itinerary.getTopSource();
 
@@ -15,29 +16,31 @@ export const highlightTab = (providerManager: ProviderManager): void => {
     tabId !== undefined &&
     !isNaN(tabId)
   ) {
-    chrome.windows.update(windowId, { focused: true }, (win) => {
-      chrome.tabs.sendMessage(
-        tabId,
-        {
+    try {
+      const window = await browser.windows.update(windowId, { focused: true });
+      if (window) {
+        await browser.tabs.sendMessage(tabId, {
           event: "HIGHLIGHT_FLIGHT",
           itineraryId: itinerary.getId(),
           sourceId: itinerary.getTopSource().getId() || "",
           provider: provider.getName(),
-        },
-        (response: MessageResponse) => {
-          console.debug(response);
-          if (!response || !response.received) {
-            providerManager.closeWindows();
-            providerManager.sendMessageToIndexPage({ event: "HIGHLIGHT_TAB_FAILED" });
-          }
-        },
-      );
-
-      chrome.tabs.update(tabId, {
-        selected: true,
-      });
-    });
+        });
+        await browser.tabs.update(tabId, { active: true, highlighted: true });
+      } else {
+        console.log("Unable to update window");
+        handleError(providerManager);
+      }
+    } catch {
+      console.log("Unable to update window/tab focus");
+      handleError(providerManager);
+    }
   } else {
-    throw Error("Unable to find valid window & tab id");
+    console.log("Unable to find valid window & tab id");
+    handleError(providerManager);
   }
+};
+
+const handleError = (providerManager: ProviderManager): void => {
+  providerManager.closeWindows();
+  providerManager.sendMessageToIndexPage({ event: "HIGHLIGHT_TAB_FAILED" });
 };

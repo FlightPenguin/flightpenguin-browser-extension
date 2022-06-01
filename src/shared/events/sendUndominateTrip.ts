@@ -1,5 +1,7 @@
+import * as browser from "webextension-polyfill";
+
 export const sendUndominateTrip = (tripId: string): void => {
-  chrome.runtime.sendMessage({
+  browser.runtime.sendMessage({
     event: `UNDOMINATE_TRIP`,
     tripId,
   });

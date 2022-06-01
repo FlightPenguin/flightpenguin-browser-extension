@@ -1,9 +1,11 @@
+import * as browser from "webextension-polyfill";
+
 import { setRecentlyInstalled } from "../../shared/utilities/recentlyInstalledManager";
 import { AnalyticsManager } from "../AnalyticsManager";
 import { openExtension } from "./openExtension";
 
 export const ExtensionInstalledHandler = (analytics: AnalyticsManager): void => {
-  chrome.runtime.onInstalled.addListener(async function (details) {
+  browser.runtime.onInstalled.addListener(async (details) => {
     console.log("It's alive!");
     console.log(details);
 
@@ -17,6 +19,7 @@ export const ExtensionInstalledHandler = (analytics: AnalyticsManager): void => 
         analytics.track({ category: "lifecycle", action: "Update", label: "Flight Penguin" });
         break;
       case "chrome_update":
+      case "browser_update":
         analytics.track({ category: "lifecycle", action: "Chrome update", label: "Flight Penguin" });
         break;
       case "shared_module_update":

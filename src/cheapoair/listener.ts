@@ -1,3 +1,6 @@
+import * as Sentry from "@sentry/browser";
+import * as browser from "webextension-polyfill";
+
 import { suppressOfferFlightPenguinPopup } from "../collectors/generic/activeCollectorSuppression/suppressOfferFlightPenguinPopup";
 import {
   sendFailedScraper,
@@ -21,8 +24,7 @@ export const initMessageListener = (observer: CheapoairModalObserver): void => {
   let formData;
   const knownItineraries = [] as Itinerary[];
 
-  chrome.runtime.onMessage.addListener(async function (message, sender, sendResponse) {
-    sendResponse({ received: true, responderName: "cheapoair" });
+  browser.runtime.onMessage.addListener(async (message, sender) => {
     console.debug(message);
     switch (message.event) {
       case "BEGIN_PARSING":
@@ -35,9 +37,7 @@ export const initMessageListener = (observer: CheapoairModalObserver): void => {
           observer.beginObservation();
           await getAllItineraries(formData, knownItineraries);
         } catch (error) {
-          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-          // @ts-ignore
-          window.Sentry.captureException(error);
+          Sentry.captureException(error);
           sendFailedScraper("cheapoair", error);
           sendFailed("cheapoair");
         }
@@ -47,14 +47,12 @@ export const initMessageListener = (observer: CheapoairModalObserver): void => {
           await openBookingLink(message.itineraryId, knownItineraries);
           observer.endObservation();
         } catch (error) {
-          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-          // @ts-ignore
-          window.Sentry.captureException(error);
+          Sentry.captureException(error);
           sendItineraryNotFound(message.itineraryId);
         }
         break;
       case "CLEAR_SELECTION":
-        chrome.runtime.sendMessage({ event: "PROVIDER_READY", provider: "cheapoair" });
+        browser.runtime.sendMessage({ event: "PROVIDER_READY", provider: "cheapoair" });
         break;
       default:
         break;
