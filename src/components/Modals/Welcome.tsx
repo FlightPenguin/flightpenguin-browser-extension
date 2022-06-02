@@ -56,7 +56,12 @@ export const WelcomeModal = ({ firebaseAuth, googleProvider, onSuccess }: Welcom
             It's time to take the pain out of flight search. You've installed the extension, now we just need you to
             sign in with Google to get started.
             <Box alignX="center" marginTop="major-1">
-              <Image src="/images/welcome.svg" alt="Welcome" maxWidth="360px" border="default" />
+              <Image
+                src={browser.runtime.getURL("/src/assets/images/welcome.svg")}
+                alt="Welcome"
+                maxWidth="360px"
+                border="default"
+              />
             </Box>
             <Checkbox
               paddingTop="major-2"

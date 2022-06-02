@@ -1,6 +1,7 @@
 import { Alert, Box, Button, Card, Image, Link, Modal } from "bumbag";
 import { Auth, GoogleAuthProvider } from "firebase/auth";
 import React, { useEffect, useState } from "react";
+import * as browser from "webextension-polyfill";
 
 import { AnalyticsManager } from "../../background/AnalyticsManager";
 import { loginWithGooglePopup } from "../utilities/auth/social/google/loginWithGooglePopup";
@@ -52,7 +53,12 @@ export const LoginModal = ({ firebaseAuth, googleProvider, onSuccess }: LoginMod
             )}
             It looks like we need you to sign in again.
             <Box alignX="center" marginTop="major-1">
-              <Image src="/images/login.svg" alt="Login" maxWidth="360px" border="default" />
+              <Image
+                src={browser.runtime.getURL("/src/assets/images/login.svg")}
+                alt="Login"
+                maxWidth="360px"
+                border="default"
+              />
             </Box>
           </Card.Content>
           <Card.Footer>

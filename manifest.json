@@ -136,5 +136,13 @@
   },
   "manifest_version": 2,
   "content_security_policy": "script-src 'self' https://www.google-analytics.com https://apis.google.com; object-src 'self'",
-  "web_accessible_resources": ["index.html", "test.html", "images/*.svg", "src/icons/*.png", "src/icons/*.svg"]
+  "web_accessible_resources": [
+    "index.html",
+    "test.html",
+    "src/assets/images/*.svg",
+    "src/assets/images/*.png",
+    "src/assets/images/*.webp",
+    "src/icons/*.png",
+    "src/icons/*.svg"
+  ]
 }
