@@ -10,6 +10,7 @@ import {
   TwitterIcon,
   TwitterShareButton,
 } from "react-share";
+import * as browser from "webextension-polyfill";
 
 import { logout } from "../utilities/auth/logout";
 import { getUserInfo } from "../utilities/auth/social/google/getUserInfo";
@@ -41,7 +42,12 @@ const NavigationBar = ({ firebaseLoaded, currentUser }: NavigationBarProps): Rea
     <TopNav border={"none"}>
       <TopNav.Section paddingLeft="major-2">
         <TopNav.Item fontWeight="semibold" tabIndex={-1}>
-          <Image src="src/icons/logo.png" height="44px" alt="FlightPenguin Logo" tabIndex={-1} />
+          <Image
+            src={browser.runtime.getURL("src/assets/icons/logo.png")}
+            height="44px"
+            alt="FlightPenguin Logo"
+            tabIndex={-1}
+          />
         </TopNav.Item>
       </TopNav.Section>
 

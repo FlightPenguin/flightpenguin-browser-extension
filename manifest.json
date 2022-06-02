@@ -130,9 +130,9 @@
     "default_title": "FlightPenguin"
   },
   "icons": {
-    "16": "src/icons/icon.png",
-    "48": "src/icons/icon.png",
-   "128": "src/icons/icon128.png"
+    "16": "src/assets/icons/icon.png",
+    "48": "src/assets/icons/icon.png",
+   "128": "src/assets/icons/icon128.png"
   },
   "manifest_version": 2,
   "content_security_policy": "script-src 'self' https://www.google-analytics.com https://apis.google.com; object-src 'self'",
@@ -142,7 +142,7 @@
     "src/assets/images/*.svg",
     "src/assets/images/*.png",
     "src/assets/images/*.webp",
-    "src/icons/*.png",
-    "src/icons/*.svg"
+    "src/assets/icons/*.png",
+    "src/assets/icons/*.svg"
   ]
 }

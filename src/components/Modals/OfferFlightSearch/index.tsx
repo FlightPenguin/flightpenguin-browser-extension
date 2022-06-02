@@ -86,7 +86,7 @@ export const OfferFlightSearchModal = (): React.ReactElement => {
                       height={iconSize}
                       width={iconSize}
                       alt="Search with Flight Penguin"
-                      src={browser.runtime.getURL("/src/icons/icon128.png")}
+                      src={browser.runtime.getURL("/src/assets/icons/icon128.png")}
                     />
                     <Box textAlign="center" width="100%">
                       <Text fontWeight="700">Flight Penguin</Text>
