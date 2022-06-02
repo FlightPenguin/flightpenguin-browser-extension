@@ -23,10 +23,6 @@ const getModuleRules = ({ mode }: { mode: "production" | "development" }) => [
     test: /\.css$/,
     use: ["style-loader", "css-loader"],
   },
-  {
-    test: /\.(png|svg|jpg|gif)$/,
-    use: ["file-loader"],
-  },
 ];
 
 const baseResolve = {
