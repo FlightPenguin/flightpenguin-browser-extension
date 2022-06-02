@@ -95,7 +95,7 @@
     "@sentry/react": "^6.16.1",
     "@sentry/tracing": "^6.16.1",
     "axios": "^0.24.0",
-    "bumbag": "^2.7.15",
+    "bumbag": "^2.7.19",
     "date-fns": "^2.23.0",
     "date-fns-tz": "^1.1.6",
     "decimal.js-light": "^2.5.1",

@@ -18,7 +18,6 @@ const getModuleRules = ({ mode }: { mode: "production" | "development" }) => [
   {
     test: /\.(js|jsx|ts|tsx)$/,
     loader: "babel-loader",
-    exclude: /node_modules\/(?!bumbag)/,
   },
   {
     test: /\.css$/,
