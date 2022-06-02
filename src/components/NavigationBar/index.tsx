@@ -43,7 +43,7 @@ const NavigationBar = ({ firebaseLoaded, currentUser }: NavigationBarProps): Rea
       <TopNav.Section paddingLeft="major-2">
         <TopNav.Item fontWeight="semibold" tabIndex={-1}>
           <Image
-            src={browser.runtime.getURL("src/assets/icons/logo.png")}
+            src={browser.runtime.getURL("./icons/logo.png")}
             height="44px"
             alt="FlightPenguin Logo"
             tabIndex={-1}

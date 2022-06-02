@@ -57,7 +57,7 @@ export const WelcomeModal = ({ firebaseAuth, googleProvider, onSuccess }: Welcom
             sign in with Google to get started.
             <Box alignX="center" marginTop="major-1">
               <Image
-                src={browser.runtime.getURL("/src/assets/images/welcome.svg")}
+                src={browser.runtime.getURL("./images/welcome.svg")}
                 alt="Welcome"
                 maxWidth="360px"
                 border="default"

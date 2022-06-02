@@ -39,20 +39,20 @@ export const MarketingFooter = (): React.ReactElement => {
           <ContentTile
             title="Visualize flights"
             body="Do your eyes glaze over staring at virtual flight tickets that are intentionally made to be difficult to compare?  Our time-bar layout makes it easy to see flight takeoff, landing, and layover times."
-            image={{ path: "/src/assets/images/TimelineView.png", altText: "Example of timeline view" }}
+            image={{ path: "./images/TimelineView.png", altText: "Example of timeline view" }}
           />
           <ContentTile
             title="Fly pain free"
             body="Sick of seeing 'best' flight being a redeye on a discount carrier with a long layover?  Our top choice finds the best combination of comfort and value - usually an affordable, nonstop, daytime flight."
             image={{
-              path: "/src/assets/images/PainView.png",
+              path: "./images/PainView.png",
               altText: "Example of flights sorted by the pain algorithm",
             }}
           />
           <ContentTile
             title="One search"
             body="Hate having to visit multiple travel sites?  Our extension searches over 600 airlines globally, including many that do not play nicely with others."
-            image={{ path: "/src/assets/images/Airlines.webp", altText: "Example of searched airlines" }}
+            image={{ path: "./images/Airlines.webp", altText: "Example of searched airlines" }}
           />
         </Box>
       </Box>

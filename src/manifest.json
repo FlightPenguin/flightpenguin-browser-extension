@@ -4,36 +4,36 @@
   "version": "1.20.0",
   "description": "From some of the builders of Hipmunk, Flight Penguin takes the pain out of flight search.",
   "background": {
-    "page": "src/background.html",
+    "page": "background.html",
     "persistent": false
   },
   "content_scripts": [
     {
       "matches": ["https://www.trip.com/flights/*"],
-      "css": ["src/shared/contentScript.css"],
+      "css": ["css/contentScript.css"],
       "js": [
-        "dist/trip.bundle.js"
+        "content_scripts/trip.js"
       ]
     },
     {
       "matches": ["https://www.cheapoair.com/air*"],
-      "css": ["src/shared/contentScript.css"],
+      "css": ["css/contentScript.css"],
       "js": [
-        "dist/cheapoair.bundle.js"
+        "content_scripts/cheapoair.js"
       ]
     },
     {
       "matches": ["https://www.kiwi.com/us/search/results/*"],
-      "css": ["src/shared/contentScript.css"],
+      "css": ["css/contentScript.css"],
       "js": [
-        "dist/kiwi.bundle.js"
+        "content_scripts/kiwi.js"
       ]
     },
     {
       "matches": ["https://www.momondo.com/flight-search/*", "https://www.momondo.com/book/*"],
-      "css": ["src/shared/contentScript.css"],
+      "css": ["css/contentScript.css"],
       "js": [
-        "dist/momondo.bundle.js"
+        "content_scripts/momondo.js"
       ]
     },
     {
@@ -42,7 +42,7 @@
         "https://flightpenguin.com/talking_travel*"
       ],
       "js": [
-        "dist/flightpenguin.bundle.js"
+        "content_scripts/flightpenguin.js"
       ],
       "run_at": "document_start"
     },
@@ -108,7 +108,7 @@
         "https://www.cheapoair.com/air/*"
       ],
       "js": [
-        "dist/generic.bundle.js"
+        "content_scripts/generic.js"
       ],
       "run_at": "document_end"
     }
@@ -130,19 +130,18 @@
     "default_title": "FlightPenguin"
   },
   "icons": {
-    "16": "src/assets/icons/icon.png",
-    "48": "src/assets/icons/icon.png",
-   "128": "src/assets/icons/icon128.png"
+    "16": "icons/icon.png",
+    "48": "icons/icon.png",
+   "128": "icons/icon128.png"
   },
   "manifest_version": 2,
   "content_security_policy": "script-src 'self' https://www.google-analytics.com https://apis.google.com; object-src 'self'",
   "web_accessible_resources": [
     "index.html",
-    "test.html",
-    "src/assets/images/*.svg",
-    "src/assets/images/*.png",
-    "src/assets/images/*.webp",
-    "src/assets/icons/*.png",
-    "src/assets/icons/*.svg"
+    "images/*.svg",
+    "images/*.png",
+    "images/*.webp",
+    "icons/*.png",
+    "icons/*.svg"
   ]
 }

@@ -62,7 +62,7 @@ build() {
     exit 81
   fi
 
-  npm run build
+  npm run build:legacy
   exitcode=$?
   if [ $exitcode -ne 0 ]; then
     echo "ERROR: Failed to build the project"

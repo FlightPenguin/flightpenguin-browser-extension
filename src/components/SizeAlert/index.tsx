@@ -18,7 +18,7 @@ export const SizeAlert = (): React.ReactElement => {
                 width="100%"
                 height="100%"
                 alt="Searching..."
-                src={browser.runtime.getURL("/src/assets/images/warning.svg")}
+                src={browser.runtime.getURL("./images/warning.svg")}
                 onLoad={() => {
                   setImageLoaded(true);
                 }}

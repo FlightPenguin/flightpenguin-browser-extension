@@ -1,15 +1,22 @@
 {
   "name": "flightpenguin",
-  "version": "1.0.0",
+  "version": "1.20.0",
   "description": "flight search",
   "private": true,
   "scripts": {
-    "build": "npx webpack -c ./webpack.production.config.js",
-    "build:dev": "npx webpack -c webpack.development.config.js --watch",
+    "build:dev:chrome": "npm run clean:chrome && export TARGET_VENDOR=chrome && npx webpack -c webpack.development.config.js --watch",
+    "build:dev:firefox": "npm run clean:chrome && TARGET_VENDOR=firefox npx webpack -c webpack.development.config.js --watch",
+    "build:legacy": "npx webpack -c ./webpack.production.config.js",
+    "build:prod:chrome": "npm run clean:chrome && TARGET_ENVIRONMENT=chrome npx webpack -c webpack.production.config.js",
+    "build:prod:firefox": "npm run clean:chrome && TARGET_ENVIRONMENT=firefox npx webpack -c webpack.production.config.js",
+    "clean": "rm -rf build/*",
+    "clean:chrome": "rm -rf build/chrome/*",
+    "clean:firefox": "rm -rf build/firefox/*",
     "prepare": "husky install",
+    "start:chrome": "node_modules/web-ext/bin/web-ext --config=web-ext.chrome.js run -t chromium",
+    "start:firefox": "node_modules/web-ext/bin/web-ext --config=web-ext.firefox.js run",
     "test": "export TZ=UTC && jest --silent",
-    "test:debug": "export TZ=UTC && jest",
-    "browser:dev:firefox": "node_modules/web-ext/bin/web-ext run"
+    "test:debug": "export TZ=UTC && jest"
   },
   "jest": {
     "globals": {
@@ -65,6 +72,7 @@
     "@typescript-eslint/parser": "^4.29.1",
     "babel-loader": "^8.2.2",
     "babel-plugin-module-resolver": "^4.1.0",
+    "copy-webpack-plugin": "^9.1.0",
     "css-loader": "^5.1.1",
     "envkey-webpack-plugin": "^1.1.2",
     "eslint": "^7.32.0",
@@ -72,6 +80,7 @@
     "eslint-plugin-prettier": "^3.4.0",
     "eslint-plugin-security": "^1.4.0",
     "eslint-plugin-simple-import-sort": "^7.0.0",
+    "extract-loader": "^5.1.0",
     "fishery": "^2.2.2",
     "husky": "^7.0.1",
     "jest": "^27.2.2",
@@ -84,6 +93,7 @@
     "style-loader": "^2.0.0",
     "ts-jest": "^27.0.5",
     "typescript": "^4.3.5",
+    "webextension-manifest-loader": "^0.1.1",
     "webextension-polyfill": "^0.9.0",
     "webpack": "^5.24.4",
     "webpack-cli": "^4.5.0"

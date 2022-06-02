@@ -53,12 +53,7 @@ export const LoginModal = ({ firebaseAuth, googleProvider, onSuccess }: LoginMod
             )}
             It looks like we need you to sign in again.
             <Box alignX="center" marginTop="major-1">
-              <Image
-                src={browser.runtime.getURL("/src/assets/images/login.svg")}
-                alt="Login"
-                maxWidth="360px"
-                border="default"
-              />
+              <Image src={browser.runtime.getURL("./images/login.svg")} alt="Login" maxWidth="360px" border="default" />
             </Box>
           </Card.Content>
           <Card.Footer>
