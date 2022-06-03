@@ -3,8 +3,8 @@ module.exports = {
   artifactsDir: "./dist/chrome",
   verbose: true,
   run: {
-    target: ["chromium"],
-    startUrl: ["chrome://extensions/"],
+    target: ["chrome"],
+    startUrl: ["chrome-extension://nofndgfpjopdpbcejgdpikmpdehlekac/index.html"],
   },
   build: {
     overwriteDest: true,
