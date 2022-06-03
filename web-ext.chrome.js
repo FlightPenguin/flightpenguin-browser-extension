@@ -4,7 +4,7 @@ module.exports = {
   verbose: true,
   run: {
     target: ["chromium"],
-    startUrl: ["chrome://extensions/", "chrome://inspect/#extensions"],
+    startUrl: ["chrome://extensions/"],
   },
   build: {
     overwriteDest: true,
