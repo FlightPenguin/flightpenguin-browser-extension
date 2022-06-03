@@ -1,11 +1,14 @@
 import * as path from "path";
 import * as TerserPlugin from "terser-webpack-plugin";
 import { Configuration, DefinePlugin, ProgressPlugin } from "webpack";
+import VERSION = chrome.cast.VERSION;
 const EnvkeyWebpackPlugin = require("envkey-webpack-plugin");
 const CopyPlugin = require("copy-webpack-plugin");
+const WebpackExtensionManifestPlugin = require("webpack-extension-manifest-plugin");
 
 const TARGET_VENDOR = process.env.TARGET_VENDOR as "firefox" | "chrome";
 const VERSION = require("./package.json").version;
+const baseManifestV2 = require("./src/baseManifest.v2.ts");
 
 const defaultEntry = {
   // manifest: "./manifest.json",
@@ -19,27 +22,7 @@ const defaultEntry = {
   "content_scripts/flightpenguin": "./flightpenguin/contentScript.ts",
 };
 
-const getModuleRules = ({ mode }: { mode: "production" | "development" }) => [
-  // {
-  //   type: "asset/resource",
-  //   test: /manifest\.json$/,
-  //   generator: {
-  //     filename: "[name][ext]",
-  //   },
-  //   use: [
-  //     "extract-loader",
-  //     {
-  //       loader: "webextension-manifest-loader",
-  //       options: {
-  //         targetVendor: TARGET_VENDOR,
-  //         merge: {
-  //           version,
-  //           ...(TARGET_VENDOR === "chrome" ? { version_name: version } : {}),
-  //         },
-  //       },
-  //     },
-  //   ],
-  // },
+const getModuleRules = () => [
   {
     test: /\.(js|jsx|ts|tsx)$/,
     loader: "babel-loader",
@@ -57,6 +40,47 @@ const baseResolve = {
     shared: path.resolve(__dirname, "src/shared"),
     sharedTypes: path.resolve(__dirname, "src/shared/types"),
   },
+};
+
+const getBrowserSpecificManifestData = () => {
+  const manifestData: { [keyof: string]: any } = {
+    version: VERSION,
+  };
+  switch (TARGET_VENDOR) {
+    case "chrome":
+      manifestData["oauth2"] = {
+        client_id: "82466302556-jujsfqptcild0kjidp1tspr9pghdva92.apps.googleusercontent.com",
+        scopes: ["https://www.googleapis.com/auth/plus.login", "email"],
+      };
+      manifestData["key"] =
+        "MIIBIjANBgkqhkiG9w0B" +
+        "AQEFAAOCAQ8AMIIBCgKC" +
+        "AQEArDtt/DK1/yBIYUu7" +
+        "ZR99hwrIRFcQ0vNxo4Nj" +
+        "68vAgYniaNaKas5nbmcy" +
+        "W5gmadkz7fJ5EfiMmDa4" +
+        "ZMl4iYsIdeCW32OGczxo" +
+        "AIGqK27lI9jRG/sgaFa8" +
+        "Mm0p926f/D2TPYmZya2f" +
+        "vLn+yvu5sWqWHWhTKbYA" +
+        "cFUQk1L179NYeTGhN6T6" +
+        "DGIemXrSulpExmvcgMIO" +
+        "svazLAzbI4QdSdUWbMQS" +
+        "L4DEhfD3rpO3CaTkmH0D" +
+        "cwrphI8dGPwsVYK1YZUJ" +
+        "sJ2ccSjn3m2H8U55/Iw4" +
+        "v+sS4JrxMnxabrY+g9lI" +
+        "bXe8iDLMSjrV9HNIamy2" +
+        "FMKj9EQBuDOJ9J/qGVt3" +
+        "RuRaRwIDAQAB";
+      console.log(manifestData);
+      break;
+    case "firefox":
+      break;
+    default:
+      throw new Error(`Unknown browser ${TARGET_VENDOR}`);
+  }
+  return manifestData;
 };
 
 const basePlugins = [
@@ -84,8 +108,10 @@ const basePlugins = [
       { from: "background.html", to: path.resolve(__dirname, "./build", TARGET_VENDOR) },
       { from: "index.html", to: path.resolve(__dirname, "./build", TARGET_VENDOR) },
       { from: "css", to: path.resolve(__dirname, "./build", TARGET_VENDOR, "css") },
-      { from: "manifest.json", to: path.resolve(__dirname, "./build", TARGET_VENDOR) },
     ],
+  }),
+  new WebpackExtensionManifestPlugin({
+    config: { base: baseManifestV2, extend: getBrowserSpecificManifestData() },
   }),
 ];
 
@@ -109,7 +135,7 @@ export const development: Configuration = {
   },
   devtool: "inline-source-map",
   module: {
-    rules: getModuleRules({ mode: "development" }),
+    rules: getModuleRules(),
   },
   optimization: baseOptimization,
   target: "web",
@@ -123,7 +149,7 @@ export const production: Configuration = {
   devtool: "source-map",
   plugins: [...basePlugins, new DefinePlugin({ "process.env.EXTENSION_ENV": JSON.stringify("production") })],
   module: {
-    rules: getModuleRules({ mode: "production" }),
+    rules: getModuleRules(),
   },
   resolve: baseResolve,
   resolveLoader: {
