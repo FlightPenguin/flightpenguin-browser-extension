@@ -73,9 +73,18 @@ const getBrowserSpecificManifestData = () => {
         "bXe8iDLMSjrV9HNIamy2" +
         "FMKj9EQBuDOJ9J/qGVt3" +
         "RuRaRwIDAQAB";
-      console.log(manifestData);
       break;
     case "firefox":
+      manifestData["browser_specific_settings"] = {
+        gecko: {
+          id: "flightpenguinfirefox@flightpenguin.com",
+          strict_min_version: "48.0",
+        },
+      };
+      manifestData["oauth2"] = {
+        client_id: "82466302556-qssi2ts28rci8ve9s7s92ge7i633upai.apps.googleusercontent.com",
+        scopes: ["https://www.googleapis.com/auth/plus.login", "email"],
+      };
       break;
     default:
       throw new Error(`Unknown browser ${TARGET_VENDOR}`);
