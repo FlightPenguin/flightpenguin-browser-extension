@@ -5,10 +5,10 @@
   "private": true,
   "scripts": {
     "build:dev:chrome": "npm run clean:chrome && export TARGET_VENDOR=chrome && npx webpack -c webpack.development.config.js --watch",
-    "build:dev:firefox": "npm run clean:chrome && TARGET_VENDOR=firefox npx webpack -c webpack.development.config.js --watch",
+    "build:dev:firefox": "npm run clean:firefox && TARGET_VENDOR=firefox npx webpack -c webpack.development.config.js --watch",
     "build:legacy": "npx webpack -c ./webpack.production.config.js",
     "build:prod:chrome": "npm run clean:chrome && TARGET_ENVIRONMENT=chrome npx webpack -c webpack.production.config.js",
-    "build:prod:firefox": "npm run clean:chrome && TARGET_ENVIRONMENT=firefox npx webpack -c webpack.production.config.js",
+    "build:prod:firefox": "npm run clean:firefox && TARGET_ENVIRONMENT=firefox npx webpack -c webpack.production.config.js",
     "clean": "rm -rf build/*",
     "clean:chrome": "rm -rf build/chrome/*",
     "clean:firefox": "rm -rf build/firefox/*",
