@@ -22,7 +22,7 @@ describe("indexUnloaded happy path", () => {
     });
     await handleIndexUnloaded(providerManager);
     expect(providerManager.getFormData).toHaveBeenCalledTimes(1);
-    expect(providerManager.closeWindows).toHaveBeenCalledTimes(0);
+    expect(providerManager.closeTabs).toHaveBeenCalledTimes(0);
   });
 
   it("works correctly with form data", async () => {
@@ -41,6 +41,6 @@ describe("indexUnloaded happy path", () => {
     });
     await handleIndexUnloaded(providerManager);
     expect(providerManager.getFormData).toHaveBeenCalledTimes(1);
-    expect(providerManager.closeWindows).toHaveBeenCalledTimes(1);
+    expect(providerManager.closeTabs).toHaveBeenCalledTimes(1);
   });
 });

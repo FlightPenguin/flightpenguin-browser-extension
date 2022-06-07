@@ -15,9 +15,9 @@ describe("scraperFailed happy path", () => {
 
   it("works correctly", async () => {
     await handleScraperFailed(providerManager, "nofunprovider");
-    expect(providerManager.setAlertOnWindowClose).toHaveBeenCalledTimes(1);
-    expect(providerManager.setAlertOnWindowClose).toHaveBeenCalledWith("nofunprovider", false);
-    expect(providerManager.closeWindow).toHaveBeenCalledTimes(1);
-    expect(providerManager.closeWindow).toHaveBeenCalledWith("nofunprovider");
+    expect(providerManager.setAlertOnTabClose).toHaveBeenCalledTimes(1);
+    expect(providerManager.setAlertOnTabClose).toHaveBeenCalledWith("nofunprovider", false);
+    expect(providerManager.closeTab).toHaveBeenCalledTimes(1);
+    expect(providerManager.closeTab).toHaveBeenCalledWith("nofunprovider");
   });
 });

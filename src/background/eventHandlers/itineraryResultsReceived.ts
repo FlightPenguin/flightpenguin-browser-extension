@@ -18,9 +18,8 @@ export const handleItineraryResultsReceived = async (
   });
   newItineraries.forEach((itinerary) => providerManager.addItinerary(itinerary));
 
-  const windowId = providerManager.getWindowId(providerName);
   const tabId = providerManager.getTabId(providerName);
-  if (windowId === null || windowId === undefined || tabId === null || tabId === undefined) {
+  if (tabId === null || tabId === undefined) {
     console.debug("No windows available in flight results");
 
     Sentry.captureMessage(`No window found for ${providerName}`);
