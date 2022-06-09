@@ -7,11 +7,11 @@ const CopyPlugin = require("copy-webpack-plugin");
 const WebpackExtensionManifestPlugin = require("webpack-extension-manifest-plugin");
 
 const TARGET_VENDOR = process.env.TARGET_VENDOR as "firefox" | "chrome";
+// @ts-ignore
 const VERSION = require("./package.json").version;
 const baseManifestV2 = require("./src/baseManifest.v2.ts");
 
 const defaultEntry = {
-  // manifest: "./manifest.json",
   background: "./background.js",
   "content_scripts/cheapoair": "./cheapoair/contentScript.ts",
   index: "./index.js",
@@ -153,17 +153,19 @@ export const development: Configuration = {
 
 export const production: Configuration = {
   mode: "production",
-  entry: { ...defaultEntry },
+  entry: defaultEntry,
   output: baseOutput,
-  devtool: "source-map",
-  plugins: [...basePlugins, new DefinePlugin({ "process.env.EXTENSION_ENV": JSON.stringify("production") })],
-  module: {
-    rules: getModuleRules(),
-  },
+  plugins: [...basePlugins, new DefinePlugin({ "process.env.EXTENSION_ENV": JSON.stringify("development") })],
   resolve: baseResolve,
   resolveLoader: {
     modules: ["node_modules", path.resolve(__dirname, "loaders")],
   },
+  devtool: "source-map",
+  module: {
+    rules: getModuleRules(),
+  },
+  target: "web",
+  context: path.resolve(__dirname, "./src"),
   optimization: {
     minimize: true,
     minimizer: [
