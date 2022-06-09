@@ -3,7 +3,6 @@ import { FlightSearchFormData } from "../../shared/types/FlightSearchFormData";
 jest.mock("../ProviderManager");
 
 import { Airport } from "../../components/SearchForm/api/airports/Airport";
-import { WindowConfig } from "../../shared/types/WindowConfig";
 import { ProviderManager } from "../ProviderManager";
 import { handleFormDataReceived } from "./formDataReceived";
 
@@ -28,11 +27,10 @@ describe("formDataReceived happy path", () => {
       fromDate: "1",
       toDate: "2",
     };
-    const windowConfig: WindowConfig = { left: 0, top: 0 };
-    await handleFormDataReceived(providerManager, formData, windowConfig);
-    expect(providerManager.closeWindows).toHaveBeenCalledTimes(1);
-    expect(providerManager.closeWindows).toHaveBeenCalledWith();
+    await handleFormDataReceived(providerManager, formData);
+    expect(providerManager.closeTabs).toHaveBeenCalledTimes(1);
+    expect(providerManager.closeTabs).toHaveBeenCalledWith();
     expect(providerManager.searchForResults).toHaveBeenCalledTimes(1);
-    expect(providerManager.searchForResults).toHaveBeenCalledWith(formData, windowConfig);
+    expect(providerManager.searchForResults).toHaveBeenCalledWith(formData);
   });
 });

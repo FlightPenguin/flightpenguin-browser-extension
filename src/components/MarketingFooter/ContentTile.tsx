@@ -1,5 +1,6 @@
 import { Box, Image, Text } from "bumbag";
 import React from "react";
+import * as browser from "webextension-polyfill";
 
 interface ContentTileProps {
   title: string;
@@ -28,7 +29,7 @@ export const ContentTile = ({ title, body, image }: ContentTileProps): React.Rea
             {title}
           </Text>
           <Box padding="major-1">
-            <Image alt={image.altText} src={image.path} width="100%" />
+            <Image alt={image.altText} src={browser.runtime.getURL(image.path)} width="100%" />
           </Box>
         </Box>
         <Box padding="major-1">

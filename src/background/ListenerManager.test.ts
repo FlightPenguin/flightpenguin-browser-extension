@@ -63,11 +63,10 @@ describe("Listener events", () => {
     const message = {
       event: "FORM_DATA_RECEIVED",
       formData: { cat: "meow" },
-      windowConfig: { dog: "woof" },
     };
     browser.runtime.sendMessage(message);
     expect(handleFormDataReceived).toHaveBeenCalledTimes(1);
-    expect(handleFormDataReceived).toHaveBeenCalledWith(expect.anything(), { cat: "meow" }, { dog: "woof" });
+    expect(handleFormDataReceived).toHaveBeenCalledWith(expect.anything(), { cat: "meow" });
   });
 
   it("works with NO_FLIGHTS_FOUND", () => {

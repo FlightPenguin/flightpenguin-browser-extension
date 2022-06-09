@@ -1,32 +1,35 @@
 import * as path from "path";
 import * as TerserPlugin from "terser-webpack-plugin";
 import { Configuration, DefinePlugin, ProgressPlugin } from "webpack";
+import VERSION = chrome.cast.VERSION;
 const EnvkeyWebpackPlugin = require("envkey-webpack-plugin");
+const CopyPlugin = require("copy-webpack-plugin");
+const WebpackExtensionManifestPlugin = require("webpack-extension-manifest-plugin");
+
+const TARGET_VENDOR = process.env.TARGET_VENDOR as "firefox" | "chrome";
+// @ts-ignore
+const VERSION = require("./package.json").version;
+const baseManifestV2 = require("./src/baseManifest.v2.ts");
 
 const defaultEntry = {
-  background: "./src/background.js",
-  cheapoair: "./src/cheapoair/contentScript.ts",
-  index: "./src/index.js",
-  momondo: "./src/momondo/contentScript.ts",
-  kiwi: "./src/kiwi/contentScript.ts",
-  trip: "./src/trip/contentScript.ts",
-  generic: "./src/collectors/generic/contentScript.ts",
-  flightpenguin: "./src/flightpenguin/contentScript.ts",
+  background: "./background.js",
+  "content_scripts/cheapoair": "./cheapoair/contentScript.ts",
+  index: "./index.js",
+  "content_scripts/momondo": "./momondo/contentScript.ts",
+  "content_scripts/kiwi": "./kiwi/contentScript.ts",
+  "content_scripts/trip": "./trip/contentScript.ts",
+  "content_scripts/generic": "./collectors/generic/contentScript.ts",
+  "content_scripts/flightpenguin": "./flightpenguin/contentScript.ts",
 };
 
-const getModuleRules = ({ mode }: { mode: "production" | "development" }) => [
+const getModuleRules = () => [
   {
     test: /\.(js|jsx|ts|tsx)$/,
     loader: "babel-loader",
-    exclude: /node_modules\/(?!bumbag)/,
   },
   {
     test: /\.css$/,
     use: ["style-loader", "css-loader"],
-  },
-  {
-    test: /\.(png|svg|jpg|gif)$/,
-    use: ["file-loader"],
   },
 ];
 
@@ -39,11 +42,61 @@ const baseResolve = {
   },
 };
 
+const getBrowserSpecificManifestData = () => {
+  const manifestData: { [keyof: string]: any } = {
+    version: VERSION,
+  };
+  switch (TARGET_VENDOR) {
+    case "chrome":
+      manifestData["oauth2"] = {
+        client_id: "82466302556-jujsfqptcild0kjidp1tspr9pghdva92.apps.googleusercontent.com",
+        scopes: ["https://www.googleapis.com/auth/plus.login", "email"],
+      };
+      manifestData["key"] =
+        "MIIBIjANBgkqhkiG9w0B" +
+        "AQEFAAOCAQ8AMIIBCgKC" +
+        "AQEArDtt/DK1/yBIYUu7" +
+        "ZR99hwrIRFcQ0vNxo4Nj" +
+        "68vAgYniaNaKas5nbmcy" +
+        "W5gmadkz7fJ5EfiMmDa4" +
+        "ZMl4iYsIdeCW32OGczxo" +
+        "AIGqK27lI9jRG/sgaFa8" +
+        "Mm0p926f/D2TPYmZya2f" +
+        "vLn+yvu5sWqWHWhTKbYA" +
+        "cFUQk1L179NYeTGhN6T6" +
+        "DGIemXrSulpExmvcgMIO" +
+        "svazLAzbI4QdSdUWbMQS" +
+        "L4DEhfD3rpO3CaTkmH0D" +
+        "cwrphI8dGPwsVYK1YZUJ" +
+        "sJ2ccSjn3m2H8U55/Iw4" +
+        "v+sS4JrxMnxabrY+g9lI" +
+        "bXe8iDLMSjrV9HNIamy2" +
+        "FMKj9EQBuDOJ9J/qGVt3" +
+        "RuRaRwIDAQAB";
+      break;
+    case "firefox":
+      manifestData["browser_specific_settings"] = {
+        gecko: {
+          id: "flightpenguinfirefox@flightpenguin.com",
+          strict_min_version: "48.0",
+        },
+      };
+      manifestData["oauth2"] = {
+        client_id: "82466302556-qssi2ts28rci8ve9s7s92ge7i633upai.apps.googleusercontent.com",
+        scopes: ["https://www.googleapis.com/auth/plus.login", "email"],
+      };
+      break;
+    default:
+      throw new Error(`Unknown browser ${TARGET_VENDOR}`);
+  }
+  return manifestData;
+};
+
 const basePlugins = [
   new ProgressPlugin({}),
   new DefinePlugin({
     "process.env.BUMBAG_ENV": JSON.stringify("not test"),
-    "process.env.VERSION": JSON.stringify("1.20.0"),
+    "process.env.VERSION": JSON.stringify(VERSION),
   }),
   new EnvkeyWebpackPlugin({
     permitted: [
@@ -57,11 +110,24 @@ const basePlugins = [
     ],
     dotEnvFile: ".env",
   }),
+  new CopyPlugin({
+    patterns: [
+      { from: "assets/icons", to: path.resolve(__dirname, "./build", TARGET_VENDOR, "icons") },
+      { from: "assets/images", to: path.resolve(__dirname, "./build", TARGET_VENDOR, "images") },
+      { from: "background.html", to: path.resolve(__dirname, "./build", TARGET_VENDOR) },
+      { from: "index.html", to: path.resolve(__dirname, "./build", TARGET_VENDOR) },
+      { from: "css", to: path.resolve(__dirname, "./build", TARGET_VENDOR, "css") },
+    ],
+  }),
+  new WebpackExtensionManifestPlugin({
+    config: { base: baseManifestV2, extend: getBrowserSpecificManifestData() },
+  }),
 ];
 
 const baseOutput = {
-  filename: "[name].bundle.js",
-  path: path.resolve(__dirname, "dist"),
+  filename: "[name].js",
+  path: path.resolve(__dirname, "./build", TARGET_VENDOR),
+  publicPath: "/",
   sourceMapFilename: "[file].map",
 };
 
@@ -69,29 +135,37 @@ const baseOptimization = {};
 
 export const development: Configuration = {
   mode: "development",
-  entry: {
-    ...defaultEntry,
-  },
+  entry: defaultEntry,
   output: baseOutput,
   plugins: [...basePlugins, new DefinePlugin({ "process.env.EXTENSION_ENV": JSON.stringify("development") })],
   resolve: baseResolve,
+  resolveLoader: {
+    modules: ["node_modules", path.resolve(__dirname, "loaders")],
+  },
   devtool: "inline-source-map",
   module: {
-    rules: getModuleRules({ mode: "development" }),
+    rules: getModuleRules(),
   },
   optimization: baseOptimization,
+  target: "web",
+  context: path.resolve(__dirname, "./src"),
 };
 
 export const production: Configuration = {
   mode: "production",
-  entry: { ...defaultEntry },
+  entry: defaultEntry,
   output: baseOutput,
-  devtool: "source-map",
   plugins: [...basePlugins, new DefinePlugin({ "process.env.EXTENSION_ENV": JSON.stringify("production") })],
-  module: {
-    rules: getModuleRules({ mode: "production" }),
-  },
   resolve: baseResolve,
+  resolveLoader: {
+    modules: ["node_modules", path.resolve(__dirname, "loaders")],
+  },
+  devtool: "source-map",
+  module: {
+    rules: getModuleRules(),
+  },
+  target: "web",
+  context: path.resolve(__dirname, "./src"),
   optimization: {
     minimize: true,
     minimizer: [

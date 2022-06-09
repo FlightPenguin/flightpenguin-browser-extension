@@ -35,7 +35,7 @@ export const ListenerManager = (providerManager: ProviderManager, analyticsManag
     console.debug(message);
     switch (message.event) {
       case "FORM_DATA_RECEIVED":
-        await handleFormDataReceived(providerManager, message.formData, message.windowConfig);
+        await handleFormDataReceived(providerManager, message.formData);
         break;
       case "NO_FLIGHTS_FOUND":
         await handleNoFlightsFound(providerManager, message.provider);

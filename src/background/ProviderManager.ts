@@ -9,7 +9,6 @@ import { pause } from "../shared/pause";
 import { DisplayableTrip } from "../shared/types/DisplayableTrip";
 import { FlightSearchFormData } from "../shared/types/FlightSearchFormData";
 import { Itinerary } from "../shared/types/Itinerary";
-import { WindowConfig } from "../shared/types/WindowConfig";
 import { getExtensionUrl } from "../shared/utilities/getExtensionUrl";
 import { focusTab } from "../shared/utilities/tabs/focusTab";
 import { getTab } from "../shared/utilities/tabs/getTab";
@@ -27,10 +26,9 @@ import { isExtensionOpen } from "./state";
 type StatusType = "PENDING" | "PARSING" | "FAILED" | "SUCCESS";
 
 interface ProviderState {
-  alertOnWindowClose: boolean;
+  alertOnTabClose: boolean;
   status: StatusType;
   tab?: browser.Tabs.Tab;
-  window?: browser.Windows.Window;
   ready: boolean;
   onReady: () => void;
   timer: ReturnType<typeof setTimeout> | null;
@@ -39,7 +37,7 @@ interface ProviderState {
 
 const terminalStates = ["FAILED", "SUCCESS"];
 const defaultProviderState: ProviderState = {
-  alertOnWindowClose: true,
+  alertOnTabClose: true,
   status: "PENDING",
   ready: true,
   onReady: DEFAULT_ON_READY_FUNCTION,
@@ -58,6 +56,7 @@ export class ProviderManager {
   private knownProviders: string[];
   private state: { [key: string]: ProviderState };
   private primaryTab: browser.Tabs.Tab | null;
+  private tabGroupId: number | undefined;
 
   private selectedTrips: DisplayableTrip[];
   private dominationDenyList: string[];
@@ -74,6 +73,7 @@ export class ProviderManager {
   constructor() {
     this.knownProviders = [];
     this.state = {};
+    this.tabGroupId = undefined;
 
     this.selectedTrips = [];
     this.dominationDenyList = [];
@@ -107,24 +107,17 @@ export class ProviderManager {
 
     browser.tabs.onRemoved.addListener(async (tabId) => {
       if (tabId === that.getPrimaryTabId()) {
-        await that.closeWindows();
+        await that.closeTabs();
       }
 
       if (tabId !== that.getPrimaryTabId()) {
         const details = that.getProviderByTabId(tabId);
         if (details && details.providerName) {
           const providerName = details.providerName;
-          const { height, left, top, width } = details.details.window || {
-            height: undefined,
-            left: undefined,
-            top: undefined,
-            width: undefined,
-          };
-
           that.setFailed(providerName);
-          const isRetrying = await that.retry(providerName, { height, left, top, width });
+          const isRetrying = await that.retry(providerName);
           if (!isRetrying) {
-            if (that.getAlertOnWindowClose(providerName)) {
+            if (that.getAlertOnTabClose(providerName)) {
               console.debug(`tab for ${providerName} closed`);
               await that.sendMessageToIndexPage({
                 event: "WINDOW_CLOSED",
@@ -266,12 +259,12 @@ export class ProviderManager {
     return this.state[providerName].onReady;
   }
 
-  setAlertOnWindowClose(providerName: string, value: boolean): void {
-    this.state[providerName].alertOnWindowClose = value;
+  setAlertOnTabClose(providerName: string, value: boolean): void {
+    this.state[providerName].alertOnTabClose = value;
   }
 
-  getAlertOnWindowClose(providerName: string): boolean {
-    return this.state[providerName].alertOnWindowClose;
+  getAlertOnTabClose(providerName: string): boolean {
+    return this.state[providerName].alertOnTabClose;
   }
 
   setDefault(): void {
@@ -302,26 +295,8 @@ export class ProviderManager {
     this.state[providerName]["tab"] = tab;
   }
 
-  setWindow(providerName: string, window: browser.Windows.Window): void {
-    this.state[providerName]["window"] = window;
-  }
-
   getTabId(providerName: string): number | undefined {
     return this.state[providerName].tab?.id;
-  }
-
-  getWindowId(providerName: string): number | undefined {
-    return this.state[providerName].window?.id;
-  }
-
-  getProviderByWindowId(windowId: number): { details: ProviderState; providerName: string } | null {
-    const windows = Object.entries(this.state).filter(([providerName, providerDetails]) => {
-      return providerName && providerDetails && providerDetails?.window?.id && providerDetails.window.id === windowId;
-    });
-    if (windows.length) {
-      return { providerName: windows[0][0], details: windows[0][1] };
-    }
-    return null;
   }
 
   getProviderByTabId(tabId: number): { details: ProviderState; providerName: string } | null {
@@ -348,80 +323,71 @@ export class ProviderManager {
     });
   }
 
-  async createWindow(
-    url: string,
-    provider: string,
-    windowConfig: WindowConfig,
-    message: Record<string, unknown>,
-  ): Promise<void> {
-    this.setParsing(provider); // de facto starting...
-    this.setAlertOnWindowClose(provider, true);
-
-    const { height, width, left, top } = windowConfig;
-    const window = await browser.windows.create({
-      url,
-      focused: false,
-      height,
-      width,
-      left,
-      top,
-    });
-    this.setPrimaryTabAsFocus();
-
-    // eslint-disable-next-line @typescript-eslint/no-this-alias
-    const that = this;
-
-    if (window && window.tabs) {
-      this.setTab(provider, window.tabs[0]);
-      this.setWindow(provider, window);
-
-      browser.tabs.onUpdated.addListener(async function listener(tabId, info) {
-        if (info.status === "complete" && tabId === that.getTabId(provider)) {
-          browser.tabs.onUpdated.removeListener(listener);
-          browser.tabs.sendMessage(tabId, message, {});
-        }
-      });
-    } else {
-      const error = new Error("Unable to create window - no window!");
+  async createTab(url: string, provider: string, message: Record<string, unknown>): Promise<void> {
+    const windowId = await this.getPrimaryWindowId();
+    if (!windowId) {
+      const error = new Error("Unable to create tab - no primary window!");
       sendFailedScraper(provider, error);
       throw error;
     }
+
+    this.setParsing(provider); // de facto starting...
+    this.setAlertOnTabClose(provider, true);
+
+    const tab = await browser.tabs.create({ windowId, url, active: false });
+    if (tab && tab.id) {
+      this.setTab(provider, tab);
+    } else {
+      const error = new Error("Unable to create tab - no tab returned!");
+      sendFailedScraper(provider, error);
+      throw error;
+    }
+
+    // eslint-disable-next-line @typescript-eslint/no-this-alias
+    const that = this;
+    browser.tabs.onUpdated.addListener(async function listener(tabId, info) {
+      if (info.status === "complete" && tabId === that.getTabId(provider)) {
+        browser.tabs.onUpdated.removeListener(listener);
+        browser.tabs.sendMessage(tabId, message, {});
+      }
+    });
   }
 
-  async closeWindow(providerName: string): Promise<void> {
-    const windowId = this.getWindowId(providerName);
-    if (windowId !== null && windowId !== undefined) {
-      const closeStatus = this.getAlertOnWindowClose(providerName);
+  async closeTab(providerName: string): Promise<void> {
+    const tabId = this.getTabId(providerName);
+    if (tabId !== null && tabId !== undefined) {
+      const closeStatus = this.getAlertOnTabClose(providerName);
       try {
-        const window = await browser.windows.get(windowId);
-        if (window && window.id) {
-          this.setAlertOnWindowClose(providerName, false);
-          await browser.windows.remove(windowId);
+        const tab = await browser.tabs.get(tabId);
+        if (tab && tab.id) {
+          this.setAlertOnTabClose(providerName, false);
+          await browser.tabs.remove(tabId);
         }
       } catch (e) {
-        console.debug(`Unable to close window for ${providerName}`);
+        console.debug(`Unable to close tab for ${providerName}`);
       } finally {
-        this.setAlertOnWindowClose(providerName, closeStatus);
+        this.setAlertOnTabClose(providerName, closeStatus);
       }
     }
   }
 
-  async closeWindows(): Promise<void> {
+  async closeTabs(): Promise<void> {
     for (const providerName of this.knownProviders) {
-      await this.closeWindow(providerName);
+      await this.closeTab(providerName);
     }
   }
 
-  async searchForResults(formData: FlightSearchFormData, windowConfig: WindowConfig): Promise<void> {
+  async searchForResults(formData: FlightSearchFormData): Promise<void> {
     this.setFormData(formData);
     this.initFailToStartTracker();
 
     const message = { event: "BEGIN_PARSING", formData };
     for (const providerName of this.knownProviders) {
       const url = providerURLBaseMap[providerName](formData);
-      await this.createWindow(url, providerName, windowConfig, message);
+      await this.createTab(url, providerName, message);
     }
     await this.setPrimaryTabAsFocus();
+    await this.groupAllTabs();
   }
 
   async sendMessageToIndexPage(message: any, delay = 0): Promise<void> {
@@ -439,17 +405,17 @@ export class ProviderManager {
     this.state[providerName].attempts += 1;
   }
 
-  async retry(providerName: string, windowConfig: WindowConfig): Promise<boolean> {
-    await this.closeWindow(providerName);
+  async retry(providerName: string): Promise<boolean> {
+    await this.closeTab(providerName);
     if (
-      !this.state[providerName].alertOnWindowClose &&
+      !this.state[providerName].alertOnTabClose &&
       this.state[providerName].attempts < 2 &&
       !!this.formData &&
       this.selectedTrips.length === 0
     ) {
       const url = providerURLBaseMap[providerName](this.formData);
       const message = { event: "BEGIN_PARSING", formData: this.formData };
-      await this.createWindow(url, providerName, windowConfig, message);
+      await this.createTab(url, providerName, message);
       await this.setPrimaryTabAsFocus();
       return true;
     } else {
@@ -530,17 +496,58 @@ export class ProviderManager {
   async isScrapingWindowsOpen(): Promise<boolean> {
     for (const providerState of Object.values(this.state)) {
       const tabId = providerState.tab?.id;
-      const windowId = providerState.window?.id;
-
-      if (!tabId || !windowId) {
+      if (!tabId) {
         continue;
       }
 
-      const tab = await getTab({ tabId, windowId });
+      const tab = await getTab({ tabId });
       if (tab) {
         return true;
       }
     }
     return false;
+  }
+
+  async getPrimaryWindowId(): Promise<number | undefined> {
+    const url = getExtensionUrl();
+    const tab = await getTabByUrl({ url });
+    if (tab) {
+      return tab.windowId;
+    }
+    return undefined;
+  }
+
+  setTabGroupId(groupId: number): void {
+    this.tabGroupId = groupId;
+  }
+
+  getTabGroupId(): number | undefined {
+    return this.tabGroupId;
+  }
+
+  groupAllTabs(): void {
+    const primaryTabId = this.getPrimaryTabId();
+    if (primaryTabId !== undefined && !!chrome && !!chrome.tabs && !!chrome.tabs.group) {
+      const tabIds: number[] = Object.values(this.state)
+        .map((providerState) => {
+          return providerState.tab?.id;
+        })
+        .filter((id) => {
+          return id !== undefined;
+        }) as number[];
+      tabIds.push(primaryTabId);
+
+      const options: chrome.tabs.GroupOptions = { tabIds };
+      const tabGroupId = this.getTabGroupId();
+      if (tabGroupId) {
+        options["groupId"] = tabGroupId;
+      }
+
+      // eslint-disable-next-line @typescript-eslint/no-this-alias
+      const that = this;
+      chrome.tabs.group(options, (groupId) => {
+        that.setTabGroupId(groupId);
+      });
+    }
   }
 }

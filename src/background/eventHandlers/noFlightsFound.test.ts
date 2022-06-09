@@ -20,8 +20,8 @@ describe("noFlightsFound happy path", () => {
     await handleNoFlightsFound(providerManager, "nofunprovider");
     expect(providerManager.setSuccessful).toHaveBeenCalledTimes(1);
     expect(providerManager.setSuccessful).toHaveBeenCalledWith("nofunprovider");
-    expect(providerManager.closeWindow).toHaveBeenCalledTimes(1);
-    expect(providerManager.closeWindow).toHaveBeenCalledWith("nofunprovider");
+    expect(providerManager.closeTab).toHaveBeenCalledTimes(1);
+    expect(providerManager.closeTab).toHaveBeenCalledWith("nofunprovider");
     expect(providerManager.isComplete).toHaveBeenCalledTimes(1);
     expect(providerManager.sendMessageToIndexPage).toHaveBeenCalledWith(
       { event: "SCRAPING_STATUS", complete: true },
@@ -36,8 +36,8 @@ describe("noFlightsFound happy path", () => {
     await handleNoFlightsFound(providerManager, "nofunprovider");
     expect(providerManager.setSuccessful).toHaveBeenCalledTimes(1);
     expect(providerManager.setSuccessful).toHaveBeenCalledWith("nofunprovider");
-    expect(providerManager.closeWindow).toHaveBeenCalledTimes(1);
-    expect(providerManager.closeWindow).toHaveBeenCalledWith("nofunprovider");
+    expect(providerManager.closeTab).toHaveBeenCalledTimes(1);
+    expect(providerManager.closeTab).toHaveBeenCalledWith("nofunprovider");
     expect(providerManager.isComplete).toHaveBeenCalledTimes(1);
     expect(providerManager.sendMessageToIndexPage).toHaveBeenCalledTimes(0);
   });

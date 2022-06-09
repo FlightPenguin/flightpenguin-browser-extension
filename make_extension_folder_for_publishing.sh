@@ -3,6 +3,8 @@
 VERSION=$1
 ROOT_DIR=$(pwd)
 
+TARGET_BROWSERS=("chrome" "firefox")
+
 make_directory() {
   target=${1}
   mkdir -p ${target}
@@ -10,18 +12,6 @@ make_directory() {
   if [ $exitcode -ne 0 ]; then
     echo "ERROR: Failed to make directory ${target}"
     exit 97
-  fi
-}
-
-copy_file() {
-  source_file=$1
-  destination_target=$2
-
-  cp ${source_file} ${destination_target}
-  exitcode=$?
-  if [ $exitcode -ne 0 ]; then
-    echo "ERROR: Failed to copy file ${source_file} to ${destination_target}"
-    exit 98
   fi
 }
 
@@ -56,46 +46,42 @@ build() {
     exit 87
   fi
 
-  devtools_count=$(grep -c devtools manifest.json)
+  devtools_count=$(grep -c devtools build/*/manifest.json)
   if [ ${devtools_count} -ne 0 ]; then
     echo "ERROR: No building with react-devtools listener in manifest"
-    exit 81
+    exit 86
   fi
 
-  npm run build
-  exitcode=$?
-  if [ $exitcode -ne 0 ]; then
-    echo "ERROR: Failed to build the project"
-    exit 80
-  fi
+  for browser in "${TARGET_BROWSERS[@]}"; do
+    npm run build:prod:${browser}
+    exitcode=$?
+    if [ $exitcode -ne 0 ]; then
+      echo "ERROR: Failed to build the project for ${browser}"
+      exit 80
+    fi
+  done;
 }
 
 package() {
-  pushd ${TARGET_DIR}/../ || exit 50
-  zip -rq "${PACKAGE_NAME}.zip" "${PACKAGE_NAME}"
-  exitcode=$?
-  if [ $exitcode -ne 0 ]; then
-    echo "ERROR: Failed to package ${PACKAGE_NAME}"
-    exit 52
-  fi
+  pushd ${TARGET_DIR} || exit 50
+  for browser in "${TARGET_BROWSERS[@]}"; do
+    zipFileName="${PACKAGE_NAME}.${browser}.zip"
+
+    zip -rq "${zipFileName}" "${browser}"
+    exitcode=$?
+    if [ $exitcode -ne 0 ]; then
+      echo "ERROR: Failed to package ${PACKAGE_NAME} for ${browser}"
+      exit 52
+    fi
+
+    mv "${zipFileName}" "${TARGET_DIR}/../"
+    exitcode=$?
+    if [ $exitcode -ne 0 ]; then
+      echo "ERROR: Failed to move package ${PACKAGE_NAME} for ${browser}"
+      exit 53
+    fi
+  done
   popd || exit 51
-}
-
-push_to_sentry() {
-  pushd ${TARGET_DIR}/../ || exit 60
-  if [ ! -x ${ROOT_DIR}/node_modules/@sentry/cli/bin/sentry-cli ]; then
-    echo "ERROR: missing sentry cli executable"
-    exit 63
-   fi
-
-  ${ROOT_DIR}/node_modules/@sentry/cli/bin/sentry-cli releases files ${VERSION} upload-sourcemaps ${PACKAGE_NAME} --url-prefix "chrome-extension://nofndgfpjopdpbcejgdpikmpdehlekac/"
-
-  exitcode=$?
-  if [ $exitcode -ne 0 ]; then
-    echo "ERROR: Failed to package ${PACKAGE_NAME}"
-    exit 62
-  fi
-  popd || exit 61
 }
 
 load_envkey() {
@@ -114,14 +100,12 @@ load_envkey() {
 }
 
 remove_source_maps() {
-  pushd ${TARGET_DIR} || exit 40
-  rm -f ./dist/*.map
+  find ${TARGET_DIR} -type f -name \*.map -exec rm -f {} \;
   exitcode=$?
   if [ $exitcode -ne 0 ]; then
-    echo "ERROR: Failed to package ${PACKAGE_NAME}"
+    echo "ERROR: Failed to remove source maps for package ${PACKAGE_NAME}"
     exit 42
   fi
-  popd || exit 41
 }
 
 version_check () {
@@ -135,15 +119,9 @@ version_check () {
     exit 3
   fi
 
-  VERSION_COUNT=$(grep -c "\"version\": \"${VERSION}\"," manifest.json)
+  VERSION_COUNT=$(grep -c "\"version\": \"${VERSION}\"," package.json)
   if [ ${VERSION_COUNT} -ne 1 ]; then
-    echo "ERROR: Update manifest file to match version ${VERSION}"
-    exit 4
-  fi
-
-  VERSION_COUNT=$(grep -c "\"process.env.VERSION\": JSON.stringify(\"${VERSION}\")," webpack.config.ts)
-  if [ ${VERSION_COUNT} -ne 1 ]; then
-    echo "ERROR: Update webpack file to match version ${VERSION}"
+    echo "ERROR: Update package.json file to match version ${VERSION}"
     exit 4
   fi
 }
@@ -156,21 +134,11 @@ build
 PACKAGE_NAME="flightpenguin_ext_${VERSION}"
 TARGET_DIR="./local/packaging/${PACKAGE_NAME}"
 make_directory "${TARGET_DIR}"
-make_directory "${TARGET_DIR}/src"
-make_directory "${TARGET_DIR}/src/css"
-make_directory "${TARGET_DIR}/src/shared"
 
-copy_file "./manifest.json" "${TARGET_DIR}"
-copy_file "./index.html" "${TARGET_DIR}"
-copy_file "./src/background.html" "${TARGET_DIR}/src/"
-copy_file "./src/shared/contentScript.css" "${TARGET_DIR}/src/shared"
+for browser in "${TARGET_BROWSERS[@]}"; do
+  copy_directory "./build/${browser}" "${TARGET_DIR}"
+done;
 
-copy_directory "./dist" "${TARGET_DIR}"
-copy_directory "./images" "${TARGET_DIR}"
-copy_directory "./src/css" "${TARGET_DIR}/src"
-copy_directory "./src/icons" "${TARGET_DIR}/src"
-
-push_to_sentry
 remove_source_maps
 package
 

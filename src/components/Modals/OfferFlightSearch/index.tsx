@@ -46,7 +46,7 @@ export const OfferFlightSearchModal = (): React.ReactElement => {
                   width="100%"
                   height="100%"
                   alt="Searching..."
-                  src={browser.runtime.getURL("/images/choice.svg")}
+                  src={browser.runtime.getURL("./images/choice.svg")}
                   onLoad={() => {
                     // consistently slowest loading image in testing...
                     setImageLoaded(true);
@@ -86,7 +86,7 @@ export const OfferFlightSearchModal = (): React.ReactElement => {
                       height={iconSize}
                       width={iconSize}
                       alt="Search with Flight Penguin"
-                      src={browser.runtime.getURL("/src/icons/icon128.png")}
+                      src={browser.runtime.getURL("./icons/icon128.png")}
                     />
                     <Box textAlign="center" width="100%">
                       <Text fontWeight="700">Flight Penguin</Text>
@@ -123,7 +123,7 @@ export const OfferFlightSearchModal = (): React.ReactElement => {
                       height={iconSize}
                       width={iconSize}
                       alt={`Search with ${siteName}`}
-                      src={browser.runtime.getURL("/images/aircraft.svg")}
+                      src={browser.runtime.getURL("./images/aircraft.svg")}
                     />
                     <Box textAlign="center" width="100%">
                       <Text fontWeight="700">{siteName}</Text>
