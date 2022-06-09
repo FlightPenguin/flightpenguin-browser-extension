@@ -155,7 +155,7 @@ export const production: Configuration = {
   mode: "production",
   entry: defaultEntry,
   output: baseOutput,
-  plugins: [...basePlugins, new DefinePlugin({ "process.env.EXTENSION_ENV": JSON.stringify("development") })],
+  plugins: [...basePlugins, new DefinePlugin({ "process.env.EXTENSION_ENV": JSON.stringify("production") })],
   resolve: baseResolve,
   resolveLoader: {
     modules: ["node_modules", path.resolve(__dirname, "loaders")],
