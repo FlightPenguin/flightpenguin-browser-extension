@@ -74,7 +74,7 @@ package() {
       exit 52
     fi
 
-    mv "${zipFileName}" "${TARGET_DIR}/../"
+    mv "${zipFileName}" "./../"
     exitcode=$?
     if [ $exitcode -ne 0 ]; then
       echo "ERROR: Failed to move package ${PACKAGE_NAME} for ${browser}"
