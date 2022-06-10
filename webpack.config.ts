@@ -1,7 +1,6 @@
 import * as path from "path";
 import * as TerserPlugin from "terser-webpack-plugin";
 import { Configuration, DefinePlugin, ProgressPlugin } from "webpack";
-import VERSION = chrome.cast.VERSION;
 const EnvkeyWebpackPlugin = require("envkey-webpack-plugin");
 const CopyPlugin = require("copy-webpack-plugin");
 const WebpackExtensionManifestPlugin = require("webpack-extension-manifest-plugin");
