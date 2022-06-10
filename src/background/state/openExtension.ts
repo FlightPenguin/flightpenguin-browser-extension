@@ -1,6 +1,7 @@
 import * as Sentry from "@sentry/browser";
 import * as browser from "webextension-polyfill";
 
+import { isChromeExtension } from "../../shared/utilities/isChromeExtension";
 import { focusTab } from "../../shared/utilities/tabs/focusTab";
 import { isExtensionOpen } from "./isExtensionOpen";
 
@@ -42,9 +43,11 @@ const handleExtensionNotOpen = async () => {
 };
 
 const updateExtensionIfRequired = async () => {
-  const [status, details] = await browser.runtime.requestUpdateCheck();
-  if (status === "update_available") {
-    console.debug(details);
-    browser.runtime.reload();
+  if (isChromeExtension()) {
+    const [status, details] = await browser.runtime.requestUpdateCheck();
+    if (status === "update_available") {
+      console.debug(details);
+      browser.runtime.reload();
+    }
   }
 };
