@@ -66,20 +66,22 @@ package() {
   pushd ${TARGET_DIR} || exit 50
   for browser in "${TARGET_BROWSERS[@]}"; do
     zipFileName="${PACKAGE_NAME}.${browser}.zip"
+    pushd ${browser} || exit 50
 
-    zip -rq "${zipFileName}" "${browser}"
+    zip -rq "${zipFileName}" ./
     exitcode=$?
     if [ $exitcode -ne 0 ]; then
       echo "ERROR: Failed to package ${PACKAGE_NAME} for ${browser}"
       exit 52
     fi
 
-    mv "${zipFileName}" "./../"
+    mv "${zipFileName}" "./../../"
     exitcode=$?
     if [ $exitcode -ne 0 ]; then
       echo "ERROR: Failed to move package ${PACKAGE_NAME} for ${browser}"
       exit 53
     fi
+    popd || exit 51
   done
   popd || exit 51
 }
