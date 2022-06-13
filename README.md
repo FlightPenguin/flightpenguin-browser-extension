@@ -20,8 +20,18 @@
 
 ### How to develop
 
+## Initial Setup
+
+1. npm ci
+2. mkdir local/packaging
+3. Run `npm run build:dev:chrome`.
+4. Test in local browser
+
+## Ongoing development
+
 1. Make changes.
-2. Run `npm run build:dev`.
+2. Run `npm run build:dev:chrome`.
+3. Test in local browser
 
 ### How to deploy
 1. Ensure versions match in webpack and manifest
