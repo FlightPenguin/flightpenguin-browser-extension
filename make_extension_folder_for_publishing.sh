@@ -84,6 +84,13 @@ package() {
     popd || exit 51
   done
   popd || exit 51
+
+  zip -r "local/packaging/flightpenguin_ext_${VERSION}.source.zip" src package.json package-lock.json README.md setup.jest.js tsconfig.json web-ext.*.js webpack.*
+  exitcode=$?
+  if [ $exitcode -ne 0 ]; then
+    echo "ERROR: Failed to build source package ${PACKAGE_NAME}}"
+    exit 54
+  fi
 }
 
 load_envkey() {
