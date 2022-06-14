@@ -1,9 +1,10 @@
 import debounce from "lodash.debounce";
 import * as browser from "webextension-polyfill";
 
-import { getUrl as getCheapoairUrl } from "../cheapoair/mappings/getUrl";
-import { getUrl as getKiwiUrl } from "../kiwi/mappings/getUrl";
-import { getUrl as getMomondoUrl } from "../momondo/mapping/getUrl";
+import { getUrl as getCheapoairUrl } from "../content_scripts/collectors/cheapoair/mappings/getUrl";
+import { getUrl as getKiwiUrl } from "../content_scripts/collectors/kiwi/mappings/getUrl";
+import { getUrl as getMomondoUrl } from "../content_scripts/collectors/momondo/mapping/getUrl";
+import { getUrl as getTripUrl } from "../content_scripts/collectors/trip/mappings/getUrl";
 import { sendFailedScraper } from "../shared/events";
 import { pause } from "../shared/pause";
 import { DisplayableTrip } from "../shared/types/DisplayableTrip";
@@ -13,7 +14,6 @@ import { getExtensionUrl } from "../shared/utilities/getExtensionUrl";
 import { focusTab } from "../shared/utilities/tabs/focusTab";
 import { getTab } from "../shared/utilities/tabs/getTab";
 import { getTabByUrl } from "../shared/utilities/tabs/getTabByUrl";
-import { getUrl as getTripUrl } from "../trip/mappings/getUrl";
 import {
   DEFAULT_ON_READY_FUNCTION,
   PROVIDERS_NEEDING_RETURNS,

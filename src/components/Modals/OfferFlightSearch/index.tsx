@@ -2,7 +2,7 @@ import { Box, Flex, Image, Modal, Text } from "bumbag";
 import React, { useEffect, useState } from "react";
 import * as browser from "webextension-polyfill";
 
-import { setSuppressionFlag } from "../../../collectors/generic/recentDisplaySuppression/setSuppressionFlag";
+import { setSuppressionFlag } from "../../../content_scripts/generic/recentDisplaySuppression/setSuppressionFlag";
 import { sendOpenExtension } from "../../../shared/events/";
 import { sendSearchDecision } from "../../../shared/events/analytics/searchDecision";
 import { hasVisitedRecently } from "../utilities/hasVisitedRecently";
