@@ -75,6 +75,7 @@ export const getItinerary = async (
         fare,
         id: cheapoAirId,
         name: "cheapoair",
+        isFirstParty: false,
       } as TripSourceInput,
     ],
     trips: tripInputs,

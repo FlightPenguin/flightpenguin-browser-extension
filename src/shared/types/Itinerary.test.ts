@@ -12,8 +12,8 @@ import { getParsedISODate } from "./utilities/getParsedISODate";
 const itineraryInput: ItineraryInput = {
   cabin: "econ" as CabinType,
   sources: [
-    { fare: 450, id: "meow", name: "expedia" },
-    { fare: 400, id: "woof", name: "cheapoair" },
+    { fare: 450, id: "meow", name: "expedia", isFirstParty: false },
+    { fare: 400, id: "woof", name: "cheapoair", isFirstParty: false },
   ],
   trips: [
     {
@@ -108,21 +108,73 @@ describe("Itinerary happy path", () => {
 
   it("getTopSource works", () => {
     const itin = ItineraryFactory.build({}, { transient: itineraryInput });
-    expect(JSON.parse(JSON.stringify(itin.getTopSource()))).toEqual({ fare: 400, id: "woof", name: "cheapoair" });
+    expect(JSON.parse(JSON.stringify(itin.getTopSource()))).toEqual({
+      fare: 400,
+      id: "woof",
+      name: "cheapoair",
+      isFirstParty: false,
+      displayNames: ["cheapoair"],
+    });
   });
 
   it("addOrUpdateSource works - add new", () => {
     const itin = ItineraryFactory.build({}, { transient: itineraryInput });
-    itin.addOrUpdateSource(new TripSource({ fare: 273, name: "addfake" }));
-    expect(JSON.parse(JSON.stringify(itin.getTopSource()))).toEqual({ fare: 273, name: "addfake", id: null });
-    expect(JSON.parse(JSON.stringify(itin)).sources.length).toEqual(3);
+    itin.addOrUpdateSource(new TripSource({ fare: 273, name: "addfake", isFirstParty: false }));
+    const rawItin = JSON.parse(JSON.stringify(itin));
+    expect(rawItin.sources.length).toEqual(3);
+    expect(rawItin.sources[2]).toEqual({
+      displayNames: ["addfake"],
+      fare: 273,
+      name: "addfake",
+      id: null,
+      isFirstParty: false,
+    });
   });
 
-  it("addOrUpdateSource works - update", () => {
+  it("addOrUpdateSource works - update existing with provider match", () => {
     const itin = ItineraryFactory.build({}, { transient: itineraryInput });
-    itin.addOrUpdateSource(new TripSource({ fare: 273, name: "expedia" }));
-    expect(JSON.parse(JSON.stringify(itin.getTopSource()))).toEqual({ fare: 273, name: "expedia", id: null });
-    expect(JSON.parse(JSON.stringify(itin)).sources.length).toEqual(2);
+    itin.addOrUpdateSource(new TripSource({ fare: 555, name: "expedia", isFirstParty: false }));
+    const rawItin = JSON.parse(JSON.stringify(itin));
+    expect(rawItin.sources.length).toEqual(2);
+    expect(rawItin.sources[0]).toEqual({
+      displayNames: ["expedia"],
+      fare: 555,
+      name: "expedia",
+      id: null,
+      isFirstParty: false,
+    });
+  });
+
+  it("addOrUpdateSource works - update existing different providers, chooses existing when cheaper", () => {
+    const itin = ItineraryFactory.build({}, { transient: itineraryInput });
+    itin.addOrUpdateSource(
+      new TripSource({ fare: 555, name: "fakeprovider", isFirstParty: false, displayNames: ["expedia"] }),
+    );
+    const rawItin = JSON.parse(JSON.stringify(itin));
+    expect(rawItin.sources.length).toEqual(2);
+    expect(rawItin.sources[0]).toEqual({
+      displayNames: ["expedia"],
+      fare: 450,
+      id: "meow",
+      name: "expedia",
+      isFirstParty: false,
+    });
+  });
+
+  it("addOrUpdateSource works - update existing different providers, chooses new when cheaper", () => {
+    const itin = ItineraryFactory.build({}, { transient: itineraryInput });
+    itin.addOrUpdateSource(
+      new TripSource({ fare: 333, name: "fakeprovider", isFirstParty: false, displayNames: ["expedia"] }),
+    );
+    const rawItin = JSON.parse(JSON.stringify(itin));
+    expect(rawItin.sources.length).toEqual(2);
+    expect(rawItin.sources[0]).toEqual({
+      displayNames: ["expedia"],
+      fare: 333,
+      id: null,
+      name: "fakeprovider",
+      isFirstParty: false,
+    });
   });
 
   it("getMaxIndexMatch works - no selection", () => {

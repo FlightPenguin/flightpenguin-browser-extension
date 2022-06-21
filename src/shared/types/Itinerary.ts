@@ -66,10 +66,19 @@ export class Itinerary {
 
   addOrUpdateSource(source: TripSource): void {
     const index = this.sources.findIndex((existing) => {
-      return existing.getName() === source.getName();
+      return existing.getDisplayName() === source.getDisplayName();
     });
     if (index >= 0) {
-      this.sources[index] = source;
+      const existingSource = this.sources[index];
+      if (existingSource.getName() === source.getName()) {
+        // if sources have identical names, take the latest copy
+        // page may have died, etc.  Recent is better
+        this.sources[index] = source;
+      } else {
+        // a metasearch engine is returning data for an OTA we search.
+        const bestSource = existingSource.getFare() > source.getFare() ? source : existingSource;
+        this.sources[index] = bestSource;
+      }
     } else {
       this.sources.push(source);
     }

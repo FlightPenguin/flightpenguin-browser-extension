@@ -57,6 +57,7 @@ export const getItinerary = async ({ flightCard, formData }: GetFlightProps): Pr
         fare: Number(cardDetails.fare),
         id: tripId,
         name: "trip",
+        isFirstParty: false,
       } as TripSourceInput,
     ],
     trips: tripInputs,

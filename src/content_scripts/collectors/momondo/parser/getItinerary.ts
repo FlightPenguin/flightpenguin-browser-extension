@@ -1,6 +1,7 @@
 import { getParsedDate } from "../../../../components/utilities/forms";
 import { ParserError } from "../../../../shared/errors";
 import { getFlightDateFromTimeString } from "../../../../shared/parser/getFlightDateFromTimeString";
+import { FlightInput } from "../../../../shared/types/Flight";
 import { FlightSearchFormData } from "../../../../shared/types/FlightSearchFormData";
 import { Itinerary } from "../../../../shared/types/Itinerary";
 import { TripInput } from "../../../../shared/types/Trip";
@@ -23,14 +24,14 @@ export const getItinerary = async (
 
   const modal = await getModal(itineraryCard);
   updateBookingLinks(modal);
-  const modalData = await getModalData(modal, expectedTripCount, tripDepartureDates);
+  const modalData = await getModalData(modal, expectedTripCount, tripDepartureDates, cardData.trackingId);
 
-  if (modalData.length !== cardData.trips.length) {
+  if (modalData.flightInputs.length !== cardData.trips.length) {
     throw new ParserError("Data mismatch in modal and card");
   }
 
   const tripInputs = cardData.trips.map((trip, index) => {
-    const flightInputs = modalData[index];
+    const flightInputs = modalData.flightInputs[index] as FlightInput[];
     const flightDate = tripDepartureDates[index];
 
     const arrivalLocation = flightInputs.slice(-1)[0].arrivalLocation;
@@ -50,7 +51,7 @@ export const getItinerary = async (
 
   return new Itinerary({
     cabin: formData.cabin || "econ",
-    sources: [{ fare: Number(cardData.fare), id: cardData.trackingId, name: "momondo" }],
+    sources: modalData.sourceInputs,
     trips: tripInputs,
   });
 };
