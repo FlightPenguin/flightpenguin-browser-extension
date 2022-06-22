@@ -3,12 +3,12 @@ import { waitForAppearance } from "../../../../shared/utilities/waitFor";
 
 const MAX_FLIGHTS_SELECTOR = "div[class*='resultsCount']";
 const VISITED_SELECTOR = "div[data-fp-visited='true']";
-const PROGRESS_BAR_SELECTOR = "div[class*='Common-Results-ProgressBar']";
-const HIDDEN_SELECTOR = "[class*='Hidden']";
+const STREAMING_SELECTOR = "div[class*='listBody' i]";
+const STREAMING_PROGRESS_SELECTOR = "[class*='streaming-in-progress' i]";
 
 export const isComplete = async (): Promise<boolean> => {
-  const progressStatus = await isProgressBarComplete();
-  if (!progressStatus) {
+  const streamingStatus = await isStreamingComplete();
+  if (!streamingStatus) {
     return false;
   }
 
@@ -30,11 +30,11 @@ const getMaxItineraryNumber = (): number => {
   return Number(rawText.toLowerCase().split("of")[0].trim());
 };
 
-const isProgressBarComplete = async () => {
-  let progressBarElement = await waitForAppearance(30000, PROGRESS_BAR_SELECTOR);
-  if (Array.from(progressBarElement.classList).includes("Hidden")) {
+const isStreamingComplete = async () => {
+  let listElementWrapper = await waitForAppearance(45000, STREAMING_SELECTOR);
+  if (!Array.from(listElementWrapper.classList).includes("streaming-in-progress")) {
     return true;
   }
-  progressBarElement = await waitForAppearance(60000, `${PROGRESS_BAR_SELECTOR}${HIDDEN_SELECTOR}`);
-  return !!progressBarElement;
+  listElementWrapper = await waitForAppearance(90000, `${STREAMING_SELECTOR}:not(${STREAMING_PROGRESS_SELECTOR})`);
+  return !!listElementWrapper;
 };
