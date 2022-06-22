@@ -1,12 +1,7 @@
-import { addMinutes } from "date-fns";
-
 import { DisplayableTrip } from "../../../../shared/types/DisplayableTrip";
-import { FlightSearchFormData } from "../../../../shared/types/FlightSearchFormData";
 import { SearchTripMeta } from "../../../../shared/types/SearchMeta";
 import { NO_ALLIANCE } from "../../../constants";
-import { getTimeInfo } from "./getTimeInfo";
 import { TripGroupTimeMetadata } from "./getTimeInfo/TripGroupTimeMetadata";
-// import { getEarliestAndLatestTimes } from "./getEarliestAndLatestTimes";
 
 export const getTripGroupMetadata = (
   tripGroup: DisplayableTrip[],
@@ -14,8 +9,8 @@ export const getTripGroupMetadata = (
 ): SearchTripMeta => {
   let airlineCount = 0;
 
-  const [airlines, airports, layoverCounts] = tripGroup.reduce(
-    ([airlines, airports, layoverCounts], trip) => {
+  const [airlines, airports, layoverCounts, bookingSources] = tripGroup.reduce(
+    ([airlines, airports, layoverCounts, bookingSources], trip) => {
       const carriers = trip.getTrip().getAirlines();
       carriers.forEach((carrier) => {
         const alliance = carrier.getAlliance() || NO_ALLIANCE;
@@ -37,10 +32,11 @@ export const getTripGroupMetadata = (
 
       airports.push(trip.getTrip().getLayoverAirportCodes());
       layoverCounts.push(trip.getTrip().getLayoverCount());
+      bookingSources.push(trip.getBookingSources());
 
-      return [airlines, airports, layoverCounts];
+      return [airlines, airports, layoverCounts, bookingSources];
     },
-    [{} as { [keyof: string]: string[] }, [] as string[][], [] as number[]],
+    [{} as { [keyof: string]: string[] }, [] as string[][], [] as number[], [] as string[][]],
   );
 
   Object.keys(airlines).forEach((alliance) => {
@@ -53,6 +49,7 @@ export const getTripGroupMetadata = (
     airlineCount: airlineCount,
     airlines: airlines,
     airports: Array.from(new Set(airports.flat())).sort(),
+    bookingSources: Array.from(new Set(bookingSources.flat())).sort(),
     layoverCounts: Array.from(new Set(layoverCounts.flat())).sort((a, b) => {
       return a - b;
     }),

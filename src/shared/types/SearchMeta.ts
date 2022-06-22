@@ -5,12 +5,13 @@ import { FlightSearchFormData } from "./FlightSearchFormData";
 
 export interface SearchTripMeta {
   airlineCount: number;
-  airports: string[];
   airlines: { [keyof: string]: string[] };
+  airports: string[];
+  bookingSources: string[];
   earliestTime: Date;
   intervals: number[];
-  layoverCounts: number[];
   latestTime: Date;
+  layoverCounts: number[];
 }
 
 export const getSearchTripMetaDefault = (formData: FlightSearchFormData, tripIndex: number): SearchTripMeta => {
@@ -19,11 +20,12 @@ export const getSearchTripMetaDefault = (formData: FlightSearchFormData, tripInd
   );
   return {
     airlineCount: 0,
-    earliestTime: flightDate,
-    layoverCounts: [] as number[],
     airlines: {} as { [keyof: string]: string[] },
     airports: [] as string[],
+    bookingSources: [] as string[],
+    earliestTime: flightDate,
     latestTime: addDays(flightDate, 1),
+    layoverCounts: [] as number[],
     intervals: [0, 4, 8, 12, 16, 20, 24, 28],
   };
 };

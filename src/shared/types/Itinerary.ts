@@ -45,11 +45,17 @@ export class Itinerary {
     return this.trips;
   }
 
+  getSources(order = true): TripSource[] {
+    if (order) {
+      return this.sources.sort((firstSource, secondSource) => {
+        return firstSource.getFare() - secondSource.getFare();
+      });
+    }
+    return this.sources;
+  }
+
   getTopSource(): TripSource {
-    const sources = [...this.sources].sort((firstSource, secondSource) => {
-      return firstSource.getFare() - secondSource.getFare();
-    });
-    return sources[0];
+    return this.getSources(true)[0];
   }
 
   getCalculatedPain(): number {
@@ -62,6 +68,10 @@ export class Itinerary {
       });
 
     return Math.pow(this.getTopSource().getFare(), 1.05) + tripsCost;
+  }
+
+  addOrUpdateSources(sources: TripSource[]): void {
+    sources.forEach((source) => this.addOrUpdateSource(source));
   }
 
   addOrUpdateSource(source: TripSource): void {

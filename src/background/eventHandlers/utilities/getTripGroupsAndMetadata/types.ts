@@ -1,3 +1,6 @@
 import { DisplayableTripInput } from "../../../../shared/types/DisplayableTrip";
 
-export type DisplayableTripInputPrimitive = Pick<DisplayableTripInput, "cabin" | "lowestFare" | "trip">;
+export type DisplayableTripInputPrimitive = Pick<
+  DisplayableTripInput,
+  "bookingSources" | "cabin" | "lowestFare" | "trip"
+>;

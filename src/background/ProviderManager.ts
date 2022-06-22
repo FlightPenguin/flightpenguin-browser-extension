@@ -232,7 +232,7 @@ export class ProviderManager {
       return recordedItinerary.getId() === itinerary.getId();
     });
     if (index >= 0) {
-      this.itineraries[index].addOrUpdateSource(itinerary.getTopSource());
+      this.itineraries[index].addOrUpdateSources(itinerary.getSources());
     } else {
       this.itineraries.push(itinerary);
     }
