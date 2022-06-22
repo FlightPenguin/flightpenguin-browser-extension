@@ -53,6 +53,7 @@ const TimelineContainer = ({
   const [filterStops, setFilterStops] = useState<number[] | undefined>(undefined);
   const [filterCarriers, setFilterCarriers] = useState<string[] | undefined>(undefined);
   const [filterLayoverCities, setFilterLayoverCities] = useState<string[] | undefined>(undefined);
+  const [filterBookingSites, setFilterBookingSites] = useState<string[] | undefined>(undefined);
   const [sortDimension, setSortDimension] = useState<TripSortDimension>("pain");
 
   const [selectedTrip, setSelectedTrip] = useState<DisplayableTrip | null>(null);
@@ -79,6 +80,7 @@ const TimelineContainer = ({
         layoverCount: filterStops,
         carriers: filterCarriers,
         layoverCities: filterLayoverCities,
+        bookingSites: filterBookingSites,
       },
     });
 
@@ -88,7 +90,16 @@ const TimelineContainer = ({
     } else {
       setDisplayTrips(filteredTrips);
     }
-  }, [eligibleTrips, selectedTrip, filterDateRange, filterStops, filterCarriers, filterLayoverCities, sortDimension]);
+  }, [
+    eligibleTrips,
+    selectedTrip,
+    filterDateRange,
+    filterStops,
+    filterCarriers,
+    filterLayoverCities,
+    filterBookingSites,
+    sortDimension,
+  ]);
 
   if (!loading && !eligibleTrips.length) {
     return (
@@ -140,6 +151,7 @@ const TimelineContainer = ({
           filteredTripCount={displayTrips.length}
           onLayoverCountFilterChange={(values: number[]) => setFilterStops(values)}
           onAirlinesFilterChange={(values: string[]) => setFilterCarriers(values)}
+          onBookingSiteFilterChange={(values: string[]) => setFilterBookingSites(values)}
           onSortDimensionChange={(value) => setSortDimension(value)}
           meta={meta}
           tripSelected={!!selectedTrip}

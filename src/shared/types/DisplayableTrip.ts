@@ -199,4 +199,11 @@ export class DisplayableTrip {
   isEqual(otherTrip: DisplayableTrip): boolean {
     return this.getLowestFare() === otherTrip.getLowestFare() && this.getTrip().isEqual(otherTrip.getTrip());
   }
+
+  isAvailableViaBookingSite(bookingSites: string[] | undefined): boolean {
+    if (bookingSites && bookingSites.length >= 1) {
+      return this.bookingSources.some(Set.prototype.has, new Set(bookingSites));
+    }
+    return true;
+  }
 }

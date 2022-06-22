@@ -7,6 +7,7 @@ interface GetFilteredTripsInput {
     layoverCount: number[] | undefined;
     carriers: string[] | undefined;
     layoverCities: string[] | undefined;
+    bookingSites: string[] | undefined;
   };
 }
 
@@ -19,7 +20,8 @@ export const getFilteredTrips = ({ displayTrips, filterProperties }: GetFiltered
       trip.isDepartingAfterTime(filterProperties.dateRange.lowerBound) &&
       trip.isLayoverCountInRange(filterProperties.layoverCount) &&
       trip.isLayoverInCity(filterProperties.layoverCities) &&
-      trip.isFlownByCarriers(filterProperties.carriers)
+      trip.isFlownByCarriers(filterProperties.carriers) &&
+      dTrip.isAvailableViaBookingSite(filterProperties.bookingSites)
     );
   });
 };
