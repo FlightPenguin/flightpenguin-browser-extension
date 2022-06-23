@@ -12,7 +12,7 @@ export const isComplete = async (): Promise<boolean> => {
     return false;
   }
 
-  const maxNumber = Math.min(50, getMaxItineraryNumber());
+  const maxNumber = Math.min(300, getMaxItineraryNumber());
   return document.querySelectorAll(VISITED_SELECTOR).length >= maxNumber;
 };
 
