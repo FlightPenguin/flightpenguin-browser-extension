@@ -9,12 +9,6 @@ export const SUPPORTED_PROVIDERS = [
   // "kiwi",
   // "trip",
 ];
-export const PROVIDER_DISPLAY_NAMES_MAP: { [keyof: string]: string } = {
-  cheapoair: "CheapOair",
-  momondo: "Momondo",
-  kiwi: "Kiwi.com",
-  trip: "Trip.com",
-};
 
 // eslint-disable-next-line @typescript-eslint/no-empty-function
 export const DEFAULT_ON_READY_FUNCTION = () => {};

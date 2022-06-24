@@ -1,4 +1,4 @@
-import { PROVIDER_DISPLAY_NAMES_MAP } from "../../background/constants";
+import { BookingSiteMap } from "../nameMaps/bookingSiteMap";
 import { getParsedNumber } from "./utilities/getParsedNumber";
 
 export interface TripSourceInput {
@@ -25,11 +25,13 @@ export class TripSource {
   }
 
   getDisplayName(): string {
+    const map = new BookingSiteMap();
+
     const lf = new Intl.ListFormat("en");
     return lf.format(
       this.displayNames.map((name) => {
-        const overrideName: string | undefined = PROVIDER_DISPLAY_NAMES_MAP[name];
-        return overrideName || name;
+        const overrideName = map.getMatch(name);
+        return overrideName?.name || name;
       }),
     );
   }

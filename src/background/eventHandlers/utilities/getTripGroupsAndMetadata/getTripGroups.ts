@@ -18,13 +18,18 @@ export const getTripGroups = (
     if (highestMatchedIndex !== undefined && highestMatchedIndex !== null && !isNaN(highestMatchedIndex)) {
       const lowestFare = itinerary.getTopSource().getFare();
       const bookingSources = itinerary.getSources().map((source) => {
-        return source.getDisplayName();
+        return source.getDisplayNames();
       });
       const trips = itinerary.getTrips().slice(0, highestMatchedIndex + 1);
 
       trips.forEach((trip, index) => {
         const tripGroup = tripGroups[index as number];
-        tripGroup.push({ bookingSources, cabin: itinerary.getCabin(), lowestFare, trip });
+        tripGroup.push({
+          bookingSources: Array.from(new Set(bookingSources.flat())).sort(),
+          cabin: itinerary.getCabin(),
+          lowestFare,
+          trip,
+        });
       });
     }
   });
