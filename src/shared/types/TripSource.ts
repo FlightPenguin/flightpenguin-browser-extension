@@ -20,20 +20,13 @@ export class TripSource {
     this.fare = getParsedNumber(fare);
     this.id = id || null;
     this.name = name;
-    this.displayNames = displayNames && displayNames.length ? displayNames : [name];
+    this.displayNames = this.getCalculatedDisplayNames(name, displayNames);
     this.isFirstParty = isFirstParty;
   }
 
   getDisplayName(): string {
-    const map = new BookingSiteMap();
-
     const lf = new Intl.ListFormat("en");
-    return lf.format(
-      this.displayNames.map((name) => {
-        const overrideName = map.getMatch(name);
-        return overrideName?.name || name;
-      }),
-    );
+    return lf.format(this.displayNames);
   }
 
   getDisplayNames(): string[] {
@@ -54,5 +47,17 @@ export class TripSource {
 
   getName(): string {
     return this.name;
+  }
+
+  getCalculatedDisplayNames(name: string, displayNames: string[] | undefined): string[] {
+    if (!displayNames) {
+      return [name];
+    }
+
+    const map = new BookingSiteMap();
+    return displayNames.map((name) => {
+      const overrideName = map.getMatch(name);
+      return overrideName?.name || name;
+    });
   }
 }
