@@ -202,7 +202,7 @@ export class DisplayableTrip {
 
   isAvailableViaBookingSite(bookingSites: string[] | undefined): boolean {
     if (bookingSites && bookingSites.length >= 1) {
-      return this.bookingSources.some(Set.prototype.has, new Set(bookingSites));
+      return this.bookingSources.every(Set.prototype.has, new Set(bookingSites));
     }
     return true;
   }
