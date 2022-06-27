@@ -1,3 +1,4 @@
+import { BookingSiteMap } from "../../../../shared/nameMaps/bookingSiteMap";
 import { DisplayableTrip } from "../../../../shared/types/DisplayableTrip";
 import { SearchTripMeta } from "../../../../shared/types/SearchMeta";
 import { NO_ALLIANCE } from "../../../constants";
@@ -44,12 +45,18 @@ export const getTripGroupMetadata = (
     airlines[alliance] = airlines[alliance].sort();
   });
 
+  const bookingSiteMap = new BookingSiteMap();
+
   return {
     ...timeMetadata,
     airlineCount: airlineCount,
     airlines: airlines,
     airports: Array.from(new Set(airports.flat())).sort(),
-    bookingSources: Array.from(new Set(bookingSources.flat())).sort(),
+    bookingSources: Array.from(new Set(bookingSources.flat()))
+      .sort(Intl.Collator().compare)
+      .map((siteName) => {
+        return bookingSiteMap.getMatch(siteName);
+      }),
     layoverCounts: Array.from(new Set(layoverCounts.flat())).sort((a, b) => {
       return a - b;
     }),

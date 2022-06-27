@@ -3,13 +3,19 @@ import isEqual from "lodash.isequal";
 import pluralize from "pluralize";
 import React, { useEffect, useState } from "react";
 
+import { BookingPartnerLookup } from "../../../../shared/nameMaps/bookingSiteMap";
+
 interface FilterMenuProps {
-  bookingPartners: string[];
+  bookingPartners: BookingPartnerLookup[];
   onChange: (values: string[]) => void;
 }
 
 export const BookingPartnerFilterMenu = ({ bookingPartners, onChange }: FilterMenuProps): React.ReactElement => {
-  // TODO: Add airlines only filter
+  const defaultValues = getDefaultValues(bookingPartners);
+  const [showFirstPartyButton, setShowFirstPartyButton] = useState(
+    bookingPartners.some((lookup) => !lookup.isFirstParty),
+  );
+
   const [valueChanged, setValueChanged] = useState(false);
   const [values, setValues] = useState([] as string[]);
 
@@ -17,9 +23,24 @@ export const BookingPartnerFilterMenu = ({ bookingPartners, onChange }: FilterMe
 
   useEffect(() => {
     if (!valueChanged) {
-      setValues(bookingPartners);
+      setValues(defaultValues);
     }
   }, [bookingPartners, valueChanged, setValues]);
+
+  useEffect(() => {
+    if (values && values.length) {
+      setShowFirstPartyButton(
+        values.some((siteName) => {
+          const lookup = bookingPartners.filter((partner) => {
+            return partner.name === siteName;
+          })[0];
+          return (lookup && !lookup.isFirstParty) || false;
+        }),
+      );
+    } else {
+      setShowFirstPartyButton(bookingPartners.some((lookup) => !lookup.isFirstParty));
+    }
+  }, [bookingPartners, values]);
 
   return (
     <DropdownMenu
@@ -36,15 +57,42 @@ export const BookingPartnerFilterMenu = ({ bookingPartners, onChange }: FilterMe
                   event.stopPropagation();
 
                   setValueChanged(false);
-                  setValues(bookingPartners);
-                  onChange(bookingPartners);
+                  setValues(defaultValues);
+                  onChange(defaultValues);
                 }}
                 textAlign="center"
                 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
                 // @ts-ignore
                 textTranform="uppercase"
               >
-                Reset airlines
+                Reset sites
+              </DropdownMenu.Item>
+              <Divider />
+            </React.Fragment>
+          )}
+          {showFirstPartyButton && (
+            <React.Fragment>
+              <DropdownMenu.Item
+                color="text"
+                onClick={(event: React.MouseEvent) => {
+                  event.preventDefault();
+                  event.stopPropagation();
+
+                  const firstPartyOnly = values.filter((siteName) => {
+                    const value = bookingPartners.filter((lookupValue) => lookupValue.name === siteName)[0];
+                    return (value && value.isFirstParty) || false;
+                  });
+
+                  setValueChanged(true);
+                  setValues(firstPartyOnly);
+                  onChange(firstPartyOnly);
+                }}
+                textAlign="center"
+                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                // @ts-ignore
+                textTranform="uppercase"
+              >
+                Airlines only
               </DropdownMenu.Item>
               <Divider />
             </React.Fragment>
@@ -65,16 +113,16 @@ export const BookingPartnerFilterMenu = ({ bookingPartners, onChange }: FilterMe
           >
             {bookingPartners.map((value) => {
               return (
-                <DropdownMenu.OptionItem value={value} key={`${value}-option-item`}>
+                <DropdownMenu.OptionItem value={value.name} key={`${value.name}-option-item`}>
                   <Box display="flex" flexDirection="row" flexWrap="nowrap" justifyContent="space-between" width="100%">
-                    <Box display="flex">{value}</Box>
+                    <Box display="flex">{value.name}</Box>
                     <Box
                       color="gray"
                       display="flex"
                       paddingLeft="minor-1"
                       paddingRight="minor-1"
                       textDecoration="underline"
-                      data-value={value.toString()}
+                      data-value={value.name}
                       onClick={(event: React.MouseEvent) => {
                         event.preventDefault();
                         event.stopPropagation();
@@ -113,4 +161,10 @@ export const BookingPartnerFilterMenu = ({ bookingPartners, onChange }: FilterMe
 
 const getLabelText = (values: string[]): string => {
   return values.length ? `${values.length} booking ${pluralize("site", values.length)}` : "Booking sites";
+};
+
+const getDefaultValues = (bookingSites: BookingPartnerLookup[]): string[] => {
+  return bookingSites.map((lookup) => {
+    return lookup.name;
+  });
 };
