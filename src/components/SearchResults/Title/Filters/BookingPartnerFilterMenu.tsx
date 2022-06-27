@@ -12,6 +12,7 @@ interface FilterMenuProps {
 
 export const BookingPartnerFilterMenu = ({ bookingPartners, onChange }: FilterMenuProps): React.ReactElement => {
   const defaultValues = getDefaultValues(bookingPartners);
+  const airlineBookingSitePresent = useState(bookingPartners.some((lookup) => lookup.isFirstParty));
   const [showFirstPartyButton, setShowFirstPartyButton] = useState(
     bookingPartners.some((lookup) => !lookup.isFirstParty),
   );
@@ -70,7 +71,7 @@ export const BookingPartnerFilterMenu = ({ bookingPartners, onChange }: FilterMe
               <Divider />
             </React.Fragment>
           )}
-          {showFirstPartyButton && (
+          {airlineBookingSitePresent && showFirstPartyButton && (
             <React.Fragment>
               <DropdownMenu.Item
                 color="text"
