@@ -182,7 +182,7 @@ export const AirlineFilterMenu = ({ airlineCount, groupedAirlines, onChange }: F
         </React.Fragment>
       }
       paddingTop="minor-1"
-      zIndex={3}
+      zIndex={1004}
     >
       <Group>
         <Tag variant="outlined" fontSize="clamp(.5rem, .6vw, .75rem)">

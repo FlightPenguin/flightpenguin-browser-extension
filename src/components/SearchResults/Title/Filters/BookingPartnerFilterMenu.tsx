@@ -146,7 +146,7 @@ export const BookingPartnerFilterMenu = ({ bookingPartners, onChange }: FilterMe
         </React.Fragment>
       }
       paddingTop="minor-1"
-      zIndex={4}
+      zIndex={1003}
     >
       <Group>
         <Tag variant="outlined" fontSize="clamp(.5rem, .6vw, .75rem)">
