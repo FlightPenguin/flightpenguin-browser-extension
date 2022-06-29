@@ -1,11 +1,11 @@
 import { MissingElementLookupError, MissingFieldParserError } from "../../../../../shared/errors";
 import { AirportDetails } from "../../../../../shared/types/AirportDetails";
 
-const AIRPORT_CONTAINER_SELECTOR = "div[class*='SectorPlace']";
+const AIRPORT_CONTAINER_SELECTOR = "div[class*='SectorPlace-']";
 const AIRPORT_CITY_NAME_SELECTOR = "[class*='SectorPlaceText']";
-const AIRPORT_NAME_SELECTOR = "p[class*='StyledText']";
+const AIRPORT_NAME_SELECTOR = "div[class*='SectorPlaceWrapper']";
 
-const AIRPORT_REGEX = /(?<airportName>.*)\s+\((?<airportCode>[A-Za-z0-9]{3})\)/;
+const AIRPORT_REGEX = /(?<airportName>.*)\s*\((?<airportCode>[A-Za-z0-9]{3})\)/;
 
 export const getAirports = (
   container: HTMLDivElement,
