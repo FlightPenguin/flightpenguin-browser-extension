@@ -1,16 +1,18 @@
 import { addDays, startOfDay, startOfToday } from "date-fns";
 
 import { getParsedDate } from "../../components/utilities/forms";
+import { BookingPartnerLookup } from "../nameMaps/bookingSiteMap";
 import { FlightSearchFormData } from "./FlightSearchFormData";
 
 export interface SearchTripMeta {
   airlineCount: number;
-  airports: string[];
   airlines: { [keyof: string]: string[] };
+  airports: string[];
+  bookingSources: BookingPartnerLookup[];
   earliestTime: Date;
   intervals: number[];
-  layoverCounts: number[];
   latestTime: Date;
+  layoverCounts: number[];
 }
 
 export const getSearchTripMetaDefault = (formData: FlightSearchFormData, tripIndex: number): SearchTripMeta => {
@@ -19,11 +21,12 @@ export const getSearchTripMetaDefault = (formData: FlightSearchFormData, tripInd
   );
   return {
     airlineCount: 0,
-    earliestTime: flightDate,
-    layoverCounts: [] as number[],
     airlines: {} as { [keyof: string]: string[] },
     airports: [] as string[],
+    bookingSources: [] as BookingPartnerLookup[],
+    earliestTime: flightDate,
     latestTime: addDays(flightDate, 1),
+    layoverCounts: [] as number[],
     intervals: [0, 4, 8, 12, 16, 20, 24, 28],
   };
 };

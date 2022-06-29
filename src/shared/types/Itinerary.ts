@@ -45,11 +45,17 @@ export class Itinerary {
     return this.trips;
   }
 
+  getSources(order = true): TripSource[] {
+    if (order) {
+      return this.sources.sort((firstSource, secondSource) => {
+        return firstSource.getFare() - secondSource.getFare();
+      });
+    }
+    return this.sources;
+  }
+
   getTopSource(): TripSource {
-    const sources = [...this.sources].sort((firstSource, secondSource) => {
-      return firstSource.getFare() - secondSource.getFare();
-    });
-    return sources[0];
+    return this.getSources(true)[0];
   }
 
   getCalculatedPain(): number {
@@ -64,12 +70,25 @@ export class Itinerary {
     return Math.pow(this.getTopSource().getFare(), 1.05) + tripsCost;
   }
 
+  addOrUpdateSources(sources: TripSource[]): void {
+    sources.forEach((source) => this.addOrUpdateSource(source));
+  }
+
   addOrUpdateSource(source: TripSource): void {
     const index = this.sources.findIndex((existing) => {
-      return existing.getName() === source.getName();
+      return existing.getDisplayName() === source.getDisplayName();
     });
     if (index >= 0) {
-      this.sources[index] = source;
+      const existingSource = this.sources[index];
+      if (existingSource.getName() === source.getName()) {
+        // if sources have identical names, take the latest copy
+        // page may have died, etc.  Recent is better
+        this.sources[index] = source;
+      } else {
+        // a metasearch engine is returning data for an OTA we search.
+        const bestSource = existingSource.getFare() > source.getFare() ? source : existingSource;
+        this.sources[index] = bestSource;
+      }
     } else {
       this.sources.push(source);
     }

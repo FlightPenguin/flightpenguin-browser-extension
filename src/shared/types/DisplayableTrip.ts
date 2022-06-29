@@ -10,6 +10,7 @@ import { getTimebarPositions } from "./utilities/getTimebarPositions";
 export interface DisplayableTripInput {
   cabin: CabinType;
   lowestFare: number;
+  bookingSources: string[];
   trip: Trip | TripInput;
   dominatedTripIds?: string[];
   containerInfo: ContainerTimeRangeInput;
@@ -22,6 +23,7 @@ export interface DisplayableTripInput {
 
 export class DisplayableTrip {
   private ariaLabelText;
+  private bookingSources: string[];
   private cabin: CabinType;
   private dominatedTripIds: string[];
   private lowestFare: number;
@@ -34,6 +36,7 @@ export class DisplayableTrip {
 
   constructor({
     ariaLabelText,
+    bookingSources,
     cabin,
     componentTimebarPositions,
     containerInfo,
@@ -43,6 +46,7 @@ export class DisplayableTrip {
     timebarPosition,
     trip,
   }: DisplayableTripInput) {
+    this.bookingSources = bookingSources;
     this.cabin = cabin;
     this.dominatedTripIds = dominatedTripIds && dominatedTripIds.length ? dominatedTripIds : [];
     this.lowestFare = lowestFare;
@@ -58,6 +62,10 @@ export class DisplayableTrip {
 
   getAriaLabelText(): string {
     return this.ariaLabelText;
+  }
+
+  getBookingSources(): string[] {
+    return this.bookingSources;
   }
 
   getTrip(): Trip {
@@ -190,5 +198,12 @@ export class DisplayableTrip {
 
   isEqual(otherTrip: DisplayableTrip): boolean {
     return this.getLowestFare() === otherTrip.getLowestFare() && this.getTrip().isEqual(otherTrip.getTrip());
+  }
+
+  isAvailableViaBookingSite(bookingSites: string[] | undefined): boolean {
+    if (bookingSites && bookingSites.length >= 1) {
+      return this.bookingSources.every(Set.prototype.has, new Set(bookingSites));
+    }
+    return true;
   }
 }

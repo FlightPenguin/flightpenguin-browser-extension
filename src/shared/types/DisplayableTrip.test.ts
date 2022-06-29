@@ -521,6 +521,38 @@ describe("DisplayableTrip happy path", () => {
     expect(value[1]).toEqual({ startX: 11.86, width: 11.86 });
     expect(value[2]).toEqual({ startX: 23.72, width: 76.28 });
   });
+
+  describe("isAvailableViaBookingSite", () => {
+    it("works when the booking site(s) allow list is undefined", () => {
+      const trip = DisplayableTripFactory.build({}, { transient: { bookingSources: ["testasaurusrex"] } });
+      const value = trip.isAvailableViaBookingSite(undefined);
+      expect(value).toBeTruthy();
+    });
+
+    it("works when the booking site(s) allow list is empty", () => {
+      const trip = DisplayableTripFactory.build({}, { transient: { bookingSources: ["testasaurusrex"] } });
+      const value = trip.isAvailableViaBookingSite([]);
+      expect(value).toBeTruthy();
+    });
+
+    it("works when the booking site(s) allow list is superset", () => {
+      const trip = DisplayableTripFactory.build({}, { transient: { bookingSources: ["testasaurusrex"] } });
+      const value = trip.isAvailableViaBookingSite(["testasaurusrex", "meow"]);
+      expect(value).toBeTruthy();
+    });
+
+    it("fails when the booking site(s) allow list does not contain provided value", () => {
+      const trip = DisplayableTripFactory.build({}, { transient: { bookingSources: ["testasaurusrex"] } });
+      const value = trip.isAvailableViaBookingSite(["dinoarmstooshort", "meow"]);
+      expect(value).toBeFalsy();
+    });
+
+    it("fails when the booking site(s) allow list partially intersects", () => {
+      const trip = DisplayableTripFactory.build({}, { transient: { bookingSources: ["testasaurusrex", "woof"] } });
+      const value = trip.isAvailableViaBookingSite(["testasaurusrex", "meow"]);
+      expect(value).toBeFalsy();
+    });
+  });
 });
 
 const baseContainerInfo = {

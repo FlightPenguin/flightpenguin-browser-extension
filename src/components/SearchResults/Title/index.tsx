@@ -6,6 +6,7 @@ import { SearchTripMeta } from "../../../shared/types/SearchMeta";
 import { TripSortDimension } from "../../constants";
 import { Airport } from "../../SearchForm/api/airports/Airport";
 import { AirlineFilterMenu } from "./Filters/AirlineFilterMenu";
+import { BookingPartnerFilterMenu } from "./Filters/BookingPartnerFilterMenu";
 import { LayoverCountFilterMenu } from "./Filters/LayoverCountFilterMenu";
 import { SortTripsMenu } from "./Sorts/SortTripsMenu";
 
@@ -20,6 +21,7 @@ interface TimelineTitleProps {
   filteredTripCount: number;
   onLayoverCountFilterChange: (values: number[]) => void;
   onAirlinesFilterChange: (values: string[]) => void;
+  onBookingSiteFilterChange: (values: string[]) => void;
   onSortDimensionChange: (value: TripSortDimension) => void;
   tripSelected: boolean;
 }
@@ -35,6 +37,7 @@ const TimelineTitle = ({
   filteredTripCount,
   onLayoverCountFilterChange,
   onAirlinesFilterChange,
+  onBookingSiteFilterChange,
   onSortDimensionChange,
   tripSelected,
 }: TimelineTitleProps): React.ReactElement => {
@@ -71,6 +74,11 @@ const TimelineTitle = ({
                   groupedAirlines={meta.airlines}
                   onChange={onAirlinesFilterChange}
                 />
+              </Box>
+            )}
+            {!!meta?.bookingSources.length && meta.bookingSources.length > 1 && (
+              <Box display="flex">
+                <BookingPartnerFilterMenu bookingPartners={meta.bookingSources} onChange={onBookingSiteFilterChange} />
               </Box>
             )}
           </React.Fragment>

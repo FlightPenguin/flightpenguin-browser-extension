@@ -12,13 +12,13 @@ const baseManifestV2 = require("./src/baseManifest.v2.ts");
 
 const defaultEntry = {
   background: "./background.js",
-  "content_scripts/cheapoair": "./cheapoair/contentScript.ts",
+  "content_scripts/cheapoair": "./content_scripts/collectors/cheapoair/contentScript.ts",
   index: "./index.js",
-  "content_scripts/momondo": "./momondo/contentScript.ts",
-  "content_scripts/kiwi": "./kiwi/contentScript.ts",
-  "content_scripts/trip": "./trip/contentScript.ts",
-  "content_scripts/generic": "./collectors/generic/contentScript.ts",
-  "content_scripts/flightpenguin": "./flightpenguin/contentScript.ts",
+  "content_scripts/momondo": "./content_scripts/collectors/momondo/contentScript.ts",
+  "content_scripts/kiwi": "./content_scripts/collectors/kiwi/contentScript.ts",
+  "content_scripts/trip": "./content_scripts/collectors/trip/contentScript.ts",
+  "content_scripts/generic": "./content_scripts/generic/contentScript.ts",
+  "content_scripts/flightpenguin": "./content_scripts/flightpenguin/contentScript.ts",
 };
 
 const getModuleRules = () => [

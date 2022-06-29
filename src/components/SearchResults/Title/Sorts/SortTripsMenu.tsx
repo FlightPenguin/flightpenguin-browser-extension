@@ -46,7 +46,7 @@ export const SortTripsMenu = ({
         </React.Fragment>
       }
       paddingTop="minor-1"
-      zIndex={5}
+      zIndex={1006}
     >
       <Group>
         <Tag variant="outlined" fontSize="clamp(.5rem, .6vw, .75rem)">
