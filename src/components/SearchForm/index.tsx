@@ -1,4 +1,5 @@
 import { Box, Button, Card, FieldStack, FieldWrapper, Input, RadioGroup, Select, Switch, SwitchField } from "bumbag";
+import { Autosuggest } from "bumbag/src/Autosuggest";
 import { SelectMenu } from "bumbag/src/SelectMenu";
 import { addDays, endOfDay, max, nextSunday, startOfDay } from "date-fns";
 import { User } from "firebase/auth";
@@ -248,10 +249,10 @@ export const SearchForm = ({
                       aria-label="Drop down menu to search for departure airport or city"
                       buttonProps={{ elementRef: fromAirportRef }}
                       cacheKey="fromAirport"
-                      component={SelectMenu.Formik}
+                      component={Autosuggest.Formik}
                       containLabel
                       debounceInterval={300}
-                      defer
+                      // defer
                       disableClear
                       disabled={formik.isSubmitting}
                       emptyText={airportSearchText.length ? "No results found." : "Type to start searching."}
@@ -289,13 +290,20 @@ export const SearchForm = ({
                       onKeyPress={(event: KeyboardEvent) => {
                         disableNonAlphaInput(event, true);
                       }}
-                      renderOption={({ option: airport }: { option: Airport }) => (
-                        <React.Fragment>
-                          <MatchedLabel label={airport.name} searchText={airportSearchText} />
-                          <br />
-                          <MatchedLabel label={airport.location} searchText={airportSearchText} fontSize="100" />
-                        </React.Fragment>
-                      )}
+                      renderOption={({ option: airport }: { option: Airport }) => {
+                        if (!("name" in airport)) {
+                          // empty objects can get passed that break the whole component, this ignores them
+                          return null;
+                        }
+
+                        return (
+                          <React.Fragment>
+                            <MatchedLabel label={airport.name} searchText={airportSearchText} />
+                            <br />
+                            <MatchedLabel label={airport.location} searchText={airportSearchText} fontSize="100" />
+                          </React.Fragment>
+                        );
+                      }}
                       searchInputProps={{ placeholder: "Where are you leaving from?", autoFocus: true }}
                       value={fromValue}
                     />
