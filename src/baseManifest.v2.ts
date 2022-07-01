@@ -2,7 +2,8 @@ module.exports = {
   manifest_version: 2,
   name: "FlightPenguin",
   short_name: "FlightPenguin",
-  description: "From some of the builders of Hipmunk, Flight Penguin takes the pain out of flight search.",
+  description:
+    "Take the pain out of flight search with Flight Penguin - a browser extension from some of Hipmunk's founders, employees, and fans.",
   version: "1.20.0",
   content_security_policy:
     "script-src 'self' https://www.google-analytics.com https://apis.google.com; object-src 'self'",
