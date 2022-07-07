@@ -1,7 +1,7 @@
 {
   "name": "flightpenguin",
   "sideEffects": false,
-  "version": "1.21.3",
+  "version": "1.21.4",
   "description": "flight search",
   "private": true,
   "scripts": {
