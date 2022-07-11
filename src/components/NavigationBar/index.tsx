@@ -2,17 +2,9 @@ import { Box, DropdownMenu, Icon, Image, Link, Text, TopNav } from "bumbag";
 import { User } from "firebase/auth";
 import isEqual from "lodash.isequal";
 import React, { useCallback, useEffect, useState } from "react";
-import {
-  FacebookIcon,
-  FacebookShareButton,
-  LinkedinIcon,
-  LinkedinShareButton,
-  TwitterIcon,
-  TwitterShareButton,
-} from "react-share";
 import * as browser from "webextension-polyfill";
 
-import { sendSocialShareClick } from "../../shared/events/analytics/socialShareClick";
+import { SocialMediaShareModal } from "../HelpUsOut/Actions/SocialMediaShare/Modal";
 import { logout } from "../utilities/auth/logout";
 import { getUserInfo } from "../utilities/auth/social/google/getUserInfo";
 import { UserSocialAuthProfile } from "../utilities/auth/social/types/UserSocialAuthProfile";
@@ -37,7 +29,6 @@ const NavigationBar = ({ firebaseLoaded, currentUser }: NavigationBarProps): Rea
     fetchUserProfileInfo();
   }, [fetchUserProfileInfo, firebaseLoaded, currentUser]);
 
-  const socialTitle = "Share Flight Penguin";
   return (
     <TopNav border={"none"}>
       <TopNav.Section paddingLeft="major-2">
@@ -53,46 +44,7 @@ const NavigationBar = ({ firebaseLoaded, currentUser }: NavigationBarProps): Rea
 
       <TopNav.Section paddingRight="major-2">
         <TopNav.Item tabIndex={-1}>
-          <Box height="32px" width="32px">
-            <FacebookShareButton
-              beforeOnClick={() => {
-                sendSocialShareClick("facebook");
-              }}
-              tabIndex={0}
-              title={`${socialTitle} on Facebook`}
-              url={getSocialUrl("facebook")}
-            >
-              <FacebookIcon size={32} round />
-            </FacebookShareButton>
-          </Box>
-        </TopNav.Item>
-        <TopNav.Item tabIndex={-1}>
-          <Box height="32px" width="32px">
-            <TwitterShareButton
-              beforeOnClick={() => {
-                sendSocialShareClick("twitter");
-              }}
-              tabIndex={0}
-              title={`${socialTitle} on Twitter`}
-              url={getSocialUrl("twitter")}
-            >
-              <TwitterIcon size={32} round />
-            </TwitterShareButton>
-          </Box>
-        </TopNav.Item>
-        <TopNav.Item tabIndex={-1}>
-          <Box height="32px" width="32px">
-            <LinkedinShareButton
-              beforeOnClick={() => {
-                sendSocialShareClick("linkedin");
-              }}
-              tabIndex={0}
-              title={`${socialTitle} on LinkedIn`}
-              url={getSocialUrl("linkedin")}
-            >
-              <LinkedinIcon size={32} round />
-            </LinkedinShareButton>
-          </Box>
+          <SocialMediaShareModal button={{ text: "Share" }} />
         </TopNav.Item>
         <TopNav.Item tabIndex={-1}>
           <Box height="32px" width="32px">

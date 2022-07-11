@@ -1,7 +1,7 @@
 {
   "name": "flightpenguin",
   "sideEffects": false,
-  "version": "1.21.4",
+  "version": "1.22.0",
   "description": "flight search",
   "private": true,
   "scripts": {
@@ -107,7 +107,7 @@
     "@sentry/react": "^6.16.1",
     "@sentry/tracing": "^6.16.1",
     "axios": "^0.24.0",
-    "bumbag": "^2.7.19",
+    "bumbag": "^2.7.20",
     "crypto-random-string": "^5.0.0",
     "date-fns": "^2.23.0",
     "date-fns-tz": "^1.1.6",
