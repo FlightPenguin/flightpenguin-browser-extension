@@ -1,7 +1,6 @@
 import * as path from "path";
 import * as TerserPlugin from "terser-webpack-plugin";
 import { Configuration, DefinePlugin, ProgressPlugin } from "webpack";
-const EnvkeyWebpackPlugin = require("envkey-webpack-plugin");
 const CopyPlugin = require("copy-webpack-plugin");
 const WebpackExtensionManifestPlugin = require("webpack-extension-manifest-plugin");
 
@@ -96,18 +95,13 @@ const basePlugins = [
   new DefinePlugin({
     "process.env.BUMBAG_ENV": JSON.stringify("not test"),
     "process.env.VERSION": JSON.stringify(VERSION),
-  }),
-  new EnvkeyWebpackPlugin({
-    permitted: [
-      "FIREBASE_API_KEY",
-      "FIREBASE_MEASUREMENT_ID",
-      "FIREBASE_PROJECT_ID",
-      "FIREBASE_PROJECT_NUMBER",
-      "GOOGLE_ANALYTICS_TRACKING_ID",
-      "SENTRY_DSN",
-      "SENTRY_PROJECT",
-    ],
-    dotEnvFile: ".env",
+    "process.env.FIREBASE_API_KEY": JSON.stringify(process.env.FIREBASE_API_KEY || "fail"),
+    "process.env.FIREBASE_MEASUREMENT_ID": JSON.stringify(process.env.FIREBASE_MEASUREMENT_ID || "fail"),
+    "process.env.FIREBASE_PROJECT_ID": JSON.stringify(process.env.FIREBASE_PROJECT_ID || "fail"),
+    "process.env.FIREBASE_PROJECT_NUMBER": JSON.stringify(process.env.FIREBASE_PROJECT_NUMBER || "fail"),
+    "process.env.GOOGLE_ANALYTICS_TRACKING_ID": JSON.stringify(process.env.GOOGLE_ANALYTICS_TRACKING_ID || "fail"),
+    "process.env.SENTRY_DSN": JSON.stringify(process.env.SENTRY_DSN || "fail"),
+    "process.env.SENTRY_PROJECT": JSON.stringify(process.env.SENTRY_PROJECT || "fail"),
   }),
   new CopyPlugin({
     patterns: [

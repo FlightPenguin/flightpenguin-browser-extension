@@ -1,23 +1,23 @@
 {
   "name": "flightpenguin",
   "sideEffects": false,
-  "version": "1.22.0",
+  "version": "1.23.0",
   "description": "flight search",
   "private": true,
   "scripts": {
-    "build:dev:chrome": "npm run clean:chrome && export TARGET_VENDOR=chrome && npx webpack -c webpack.development.config.js --watch",
-    "build:dev:firefox": "npm run clean:firefox && TARGET_VENDOR=firefox npx webpack -c webpack.development.config.js --watch",
+    "build:dev:chrome": "npm run clean:chrome && source .env && export TARGET_VENDOR=chrome && npx webpack -c webpack.development.config.js --watch",
+    "build:dev:firefox": "npm run clean:firefox && source .env && TARGET_VENDOR=firefox npx webpack -c webpack.development.config.js --watch",
     "build:legacy": "npx webpack -c ./webpack.production.config.js",
-    "build:prod:chrome": "npm run clean:chrome && export TARGET_VENDOR=chrome && npx webpack -c webpack.production.config.js",
-    "build:prod:firefox": "npm run clean:firefox && export TARGET_VENDOR=firefox && npx webpack -c webpack.production.config.js",
+    "build:prod:chrome": "npm run clean:chrome && source .env && export TARGET_VENDOR=chrome && npx webpack -c webpack.production.config.js",
+    "build:prod:firefox": "npm run clean:firefox && source .env && export TARGET_VENDOR=firefox && npx webpack -c webpack.production.config.js",
     "clean": "rm -rf build/*",
     "clean:chrome": "rm -rf build/chrome/*",
     "clean:firefox": "rm -rf build/firefox/*",
     "prepare": "husky install",
     "start:chrome": "node_modules/web-ext/bin/web-ext --config=web-ext.chrome.js run -t chromium",
     "start:firefox": "node_modules/web-ext/bin/web-ext --config=web-ext.firefox.js run",
-    "test": "export TZ=UTC && jest --silent",
-    "test:debug": "export TZ=UTC && jest"
+    "test": "source .env && export TZ=UTC && jest --silent",
+    "test:debug": "source .env && export TZ=UTC && jest"
   },
   "jest": {
     "globals": {
@@ -75,7 +75,6 @@
     "babel-plugin-module-resolver": "^4.1.0",
     "copy-webpack-plugin": "^9.1.0",
     "css-loader": "^5.1.1",
-    "envkey-webpack-plugin": "^1.1.2",
     "eslint": "^7.32.0",
     "eslint-config-prettier": "^8.3.0",
     "eslint-plugin-prettier": "^3.4.0",
