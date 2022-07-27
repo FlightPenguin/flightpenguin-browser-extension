@@ -94,7 +94,7 @@ package() {
 }
 
 load_env() {
-  if [ ! -x ".env" ]; then
+  if [ ! -x ".env" ] && [ ! -L ".env" ]; then
     echo "ERROR: .env file not available"
     exit 70
   fi
