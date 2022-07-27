@@ -93,17 +93,16 @@ package() {
   fi
 }
 
-load_envkey() {
-  if [ ! -x "/usr/local/bin/envkey-source" ]; then
-    echo "ERROR: envkey not installed/executable"
-    echo "DEBUG: See https://github.com/envkey/envkey-source"
+load_env() {
+  if [ ! -x ".env" ]; then
+    echo "ERROR: .env file not available"
     exit 70
   fi
 
-  eval $(envkey-source)
+  source .env
   exitcode=$?
   if [ $exitcode -ne 0 ]; then
-    echo "ERROR: Failed to execute envkey-source"
+    echo "ERROR: Failed to source environment variables"
     exit 71
   fi
 }
@@ -137,7 +136,7 @@ version_check () {
 
 
 version_check
-load_envkey
+load_env
 build
 
 PACKAGE_NAME="flightpenguin_ext_${VERSION}"
