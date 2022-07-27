@@ -76,7 +76,7 @@ const NavigationBar = ({ firebaseLoaded, currentUser }: NavigationBarProps): Rea
                       iconBefore="regular-life-ring"
                       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
                       // @ts-ignore
-                      href="mailto:support@flightpenguin.com"
+                      href="mailto:flightpenguinhinhilla@gmail.com"
                     >
                       Help
                     </DropdownMenu.Item>

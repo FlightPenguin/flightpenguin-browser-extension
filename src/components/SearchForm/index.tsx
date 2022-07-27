@@ -256,7 +256,7 @@ export const SearchForm = ({
                       disabled={formik.isSubmitting}
                       emptyText={airportSearchText.length ? "No results found." : "Type to start searching."}
                       errorText={
-                        "An error occurred.  Please try again after a short wait.  If this error persists, contact support@flightpenguin.com."
+                        "An error occurred.  Please try again after a short wait.  If this error persists, contact flightpenguinhinhilla@gmail.com."
                       }
                       hasFieldWrapper={true}
                       hasSearch
@@ -318,7 +318,7 @@ export const SearchForm = ({
                       disabled={formik.isSubmitting}
                       emptyText={airportSearchText.length ? "No results found." : "Type to start searching."}
                       errorText={
-                        "An error occurred.  Please try again after a short wait.  If this error persists, contact support@flightpenguin.com."
+                        "An error occurred.  Please try again after a short wait.  If this error persists, contact flightpenguinhinhilla@gmail.com."
                       }
                       hasFieldWrapper={true}
                       hasSearch

@@ -26,7 +26,7 @@ export const ErrorPage = (): React.ReactElement => {
               </Box>
               An unexpected error occurred. Our team has already been notified and will investigate the cause of this
               issue. Please wait a short while and try again soon. If this error persists, contact our{" "}
-              <Link href="mailto:support@flightpenguin.com">support team</Link>.
+              <Link href="mailto:flightpenguinhinhilla@gmail.com">support team</Link>.
             </Card.Content>
             <Card.Footer alignX="center">
               <Button

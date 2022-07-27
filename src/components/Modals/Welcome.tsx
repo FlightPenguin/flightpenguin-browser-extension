@@ -47,7 +47,7 @@ export const WelcomeModal = ({ firebaseAuth, googleProvider, onSuccess }: Welcom
             {authError && (
               <Alert title="Error" type="danger" marginTop="major-1" marginBottom="major-3">
                 An error occurred during the sign in process. Please try again. If this continues,{" "}
-                <Link href="mailto:support@flightpenguin.com?subject=I%20cannot%20sign%20in...">
+                <Link href="mailto:flightpenguinhinhilla@gmail.com?subject=I%20cannot%20sign%20in...">
                   email our support team
                 </Link>
                 .
