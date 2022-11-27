@@ -4,7 +4,6 @@ import React, { useCallback, useEffect, useState } from "react";
 import * as browser from "webextension-polyfill";
 
 import { AnalyticsManager } from "../../background/AnalyticsManager";
-import { HelpUsOut } from "../../components/HelpUsOut";
 import { MarketingFooter } from "../../components/MarketingFooter";
 import { LoginModal, WelcomeModal } from "../../components/Modals";
 import NavigationBar from "../../components/NavigationBar";
@@ -143,7 +142,6 @@ export const SearchPage = (): React.ReactElement => {
               }}
               activeUser={activeUser}
             />
-            <HelpUsOut user={activeUser} />
             <MarketingFooter />
           </React.Fragment>
         )}
