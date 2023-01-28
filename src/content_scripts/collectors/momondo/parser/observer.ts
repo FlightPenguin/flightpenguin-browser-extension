@@ -1,7 +1,4 @@
-import * as Sentry from "@sentry/browser";
-
 import { sendFailedScraper, sendScraperComplete } from "../../../../shared/events";
-import { sendFailed, sendSuccess } from "../../../../shared/events/analytics/scrapers";
 import { FlightSearchFormData } from "../../../../shared/types/FlightSearchFormData";
 import { sendItineraries } from "./sendItineraries";
 
@@ -43,9 +40,7 @@ export class ItineraryObserver {
       } catch (error) {
         that.endObservation();
         console.error(error);
-        Sentry.captureException(error);
         sendFailedScraper("momondo", error);
-        sendFailed("momondo");
       }
 
       if (itineraryCards.length) {
@@ -55,15 +50,12 @@ export class ItineraryObserver {
 
           if (complete) {
             sendScraperComplete("momondo");
-            sendSuccess("momondo", that.itineraryCount);
             that.endObservation();
           }
         } catch (error) {
           that.endObservation();
           console.error(error);
-          Sentry.captureException(error);
           sendFailedScraper("momondo", error);
-          sendFailed("momondo");
         }
       }
     });

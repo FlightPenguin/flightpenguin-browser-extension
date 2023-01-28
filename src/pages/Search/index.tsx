@@ -1,29 +1,18 @@
-import { Box, PageContent, PageWithHeader } from "bumbag";
-import { onAuthStateChanged, User } from "firebase/auth";
+import { Box, PageContent } from "bumbag";
 import React, { useCallback, useEffect, useState } from "react";
 import * as browser from "webextension-polyfill";
 
-import { AnalyticsManager } from "../../background/AnalyticsManager";
-import { MarketingFooter } from "../../components/MarketingFooter";
-import { LoginModal, WelcomeModal } from "../../components/Modals";
-import NavigationBar from "../../components/NavigationBar";
 import { SearchForm } from "../../components/SearchForm";
 import SearchFormDisplay from "../../components/SearchFormDisplay";
 import SearchResults from "../../components/SearchResults";
 import { SizeAlert } from "../../components/SizeAlert";
 import { UpdateNotificationAlert } from "../../components/UpdateNotificationAlert";
-import { initFirebase } from "../../components/utilities/auth/initFirebase";
-import { initGoogleProvider } from "../../components/utilities/auth/social/google/initGoogleProvider";
 import { getStandardizedFormatDate } from "../../components/utilities/forms/getStandardizedFormatDate";
 import { sendIndexUnload } from "../../shared/events/sendIndexUnload";
 import { FlightSearchFormData } from "../../shared/types/FlightSearchFormData";
-import { isRecentlyInstalled, setRecentlyInstalled } from "../../shared/utilities/recentlyInstalledManager";
 import { getResultsContainerWidth } from "./utils/getResultsContainerWidth";
 
 export const SearchPage = (): React.ReactElement => {
-  const { auth } = initFirebase();
-  const googleProvider = initGoogleProvider();
-
   const [formData, setFormData] = useState<FlightSearchFormData | undefined>(undefined);
   const [showForm, setShowForm] = useState(true);
 
@@ -31,22 +20,6 @@ export const SearchPage = (): React.ReactElement => {
   const [resultsContainerWidth, setResultsContainerWidth] = useState<number | undefined>();
 
   const [showUpdate, setShowUpdate] = useState(false);
-  const [showWelcomeModal, setShowWelcomeModal] = useState(isRecentlyInstalled());
-  const [activeUser, setActiveUser] = useState<User | null>(null);
-  const [firebaseLoaded, setFirebaseLoaded] = useState(false);
-
-  const analytics = new AnalyticsManager(`${process.env.GOOGLE_ANALYTICS_TRACKING_ID}`, false);
-
-  useEffect(() => {
-    onAuthStateChanged(auth, (user) => {
-      if (user) {
-        setActiveUser(user);
-      } else {
-        setActiveUser(null);
-      }
-      setFirebaseLoaded(true);
-    });
-  }, []);
 
   useEffect(() => {
     browser.runtime.onMessage.addListener((message) => {
@@ -60,10 +33,6 @@ export const SearchPage = (): React.ReactElement => {
       }
     });
   }, [setShowUpdate]);
-
-  useEffect(() => {
-    analytics.pageview({});
-  }, []);
 
   const handleSetContainerWidths = useCallback((element) => {
     if (element) {
@@ -94,32 +63,10 @@ export const SearchPage = (): React.ReactElement => {
   }
 
   return (
-    <PageWithHeader
-      header={<NavigationBar firebaseLoaded={firebaseLoaded} currentUser={activeUser} />}
-      overflow="hidden"
-    >
+    <PageContent>
       <Box display="flex" flexDirection="column">
-        {showWelcomeModal && firebaseLoaded && !activeUser && (
-          <WelcomeModal
-            firebaseAuth={auth}
-            googleProvider={googleProvider}
-            onSuccess={() => {
-              setShowWelcomeModal(false);
-              setRecentlyInstalled(false);
-            }}
-          />
-        )}
-        {firebaseLoaded && !activeUser && !showWelcomeModal && (
-          <LoginModal
-            firebaseAuth={auth}
-            googleProvider={googleProvider}
-            onSuccess={() => {
-              console.debug("Authenticated");
-            }}
-          />
-        )}
         {showUpdate && showForm && <UpdateNotificationAlert />}
-        {firebaseLoaded && showForm && (
+        {showForm && (
           <React.Fragment>
             <SearchForm
               initialValues={
@@ -134,15 +81,8 @@ export const SearchPage = (): React.ReactElement => {
               onSubmit={(values) => {
                 setFormData(values);
                 setShowForm(false);
-                analytics.track({
-                  category: "flight search",
-                  action: "search",
-                  label: window.location.host,
-                });
               }}
-              activeUser={activeUser}
             />
-            <MarketingFooter />
           </React.Fragment>
         )}
         <Box
@@ -168,6 +108,6 @@ export const SearchPage = (): React.ReactElement => {
           )}
         </Box>
       </Box>
-    </PageWithHeader>
+    </PageContent>
   );
 };

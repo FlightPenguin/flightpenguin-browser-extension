@@ -1,7 +1,3 @@
-import { initializeSentry } from "shared/initializeSentry";
-
-initializeSentry();
-
 import { Provider as BumbagProvider, ToastManager } from "bumbag";
 import React from "react";
 import ReactDom from "react-dom";

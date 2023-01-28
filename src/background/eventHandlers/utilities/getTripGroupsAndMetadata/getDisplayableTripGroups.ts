@@ -1,4 +1,3 @@
-import * as Sentry from "@sentry/browser";
 import { differenceInMinutes } from "date-fns";
 import range from "lodash.range";
 
@@ -46,24 +45,18 @@ export const getDisplayableTripGroups = (
 
         displayableTripGroup.push(displayableTrip);
       } else {
-        sendZeroPainMessageToSentry(displayableTrip);
+        const msg = `Zero pain for flight from ${displayableTrip
+          .getTrip()
+          .getDepartureLocation()
+          .getCode()} on ${displayableTrip.getTrip().getDepartureDateTime()} to ${displayableTrip
+          .getTrip()
+          .getArrivalLocation()
+          .getCode()}  on ${displayableTrip.getTrip().getArrivalDateTime()}`;
+        console.error(msg);
         return;
       }
     });
   });
 
   return displayableTripGroups;
-};
-
-const sendZeroPainMessageToSentry = (trip: DisplayableTrip): void => {
-  Sentry.addBreadcrumb({
-    category: "backend",
-    message: `Zero pain for flight from ${trip.getTrip().getDepartureLocation().getCode()} on ${trip
-      .getTrip()
-      .getDepartureDateTime()} to ${trip.getTrip().getArrivalLocation().getCode()}  on ${trip
-      .getTrip()
-      .getArrivalDateTime()}`,
-    level: Sentry.Severity.Info,
-  });
-  Sentry.captureMessage("Trip without pain");
 };

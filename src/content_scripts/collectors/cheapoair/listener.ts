@@ -1,4 +1,3 @@
-import * as Sentry from "@sentry/browser";
 import * as browser from "webextension-polyfill";
 
 import {
@@ -8,7 +7,6 @@ import {
   sendScraperComplete,
   sendScraperStarting,
 } from "../../../shared/events";
-import { sendFailed, sendProcessing } from "../../../shared/events/analytics/scrapers";
 import { FlightSearchFormData } from "../../../shared/types/FlightSearchFormData";
 import { Itinerary } from "../../../shared/types/Itinerary";
 import { suppressOfferFlightPenguinPopup } from "../../generic/activeCollectorSuppression/suppressOfferFlightPenguinPopup";
@@ -31,15 +29,12 @@ export const initMessageListener = (observer: CheapoairModalObserver): void => {
         try {
           document.cookie = "currency=usd";
           suppressOfferFlightPenguinPopup();
-          sendProcessing("cheapoair");
           sendScraperStarting("cheapoair");
           formData = message.formData;
           observer.beginObservation();
           await getAllItineraries(formData, knownItineraries);
         } catch (error) {
-          Sentry.captureException(error);
           sendFailedScraper("cheapoair", error);
-          sendFailed("cheapoair");
         }
         break;
       case "HIGHLIGHT_FLIGHT":
@@ -47,7 +42,6 @@ export const initMessageListener = (observer: CheapoairModalObserver): void => {
           await openBookingLink(message.itineraryId, knownItineraries);
           observer.endObservation();
         } catch (error) {
-          Sentry.captureException(error);
           sendItineraryNotFound(message.itineraryId);
         }
         break;

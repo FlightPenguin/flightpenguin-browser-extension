@@ -23,17 +23,4 @@ export const CabinMap = {
 };
 export type CabinType = "econ" | "prem_econ" | "business" | "first";
 
-export const API_HOST =
-  `${process.env.EXTENSION_ENV}` === "development" ? "http://localhost:3000" : "https://subscribe.flightpenguin.com";
-
-export const FIREBASE_CONFIG = {
-  appId: `1:${process.env.FIREBASE_PROJECT_NUMBER}:web:f9f968ca6c2c8ce76ea2e5`,
-  apiKey: `${process.env.FIREBASE_API_KEY}`,
-  authDomain: "firebase.flightpenguin.com",
-  measurementId: "G-QBJMPED0J4",
-  messagingSenderId: `${process.env.FIREBASE_PROJECT_NUMBER}`,
-  projectId: `${process.env.FIREBASE_PROJECT_ID}`,
-  storageBucket: `${process.env.FIREBASE_PROJECT_ID}.appspot.com`,
-};
-
 export const NO_ALLIANCE = "ZNo Alliance"; // leading z is a hack to force this to end of the sort

@@ -1,5 +1,3 @@
-import * as Sentry from "@sentry/browser";
-
 import { Itinerary, ItineraryInput } from "../../shared/types/Itinerary";
 import { ProviderManager } from "../ProviderManager";
 
@@ -21,8 +19,6 @@ export const handleItineraryResultsReceived = async (
   const tabId = providerManager.getTabId(providerName);
   if (tabId === null || tabId === undefined) {
     console.debug("No windows available in flight results");
-
-    Sentry.captureMessage(`No window found for ${providerName}`);
     return; // TODO: Better handle
   }
 

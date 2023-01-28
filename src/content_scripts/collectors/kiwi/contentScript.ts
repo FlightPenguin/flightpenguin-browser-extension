@@ -1,12 +1,6 @@
-import { initializeSentry } from "../../../shared/initializeSentry";
-
-initializeSentry();
-
-import * as Sentry from "@sentry/browser";
 import * as browser from "webextension-polyfill";
 
 import { sendFailedScraper, sendItineraryNotFound, sendScraperStarting } from "../../../shared/events";
-import { sendFailed, sendProcessing } from "../../../shared/events/analytics/scrapers";
 import { pollForNoResults } from "../../../shared/parser/pollForNoResults";
 import { addBackToSearchButton } from "../../../shared/ui/backToSearch";
 import { stopScrollingNow } from "../../../shared/ui/stopScrolling";
@@ -25,16 +19,13 @@ browser.runtime.onMessage.addListener(async (message, sender) => {
       try {
         document.cookie = "preferred_currency=usd";
         suppressOfferFlightPenguinPopup();
-        sendProcessing("kiwi");
         sendScraperStarting("kiwi");
         observer = new FlightObserver({ formData: message.formData });
         await attachObserver(observer);
         pollForNoResults({ pollForNoResultsCheck: hasNoResults, providerName: "kiwi" });
       } catch (error) {
         console.error(error);
-        Sentry.captureException(error);
         sendFailedScraper("kiwi", error);
-        sendFailed("kiwi");
       }
       break;
     case "HIGHLIGHT_FLIGHT":
@@ -44,7 +35,6 @@ browser.runtime.onMessage.addListener(async (message, sender) => {
         addBackToSearchButton();
       } catch (error) {
         console.error(error);
-        Sentry.captureException(error);
         sendItineraryNotFound(message.itineraryId);
       }
       break;

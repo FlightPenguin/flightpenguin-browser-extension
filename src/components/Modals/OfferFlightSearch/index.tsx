@@ -4,7 +4,6 @@ import * as browser from "webextension-polyfill";
 
 import { setSuppressionFlag } from "../../../content_scripts/generic/recentDisplaySuppression/setSuppressionFlag";
 import { sendOpenExtension } from "../../../shared/events/";
-import { sendSearchDecision } from "../../../shared/events/analytics/searchDecision";
 import { hasVisitedRecently } from "../utilities/hasVisitedRecently";
 import { getSiteName } from "./utilities/getSiteName";
 
@@ -68,7 +67,6 @@ export const OfferFlightSearchModal = (): React.ReactElement => {
                         setLoadingSelection(true);
                         sendOpenExtension();
                         setSuppressionFlag(1);
-                        sendSearchDecision("Flight Penguin");
                       }
                     }}
                     onKeyPress={(event) => {
@@ -76,7 +74,6 @@ export const OfferFlightSearchModal = (): React.ReactElement => {
                         setLoadingSelection(true);
                         sendOpenExtension();
                         setSuppressionFlag(1);
-                        sendSearchDecision("Flight Penguin");
                       }
                     }}
                     _hover={{ border: "2px solid black", borderRadius: "10%" }}
@@ -104,7 +101,6 @@ export const OfferFlightSearchModal = (): React.ReactElement => {
                         setHasSeenOffer(true);
                         setSuppressionFlag(3);
                         modal.setVisible(false);
-                        sendSearchDecision(siteName);
                       }
                     }}
                     onKeyPress={(event) => {
@@ -113,7 +109,6 @@ export const OfferFlightSearchModal = (): React.ReactElement => {
                         setHasSeenOffer(true);
                         setSuppressionFlag(3);
                         modal.setVisible(false);
-                        sendSearchDecision(siteName);
                       }
                     }}
                     _hover={{ border: "2px solid black", borderRadius: "10%" }}

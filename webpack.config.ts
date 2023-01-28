@@ -46,43 +46,8 @@ const getBrowserSpecificManifestData = () => {
   };
   switch (TARGET_VENDOR) {
     case "chrome":
-      manifestData["oauth2"] = {
-        client_id: "82466302556-jujsfqptcild0kjidp1tspr9pghdva92.apps.googleusercontent.com",
-        scopes: ["https://www.googleapis.com/auth/plus.login", "email"],
-      };
-      manifestData["key"] =
-        "MIIBIjANBgkqhkiG9w0B" +
-        "AQEFAAOCAQ8AMIIBCgKC" +
-        "AQEArDtt/DK1/yBIYUu7" +
-        "ZR99hwrIRFcQ0vNxo4Nj" +
-        "68vAgYniaNaKas5nbmcy" +
-        "W5gmadkz7fJ5EfiMmDa4" +
-        "ZMl4iYsIdeCW32OGczxo" +
-        "AIGqK27lI9jRG/sgaFa8" +
-        "Mm0p926f/D2TPYmZya2f" +
-        "vLn+yvu5sWqWHWhTKbYA" +
-        "cFUQk1L179NYeTGhN6T6" +
-        "DGIemXrSulpExmvcgMIO" +
-        "svazLAzbI4QdSdUWbMQS" +
-        "L4DEhfD3rpO3CaTkmH0D" +
-        "cwrphI8dGPwsVYK1YZUJ" +
-        "sJ2ccSjn3m2H8U55/Iw4" +
-        "v+sS4JrxMnxabrY+g9lI" +
-        "bXe8iDLMSjrV9HNIamy2" +
-        "FMKj9EQBuDOJ9J/qGVt3" +
-        "RuRaRwIDAQAB";
       break;
     case "firefox":
-      manifestData["browser_specific_settings"] = {
-        gecko: {
-          id: "flightpenguinfirefox@flightpenguin.com",
-          strict_min_version: "48.0",
-        },
-      };
-      manifestData["oauth2"] = {
-        client_id: "82466302556-qssi2ts28rci8ve9s7s92ge7i633upai.apps.googleusercontent.com",
-        scopes: ["https://www.googleapis.com/auth/plus.login", "email"],
-      };
       break;
     default:
       throw new Error(`Unknown browser ${TARGET_VENDOR}`);
@@ -95,13 +60,6 @@ const basePlugins = [
   new DefinePlugin({
     "process.env.BUMBAG_ENV": JSON.stringify("not test"),
     "process.env.VERSION": JSON.stringify(VERSION),
-    "process.env.FIREBASE_API_KEY": JSON.stringify(process.env.FIREBASE_API_KEY || "fail"),
-    "process.env.FIREBASE_MEASUREMENT_ID": JSON.stringify(process.env.FIREBASE_MEASUREMENT_ID || "fail"),
-    "process.env.FIREBASE_PROJECT_ID": JSON.stringify(process.env.FIREBASE_PROJECT_ID || "fail"),
-    "process.env.FIREBASE_PROJECT_NUMBER": JSON.stringify(process.env.FIREBASE_PROJECT_NUMBER || "fail"),
-    "process.env.GOOGLE_ANALYTICS_TRACKING_ID": JSON.stringify(process.env.GOOGLE_ANALYTICS_TRACKING_ID || "fail"),
-    "process.env.SENTRY_DSN": JSON.stringify(process.env.SENTRY_DSN || "fail"),
-    "process.env.SENTRY_PROJECT": JSON.stringify(process.env.SENTRY_PROJECT || "fail"),
   }),
   new CopyPlugin({
     patterns: [

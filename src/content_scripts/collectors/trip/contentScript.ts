@@ -1,12 +1,6 @@
-import { initializeSentry } from "../../../shared/initializeSentry";
-
-initializeSentry();
-
-import * as Sentry from "@sentry/browser";
 import * as browser from "webextension-polyfill";
 
 import { sendFailedScraper, sendItineraryNotFound, sendScraperStarting } from "../../../shared/events";
-import { sendFailed, sendProcessing } from "../../../shared/events/analytics/scrapers";
 import { pollForNoResults } from "../../../shared/parser/pollForNoResults";
 import { FlightSearchFormData } from "../../../shared/types/FlightSearchFormData";
 import { addBackToSearchButton } from "../../../shared/ui/backToSearch";
@@ -28,7 +22,6 @@ browser.runtime.onMessage.addListener(async (message, sender) => {
       try {
         document.cookie = "IBU_FLIGHT_LIST_STYLE=Merged;cookiePricesDisplayed=USD";
         suppressOfferFlightPenguinPopup();
-        sendProcessing("trip");
         sendScraperStarting("trip");
         formData = message.formData as FlightSearchFormData;
         if (formData.roundtrip) {
@@ -39,9 +32,7 @@ browser.runtime.onMessage.addListener(async (message, sender) => {
         pollForNoResults({ pollForNoResultsCheck: hasNoResults, providerName: "trip" });
       } catch (error) {
         console.error(error);
-        Sentry.captureException(error);
         sendFailedScraper("trip", error);
-        sendFailed("trip");
       }
       break;
     case "HIGHLIGHT_FLIGHT":
@@ -50,7 +41,6 @@ browser.runtime.onMessage.addListener(async (message, sender) => {
         await highlightFlight(message.itineraryId, formData);
       } catch (error) {
         console.error(error);
-        Sentry.captureException(error);
         sendItineraryNotFound(message.itineraryId);
       }
       break;
