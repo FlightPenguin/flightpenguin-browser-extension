@@ -1,10 +1,8 @@
-import { Box, Button, Card, FieldStack, FieldWrapper, Input, RadioGroup, Select, Switch, SwitchField } from "bumbag";
+import { Box, Button, Card, FieldStack, FieldWrapper, Input, RadioGroup, Select, Switch } from "bumbag";
 import { SelectMenu } from "bumbag/src/SelectMenu";
 import { addDays, endOfDay, max, nextSunday, startOfDay } from "date-fns";
-import { User } from "firebase/auth";
 import { Field as FormikField, Form, Formik } from "formik";
-import React, { useCallback, useEffect, useRef, useState } from "react";
-import useGeolocation from "react-hook-geolocation";
+import React, { useCallback, useRef, useState } from "react";
 import { boolean, mixed, number, object, string } from "yup";
 
 import airports from "../../assets/airports.json";
@@ -22,11 +20,6 @@ import { getFormattedDate } from "../utilities/forms/getFormattedDate";
 import { getPrettyRewardsCardName } from "../utilities/forms/getPrettyRewardsCardName";
 import { getStandardizedFormatDate } from "../utilities/forms/getStandardizedFormatDate";
 import { isValidDateInputString } from "../utilities/forms/isValidDateInputString";
-import {
-  getNearbyAirportData,
-  getNearbyAirportFromCache,
-  setNearbyAirportCache,
-} from "../utilities/geography/getNearbyAirportData";
 import { Airport } from "./api/airports/Airport";
 import { SearchAirport } from "./api/airports/SearchAirport";
 import { MatchedLabel } from "./components/SelectMenu/MatchedLabel";
@@ -124,31 +117,14 @@ const defaultInitialValues: FormState = {
 };
 
 interface SearchFormProps {
-  activeUser: User | null;
   onSubmit: (values: FlightSearchFormData) => void;
   initialValues?: FormState;
 }
 
-export const SearchForm = ({
-  activeUser,
-  onSubmit,
-  initialValues = defaultInitialValues,
-}: SearchFormProps): React.ReactElement => {
-  const cachedBaseAirport = getNearbyAirportFromCache();
-  if (cachedBaseAirport && initialValues.from.label === "") {
-    initialValues.from = cachedBaseAirport;
-  }
-  const [suggestedDefaultAirport, setSuggestedDefaultAirport] = useState(cachedBaseAirport);
-
+export const SearchForm = ({ onSubmit, initialValues = defaultInitialValues }: SearchFormProps): React.ReactElement => {
   const fromAirportRef = useRef<HTMLDivElement>(null);
   const toAirportRef = useRef<HTMLDivElement>(null);
   const cabinRef = useRef<HTMLDivElement>(null);
-
-  const geolocation = useGeolocation({
-    enableHighAccuracy: true,
-    maximumAge: 86400000,
-    timeout: 3000,
-  });
 
   const [fromValue, setFromValue] = useState<Airport>({
     value: "",
@@ -178,23 +154,6 @@ export const SearchForm = ({
     },
     [setAirportSearchText],
   );
-
-  const getNearestAirport = useCallback(async () => {
-    if (!geolocation.error && geolocation.latitude && !cachedBaseAirport && !suggestedDefaultAirport && !!activeUser) {
-      const airport = await getNearbyAirportData({
-        latitude: geolocation.latitude,
-        longitude: geolocation.longitude,
-        page: 0,
-      });
-      if (airport && airport.key) {
-        setSuggestedDefaultAirport(airport);
-      }
-    }
-  }, [geolocation, cachedBaseAirport, suggestedDefaultAirport, setSuggestedDefaultAirport, activeUser]);
-
-  useEffect(() => {
-    getNearestAirport();
-  }, [getNearestAirport]);
 
   return (
     <Box
@@ -363,53 +322,6 @@ export const SearchForm = ({
                     />
                   </FieldWrapper>
                 </FieldStack>
-
-                {suggestedDefaultAirport &&
-                  suggestedDefaultAirport.value &&
-                  fromValue &&
-                  fromValue.value &&
-                  fromValue.type === "airport" &&
-                  suggestedDefaultAirport.value === fromValue.value &&
-                  fromValue.type === "airport" && (
-                    <FieldStack
-                      orientation="horizontal"
-                      verticalBelow="tablet"
-                      className="airport-cache"
-                      paddingTop="major-3"
-                    >
-                      <SwitchField
-                        switchLabel={`Set ${fromValue.value} as your default departure airport`}
-                        label=""
-                        onClick={() => {
-                          setNearbyAirportCache(fromValue);
-                          setSuggestedDefaultAirport(null);
-                        }}
-                      />
-                    </FieldStack>
-                  )}
-
-                {suggestedDefaultAirport &&
-                  fromValue &&
-                  fromValue.value &&
-                  fromValue.type === "city" &&
-                  suggestedDefaultAirport.raw?.cityCode &&
-                  suggestedDefaultAirport.raw?.cityCode === fromValue.value && (
-                    <FieldStack
-                      orientation="horizontal"
-                      verticalBelow="tablet"
-                      className="airport-cache"
-                      paddingTop="major-3"
-                    >
-                      <SwitchField
-                        switchLabel={`Set ${fromValue.value} as your default departure city`}
-                        label=""
-                        onClick={() => {
-                          setNearbyAirportCache(fromValue);
-                          setSuggestedDefaultAirport(null);
-                        }}
-                      />
-                    </FieldStack>
-                  )}
 
                 <FieldStack
                   orientation="horizontal"
@@ -675,7 +587,7 @@ export const SearchForm = ({
                     alignX="center"
                     paddingLeft="major-4"
                     paddingRight="major-4"
-                    disabled={!activeUser || formik.isSubmitting}
+                    disabled={formik.isSubmitting}
                     isLoading={formik.isSubmitting}
                     style={{ whiteSpace: "nowrap" }}
                   >

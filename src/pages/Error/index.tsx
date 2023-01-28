@@ -1,14 +1,12 @@
-import { Box, Button, Card, Image, Link, PageWithHeader } from "bumbag";
+import { Box, Button, Card, Image, Link, PageContent } from "bumbag";
 import React, { useState } from "react";
 import * as browser from "webextension-polyfill";
-
-import NavigationBar from "../../components/NavigationBar";
 
 export const ErrorPage = (): React.ReactElement => {
   const [imageLoaded, setImageLoaded] = useState(false);
 
   return (
-    <PageWithHeader header={<NavigationBar firebaseLoaded={false} currentUser={null} />} overflow="hidden">
+    <PageContent>
       <Box alignX="center">
         <Box maxWidth="768px" marginTop="major-5" display={imageLoaded ? "flex" : "none"}>
           <Card standalone width="100%">
@@ -41,6 +39,6 @@ export const ErrorPage = (): React.ReactElement => {
           </Card>
         </Box>
       </Box>
-    </PageWithHeader>
+    </PageContent>
   );
 };

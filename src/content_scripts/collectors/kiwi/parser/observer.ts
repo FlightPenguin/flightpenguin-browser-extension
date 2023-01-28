@@ -1,8 +1,6 @@
-import * as Sentry from "@sentry/browser";
 import debounce from "lodash.debounce";
 
 import { sendFailedScraper, sendScraperComplete } from "../../../../shared/events";
-import { sendFailed, sendSuccess } from "../../../../shared/events/analytics/scrapers";
 import { FlightSearchFormData } from "../../../../shared/types/FlightSearchFormData";
 import { sendFlights } from "./sendFlights";
 
@@ -68,15 +66,12 @@ export class FlightObserver {
         const { complete } = await sendFlights({ flightCards, formData: this.formData });
         if (complete) {
           sendScraperComplete("kiwi");
-          sendSuccess("kiwi", this.flightCount);
           this.endObservation();
         }
       } catch (error) {
         this.endObservation();
         console.error(error);
-        Sentry.captureException(error);
         sendFailedScraper("kiwi", error);
-        sendFailed("kiwi");
       }
     }
   }

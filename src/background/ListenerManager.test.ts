@@ -14,18 +14,13 @@ jest.mock("./eventHandlers", () => ({
   handleClearSelections: jest.fn(),
   handleIndexUnloaded: jest.fn(),
   handleUpdateRequest: jest.fn(),
-  handleLogAnalyticsEvent: jest.fn(),
-  handleLogAnalyticsUserIdentified: jest.fn(),
-  handleLogAnalyticsPageView: jest.fn(),
   handleOpenExtensionRequest: jest.fn(),
   handleUndominateTrip: jest.fn(),
 }));
 jest.mock("./ProviderManager");
-jest.mock("./AnalyticsManager");
 
 import * as browser from "webextension-polyfill";
 
-import { AnalyticsManager } from "./AnalyticsManager";
 import {
   handleClearSelections,
   handleFocusWebpage,
@@ -33,9 +28,6 @@ import {
   handleIndexUnloaded,
   handleItineraryNotFound,
   handleItineraryResultsReceived,
-  handleLogAnalyticsEvent,
-  handleLogAnalyticsPageView,
-  handleLogAnalyticsUserIdentified,
   handleNoFlightsFound,
   handleOpenExtensionRequest,
   handleProviderReady,
@@ -51,8 +43,7 @@ import { ListenerManager } from "./ListenerManager";
 describe("Listener events", () => {
   beforeAll(() => {
     const providerManager = new ProviderManager();
-    const analyticsManager = new AnalyticsManager("", false);
-    ListenerManager(providerManager, analyticsManager);
+    ListenerManager(providerManager);
   });
 
   beforeEach(() => {
@@ -188,39 +179,6 @@ describe("Listener events", () => {
     };
     browser.runtime.sendMessage(message);
     expect(handleUpdateRequest).toHaveBeenCalledTimes(1);
-  });
-
-  it("works with LOG_ANALYTICS_EVENT", () => {
-    const message = {
-      event: "LOG_ANALYTICS_EVENT",
-      cat: "meow",
-      dog: "woof",
-    };
-    browser.runtime.sendMessage(message);
-    expect(handleLogAnalyticsEvent).toHaveBeenCalledTimes(1);
-    expect(handleLogAnalyticsEvent).toHaveBeenCalledWith(expect.anything(), message);
-  });
-
-  it("works with LOG_ANALYTICS_USER_IDENTIFIED", () => {
-    const message = {
-      event: "LOG_ANALYTICS_USER_IDENTIFIED",
-      cat: "meow",
-      dog: "woof",
-    };
-    browser.runtime.sendMessage(message);
-    expect(handleLogAnalyticsUserIdentified).toHaveBeenCalledTimes(1);
-    expect(handleLogAnalyticsUserIdentified).toHaveBeenCalledWith(expect.anything(), message);
-  });
-
-  it("works with LOG_ANALYTICS_PAGE_VIEW", () => {
-    const message = {
-      event: "LOG_ANALYTICS_PAGE_VIEW",
-      cat: "meow",
-      dog: "woof",
-    };
-    browser.runtime.sendMessage(message);
-    expect(handleLogAnalyticsPageView).toHaveBeenCalledTimes(1);
-    expect(handleLogAnalyticsPageView).toHaveBeenCalledWith(expect.anything(), message);
   });
 
   it("works with OPEN_EXTENSION", () => {

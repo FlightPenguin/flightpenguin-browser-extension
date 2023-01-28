@@ -5,7 +5,6 @@ import range from "lodash.range";
 import React, { useEffect, useState } from "react";
 import * as browser from "webextension-polyfill";
 
-import { AnalyticsManager } from "../../background/AnalyticsManager";
 import { sendTripSelected } from "../../shared/events";
 import { sendClearSelections } from "../../shared/events/sendClearSelections";
 import { sendIndexUnload } from "../../shared/events/sendIndexUnload";
@@ -26,7 +25,6 @@ export const SearchResults = ({
   resultsContainerWidth,
   onUpdateFormClick,
 }: SearchResultsProps): React.ReactElement => {
-  const analytics = new AnalyticsManager(`${process.env.GOOGLE_ANALYTICS_TRACKING_ID}`, false);
   const maxContainerIndex = formData.roundtrip ? 2 : 1;
   const minContainerIndex = 1;
   const containerRange = range(minContainerIndex, maxContainerIndex + 1);
@@ -237,18 +235,6 @@ export const SearchResults = ({
                   setActiveContainerIndex(newActiveContainerIndex);
                   setTripSelection(selectedTrips);
                   sendTripSelected(selectedTrips.filter((trip) => !!trip) as DisplayableTrip[]);
-                  if (containerIndex === maxContainerIndex) {
-                    analytics.track({
-                      category: "flight search",
-                      action: `trip selection`,
-                      label: window.location.host,
-                    });
-                  }
-                  analytics.track({
-                    category: "flight search",
-                    action: `trip flight selection`,
-                    label: window.location.host,
-                  });
                 }}
                 onUpdateFormClick={onUpdateFormClick}
                 resultsContainerWidth={resultsContainerWidth}

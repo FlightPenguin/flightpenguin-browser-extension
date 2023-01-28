@@ -1,7 +1,5 @@
-import * as Sentry from "@sentry/browser";
 import * as browser from "webextension-polyfill";
 
-import { AnalyticsManager } from "./AnalyticsManager";
 import {
   handleClearSelections,
   handleFocusWebpage,
@@ -9,9 +7,6 @@ import {
   handleIndexUnloaded,
   handleItineraryNotFound,
   handleItineraryResultsReceived,
-  handleLogAnalyticsEvent,
-  handleLogAnalyticsPageView,
-  handleLogAnalyticsUserIdentified,
   handleNoFlightsFound,
   handleOpenExtensionRequest,
   handleProviderReady,
@@ -24,14 +19,8 @@ import {
 } from "./eventHandlers";
 import { ProviderManager } from "./ProviderManager";
 
-export const ListenerManager = (providerManager: ProviderManager, analyticsManager: AnalyticsManager): void => {
+export const ListenerManager = (providerManager: ProviderManager): void => {
   browser.runtime.onMessage.addListener(async (message, sender) => {
-    Sentry.addBreadcrumb({
-      category: "extension",
-      message: "Received message",
-      level: Sentry.Severity.Debug,
-      data: message,
-    });
     console.debug(message);
     switch (message.event) {
       case "FORM_DATA_RECEIVED":
@@ -73,15 +62,6 @@ export const ListenerManager = (providerManager: ProviderManager, analyticsManag
       case "UPDATE_NOW":
         handleUpdateRequest();
         break;
-      case "LOG_ANALYTICS_EVENT":
-        handleLogAnalyticsEvent(analyticsManager, message);
-        break;
-      case "LOG_ANALYTICS_USER_IDENTIFIED":
-        handleLogAnalyticsUserIdentified(analyticsManager, message);
-        break;
-      case "LOG_ANALYTICS_PAGE_VIEW":
-        handleLogAnalyticsPageView(analyticsManager, message);
-        break;
       case "OPEN_EXTENSION":
         await handleOpenExtensionRequest(sender);
         break;
@@ -89,7 +69,6 @@ export const ListenerManager = (providerManager: ProviderManager, analyticsManag
         handleUndominateTrip(providerManager, message.tripId);
         break;
       default:
-        Sentry.captureException(new Error(message));
         console.error(message);
         break;
     }

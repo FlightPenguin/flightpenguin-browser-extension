@@ -4,9 +4,7 @@ module.exports = {
   short_name: "FlightPenguin",
   description:
     "Take the pain out of flight search with Flight Penguin - a browser extension from some of Hipmunk's founders, employees, and fans.",
-  version: "1.20.0",
-  content_security_policy:
-    "script-src 'self' https://www.google-analytics.com https://apis.google.com; object-src 'self'",
+  version: "2.0.0",
   web_accessible_resources: [
     "index.html",
     "images/*.svg",
@@ -23,14 +21,7 @@ module.exports = {
   browser_action: {
     default_title: "FlightPenguin",
   },
-  permissions: [
-    "tabs",
-    "identity",
-    "identity.email",
-    "geolocation",
-    "https://www.googleapis.com/",
-    "https://subscribe.flightpenguin.com/",
-  ],
+  permissions: ["tabs", "identity", "identity.email"],
   content_scripts: [
     {
       matches: ["https://www.trip.com/flights/*"],
